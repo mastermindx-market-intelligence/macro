@@ -462,6 +462,26 @@ ADAPTIVE_CENSUS_MATURITY_SECONDS = 240
 ADAPTIVE_CENSUS_JOB_PAGE = 100
 ADAPTIVE_SERVED_RUNS_FULL_HEADROOM = 2
 ADAPTIVE_PICKUP_GRACE_SECONDS = 120
+# A `queued` ci.yml run older than this is only a CANDIDATE for stranding, never
+# stranded by age alone (review hold, 2026-11-12: age is not positive proof a
+# queued run is dead).  The old run still occupies the concurrency group's one
+# pending slot and is still its PR's current head, so it counts unless a clean
+# jobs read proves it has no jobs at all.  A ci.yml run waiting on its
+# concurrency group or a manual admission shows status `pending` (live: run
+# 43210897203), which ACTIVE_PR_PROOF_STATUSES counts UNFILTERED; a run queued
+# for runners has its jobs created.  From 2026-11-11 ~20:18Z seven runs
+# (43095271395, 43095653706, 43097443305, 43097453239, 43098308950,
+# 43098323413, 43098610401) sat queued with ZERO jobs ever created while the
+# pool served new runs in ~2 s; counting them zeroed adaptive headroom and
+# withheld the refresh floor for 12 h.  30 minutes is far beyond any real
+# pickup latency (observed 2-82 s; the grace is ADAPTIVE_PICKUP_GRACE_SECONDS),
+# so it bounds the probe, but exclusion additionally needs jobs total_count == 0.
+# A stranded run that later starts re-enters the count as in_progress.
+ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS = 1800
+# How many OLD `queued` ci.yml runs one sweep probes at the job level (one list
+# read plus one `per_page=1` jobs read each).  Runs beyond this page are NOT
+# read, and unproven age is not evidence of death, so they count fail-closed.
+STRANDED_QUEUED_RUN_PROBE_LIMIT = 10
 ADAPTIVE_HOSTED_LABEL_PREFIXES = ("ubuntu-", "windows-", "macos-")
 ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # S9 (2026-11-07) saturation floor.  Sweep 42339359763 (2026-11-07 04:39Z) read 12
@@ -3074,7 +3094,92 @@ def is_sweep_candidate(pull: dict[str, Any]) -> bool:
     )
 
 
-def in_flight_pr_proofs(repo: str, token: str) -> int | None:
+def _count_old_queued_runs(
+    repo: str,
+    token: str,
+    *,
+    cutoff: dt.datetime,
+    event: str | None = None,
+) -> int | None:
+    """Old ``queued`` ``ci.yml`` runs that must still count, or ``None`` if unreadable.
+
+    ``cutoff`` splits FRESH queued runs (the caller counts those from its own
+    index read) from OLD ones, which are probed here.  Age alone is not proof a
+    queued run is dead (review hold, 2026-11-12): the run still holds the
+    concurrency group's pending slot and is still its PR's current head while it
+    waits.  So one list read (up to ``STRANDED_QUEUED_RUN_PROBE_LIMIT`` runs
+    created before ``cutoff``, newest first) is followed by one ``per_page=1``
+    jobs read per listed run, and a run is excluded ONLY when that read is clean
+    and its ``total_count`` is 0 -- the positive evidence of stranding.
+
+    Everything else counts, fail-closed: a run with jobs, a jobs read that
+    errors or is malformed, a listed entry without a usable id, and every run
+    beyond the probe page (list ``total_count`` exceeds the page, so they were
+    never read and their age proves nothing).  ``None`` is returned only when
+    the LIST read itself is unclean, which keeps the callers' "unreadable is
+    never zero load" contract.
+
+    ``event`` narrows the list to pull-request runs where the caller's census is
+    pull-request scoped; ``None`` keeps the repository-wide census.
+    """
+    base = f"{GITHUB_API}/repos/{repo}/actions"
+    params = {
+        "status": "queued",
+        "created": "<" + cutoff.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "per_page": str(STRANDED_QUEUED_RUN_PROBE_LIMIT),
+    }
+    if event is not None:
+        params["event"] = event
+    query = urllib.parse.urlencode(params)
+    status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
+    if status >= 400 or not isinstance(payload, dict):
+        return None
+    listed_total = _clean_count(payload, "total_count")
+    runs = payload.get("workflow_runs")
+    if listed_total is None or not isinstance(runs, list):
+        return None
+    page = runs[:STRANDED_QUEUED_RUN_PROBE_LIMIT]
+    counted = 0
+    for run in page:
+        run_id = run.get("id") if isinstance(run, dict) else None
+        if not isinstance(run_id, int) or isinstance(run_id, bool):
+            # No usable id means no way to prove zero jobs: count it.
+            counted += 1
+            continue
+        # Bind the probe to the run's FIRST attempt, never re-run since the
+        # cutoff (review 5874181673).  The jobs endpoint shows the latest
+        # attempt, and a re-run keeps the run id while its new attempt may
+        # briefly list no jobs; a re-run, a missing attempt number or a
+        # recent update is therefore never proof of stranding.
+        attempt = run.get("run_attempt")
+        updated = _parse_dt(run.get("updated_at"))
+        if (
+            not isinstance(attempt, int)
+            or isinstance(attempt, bool)
+            or attempt != 1
+            or updated is None
+            or updated >= cutoff
+        ):
+            counted += 1
+            continue
+        jobs_status, jobs_payload = _request(
+            "GET", f"{base}/runs/{run_id}/jobs?per_page=1", token
+        )
+        jobs_total = (
+            _clean_count(jobs_payload, "total_count") if jobs_status < 400 else None
+        )
+        jobs = jobs_payload.get("jobs") if isinstance(jobs_payload, dict) else None
+        # Proof needs BOTH a clean zero count and an actual empty jobs list.
+        if jobs_total != 0 or not isinstance(jobs, list) or jobs:
+            counted += 1
+    # Unlisted runs were never probed; unproven age is not evidence of death.
+    counted += max(0, listed_total - len(page))
+    return counted
+
+
+def in_flight_pr_proofs(
+    repo: str, token: str, *, now: dt.datetime | None = None
+) -> int | None:
     """Repo-wide active pull-request ``ci.yml`` runs, or ``None`` if unreadable.
 
     This is the controller's workload circuit breaker.  A per-sweep refresh cap
@@ -3083,19 +3188,40 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
     Five tiny ``per_page=1`` reads use GitHub's own status index and ``total_count``
     so proofs outside the pull-list/evaluation window still consume capacity.
 
+    The ``queued`` reads split at ``ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS``: FRESH
+    queued runs always count (one index read), and OLD ones are excluded only
+    with positive proof -- a clean jobs read showing ``total_count == 0`` (see
+    :func:`_count_old_queued_runs`, which adds one list read and at most
+    ``STRANDED_QUEUED_RUN_PROBE_LIMIT`` tiny jobs reads per sweep).  Age alone
+    proved nothing here: a run waiting on its concurrency group still shows
+    ``pending`` (counted unfiltered by ``ACTIVE_PR_PROOF_STATUSES``), a run
+    queued for runners has jobs created, and the 2026-11-11 incident runs had
+    zero jobs for 15 h while remaining their PRs' current heads.  A stranded
+    run that later starts re-enters the count as ``in_progress``; the other
+    status reads are unchanged.
+
     Unreadable is deliberately ``None`` rather than zero.  The caller pauses only
     NEW ``update-branch`` work while continuing to judge and merge already-proven
     heads; an API blip must not be interpreted as an empty runner pool.
     """
-    total = 0
+    queued_cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
+        seconds=ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+    )
+    old_queued = _count_old_queued_runs(
+        repo, token, cutoff=queued_cutoff, event="pull_request"
+    )
+    if old_queued is None:
+        return None
+    total = old_queued
     for run_status in ACTIVE_PR_PROOF_STATUSES:
-        query = urllib.parse.urlencode(
-            {
-                "event": "pull_request",
-                "status": run_status,
-                "per_page": "1",
-            }
-        )
+        params = {
+            "event": "pull_request",
+            "status": run_status,
+            "per_page": "1",
+        }
+        if run_status == "queued":
+            params["created"] = ">=" + queued_cutoff.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        query = urllib.parse.urlencode(params)
         status, payload = _request(
             "GET",
             f"{GITHUB_API}/repos/{repo}/actions/workflows/ci.yml/runs?{query}",
@@ -3117,7 +3243,11 @@ def in_flight_pr_proofs(repo: str, token: str) -> int | None:
 class HostedPoolCensus:
     """Job-level evidence of hosted-pool service for this repository's ci.yml."""
 
-    #: ci.yml runs whose first job (`ci-plan`, hosted) has no runner yet.
+    #: ci.yml runs with no runner yet that still count as refusal evidence:
+    #: every FRESH queued run, plus every queued run older than
+    #: ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS that was NOT proven jobless by a
+    #: clean ``total_count == 0`` jobs read (see :func:`_count_old_queued_runs`).
+    #: Age alone excludes nothing.
     queued_runs: int
     #: Mature in-progress ci.yml runs whose job lists were read.
     sampled_runs: int
@@ -3204,22 +3334,36 @@ def hosted_pool_census(
 ) -> HostedPoolCensus | None:
     """Sample this repository's mature in-progress ci.yml runs at the JOB level.
 
-    One ``per_page=1`` read of queued ci.yml runs, one list of the newest
-    in-progress ci.yml runs created at least ``ADAPTIVE_CENSUS_MATURITY_SECONDS``
-    ago (so their dynamic pack matrix is likely to exist), and one job list per
-    sampled run.  ``None`` on any read that is not clean, including a job list
-    longer than one page or a job without a usable timestamp, so the caller
-    falls back to the flat cap rather than reading an API blip as a free pool.
+    One ``per_page=1`` read of queued ci.yml runs created within
+    ``ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS`` (FRESH refusal evidence), the
+    :func:`_count_old_queued_runs` probe of older queued runs (excluded only on
+    a clean ``total_count == 0`` jobs read, so age alone never excludes), one
+    list of the newest in-progress ci.yml runs created at least
+    ``ADAPTIVE_CENSUS_MATURITY_SECONDS`` ago (so their dynamic pack matrix is
+    likely to exist), and one job list per sampled run.  ``None`` on any read
+    that is not clean, including a job list longer than one page or a job
+    without a usable timestamp, so the caller falls back to the flat cap rather
+    than reading an API blip as a free pool.
     """
     base = f"{GITHUB_API}/repos/{repo}/actions"
-    query = urllib.parse.urlencode({"status": "queued", "per_page": "1"})
+    now = now or dt.datetime.now(dt.timezone.utc)
+    queued_cutoff = now - dt.timedelta(seconds=ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS)
+    query = urllib.parse.urlencode(
+        {
+            "status": "queued",
+            "per_page": "1",
+            "created": ">=" + queued_cutoff.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    )
     status, payload = _request("GET", f"{base}/workflows/ci.yml/runs?{query}", token)
     queued_runs = _clean_count(payload, "total_count") if status < 400 else None
     if queued_runs is None:
         return None
-    cutoff = (now or dt.datetime.now(dt.timezone.utc)) - dt.timedelta(
-        seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS
-    )
+    old_queued = _count_old_queued_runs(repo, token, cutoff=queued_cutoff)
+    if old_queued is None:
+        return None
+    queued_runs += old_queued
+    cutoff = now - dt.timedelta(seconds=ADAPTIVE_CENSUS_MATURITY_SECONDS)
     query = urllib.parse.urlencode(
         {
             "status": "in_progress",

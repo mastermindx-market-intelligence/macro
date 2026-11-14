@@ -17,6 +17,7 @@ import ast
 import base64
 import datetime as dt
 import json
+import urllib.parse
 from pathlib import Path
 
 import pytest
@@ -4957,6 +4958,13 @@ def test_repo_wide_proof_census_sums_every_active_actions_state(monkeypatch):
 
     def fake_request(method, url, token, payload=None):
         assert method == "GET" and token == "read" and payload is None
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if query["status"] == ["queued"] and query["created"][0].startswith("<"):
+            # The old-queued probe pages at STRANDED_QUEUED_RUN_PROBE_LIMIT and
+            # never sees a fresh run; here it lists none, so it adds nothing.
+            assert query["per_page"] == [str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT)]
+            assert query["event"] == ["pull_request"]
+            return 200, {"total_count": 0, "workflow_runs": []}
         for run_status, count in counts.items():
             if f"status={run_status}" in url:
                 seen.append(run_status)
@@ -4981,6 +4989,230 @@ def test_an_unreadable_proof_census_never_claims_zero_load(
     monkeypatch, status, payload
 ):
     monkeypatch.setattr(MOG, "_request", lambda *_a, **_k: (status, payload))
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") is None
+
+
+@pytest.mark.parametrize(
+    "fresh_queued,expected",
+    [
+        # The live stranding (2026-11-11 ~20:18Z): seven queued ci.yml runs with
+        # ZERO jobs ever created (run 43095271395).  They consume no runners, so
+        # the age-bounded queued read must exclude them or the controller
+        # starves at the flat cap while the pool serves new runs in ~2 s.
+        (0, 4),
+        # A genuinely refusing pool still shows a FRESH queued run.
+        (1, 5),
+    ],
+    ids=("stranded-queued-excluded", "fresh-queued-counted"),
+)
+def test_stranded_queued_runs_do_not_consume_proof_slots(
+    monkeypatch, fresh_queued, expected
+):
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    runs = [("2026-11-11T20:18:53Z", "queued")] * 7
+    runs += [("2026-11-12T08:00:00Z", "in_progress")] * 4
+    old_ids = [43095271395 + i for i in range(7)]
+    if fresh_queued:
+        runs.append(("2026-11-12T08:29:00Z", "queued"))
+    jobs_reads: list[int] = []
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        assert query["event"] == ["pull_request"]
+        run_status = query["status"][0]
+        if run_status == "queued" and query["created"][0].startswith("<"):
+            # The old-queued probe, paged and newest-first.
+            assert query["per_page"] == [str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT)]
+            return 200, {
+                "total_count": len(old_ids),
+                "workflow_runs": [{"id": run_id, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"} for run_id in old_ids],
+            }
+        assert query["per_page"] == ["1"]
+        if run_status == "queued":
+            # The API applies the created qualifier; a query without it would
+            # count the stranded runs on age alone (the bug).
+            assert "created" in query, url
+            assert query["created"][0].startswith(">="), url
+            cutoff = MOG._parse_dt(query["created"][0][2:])
+            assert cutoff == now - dt.timedelta(
+                seconds=MOG.ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+            )
+            count = sum(
+                1
+                for created, status in runs
+                if status == "queued" and MOG._parse_dt(created) >= cutoff
+            )
+        else:
+            # in_progress and the other active states keep counting every run.
+            assert "created" not in query
+            count = sum(1 for _created, status in runs if status == run_status)
+        return 200, {"total_count": count, "workflow_runs": []}
+
+    # Only a CLEAN zero-job read is proof of stranding.
+    def fake_jobs(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        run_id = int(url.split("/actions/runs/")[1].split("/jobs")[0])
+        assert run_id in old_ids and "per_page=1" in url
+        jobs_reads.append(run_id)
+        return 200, {"total_count": 0, "jobs": []}
+
+    def routed(method, url, token, payload=None):
+        if "/actions/runs/" in url and "/jobs" in url:
+            return fake_jobs(method, url, token, payload)
+        return fake_request(method, url, token, payload)
+
+    monkeypatch.setattr(MOG, "_request", routed)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == expected
+    assert sorted(jobs_reads) == old_ids
+
+
+def _old_queued_probe_fake(
+    monkeypatch,
+    *,
+    old_runs,
+    jobs_answer_for,
+    fresh_queued=0,
+    pending_runs=(),
+    list_total=None,
+    list_answer=None,
+):
+    """Route `in_flight_pr_proofs`; `old_runs` are ids on the probe page."""
+    seen: list[str] = []
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read" and payload is None
+        if "/actions/runs/" in url and "/jobs" in url:
+            run_id = int(url.split("/actions/runs/")[1].split("/jobs")[0])
+            assert "per_page=1" in url
+            return jobs_answer_for(run_id)
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        assert query["event"] == ["pull_request"]
+        run_status = query["status"][0]
+        seen.append(run_status)
+        if run_status == "queued" and query["created"][0].startswith("<"):
+            assert query["per_page"] == [str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT)]
+            if list_answer is not None:
+                return list_answer
+            return 200, {
+                "total_count": len(old_runs) if list_total is None else list_total,
+                "workflow_runs": [{"id": run_id, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"} for run_id in old_runs],
+            }
+        if run_status == "queued":
+            assert query["created"][0].startswith(">="), url
+            return 200, {"total_count": fresh_queued, "workflow_runs": []}
+        if run_status == "pending":
+            # Status alone, with no age qualifier: an old pending run is still
+            # live concurrency-group/admission evidence and must count.
+            assert "created" not in query, url
+            return 200, {"total_count": len(pending_runs), "workflow_runs": list(pending_runs)}
+        return 200, {"total_count": 0, "workflow_runs": []}
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    return seen
+
+
+@pytest.mark.parametrize(
+    "jobs_answer,expected",
+    [
+        # A clean read proving the run has no jobs is the ONLY exclusion.
+        ((200, {"total_count": 0, "jobs": []}), 0),
+        ((200, {"total_count": 16, "jobs": [{"name": "ci-plan"}]}), 1),
+        # Fail-closed: an unclean read proves nothing, so the run still counts.
+        ((403, {"message": "rate limited"}), 1),
+        ((200, {}), 1),
+        ((200, {"total_count": True}), 1),
+        ((200, {"total_count": "0"}), 1),
+        # A zero count is proof only with an actual, empty jobs list.
+        ((200, {"total_count": 0}), 1),
+        ((200, {"total_count": 0, "jobs": None}), 1),
+        ((200, {"total_count": 0, "jobs": [{"id": 1, "status": "queued"}]}), 1),
+    ],
+    ids=(
+        "zero-jobs-excluded",
+        "jobs-present-counted",
+        "jobs-403-counted",
+        "jobs-payload-missing-counted",
+        "jobs-bool-counted",
+        "jobs-string-counted",
+        "zero-count-no-jobs-key-counted",
+        "zero-count-null-jobs-counted",
+        "zero-count-nonempty-jobs-counted",
+    ),
+)
+def test_an_old_queued_run_is_excluded_only_on_a_clean_zero_job_read(
+    monkeypatch, jobs_answer, expected
+):
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    _old_queued_probe_fake(
+        monkeypatch,
+        old_runs=[777],
+        jobs_answer_for=lambda _run_id: jobs_answer,
+    )
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == expected
+
+
+def test_old_queued_runs_beyond_the_probe_page_count_without_a_jobs_read(monkeypatch):
+    limit = MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT
+    old_runs = list(range(5000, 5000 + limit))
+    probed: list[int] = []
+
+    def jobs_answer(run_id):
+        probed.append(run_id)
+        return 200, {"total_count": 0, "jobs": []}
+
+    _old_queued_probe_fake(
+        monkeypatch,
+        old_runs=old_runs,
+        jobs_answer_for=jobs_answer,
+        # Three more old runs exist than the page can carry: unread, so counted.
+        list_total=limit + 3,
+    )
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == 3
+    # The page itself was probed and proven jobless; the overflow was never read.
+    assert probed == old_runs
+
+
+def test_fresh_queued_and_pending_runs_count_regardless_of_age(monkeypatch):
+    old_pending = {"id": 9001, "status": "pending", "created_at": "2026-11-11T17:30:00Z"}
+    _old_queued_probe_fake(
+        monkeypatch,
+        old_runs=[],
+        jobs_answer_for=lambda _run_id: (200, {"total_count": 0, "jobs": []}),
+        fresh_queued=2,
+        pending_runs=(old_pending,),
+    )
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == 3
+
+
+@pytest.mark.parametrize(
+    "list_answer",
+    [
+        (500, None),
+        (403, {"message": "rate limited"}),
+        (200, {}),
+        (200, {"total_count": "7"}),
+        (200, {"total_count": 2, "workflow_runs": "nope"}),
+        (200, "not a payload"),
+    ],
+    ids=(
+        "list-500",
+        "list-403",
+        "list-empty",
+        "list-string-total",
+        "list-runs-not-a-list",
+        "list-not-a-dict",
+    ),
+)
+def test_an_unreadable_old_queued_probe_is_never_zero_load(monkeypatch, list_answer):
+    _old_queued_probe_fake(
+        monkeypatch,
+        old_runs=[],
+        jobs_answer_for=lambda _run_id: (200, {"total_count": 0, "jobs": []}),
+        list_answer=list_answer,
+    )
     assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read") is None
 
 
@@ -5382,7 +5614,18 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
         seen.append(url)
         assert method == "GET" and token == "read"
         if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            if "created=%3C" in url:
+                # The old-queued probe: repository-wide (no `event` qualifier),
+                # paged at STRANDED_QUEUED_RUN_PROBE_LIMIT.
+                assert "created=%3C2026-11-05T13%3A55%3A00Z" in url
+                assert (
+                    "per_page=" + str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT) in url
+                )
+                assert "event=" not in url, url
+                return 200, {"total_count": 0, "workflow_runs": []}
             assert "per_page=1" in url
+            # FRESH queued runs are refusal evidence on their own.
+            assert "created=%3E%3D2026-11-05T13%3A55%3A00Z" in url
             return 200, {"total_count": 0}
         if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
             # Mature = created before now - 240 s, newest first, sample of three.
@@ -5405,11 +5648,14 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
     assert census == MOG.HostedPoolCensus(
         queued_runs=0, sampled_runs=3, refused_jobs=2, served_runs=1, slow_jobs=0
     )
-    assert len(seen) == 5
+    # Fresh queued, old-queued list, in-progress list, and three job lists.
+    assert len(seen) == 6
 
     def failing(step, answer):
         def request(method, url, token, payload=None):
-            if step == "queued" and "status=queued" in url:
+            if step == "queued" and "status=queued" in url and "created=%3C" not in url:
+                return answer
+            if step == "oldlist" and "status=queued" in url and "created=%3C" in url:
                 return answer
             if step == "list" and "status=in_progress" in url:
                 return answer
@@ -5422,6 +5668,10 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
     for step, answer in (
         ("queued", (403, {"message": "rate limited"})),
         ("queued", (200, {"total_count": True})),
+        # The old-queued LIST read is the same contract: unclean is unknown load.
+        ("oldlist", (500, None)),
+        ("oldlist", (200, {})),
+        ("oldlist", (200, {"total_count": 1, "workflow_runs": "nope"})),
         ("list", (500, None)),
         ("list", (200, {"workflow_runs": [{"id": True}]})),
         ("list", (200, {"total_count": 3})),
@@ -5442,7 +5692,8 @@ def test_hosted_pool_census_samples_mature_run_jobs_and_fails_closed(monkeypatch
 def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
     def fake_request(method, url, token, payload=None):
         if "status=queued" in url:
-            return 200, {"total_count": 0}
+            # Both the fresh index read and the old-queued probe list read.
+            return 200, {"total_count": 0, "workflow_runs": []}
         if "status=in_progress" in url:
             return 200, {"workflow_runs": []}
         raise AssertionError(url)
@@ -5451,6 +5702,126 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
     census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read")
     assert census == MOG.HostedPoolCensus(0, 0, 0, 0, 0)
     assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+
+
+@pytest.mark.parametrize(
+    "fresh_queued,old_runs,expected_queued,expected_cap,expected_floor",
+    [
+        # Seven runs stranded queued since 2026-11-11 ~20:18Z (run 43095271395
+        # among them): old AND proven jobless by a clean total_count == 0, so
+        # headroom and the saturation floor survive them.
+        (
+            0,
+            [(43095271395 + i, 732, 0) for i in range(7)],
+            0,
+            16,
+            1,
+        ),
+        # Old queued runs WITH jobs at 45m and 179m: age proves nothing, so both
+        # still consume a proof slot -- zero headroom, floor withheld.
+        (0, [(700, 45, 12), (701, 179, 3)], 2, 8, 0),
+        # A fresh queued run is refusal on its own, whatever its jobs read says.
+        (1, [], 1, 8, 0),
+    ],
+    ids=("stranded-proven-jobless", "old-with-jobs-counts", "fresh-queued-refuses"),
+)
+def test_queued_run_proof_bounds_headroom_and_the_refresh_floor(
+    monkeypatch, fresh_queued, old_runs, expected_queued, expected_cap, expected_floor
+):
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    old_ids = [run_id for run_id, _age, _jobs in old_runs]
+    jobs_by_id = {run_id: jobs for run_id, _age, jobs in old_runs}
+    served = _census_jobs(*_first_wave(*_packs()))
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read"
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if "/actions/runs/" in url and "/jobs" in url:
+            if "filter=latest" in url:
+                return served
+            run_id = int(url.split("/actions/runs/")[1].split("/jobs")[0])
+            assert run_id in jobs_by_id, url
+            return 200, {"total_count": jobs_by_id[run_id], "jobs": []}
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            if query["created"][0].startswith("<"):
+                # The old-queued probe: repository-wide, paged, newest first.
+                assert query["per_page"] == [str(MOG.STRANDED_QUEUED_RUN_PROBE_LIMIT)]
+                assert "event" not in query, url
+                runs = [
+                    {
+                        "id": run_id,
+                        "run_attempt": 1,
+                        "created_at": (
+                            now - dt.timedelta(minutes=age)
+                        ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                        "updated_at": (
+                            now - dt.timedelta(minutes=age)
+                        ).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    }
+                    for run_id, age, _jobs in old_runs
+                ]
+                return 200, {"total_count": len(runs), "workflow_runs": runs}
+            assert query["per_page"] == ["1"]
+            # The API applies the created qualifier; FRESH queued runs count.
+            assert query["created"][0].startswith(">="), url
+            cutoff = MOG._parse_dt(query["created"][0][2:])
+            assert cutoff == now - dt.timedelta(
+                seconds=MOG.ADAPTIVE_QUEUED_RUN_MAX_AGE_SECONDS
+            )
+            return 200, {"total_count": fresh_queued}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            return 200, {"workflow_runs": [{"id": 11}, {"id": 12}, {"id": 13}]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    assert census.queued_runs == expected_queued
+    assert census.served_runs == 3
+    assert MOG.adaptive_proof_cap(census)[0] == expected_cap
+    assert MOG.refresh_floor_allowance(census, 8)[0] == expected_floor
+
+
+@pytest.mark.parametrize(
+    "jobs_answer",
+    [
+        (403, {"message": "rate limited"}),
+        (200, {}),
+        (200, {"total_count": True}),
+        (200, {"total_count": 7}),
+    ],
+    ids=("jobs-403", "jobs-empty", "jobs-bool", "jobs-present"),
+)
+def test_census_counts_an_old_queued_run_whose_jobs_read_is_not_proof_of_zero(
+    monkeypatch, jobs_answer
+):
+    """Only a clean `total_count == 0` excludes; every other jobs read keeps counting."""
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    served = _census_jobs(*_first_wave(*_packs()))
+
+    def fake_request(method, url, token, payload=None):
+        assert method == "GET" and token == "read"
+        query = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+        if "/actions/runs/" in url and "/jobs" in url:
+            if "filter=latest" in url:
+                return served
+            assert "per_page=1" in url, url
+            return jobs_answer
+        if "/workflows/ci.yml/runs?" in url and "status=queued" in url:
+            if query["created"][0].startswith("<"):
+                return 200, {
+                    "total_count": 1,
+                    "workflow_runs": [{"id": 777, "run_attempt": 1, "updated_at": "2026-11-11T20:18:53Z"}],
+                }
+            return 200, {"total_count": 0}
+        if "/workflows/ci.yml/runs?" in url and "status=in_progress" in url:
+            return 200, {"workflow_runs": [{"id": 11}]}
+        raise AssertionError(url)
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    census = REAL_HOSTED_POOL_CENSUS("acme/widgets", "read", now=now)
+    assert census.queued_runs == 1
+    assert MOG.adaptive_proof_cap(census)[0] == MOG.MAX_IN_FLIGHT_PR_PROOFS
+    assert MOG.refresh_floor_allowance(census, 8)[0] == 0
 
 
 @pytest.mark.parametrize(
@@ -10810,3 +11181,38 @@ def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
     assert "\r" not in out and "\x1b" not in out
     assert "%250A" in out and "%0A" not in out
     assert len(out.removeprefix(prefix).rstrip("\n")) <= 600
+
+
+@pytest.mark.parametrize(
+    "run_fields",
+    [
+        {"run_attempt": 2, "updated_at": "2026-11-11T20:18:53Z"},
+        {"updated_at": "2026-11-11T20:18:53Z"},
+        {"run_attempt": True, "updated_at": "2026-11-11T20:18:53Z"},
+        {"run_attempt": 1, "updated_at": "2026-11-12T08:20:00Z"},
+        {"run_attempt": 1},
+    ],
+    ids=("rerun", "attempt-missing", "attempt-bool", "recently-updated", "updated-missing"),
+)
+def test_an_old_queued_run_without_first_attempt_proof_counts_even_with_zero_jobs(
+    monkeypatch, run_fields
+):
+    """Review 5874181673: the zero-job proof binds to an untouched first attempt."""
+    now = dt.datetime(2026, 11, 12, 8, 30, tzinfo=dt.timezone.utc)
+    jobs_reads: list[int] = []
+
+    def jobs_answer_for(run_id):
+        jobs_reads.append(run_id)
+        return 200, {"total_count": 0, "jobs": []}
+
+    _old_queued_probe_fake(monkeypatch, old_runs=[777], jobs_answer_for=jobs_answer_for)
+
+    def fake_with_fields(method, url, token, payload=None, _inner=MOG._request):
+        status, body = _inner(method, url, token, payload)
+        if isinstance(body, dict) and body.get("workflow_runs"):
+            body = {**body, "workflow_runs": [{"id": 777, **run_fields}]}
+        return status, body
+
+    monkeypatch.setattr(MOG, "_request", fake_with_fields)
+    assert REAL_IN_FLIGHT_PR_PROOFS("acme/widgets", "read", now=now) == 1
+    assert jobs_reads == []
