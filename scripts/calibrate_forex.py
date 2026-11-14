@@ -40,7 +40,7 @@ from lib import config  # noqa: E402
 from engine import forex_inputs, forex_signals, forex_conviction  # noqa: E402
 from engine.trial_ledger import TrialLedger  # noqa: E402
 from engine.validation import (  # noqa: E402
-    backtest_core, deflated_sharpe, dsr_verdict, ret_moments)
+    backtest_core, deflated_sharpe, dsr_verdict, ret_moments, sortino_ratio)
 
 TRADING_YEAR = 252  # FX spot trades ~252 days/yr
 
@@ -129,10 +129,6 @@ def backtest_conviction(close: pd.Series, conviction: pd.Series, cost_bps: float
         sd = r.std()
         return (r.mean() / sd * np.sqrt(TRADING_YEAR)) if sd else np.nan
 
-    def sortino(r):
-        dn = r[r < 0].std()
-        return (r.mean() / dn * np.sqrt(TRADING_YEAR)) if dn else np.nan
-
     def maxdd(e):
         return float((e / e.cummax() - 1).min())
 
@@ -145,7 +141,8 @@ def backtest_conviction(close: pd.Series, conviction: pd.Series, cost_bps: float
                          if pd.notna(cagr_net) and pd.notna(cagr_gross) else np.nan),
         "sharpe": round(sharpe(strat), 2), "hold_sharpe": round(sharpe(ret), 2),
         "sharpe_gross": round(sharpe(gross), 2),
-        "sortino": round(sortino(strat), 2), "hold_sortino": round(sortino(ret), 2),
+        "sortino": round(sortino_ratio(strat, TRADING_YEAR), 2),
+        "hold_sortino": round(sortino_ratio(ret, TRADING_YEAR), 2),
         "maxdd": round(100 * maxdd(eq), 1), "hold_maxdd": round(100 * maxdd(hold), 1),
         "time_in_market": round(100 * (pos.abs() > 1e-9).mean(), 1),
         "avg_exposure": round(100 * pos.abs().mean(), 1),

@@ -198,6 +198,31 @@ def _norm_ppf(p: float) -> float:
 # --------------------------------------------------------------------------- #
 # return moments + Deflated Sharpe Ratio
 # --------------------------------------------------------------------------- #
+def sortino_ratio(r: pd.Series, ppy: int = 252) -> float:
+    """Annualized zero-target Sortino over all observed return periods.
+
+    Downside deviation is sqrt(mean(min(r, 0)**2)); positive and actual zero
+    returns remain in its population. NaNs are missing observations, not zero
+    returns. Empty input, infinity, or no downside gives NaN. The caller keeps
+    its existing periods-per-year convention. Scaling and hypot avoid losing
+    small squared returns or overflowing large ones without changing the ratio.
+    """
+    values = r.dropna().to_numpy(dtype=float)
+    if not len(values) or not np.isfinite(values).all():
+        return float("nan")
+    scale = float(np.max(np.abs(values)))
+    if scale == 0:
+        return float("nan")
+    scaled = values / scale
+    losses = np.maximum(-scaled, 0.0)
+    downside = float(np.hypot.reduce(losses) / np.sqrt(len(values)))
+    if downside == 0:
+        return float("nan")
+    mean_return = math.fsum(scaled) / len(scaled)
+    ratio = float(mean_return / downside * np.sqrt(ppy))
+    return ratio if math.isfinite(ratio) else float("nan")
+
+
 def ret_moments(r: pd.Series):
     """(per-period Sharpe, skew, Pearson-kurtosis, n) of a return series — the
     inputs the DSR consumes. Pearson kurtosis (normal = 3), ddof=1 like sharpe()."""

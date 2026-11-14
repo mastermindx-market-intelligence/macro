@@ -39,7 +39,7 @@ from lib import config, store  # noqa: E402
 # referenced them on scripts.calibrate_vector keep working.
 from engine.validation import (  # noqa: E402,F401
     EULER_GAMMA, _norm_cdf, _norm_ppf, _ret_moments, backtest_core, bootstrap_effective_t,
-    deflated_sharpe,
+    deflated_sharpe, sortino_ratio,
 )
 from engine.validation import (  # noqa: E402 — stability gates (D-vec-GATES)
     block_bootstrap_ci, brier_reliability, dsr_verdict, platt_fit, purged_folds,
@@ -211,10 +211,6 @@ def backtest(close: pd.Series, alloc: pd.Series, cost_bps: float = 0.0) -> dict:
         sd = r.std()
         return (r.mean() / sd * np.sqrt(TRADING_YEAR)) if sd else np.nan
 
-    def sortino(r):
-        dn = r[r < 0].std()
-        return (r.mean() / dn * np.sqrt(TRADING_YEAR)) if dn else np.nan
-
     def maxdd(e):
         return float((e / e.cummax() - 1).min())
 
@@ -227,7 +223,8 @@ def backtest(close: pd.Series, alloc: pd.Series, cost_bps: float = 0.0) -> dict:
                          if pd.notna(cagr_net) and pd.notna(cagr_gross) else np.nan),
         "sharpe": round(sharpe(strat), 2), "hodl_sharpe": round(sharpe(ret), 2),
         "sharpe_gross": round(sharpe(gross), 2),
-        "sortino": round(sortino(strat), 2), "hodl_sortino": round(sortino(ret), 2),
+        "sortino": round(sortino_ratio(strat, TRADING_YEAR), 2),
+        "hodl_sortino": round(sortino_ratio(ret, TRADING_YEAR), 2),
         "maxdd": round(100 * maxdd(eq), 1), "hodl_maxdd": round(100 * maxdd(hodl), 1),
         "time_in_market": round(100 * (pos > 0).mean(), 1),
         "turnover_annual": round(float(turnover.sum() / years), 1) if years > 0 else np.nan,
