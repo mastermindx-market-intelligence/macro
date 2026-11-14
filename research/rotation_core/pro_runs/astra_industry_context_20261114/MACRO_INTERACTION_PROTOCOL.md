@@ -1,0 +1,15 @@
+# Adaptive industry exposure x macro-state experiment
+
+This is historical development after the price and tree races, not untouched confirmation. It directly tests the Chairman's monetary/regime hypothesis rather than repeating unconditional price gates. Current-vintage/backdated FRED observations are accepted for discovery. They are not represented as original releases. No post-2002 industry outcomes or reserved stock panels are used.
+
+Hypothesis: the relevant variable is not a universal 'rate cut good' vote but whether a specific industry's historically estimated exposure fits the current policy, yield, inflation and growth state. The existing rate_inflation_transmission/sector_rate_inflation owners remain unchanged; their prior negative scored-timing verdict is not overturned by a new experiment.
+
+Inputs: monthly FEDFUNDS, TB3MS, GS10, CPIAUCSL, INDPRO; same French49 value-weighted daily industry and market returns. Cut numeric observations at 2002-12-31. Use an assumed TWO-calendar-month publication lag for every macro series, explicitly current-vintage reconstruction, not PIT. No backfill of missing monthly values.
+
+Slow exposures: at each decision month, fit an intercept plus market return, policy-rate change, long-yield change, CPI-inflation change and industrial-production growth to monthly industry log returns. Use exactly 60 completed months ending before the most recent lag-available macro month; require complete pairs. Standardize predictors within that window, fixed ridge penalty 6 on non-intercept coefficients. These are conditional associations, not causal elasticities.
+
+Fast state: policy level and 3/12-month change; ex-post short real-rate proxy TB3MS minus trailing CPI inflation; 10y-minus-3m slope; CPI inflation level and 3-month change; industrial production six-month annualized growth. Pair exposure estimates with policy/yield/inflation/growth changes as four explicit interaction features; include fixed improving x real-rate, leading x policy-change and beta_old x industrial-growth terms.
+
+Three tracks, fixed l2=.03: price-context baseline on identical eligible rows; price plus macro states/exposure descriptors; the same with the seven declared interactions. No hyperparameter/window search. Expanding tests 1973-82, 1983-92, 1993-2002; train labels mature strictly before test starts. Compare same-month top quintile with raw momentum and one another. Retain full-sample, continuation/improving-state and era results, path risk, coverage and rejected opportunities. Reuse 12-calendar-month block inference; all intervals exploratory/unadjusted. Three additional configurations are counted in this run's experiment history.
+
+Acceptance: only incremental utility over equally informed and equally selective controls nominates a candidate. A narrative match or higher in-sample fit is insufficient. If this experiment fails, preserve its result and the simpler incumbent; do not invert a sign or retune the windows. Scientific discovery and implementation continue without mislabelling reconstructed observations as historical publication proof.
