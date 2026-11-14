@@ -699,6 +699,7 @@ def _compute_divergence(
 
     Each: {key, active: bool|null, detail_en, detail_zh}
     """
+    fed_path = _policy_pricing_view(fed_path)
     flags: list[dict] = []
 
     # D1 — dots_vs_market: |gap_bp| >= 50
@@ -1153,8 +1154,72 @@ def _cpi_basis(item: dict, release_meta: dict, cutoff: Any) -> dict | None:
     return rcb.qualify_observation(value, meta, basis_cutoff).to_dict()
 
 
+
+def _policy_pricing_view(fed_path: dict, *, cutoff=None) -> dict:
+    """Use the producer's common version boundary for every pricing reader."""
+    try:
+        from engine.fed_path import consumer_pricing_view
+        return consumer_pricing_view(fed_path, cutoff=cutoff)
+    except Exception:
+        return {
+            "calculation_version": None,
+            "pricing_comparison_status": "normalizer_unavailable",
+            "consumer_validation": {"status": "unavailable", "reason": "normalizer_unavailable"},
+            "headline_en": "Dated pricing comparison unavailable",
+            "headline_zh": "有日期的定价比较不可用",
+        }
+
+
+def _qualified_rate_path_basis(fed_path: dict, cutoff) -> dict | None:
+    """Describe the displayed ZQ value without inventing publication clocks."""
+    from engine import rates_command_basis as rcb
+
+    if fed_path.get("implied_source_en") != "ZQ fed-funds futures":
+        return None
+    basis_cutoff = _t0b_basis_cutoff(cutoff, fed_path.get("asof"))
+    if basis_cutoff is None:
+        return None
+    evidence = (fed_path.get("path_evidence") or {}).get("zq") or {}
+    source_meta = fed_path.get("implied_source_meta") or {}
+    strips = source_meta.get("strips") if isinstance(source_meta, dict) else None
+    strip = strips.get("zq") if isinstance(strips, dict) else None
+    strip = strip if isinstance(strip, dict) else {}
+    observation = evidence.get("source_asof")
+    metadata = {
+        "subject": "fed_path.qualified_pricing.implied_path.m12",
+        "evidence_class": "market_implied_expectation",
+        "unit": "pct_ann_rate",
+        **_RATE_SOURCE_BASIS["ZQ fed-funds futures"],
+        "seasonal_treatment": rcb.NA,
+        "curve_convention": rcb.NA,
+        "tenor": rcb.NA,
+        "model_id": rcb.NA,
+        "target_epoch": None,
+        "reference_start": None,
+        "reference_end": None,
+        "observation_time": observation,
+        "observation_precision": _t0b_precision(observation),
+        "first_public_evidence": strip.get("first_public_evidence"),
+        "first_public_precision": strip.get("first_public_precision", "unknown"),
+        "vintage": strip.get("vintage"),
+        "source_version": strip.get("source_version"),
+        "rights": _rate_path_rights(fed_path, "ZQ fed-funds futures"),
+        "limitations": (
+            "risk_premium_not_stripped",
+            "relative_horizon_not_identified_contract",
+            "historical_availability_not_certified",
+            "implied_bp_12m_is_month12_path_minus_policy_level",
+        ),
+    }
+    value = _t0b_number((fed_path.get("implied") or {}).get("m12"))
+    return rcb.qualify_observation(value, metadata, basis_cutoff).to_dict()
+
 def _build_rate_path_row(fed_path: dict, *, cutoff: Any = None) -> dict:
-    """Build the rate_path display row."""
+    """Render qualified pricing while retaining the legacy row and basis contract."""
+    from copy import deepcopy
+
+    fed_path = _policy_pricing_view(fed_path, cutoff=cutoff)
+    versioned = "calculation_version" in fed_path
     if not isinstance(fed_path, dict):
         fed_path = {}
     implied = fed_path.get("implied") or {}
@@ -1168,7 +1233,19 @@ def _build_rate_path_row(fed_path: dict, *, cutoff: Any = None) -> dict:
         gap = {}
     implied_cuts_12m = fed_path.get("implied_cuts_12m")
     implied_bp_12m = fed_path.get("implied_bp_12m")
-    path_read = _render_cuts(implied_cuts_12m)
+    if versioned:
+        qualified = (
+            (fed_path.get("consumer_validation") or {}).get("status") == "internally_consistent"
+            and fed_path.get("pricing_comparison_status") == "same_date_frame_reference"
+            and implied_bp_12m is not None
+            and fed_path.get("implied_cut_equivalents_12m") is not None
+        )
+        path_read = {
+            "en": fed_path.get("headline_en") if qualified else "Dated comparison unavailable",
+            "zh": fed_path.get("headline_zh") if qualified else "有日期的比较不可用",
+        }
+    else:
+        path_read = _render_cuts(implied_cuts_12m)
 
     row = {
         "asof": fed_path.get("asof"),
@@ -1193,8 +1270,25 @@ def _build_rate_path_row(fed_path: dict, *, cutoff: Any = None) -> dict:
     }
     # The basis key is ALWAYS present; None when the observation cannot be
     # qualified. The basis never edits the row's display fields.
-    row["basis"] = _rate_path_basis(fed_path, cutoff)
-    return row
+    row["basis"] = (
+        _qualified_rate_path_basis(fed_path, cutoff) if versioned
+        else _rate_path_basis(fed_path, cutoff)
+    )
+    if versioned:
+        for key in (
+            "calculation_version", "horizons_m", "consumer_validation",
+            "policy_reference_evidence", "target_range_evidence",
+            "path_evidence", "sofr_path", "front_quote_context",
+            "implied_cut_equivalents_12m", "implied_cut_equivalents_6m",
+            "cut_count_interpretation", "pricing_comparison_status",
+            "policy_reference_asof", "policy_observation_origin",
+            "historical_availability_qualified", "current_session_freshness",
+            "gap_unavailable_reasons", "note_en", "note_zh", "implied_source_meta",
+        ):
+            row[key] = fed_path.get(key)
+        row.update(display_only=True, authority=False, can_score=False,
+                   can_rank=False, can_gate=False, can_size=False, can_trade=False)
+    return deepcopy(row)
 
 
 def _build_inflation_row(
@@ -1434,6 +1528,7 @@ def _build_market_check(
     pm_snapshot: dict | None,
 ) -> dict:
     """Build the market_check display block (juxtaposition only, never fused)."""
+    fed_path = _policy_pricing_view(fed_path)
     implied = fed_path.get("implied") or {}
     if not isinstance(implied, dict):
         implied = {}
@@ -1615,8 +1710,10 @@ def build_board(root=None, *, cutoff=None) -> dict:
 
     # bond_health.json -> fed_path
     bond_health = _read_json(data_dir / "bonds" / "bond_health.json") or {}
-    fed_path = bond_health.get("fed_path") or {}
-    main_asof = fed_path.get("asof") or bond_health.get("as_of") or ""
+    raw_fed_path = bond_health.get("fed_path") or {}
+    raw_fed_path = raw_fed_path if isinstance(raw_fed_path, dict) else {}
+    fed_path = _policy_pricing_view(raw_fed_path, cutoff=cutoff)
+    main_asof = raw_fed_path.get("asof") or bond_health.get("as_of") or ""
 
     if not fed_path:
         caveats.append("bond_health.json / fed_path absent — rate path row will be empty")
@@ -1862,9 +1959,7 @@ def build_board(root=None, *, cutoff=None) -> dict:
         isinstance(_rp_basis, dict)
         and _rp_basis.get("value_state") == "present"
     )
-    d1_identified = _c0_d1_any_identified(
-        fed_path if isinstance(fed_path, dict) else {}
-    )
+    d1_identified = _c0_d1_any_identified(raw_fed_path)
     pre_artifact["stance"] = _c0_compose_stance_with_basis_guard(
         pre_artifact,
         basis_present=basis_present,
@@ -1899,7 +1994,7 @@ def build_board(root=None, *, cutoff=None) -> dict:
     # verbatim lenses carry).
     artifact = _c0_apply_to_artifact(
         artifact,
-        fed_path=fed_path,
+        fed_path=raw_fed_path,
         data_dir=data_dir,
         cutoff=cutoff,
         build_time_fallback=build_time_fallback,
