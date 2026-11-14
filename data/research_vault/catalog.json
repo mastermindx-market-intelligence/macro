@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-13T23:54:58.238033+00:00",
-  "count": 3328,
+  "generated_at": "2026-11-14T00:09:59.549505+00:00",
+  "count": 3329,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1186,6 +1186,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-vobw9uztmuz-5fd839",
+      "title": "UBS NVIDIA Corp Media Reports on CEO Change; A Few Thoughts",
+      "institution": "NVIDIA",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T14:18:04Z",
+      "summary_points": [
+        "Competitive Risks: Intense competition from AMD (GPUs), ARM-based applications, and Intel’s MIC threatens core segments; semiconductor sector volatility (revenue tied to subdued economic recovery) adds significant downside risk.",
+        "Geopolitical Risk: US tightening restrictions on shipping to China risk ~10% of revenue (per Singapore/Malaysia disclosures), though supply chain advantages may partially offset exposure.",
+        "Forecast Returns: 72.7% price appreciation and 63.6% excess return vs 9.7% market return highlight aggressive growth expectations and substantial alpha potential.",
+        "Price Target Trend: Consistent upward revisions (US$47.50 → US$300.00) from 2023-2026 reflect escalating bullish sentiment and strong conviction in long-term growth trajectory."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 12,
       "language": "en",
       "needs_metadata": false
     },
