@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 317,
+    "opportunity_queue_depth": 321,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 317,
-      "scored": 457,
+      "open": 321,
+      "scored": 461,
       "newest": [
         {
           "id": "radar-earnings-ACM-2026-11-14",
           "problem_or_desire": "$ACM: earnings 2026-11-16 after hours",
           "expected_value": 0.5,
-          "score": 0.337985,
+          "score": 0.333986,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-ALM-2026-11-14",
           "problem_or_desire": "$ALM: earnings 2026-11-16",
           "expected_value": 0.5,
-          "score": 0.337985,
+          "score": 0.333986,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-ARMK-2026-11-14",
           "problem_or_desire": "$ARMK: earnings 2026-11-16 pre-market",
           "expected_value": 0.5,
-          "score": 0.337985,
+          "score": 0.333986,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 36,
-    "signal_posts": 8,
-    "charts": 179,
+    "total_posts": 34,
+    "signal_posts": 9,
+    "charts": 178,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-11-14"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-14T13:33:33Z",
-  "inputs_hash": "sha256:5b98368f99f424036e6ff59de8b9609abdcbcb3a066a1aee70f919f71e1d5a61",
+  "produced_at": "2026-11-14T13:58:17Z",
+  "inputs_hash": "sha256:890b08cda516f019829672aa7921219b59305fc3f123252aea9fbb233b98224b",
   "tier": "display"
 }

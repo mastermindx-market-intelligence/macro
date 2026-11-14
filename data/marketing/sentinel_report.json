@@ -1,36 +1,24 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-11-14T13:30:59Z",
+  "produced_at": "2026-11-14T13:56:17Z",
   "as_of": "2026-11-14",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 42,
-    "passed": 39,
-    "quarantined": 3,
-    "quarantined_policy": 3,
+    "items": 41,
+    "passed": 40,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 3
+    "near_dup": 1
   },
   "quarantined": [
-    {
-      "id": "post-congress-002",
-      "account": "founder",
-      "slot": "D1-S19",
-      "type": "congress",
-      "cashtag": "$ARGX",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-congress-001"
-      ]
-    },
     {
       "id": "post-meagan-013",
       "account": "meagan",
@@ -40,19 +28,7 @@
       "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-founder-016"
-      ]
-    },
-    {
-      "id": "post-kelly-012",
-      "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-founder-016"
+        "near_dup:post-flagship-020"
       ]
     }
   ],
@@ -63,7 +39,7 @@
       "slot": "D1-S11",
       "type": "chart",
       "cashtag": "$WPC",
-      "headline": "$WPC at the decision line"
+      "headline": "$WPC is back at the decision point"
     },
     {
       "id": "post-flagship-014",
@@ -90,6 +66,14 @@
       "headline": ""
     },
     {
+      "id": "post-flagship-028",
+      "account": "flagship",
+      "slot": "D1-S28",
+      "type": "chart",
+      "cashtag": "$EPR",
+      "headline": "57.7 is the $EPR line"
+    },
+    {
       "id": "post-flagship-032",
       "account": "flagship",
       "slot": "D1-S32",
@@ -98,20 +82,12 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-034",
-      "account": "flagship",
-      "slot": "D1-S34",
-      "type": "receipt",
-      "cashtag": "$DAN",
-      "headline": ""
-    },
-    {
       "id": "post-flagship-041",
       "account": "flagship",
       "slot": "D1-S41",
       "type": "watchlist",
       "cashtag": "$CLH",
-      "headline": "$CLH needs 323 back"
+      "headline": "The $CLH repair line"
     },
     {
       "id": "post-flagship-049",
@@ -122,20 +98,12 @@
       "headline": ""
     },
     {
-      "id": "post-flagship-050",
-      "account": "flagship",
-      "slot": "D1-S50",
-      "type": "receipt",
-      "cashtag": "$SUPN",
-      "headline": "$SUPN is above 28, where the most shares traded over the past six months"
-    },
-    {
       "id": "post-conf-flagship-002",
       "account": "flagship",
       "slot": "CONF-02",
       "type": "signal",
-      "cashtag": "$DOW",
-      "headline": "$DOW just lined up a pattern we track."
+      "cashtag": "$OXY",
+      "headline": "$OXY just lined up a pattern we track."
     },
     {
       "id": "post-theme-003",
@@ -175,31 +143,23 @@
       "slot": "D1-S18",
       "type": "chart",
       "cashtag": "$FOXF",
-      "headline": "$FOXF keeps failing at 18.3"
+      "headline": "$FOXF holds 16.2"
     },
     {
       "id": "post-founder-033",
       "account": "founder",
-      "slot": "D1-S33",
-      "type": "chart",
-      "cashtag": "$OSK",
+      "slot": "D1-S28",
+      "type": "receipt",
+      "cashtag": "$AROC",
       "headline": ""
     },
     {
-      "id": "post-meagan-002",
-      "account": "meagan",
-      "slot": "D1-S2",
-      "type": "chart",
-      "cashtag": "$EPR",
+      "id": "post-congress-002",
+      "account": "founder",
+      "slot": "D1-S19",
+      "type": "congress",
+      "cashtag": "$ARGX",
       "headline": ""
-    },
-    {
-      "id": "post-meagan-017",
-      "account": "meagan",
-      "slot": "D1-S17",
-      "type": "watchlist",
-      "cashtag": "$IQMM",
-      "headline": "No clean level on $IQMM"
     },
     {
       "id": "post-meagan-018",
@@ -215,15 +175,7 @@
       "slot": "D1-S31",
       "type": "chart",
       "cashtag": "$T",
-      "headline": "Three green weeks for $T"
-    },
-    {
-      "id": "post-meagan-045",
-      "account": "meagan",
-      "slot": "D1-S45",
-      "type": "receipt",
-      "cashtag": "$BCC",
-      "headline": ""
+      "headline": "$T has closed green 3 weeks running"
     },
     {
       "id": "post-theme-004",
@@ -242,11 +194,11 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-015",
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S15",
-      "type": "chart",
-      "cashtag": "$VZ",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
       "headline": ""
     },
     {
@@ -258,11 +210,11 @@
       "headline": ""
     },
     {
-      "id": "post-sophia-023",
+      "id": "post-sophia-029",
       "account": "sophia",
-      "slot": "D1-S23",
+      "slot": "D1-S29",
       "type": "chart",
-      "cashtag": "$WWW",
+      "cashtag": "$TKR",
       "headline": ""
     },
     {
@@ -271,7 +223,15 @@
       "slot": "D1-S32",
       "type": "chart",
       "cashtag": "$BHF",
-      "headline": "$BHF needs to reclaim 44.1"
+      "headline": "The recovery test"
+    },
+    {
+      "id": "post-sophia-044",
+      "account": "sophia",
+      "slot": "D1-S44",
+      "type": "watchlist",
+      "cashtag": "$MRCY",
+      "headline": "$MRCY is pressing 84.4 again"
     },
     {
       "id": "post-congress-004",
@@ -282,12 +242,44 @@
       "headline": ""
     },
     {
+      "id": "post-kelly-008",
+      "account": "kelly",
+      "slot": "D1-S8",
+      "type": "chart",
+      "cashtag": "$CHRW",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-012",
+      "account": "kelly",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-028",
+      "account": "kelly",
+      "slot": "D1-S28",
+      "type": "watchlist",
+      "cashtag": "$SOXL",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-036",
+      "account": "kelly",
+      "slot": "D1-S36",
+      "type": "receipt",
+      "cashtag": "$DAN",
+      "headline": "$DAN is below the price where the most shares traded over the past six months"
+    },
+    {
       "id": "post-kelly-041",
       "account": "kelly",
       "slot": "D1-S41",
       "type": "watchlist",
       "cashtag": "$GS",
-      "headline": "$GS is under distribution"
+      "headline": "$GS is still under distribution"
     },
     {
       "id": "post-kelly-043",
@@ -295,14 +287,6 @@
       "slot": "D1-S43",
       "type": "watchlist",
       "cashtag": "$GRBK",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-047",
-      "account": "kelly",
-      "slot": "D1-S47",
-      "type": "chart",
-      "cashtag": "$XYL",
       "headline": ""
     },
     {
@@ -351,7 +335,7 @@
       "slot": "D1-S48",
       "type": "chart",
       "cashtag": "$MSEX",
-      "headline": "守住 (holding firm)"
+      "headline": "$MSEX 守住 (holding firm) at 55.9"
     },
     {
       "id": "post-theme-006",
@@ -366,14 +350,22 @@
       "account": "mastermind_news",
       "slot": "D1-S1",
       "type": "insider",
+      "cashtag": "$ASR",
+      "headline": ""
+    },
+    {
+      "id": "post-insider-007",
+      "account": "mastermind_news",
+      "slot": "D1-S1",
+      "type": "insider",
       "cashtag": "$ECX",
       "headline": ""
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 657,
-      "hits": 3,
+      "pairs_checked": 655,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {

@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-11-14T13:33:33Z",
+  "produced_at": "2026-11-14T13:58:16Z",
   "tier": "display",
   "as_of": "2026-11-14",
   "feeds": [
@@ -15,8 +15,8 @@
     {
       "name": "confluence",
       "ok": true,
-      "n_assets": 7,
-      "as_of": "2026-11-13"
+      "n_assets": 13,
+      "as_of": "2026-11-14"
     },
     {
       "name": "earnings",
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 2646,
+    "n_tickers": 2644,
     "window_plans": 7
   },
   "surplus": [
@@ -99,6 +99,14 @@
       "opportunity_id": "radar-earnings-BXDC-2026-11-14"
     },
     {
+      "ticker": "CAT",
+      "feed": "confluence",
+      "why": "confluence combo Weekly long-term uptrend + weekly reclaims 100-day line + Price reclaims AVWAP from earnings-proxy anchor firing, test WR 68%",
+      "as_of": "2026-11-14",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-CAT-2026-11-14"
+    },
+    {
       "ticker": "CYPH",
       "feed": "earnings",
       "why": "earnings 2026-11-16 pre-market",
@@ -113,6 +121,30 @@
       "as_of": "2026-11-14",
       "staleness_days": 0,
       "opportunity_id": "radar-earnings-DAC-2026-11-14"
+    },
+    {
+      "ticker": "HWM",
+      "feed": "confluence",
+      "why": "confluence combo Weekly long-term uptrend + weekly reclaims 100-day line + Price reclaims AVWAP from earnings-proxy anchor firing, test WR 68%",
+      "as_of": "2026-11-14",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-HWM-2026-11-14"
+    },
+    {
+      "ticker": "PFE",
+      "feed": "confluence",
+      "why": "confluence combo Weekly above the cloud + weekly 50/200 golden cross + above the cloud + lower-band reclaim firing, test WR 68%",
+      "as_of": "2026-11-14",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-PFE-2026-11-14"
+    },
+    {
+      "ticker": "ROST",
+      "feed": "confluence",
+      "why": "confluence combo Weekly Ichimoku bull cross + RSI crosses above 50 + Golden Star 21/100 firing, test WR 84%",
+      "as_of": "2026-11-14",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-ROST-2026-11-14"
     },
     {
       "ticker": "AAOZ",
@@ -187,14 +219,6 @@
       "opportunity_id": "radar-movers-AVL-2026-11-13"
     },
     {
-      "ticker": "AWK",
-      "feed": "confluence",
-      "why": "confluence combo Weekly 21/100 golden cross + weekly reclaims 35-day line + weekly Stochastic-RSI bullish cross + above the cloud firing, test WR 76%",
-      "as_of": "2026-11-13",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-AWK-2026-11-13"
-    },
-    {
       "ticker": "BLTE",
       "feed": "movers",
       "why": "S&P mover +9.0% 1D ()",
@@ -259,28 +283,12 @@
       "opportunity_id": "radar-stage-GDYN-2026-11-13"
     },
     {
-      "ticker": "HWM",
-      "feed": "confluence",
-      "why": "confluence combo Weekly long-term uptrend + weekly reclaims 100-day line + Price reclaims AVWAP from earnings-proxy anchor firing, test WR 68%",
-      "as_of": "2026-11-13",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-HWM-2026-11-13"
-    },
-    {
       "ticker": "HZO",
       "feed": "stage",
       "why": "stage 2D_extended_run, SATA 10, 29w in stage",
       "as_of": "2026-11-13",
       "staleness_days": 1,
       "opportunity_id": "radar-stage-HZO-2026-11-13"
-    },
-    {
-      "ticker": "ROST",
-      "feed": "confluence",
-      "why": "confluence combo Weekly Ichimoku bull cross + RSI crosses above 50 + Golden Star 21/100 firing, test WR 84%",
-      "as_of": "2026-11-13",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-ROST-2026-11-13"
     },
     {
       "ticker": "BRKR",
@@ -297,14 +305,6 @@
       "as_of": "2026-11-12",
       "staleness_days": 2,
       "opportunity_id": "radar-prophet-CEG-2026-11-12"
-    },
-    {
-      "ticker": "CHRW",
-      "feed": "prophet",
-      "why": "active Prophet plan CHRW-BULL-20261111, phase triggered_pre_t1, conviction 17",
-      "as_of": "2026-11-12",
-      "staleness_days": 2,
-      "opportunity_id": "radar-prophet-CHRW-2026-11-12"
     },
     {
       "ticker": "KLAC",
@@ -364,10 +364,10 @@
     }
   ],
   "queue": {
-    "added": 12,
+    "added": 16,
     "expired": 24,
-    "total": 458,
-    "open": 317,
+    "total": 462,
+    "open": 321,
     "doa_skipped": 9
   },
   "tiers_summary": {
