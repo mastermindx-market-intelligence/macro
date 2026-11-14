@@ -3,14 +3,14 @@
 Status: DESIGN CANDIDATE / DESIGN PHASE IN PROGRESS  
 Date: 14 November 2026  
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md)  
-Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy R7 contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2 contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md)  
+Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy R7 contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2 contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md) · [Capital Structure R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md)  
 Exact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
 
 ## What is authored
 
-The set contains **92 editable native Paper pages**: **72 product and responsive/theme/locale views, fourteen Build boards and six state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
+The set contains **99 editable native Paper pages**: **77 product and responsive/theme/locale views, fifteen Build boards and seven state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
 
-Sixteen mobile compositions are included, including additional BioCatalyst First-seen and Government Calendar views. The original eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
+Seventeen mobile and five intermediate-width compositions are included, including additional BioCatalyst First-seen and Government Calendar views. The original eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
 
 The final compositions were screenshot-inspected. Specific repairs include overlaps, excessive gaps, wrapped date/year labels, missing selected states, source-date consistency, source-group counts, unit/basis labels, comparison-line patterns and ambiguity between a resolution event and a review deadline. Inspection establishes static design quality, not working buttons, production data, saved effects or browser proof.
 
@@ -183,6 +183,22 @@ R2 adds source-grounded activist amendments, international announcement chronolo
 
 R7 adds a publication-filtered World queue, Treasury source without analysis, dated people/relationship evidence, original research beside newer sources, 1024px coverage, English mobile People, Chinese dark mobile Treasury, state and Build references. Europe is a region across distinct UK/EU documents. Former roles, unverified membership ends and source exclusions remain explicit. Source/version retention, role intervals and typed availability are build obligations, not established runtime capabilities.
 
+## C12 additions — Capital Structure R2
+
+Seven additional native pages preserve U0 Today / On a date / Scenario while making source conflict, unavailable historical inputs, uncertain saving and request transitions explicit. The [R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md) distinguishes existing runtime behavior from missing retained-result, version and operation-receipt capabilities.
+
+| New native page | Size | Root | Design purpose |
+|---|---|---|---|
+| [Capital R2 · Sources disagree · Candidate](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2Q-1) | 1440 × 1240 | 2OLI-1 | Comparable observations; no unsupported selected share count |
+| [Capital R2 · Saved historical inputs unavailable](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2R-1) | 1440 × 1240 | 2OR4-1 | Saved cutoff and assumptions remain; original numerical result unavailable |
+| [Capital R2 · Save not confirmed · Candidate](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2S-1) | 1440 × 1240 | 2PLN-1 | Unresolved feasibility beside calculation; reconcile save before retry |
+| [Capital R2 · New request loading · 768](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2T-1) | 768 × 1080 | 2P29-1 | New issuer/date identity persists while old numbers are cleared |
+| [Capital R2 · 历史情景恢复 · Mobile](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2U-1) | 390 × 1240 | 2P4N-1 | Chinese historical refusal and saved assumptions at 390px |
+| [Capital R2 · Save, attribution & access states](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2V-1) | 1400 × 1360 | 2P6K-1 | Found copy, future CAS, unattributed change, access, clock and drift distinctions |
+| [Capital R2 · Conflict, restore & save · Build](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2W-1) | 1400 × 1320 | 2P8Z-1 | Incumbent owners, gaps, preserved holds and meaningful acceptance |
+
+The final save root is 2PLN-1 after an owned composition replacement. Final QA repaired detached navigation, historical/mobile gaps and distant feasibility copy. Build notes preserve the posted save anchor: save does not automatically rebase; current/scenario restore can. All seven final roots received observed guarded finish receipts. No account save or product implementation is implied.
+
 ## Distinct interaction capabilities
 
 | Family | Authored investigation path |
@@ -208,10 +224,10 @@ These are scoped gaps, not permission or review ceremonies. Preserve already ins
 | D1-SPECIAL follow-through | Remaining term/correction interactions and theme/locale/intermediate parity | R2 core views authored; case isolation, retained sources, supported economics and terminal-state proof remain required |
 | D1-POLICY follow-through | Remaining research navigation, corrections and theme/locale/breakpoint parity | R7 core views authored; source/version/role projections and complete return states remain required |
 | D1-HUB follow-through | Expanded method/statistics disclosures, filtered exclusions and remaining parity states | R6 core views authored; same-population statistics, sparse samples, exact snapshots and preserved owner ordering remain required |
-| D1-CAPITAL | Remaining unavailable/conflict/restore states | Request identity and navigation focus separation; saved anchor; unknown inputs remain unknown |
-| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
+| D1-CAPITAL follow-through | Historical evidence focus/return and remaining U0 parity | R2 conflict/restore/save states authored; retained result, version, CAS and exact evidence binding remain owner extensions |
+| D1-CYCLES follow-through | Measured-history/basis investigation, universe restoration and Frame/measured grammar across five routes | Only six product specimens currently cover five destinations; add meaningful narrow/theme/locale and return states without fabricating measurements or forecasts |\n| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
 
-The next bounded action is **D1-CAPITAL**: conflicting source inputs, unavailable saved anchors, save reconciliation and request/focus restoration. Preserve the accepted Today/On a date/Scenario/saved-version targets and incumbent holds. Existing result retention, immutable versions, concurrency and evidence binding must be source-verified before their build contracts are finalized. Continue the remaining family and cross-product design units afterward. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
+The next bounded action is **D1-CYCLES / China Sectors**: a Chinese dark mobile investigation, source/basis detail and return state that preserve selected universe/sector and chart window. Separate measured history from typical timing and withhold unsupported forward information. The twelve-destination parity assessment also prioritizes Government intermediate comparison, Bio Chinese mobile explicit peers, Long Cycles Frame/measured grammar, and Hub population/exclusions inspection. Reuse accepted compositions; Build/state boards do not count as responsive product proof. Capital's explicit eventual U0 evidence matrix remains binding. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
 
 ## Preservation and evidence limits
 
