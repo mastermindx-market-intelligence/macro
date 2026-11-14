@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C10 below. Earlier C4–C9 sections and continuation boundaries are historical; C10 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C11 below. Earlier C4–C10 sections and continuation boundaries are historical; C11 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -391,3 +391,38 @@ The R2 contract binds exact transaction/campaign/reporting-person identity, reta
 Start **D1-POLICY** world/regional source investigation and People & relationships in existing file 01M6Y2X53ABR4MME4ATS15B8SH. Retain accepted R6 pages and inspect exact legacy capability sources. A bounded read-only review is complete; root source integration is underway. Source-specific coverage, source-versus-model availability, dated editorial substrate, role validity and documented relationship type must remain explicit. Read adapters may not invoke acquisition/model work during rendering.
 
 Protected INDEX and ACTIVE_EXECUTION were re-read at the same protected SHA; no pin invalidation was observed. Current source binding, one-carrier discipline and design-first scope remain intact. M1 is the sole qualified canvas carrier; M2 remains fenced. Async read/preflight receipts were reconciled on their original calls. No modifying effect is pending or unknown. No product implementation, collector execution, message, watch enrollment, trade, merge, deployment or daemon occurred. Continue the next safe design phase; this milestone is not a stopping gate.
+
+
+## Milestone C11 — Policy Watch R7
+
+Disposition: **MORE_WORK_EXISTS**. Nine new native pages bring the cumulative set to 92: 72 product/responsive/theme/locale, fourteen Build and six state sheets. Sixteen mobile and four intermediate compositions are present. C7–C11 added 42 reviewed pages in this resumed turn. Original design-phase closure, systematic parity and production acceptance remain open.
+
+### Reviewed design delta
+
+Existing Policy file 01M6Y2X53ABR4MME4ATS15B8SH now contains World (p-G-1/4DT-1), Treasury document (p-H-1/4KT-1), People (p-I-1/4R0-1), dark dated research (p-J-1/4XU-1), 1024px source coverage (p-K-1/53L-1), mobile People (p-L-1/57I-1), Chinese dark Treasury (p-M-1/5J4-1), states (p-N-1/5B2-1) and Build (p-O-1/5DE-1). All are synthetic fixtures. Existing R6, legacy journey, README and held reference scopes were preserved.
+
+World filters by publication time and uses Region = Europe across separate UK/EU sources. Treasury retains original text while analysis is unavailable. People distinguishes a pre-appointment paper, an ended adviser role and an independently unverified membership end. Dated research preserves three July dependencies beside a November revision. Coverage identifies excluded publishers without claiming global completeness or an outage.
+
+Bounded source/reasoning reviews and visual reviews found concrete issues: region/jurisdiction labeling, implied membership continuation, publisher-versus-event coverage, overstated clock completeness, version consistency and spacing. All were corrected. Principal inspected final Treasury, dark brief and both mobile compositions; reviewers accepted final World, People, coverage, states and Build. Repeated helper text/actions were removed; Chinese text styling and section spacing were repaired. All nine final roots received observed guarded finish receipts.
+
+### Source findings and recovery
+
+Current UK known_at_iso is evaluation time, not first observation. Regional event_id/item_id/qbus event_key differ; RSS-description hashes are not full-document hashes. Old editorial data is dated 13 July 2026; a fresh build/model cannot refresh it. Fixed template world prose and Moves in force fallbacks must not replace source/lifecycle truth. Generated influence labels, paths and co-firing do not establish roles, adoption or authority. Role intervals, immutable source/analysis dependencies and typed source availability are explicit future projections in incumbent owners.
+
+A module named binding collided with the earlier read receipt for the same operation key. The original receipt and partial root were inspected; only the absent modules were added under unique keys, with no replay of applied page/root/header work. The owned Chinese root was replaced to correct malformed font styling; its final root 5J4-1 and modules were re-read and registry reconciled. This was a bounded configuration/layout repair, not a permission denial or unreconciled effect.
+
+### Durable C11 evidence
+
+- Policy R7 contract: commit f509a91e7bce3ccb666f6875edcc47c9f01b62f3; blob ed7039e17b492d00f0835526059f5adeaa5eb776; byte readback matched.
+- 92-frame inventory: commit 6278371df09fbfd99d04b51155f999d0e0b44fe8; blob dab34791cccc0580a66ba823c90713af8f379f88.
+- Index: commit 51b02000693e04d63311a8a36dc72979b78255b8; blob ecba0cbbfd07ebfb314ca8beb9b14418828d2a6f.
+- Blueprint: commit 267fe60e348ca90dbfbe078157d32d56f9c1da48; blob 991c4bde7a90c884d89867b8d8184ccd837bedd0.
+- Inventory/index/blueprint read back byte-for-byte at 267fe60e348ca90dbfbe078157d32d56f9c1da48. Same owned branch and Draft PR #11271; pre-C11 head was reconciled at 4b51ca9327f39db1c4468ec8042a3b2d754bbf13, OPEN/DRAFT.
+
+### Next active design unit
+
+Continue **D1-CAPITAL** conflict, unavailable historical anchor, uncertain save and request/focus restoration states. A bounded read-only architecture review is complete, and root fetched the exact incumbent sources at the product pin. Preserve all accepted Capital compositions and historical W3/W4/#8673 holds; this design phase does not requalify or lift them.
+
+The review found that saved records retain assumptions/identities/digests but not result bodies; current/scenario restore can rebase to served as-of; immutable numbered versions, optimistic concurrency and operation-receipt reconciliation are not established. Share-basis conflict types exist but published share-count admission is absent at the inspected pin. Source/evidence binding and request races need precise contracts. Root source integration and design follow next; these are not claimed runtime incidents.
+
+M1 remains the sole qualified canvas carrier; M2 remains fenced. No modifying effect is pending or unknown. No product implementation, collector execution, message, account action, watch, trade, merge, deployment or daemon occurred. This checkpoint preserves progress; it does not end the authorized design mission.
