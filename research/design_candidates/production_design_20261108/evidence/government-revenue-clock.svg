@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580" height="188" viewBox="0 0 580 188" role="img" aria-labelledby="clock-title clock-desc"><title id="clock-title">Exact noon cutoff and rounded end-of-day cutoff</title><desc id="clock-desc">Controlled helper input: 9 November 2026 at noon UTC. Strict point-in-time helper stops at noon. Metrics helper rounds to 23:59:59.999999. This is source characterization, not a live data result.</desc>
+<rect x="296" y="28" width="244" height="116" rx="8" fill="#E5BC78" fill-opacity=".06"/>
+<path d="M52 144H540M296 22V150" stroke="#526075" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="52" y="21" fill="#A8CFBA" font-family="Inter, sans-serif" font-size="12">Strict instant</text>
+<rect x="52" y="38" width="244" height="18" rx="9" fill="#A8CFBA"/><circle cx="296" cy="47" r="5" fill="#E8FFF2"/>
+<text x="307" y="51" fill="#DAE3ED" font-family="Inter, sans-serif" font-size="12">12:00:00</text>
+<text x="52" y="87" fill="#E5BC78" font-family="Inter, sans-serif" font-size="12">Older metrics helper</text>
+<rect x="52" y="104" width="488" height="18" rx="9" fill="#E5BC78"/><circle cx="540" cy="113" r="5" fill="#FFF0CE"/>
+<text x="52" y="167" fill="#9DA9B8" font-family="Inter, sans-serif" font-size="11">00:00 UTC</text><text x="296" y="167" fill="#DAE3ED" font-family="Inter, sans-serif" font-size="11" text-anchor="middle">Requested 12:00</text><text x="540" y="167" fill="#9DA9B8" font-family="Inter, sans-serif" font-size="11" text-anchor="end">End of day</text></svg>

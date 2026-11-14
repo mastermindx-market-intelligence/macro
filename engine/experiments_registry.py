@@ -37,7 +37,8 @@ log = logging.getLogger(__name__)
 
 OUT = "marketdata/experiments.json"
 SEED = "data/experiments/registry_seed.json"
-_DONE = {"validated", "proven", "gate_open", "no_go"}  # already concluded — don't re-flag on come-back date
+_ARCHIVED = {"closed", "closed_no_go", "complete", "shipped"}
+_DONE = {"validated", "proven", "gate_open", "no_go"} | _ARCHIVED  # already concluded — don't re-flag on come-back date
 _NO_AUTO_READY = {"parked_research"}           # never auto-matures a result on a date
 # Date the seed's hand-authored `state` strings were last grounded by a codebase audit.
 # Used when the seed itself carries no top-level `audited` key. Any state the build could
@@ -645,11 +646,14 @@ def compute(*, trusted_codegen_bindings: tuple = (), commission=None) -> dict:
             pass
         # comprehensive 'ready' = a track-record verdict advanced (set by the hook) OR the
         # come-back date has arrived — but not for already-concluded / parked / on-demand items.
-        if not rec.get("ready"):
+        if rec.get("ready"):
+            rec["ready_reason"] = "reader_result"
+        else:
             du = rec.get("days_until")
             if (du is not None and du <= 0 and (rec.get("status") or "") not in _DONE
                     and (rec.get("kind") or "") not in _NO_AUTO_READY):
                 rec["ready"] = True
+                rec["ready_reason"] = "review_date"
         out.append(rec)
 
     ready = sum(1 for r in out if r.get("ready"))

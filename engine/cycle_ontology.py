@@ -1448,3 +1448,154 @@ def write_stance_matrix(path: str | None = None) -> str:
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(artifact, fh, indent=2, ensure_ascii=False)
     return path
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Turn knowledge for the LEGACY Sector Cycles detector (lane 8 / B05·B11, 2026-11-09)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Sector Cycles publishes turns from `engine.sector_cycles._detect_swings` (ZigZag
+# v1).  Those turns carry a PIVOT date only.  The v1 loop does know when each
+# pivot became a pivot — the bar at which price first reversed by the threshold
+# — it just never records it.  `legacy_turn_knowledge` replays the v1 loop line
+# for line, records that confirmation bar, and checks the replayed pivots against
+# the published turns before saying anything.  It does NOT switch detectors (the
+# v2 `detect_turns` above stays a separate, unintegrated object) and it never
+# renames a pivot date into a confirmation date.
+
+TURN_KNOWLEDGE_SCHEMA = "sector_cycles.turn_knowledge.v1"
+LEGACY_DETECTOR_ID = "engine.sector_cycles._detect_swings"
+LEGACY_DETECTOR_VERSION = "zigzag_pct.v1"
+TURN_CONFIRMATION_CLOCK = "detected_on_current_tape"
+
+
+def legacy_zigzag_confirmations(close: "pd.Series", pct: float
+                                ) -> tuple[list[tuple[int, str, int | None]], "pd.Series"]:
+    """Replica of `sector_cycles._detect_swings`' pivot loop + confirmation bar.
+
+    Returns ``([(pivot_i, kind, confirm_i | None), ...], dropna'd series)``.
+    ``confirm_i`` is the index of the bar whose close first crossed the reversal
+    threshold (the bar at which v1 appended the pivot); the last entry is the
+    open leg's running extreme — provisional, ``confirm_i is None``.  The first
+    pivot of v1 is SEEDED at the series' first bar (v1 has no NP-6 seed fix), so
+    its pivot date is the series start, not an observed extreme.
+    Equality of the pivots with `_detect_swings` is asserted by tests.
+    """
+    c = close.dropna()
+    arr = c.to_numpy()
+    n = len(arr)
+    if n < 30:
+        return [], c
+    th = pct / 100.0
+    piv: list[tuple[int, str, int | None]] = []
+    trend = 0
+    ext_i, ext_px = 0, arr[0]
+    ref_px = arr[0]
+    for i in range(1, n):
+        p = arr[i]
+        if trend == 0:
+            if p >= ref_px * (1 + th):
+                piv.append((0, "trough", i)); trend, ext_i, ext_px = 1, i, p
+            elif p <= ref_px * (1 - th):
+                piv.append((0, "peak", i)); trend, ext_i, ext_px = -1, i, p
+            else:
+                if p < ref_px:
+                    ref_px = p
+        elif trend == 1:
+            if p > ext_px:
+                ext_i, ext_px = i, p
+            elif p <= ext_px * (1 - th):
+                piv.append((ext_i, "peak", i)); trend, ext_i, ext_px = -1, i, p
+        else:
+            if p < ext_px:
+                ext_i, ext_px = i, p
+            elif p >= ext_px * (1 + th):
+                piv.append((ext_i, "trough", i)); trend, ext_i, ext_px = 1, i, p
+    prov_kind = "peak" if trend == 1 else "trough" if trend == -1 else "peak"
+    piv.append((ext_i, prov_kind, None))
+    return piv, c
+
+
+def _turn_knowledge_unavailable(reason: str, **extra) -> dict:
+    out = {
+        "schema": TURN_KNOWLEDGE_SCHEMA,
+        "status": "unavailable",
+        "reason": reason,
+        "detector": extra.pop("detector", None),
+        "detector_version": extra.pop("detector_version", None),
+        "confirmed_at": None,
+        "confirmation_sessions": None,
+        "anchor": None,
+        "epoch": None,
+        "as_known": {"status": "unavailable", "reasons": [reason]},
+    }
+    out.update(extra)
+    return out
+
+
+def legacy_turn_knowledge(close: "pd.Series", turns: list[dict], *, pct: float,
+                          structure_basis: str,
+                          as_known_blockers: list[str] | None = None) -> dict:
+    """Versioned turn-knowledge contract for one record's published `turns`.
+
+    `close` must be the exact structure series the record's turns were detected
+    on and `pct` its threshold.  Emits arrays ALIGNED with `turns`:
+    ``confirmed_at[k]`` (ISO date of the confirming bar, None for the provisional
+    tail) and ``confirmation_sessions[k]`` (bars from pivot to confirmation).
+    ``anchor`` is the last NON-provisional turn — the rhythm/hazard anchor — with
+    both its pivot date and its confirmation date.  ``as_known`` stays
+    ``unavailable``: a confirmation detected on today's (restated) tape is not a
+    vintage knowledge time.  Never raises.
+    """
+    base = {"detector": LEGACY_DETECTOR_ID, "detector_version": LEGACY_DETECTOR_VERSION}
+    try:
+        if not turns:
+            return _turn_knowledge_unavailable("no_published_turns", **base)
+        piv, c = legacy_zigzag_confirmations(close, pct)
+        if not piv:
+            return _turn_knowledge_unavailable("series_too_short", **base)
+        replay = [(str(c.index[i].date()), k, ci) for i, k, ci in piv]
+        published = [(t.get("date"), t.get("k"), bool(t.get("provisional"))) for t in turns]
+        tail = replay[len(replay) - len(published):] if len(published) <= len(replay) else None
+        if (tail is None
+                or [(d, k) for d, k, _ in tail] != [(d, k) for d, k, _ in published]
+                or [ci is None for _, _, ci in tail] != [p for _, _, p in published]):
+            return _turn_knowledge_unavailable("detector_replay_mismatch", **base)
+        offset = len(replay) - len(tail)
+        confirmed_at = [str(c.index[ci].date()) if ci is not None else None
+                        for _, _, ci in tail]
+        lag = [(ci - piv[offset + j][0]) if ci is not None else None
+               for j, (_, _, ci) in enumerate(tail)]
+        confirmed = [j for j, (_, _, ci) in enumerate(tail) if ci is not None]
+        anchor = None
+        if confirmed:
+            j = confirmed[-1]
+            anchor = {"index": j, "kind": tail[j][1], "pivot_date": tail[j][0],
+                      "confirmed_at": confirmed_at[j],
+                      "confirmation_sessions": lag[j]}
+        seeded = bool(offset == 0 and piv[0][0] == 0)
+        reasons = ["price_vintage_not_retained", "confirmation_detected_on_current_tape"]
+        for r in (as_known_blockers or []):
+            if r not in reasons:
+                reasons.append(r)
+        return {
+            "schema": TURN_KNOWLEDGE_SCHEMA,
+            "status": "measured",
+            "reason": None,
+            **base,
+            "threshold": {"kind": "pct", "value": float(pct)},
+            "structure_basis": structure_basis,
+            # v1 turns have no admitted epoch identity; the hazard artifact's
+            # epoch (price_c4414dcb) is ZigZag v2 + confirmed_at on close_price.
+            "epoch": None,
+            "confirmation_rule": ("first bar whose close reverses by >= threshold "
+                                  "from the pivot extreme"),
+            "confirmation_clock": TURN_CONFIRMATION_CLOCK,
+            "confirmed_at": confirmed_at,
+            "confirmation_sessions": lag,
+            "first_pivot_is_series_seed": seeded,
+            "anchor": anchor,
+            "as_known": {"status": "unavailable", "reasons": reasons},
+        }
+    except Exception:  # noqa: BLE001 — disclosure never breaks the build
+        return _turn_knowledge_unavailable("stamp_error", **base)

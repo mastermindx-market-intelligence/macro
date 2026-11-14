@@ -355,7 +355,7 @@ DASHBOARD = REPO / "templates" / "dashboard.html.j2"
 def _stale_banner_block() -> str:
     lines = DASHBOARD.read_text(encoding="utf-8").splitlines()
     start = next(i for i, ln in enumerate(lines)
-                 if "_su.staleness.get('delayed')" in ln)
+                 if ln.strip() == "{% if _su and _su.get('staleness') and _su.staleness.get('delayed') %}")
     end = next(i for i, ln in enumerate(lines[start:], start) if ln.strip() == "{% endif %}")
     return "\n".join(lines[start:end + 1])
 
