@@ -226,7 +226,13 @@ def _default_identity_reader(ticker: str) -> dict:
     )["identity_receipt"]
 
 
-def _read_pinned_body(authority, manifest_key: str, document_id: str) -> bytes:
+def _read_pinned_body(authority, manifest_key: str, document_id: str):
+    """Return (pinned bytes, canonical archive_url) read ONLY via the authority.
+
+    The archive_url comes from the pinned manifest document itself (the same
+    locator the segment-route reference uses), never from the request row, so the
+    candidate's source_ref is guaranteed to match the pinned source.
+    """
     manifest_read = authority.read_file(
         kind="archive", relative_path=manifest_key, maximum_bytes=HARD_MAX_FILING_MANIFEST_BYTES
     )
@@ -243,7 +249,7 @@ def _read_pinned_body(authority, manifest_key: str, document_id: str) -> bytes:
         maximum_bytes=n.MAX_SEC_SOURCE_BYTES,
         maximum_stored_bytes=gzip_stored_byte_ceiling(retrieval["byte_length"]),
     )
-    return read.content
+    return read.content, document["archive_url"]
 
 
 def _locate_figures(source: str, body: bytes, row: dict, main_start: int, main_end: int):
@@ -280,7 +286,7 @@ def _locate_figures(source: str, body: bytes, row: dict, main_start: int, main_e
 def _packet_row(row, authority, snapshot_id, identity_reader, identity_observed_at, theme_sources_raw) -> dict:
     ticker = row["ticker"]
     accession = row["accession"]
-    body = _read_pinned_body(authority, row["manifest_key"], row["document_id"])
+    body, archive_url = _read_pinned_body(authority, row["manifest_key"], row["document_id"])
     source = body.decode("utf-8")
     digest = sha256(body).hexdigest()
 
@@ -301,7 +307,7 @@ def _packet_row(row, authority, snapshot_id, identity_reader, identity_observed_
         "candidate_id": f"gmi:segment:{ticker}:{accession}",
         "document": {
             "document_id": row["document_id"], "version": "sha256:" + digest,
-            "source_ref": row["archive_url"], "published_date": None,
+            "source_ref": archive_url, "published_date": None,
         },
         "dataset_id": None, "temporal_row": None, "receipt": receipt,
         "assertion": {

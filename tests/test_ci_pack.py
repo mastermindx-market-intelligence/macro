@@ -4535,6 +4535,8 @@ CURATED_EXCLUSIVE = {
     "sa-w4-improvement-lanes",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
+    # GMI segment-source tooling owns its exact owner/segment-route closure.
+    "gmi-segment-sources-tooling",
     # Preserve V91 coverage while bounding newly enrolled policy regressions.
     "news-v91-vertical-proofs",
     "press-account-claim-consumer",
