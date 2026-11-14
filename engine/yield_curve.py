@@ -814,6 +814,8 @@ def market_tendency(f: pd.DataFrame, mom: dict, rec: dict) -> dict:
         risk = "elevated"
     elif n_flags >= 2 or (violent and not rising):
         risk = "watch"
+    elif real_speed is None or speed_pct is None:
+        risk = "unavailable"
     else:
         risk = "calm"
     return {
@@ -821,10 +823,12 @@ def market_tendency(f: pd.DataFrame, mom: dict, rec: dict) -> dict:
         "real_speed_pctile": speed_pct,
         "basis": "measured-direction, display-only",
         "label": _bil(
-            {"elevated": "A fast real-yield repricing is the configuration that historically precedes equity drawdowns — reactive risk, not a forecast.",
+            {"unavailable": "Real-rate speed evidence is incomplete — near-term equity stress cannot be classified as calm.",
+             "elevated": "A fast real-yield repricing is the configuration that historically precedes equity drawdowns — reactive risk, not a forecast.",
              "watch": "Curve/rate stress building — worth watching, not yet a drawdown signal.",
              "calm": "No fast real-rate repricing — the curve is not flagging near-term equity stress."}[risk],
-            {"elevated": "实际收益率快速重定价是历史上股票回撤前的形态——被动风险，并非预测。",
+            {"unavailable": "实际利率速度证据不完整——无法将近端股票压力归类为平静。",
+             "elevated": "实际收益率快速重定价是历史上股票回撤前的形态——被动风险，并非预测。",
              "watch": "曲线/利率压力在积聚——值得关注，尚非回撤信号。",
              "calm": "无快速实际利率重定价——曲线未对近端股票压力发出警示。"}[risk]),
     }
