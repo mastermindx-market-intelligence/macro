@@ -285,11 +285,17 @@ Cycle position, price and relative strength are distinct chart modes. The mode c
 
 ### 9.4 China sectors
 
-Use scripts/build_china_sector_cycles.py, templates/sector_cycles_china.html.j2 and the shared renderer. Preserve 31 Shenwan L1 sectors and curated baskets. The inspected renderer consumes actual osc[] history on 0–100, price[] rebased to the visible-window start, confirmed turns and proj.low/high/central_x.
+Use scripts/build_china_sector_cycles.py, engine/china_sector_cycles.py and the shared renderer. Preserve the 31 Shenwan L1 definitions and curated baskets, while reporting actual delivered coverage. Sector history is the concrete Shenwan close series; basket history is the equal-weight member level, not its ETF proxy. A generic tr stamp cannot establish total-return provenance. This cycle page's relative-strength benchmark is Shanghai Composite, distinct from the upstream basket product's CSI 300 ETF benchmark.
 
-The proposed chart ends the measured line at the last observation. A separately labeled vertical date band shows the typical turn window. Do not draw a sloping future oscillator or price trajectory; the inspected renderer's plotted projection series is empty. Name both calendar years when a window crosses year-end.
+The plotted osc/now.pos legacy measure is different from canonical pos_v2/phase_v2 and signature.score. Bind latest value, line, axis, tooltip and method to one identity. Price mode rebases at the visible left edge and must identify that anchor. The selected series can end before meta.asOf; weekly/month-end labels can postdate the last underlying observation. Per-series actual observation and aggregation provenance need explicit owner projection. Never date a series with the page clock by default.
 
-Separate measured position, typical historical rhythm and evidence-gated historical conditional outcomes. An eligible outcome view must reveal setup definition, baseline, sample, interval and horizon. If no eligible cohort exists, show that state rather than a fabricated probability or zero success rate. “Past the typical window” does not mean “reversal imminent.”
+End measured history at its true observation. Keep historical rhythm separate. project_next filters provisional turns, requires at least three confirmed turns, and anchors median and 25th/75th percentile inter-turn durations to the last confirmed pivot. The range is not calibrated confidence or an oscillator trajectory. Preserve month precision and the incumbent formatter; an elapsed range does not move forward. period_yrs.median is twice the median interval, not an independently computed full-cycle median or the renderer's mislabeled half-cycle. Pivot and confirmation/knowledge time are distinct.
+
+Conditional pathways cover Banks, Real Estate, Auto and Food & Beverage only; the latter's consumption research uses a broader seven-industry composite. Electronics has no pathway. Historical high-setup months, matured outcomes, overlap-deflated sample and block-bootstrap interval on conditional-minus-base rate remain distinct. Later missing setup legs can survive the current mean(skipna=True) path; strict continuing completeness requires correction in the owner.
+
+Chart asof does not bind current pathway reads or hindsight-curated basket membership. Historical research needs retained compatible snapshots or explicit unavailability. China constructors at this pin do not establish the required turn epoch/price basis for current hazard qualification; withhold all horizon numbers and numeric prior. Source failure, insufficient history, inapplicability and qualification refusal require different states.
+
+The [China R2 detailed contract](CHINA_SECTOR_CYCLES_R2_BUILD_SPEC_2026-11-14.md) adds Chinese dark mobile investigation/source/rhythm, intermediate resource recovery and exact return semantics. The standalone hash reader does not reliably switch a basket traversal back to sectors; the shell must resolve family/entity together. Existing R1 remains a preserved design reference; R2 supersedes ambiguous clock, measure, timing and qualification wording.
 
 ### 9.5 Long Cycles
 
@@ -512,3 +518,16 @@ Unconfirmed save is separate from successful calculation. Feasibility remains un
 The 768px loading state retains ALTA, requested date and mode with no earlier issuer's figures. Guard all responses, pagination and source details by the full request tuple. Focus-only source navigation uses replaceState and restores focus/scroll; issuer/mode/date/scenario changes create history. Existing loadMoreEvents and mode-bound evidence gaps are static source findings, not claimed production incidents.
 
 Principal and bounded reasoning reviews checked source contracts, whole-second cutoff conversion, fixture arithmetic and final compositions. Card gaps/navigation and distant feasibility copy were repaired; all seven final roots have observed finish receipts. Historic U0/W3/W4/#8673 holds remain, and no release status was requalified. Continue China Sectors narrow/theme/locale investigation, then remaining family and cross-product design proof. Product implementation remains sequenced after design-phase closure.
+
+
+## 20. C13 — China R2 and twelve-destination parity
+
+Six additional native pages bring the cumulative inventory to 105: 81 product/responsive/theme/locale, sixteen Build and eight state sheets. Twenty mobile and six intermediate compositions are recorded. C7–C13 added 55 reviewed pages in the resumed turn. The [parity and return matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md) now maps all twelve destinations without counting Build/state boards as product proof.
+
+The Chinese dark specimen investigates Electronics 801080 with one legacy historical oscillator, explicit source/basis access and separate rhythm. Selected-series observation 12 November, page cutoff 13 November and the weekly label 13 November are different facts. Exact observation, source snapshot, supporting turn set/count and knowledge-time fields are proposed incumbent extensions, not claimed current payload capability.
+
+Eight ordered intervals require nine confirmed alternating turns. The 0.33-year median produces a 0.66-year full-cycle reference by doubling, not independent complete-cycle sampling. The exact owner month formatter yields December 2026 through February 2027 with January 2027 central. Unknown confirmation time remains visible; no confidence badge or numeric hazard fallback is introduced.
+
+The 1024px dark failure preserves compatible core information and retries only heavy history. Core, history, narrative and DNA stay independent and identity-bound. Shared-shell restoration preserves family/entity, measurement/version, chart window, comparisons, cursor, panel, focus and scroll, including basket→sector Back/Forward. A screenshot specifies this contract but cannot prove an executed navigation path.
+
+Principal and bounded reasoning reviewers inspected all final compositions and exact source contracts. Chinese source copy was refined, and the current hash-family limitation was corrected in the spec. All six final roots received observed guarded finish receipts. No source engine, collector, account effect, trade, merge or deployment occurred. Next is the bounded Government Revenue intermediate program-version comparison, followed by the remaining Cycles and family-specific parity/return units before product implementation.
