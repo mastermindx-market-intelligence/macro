@@ -34167,6 +34167,11 @@ jobs:
       - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
       - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
       - "research/sector_completion_20261021/b12/v11_heads_result.json"
+      # COO ruling 109 (PR #11039): the rotation-context capture suite moved here
+      # from unrun-builders-stores. Its engine module matches the engine/*.py
+      # glob above and scripts/collect.py is already declared; the suite file is
+      # the one closure path this job did not yet name.
+      - "tests/test_rotation_context_capture.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -34176,6 +34181,24 @@ jobs:
           python-version: "3.12"
       - name: install deps for the defense rail batteries
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 jsonschema fastapi httpx pdfplumber==0.11.10 rjsmin==1.2.5 rcssmin==1.2.2
+      # Rotation-context nightly capture (2026-11-11, SI v1.1 ruling 8), moved
+      # here from unrun-builders-stores by COO ruling 109 (PR #11039, answer to
+      # escalation #18 option (a)): the suite's closure reaches NONE of the three
+      # packing-probe files (templates/index.html, scripts/build_free_content.py,
+      # engine/prophet/plan_book.py), yet its old home is selected by all three
+      # probes, so its token cost +5 weight on every probe and pushed the
+      # free-content probe over the 10-pack line. This job is gate: code and no
+      # probe selects it, and it is the only existing job whose curated exclusive
+      # scope already covers the suite's whole import closure — the
+      # scripts/collect.py nightly closure registered above (#9037 / #10929);
+      # the suite file itself is the one path added. A non-exclusive home would
+      # inherit collect.py's opaque templates/**, scripts/**, engine/** fallbacks
+      # and become probe-selected itself. pytest+pandas+pyarrow are already on
+      # the install line above (clean-venv proof: 7 passed); hermetic fixtures,
+      # no network. Ordered before the rail batteries so a red here is not hidden
+      # behind a later step's first-nonzero abandon.
+      - name: rotation-context nightly capture contracts (SI v1.1)
+        run: python -m pytest tests/test_rotation_context_capture.py -q
       # D6-A DoD budget live rail (PR #6377): the hostile law battery for the
       # production P-1/R-1 acquisition + parser — fetch/R2-readback order, no
       # receipt without readback proof, §5b/§5b.1 row-model refusals (sign law,
