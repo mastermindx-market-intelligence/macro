@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T03:55:31.400314+00:00",
-  "count": 3340,
+  "generated_at": "2026-11-14T04:10:34.942358+00:00",
+  "count": 3341,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-mzpe4qwbnrh-91ec5d",
+      "title": "PNC Economics Research Claims 12 November 2026",
+      "institution": "PNC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T03:50:43Z",
+      "summary_points": [
+        "Fed Rate Hike Confirmation: FOMC to raise fed funds rate by 25bps in December due to strong nonfarm payrolls and hotter-than-expected CPI, with PNC forecasting another 25bps hike in March targeting 4.25%-4.50% range.",
+        "Labor Market Fragmentation: Long-term unemployment (≥27 weeks) at 27.6% (highest since Dec 2021) signals persistent job market weakness despite low initial claims (<200k for 9 consecutive weeks).",
+        "Policy-Driven Rate Trajectory: Fed’s December hike and March forecast reflect tightening bias, directly impacting bond yields, equity valuations, and portfolio duration positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-eythpwrrvv4-237ea5",
       "title": "Portfolio Intelligence report July 2026",
