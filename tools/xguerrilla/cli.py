@@ -20,7 +20,7 @@ from pathlib import Path
 import yaml  # only third-party import allowed here
 
 try:
-    from . import net, persona, profiles, selector_shadow
+    from . import config, net, persona, profiles, registry, selector_shadow
     from .supervisor import Supervisor
     from .runtime_boundary import RuntimeBindingUnavailable, refuse_runtime
 except ImportError:  # python3 tools/xguerrilla/cli.py
@@ -28,7 +28,9 @@ except ImportError:  # python3 tools/xguerrilla/cli.py
     import net  # type: ignore
     import persona  # type: ignore
     import profiles  # type: ignore
+    import registry  # type: ignore
     import selector_shadow  # type: ignore
+    import config  # type: ignore
     from supervisor import Supervisor  # type: ignore
     from runtime_boundary import RuntimeBindingUnavailable, refuse_runtime  # type: ignore
 
@@ -102,6 +104,95 @@ def cmd_recover(args) -> int:
     refuse_runtime("recover")
 
 
+def _default_lock_path(registry_path: str) -> str:
+    """``registry.yml`` -> ``registry.lock.yml``; ``registry.example.yml`` ->
+    ``registry.lock.example.yml`` (``.lock`` goes right after the stem)."""
+    p = Path(registry_path)
+    stem, _, rest = p.name.partition(".")
+    return str(p.with_name(f"{stem}.lock.{rest}" if rest else f"{stem}.lock.yml"))
+
+
+def cmd_registry_check(args) -> int:
+    """Read-only registry gate: every refusal printed, exit 0 or 2. No writes."""
+    doc, errors = registry.load_registry(args.registry)
+    if doc is None:
+        for line in errors:
+            print(line)
+        return 2
+    lock_path = args.lock or _default_lock_path(args.registry)
+    lock, errors = registry.load_lock(lock_path)
+    if lock is None:
+        # Fail closed: a missing lock is a refusal, never a skipped check.
+        for line in errors:
+            print(line)
+        print(f"registry lock {lock_path!r} is required for the mutation-without-bump "
+              "check — run `registry-lock` first (fail-closed)")
+        return 2
+    personas: dict | None
+    if args.skip_bindings:
+        # Documented use: the lock-only structural check (registry-lock itself
+        # never checks bindings either). Loud, so nobody mistakes the skip
+        # for a pass.
+        print("bindings NOT checked: --skip-bindings — the persona↔entry "
+              "symmetry check did not run")
+        personas = None
+    else:
+        # Fail closed: the default invocation checks bindings against the
+        # repo personas. A missing or empty personas directory is a refusal,
+        # never a silently skipped check.
+        personas_dir = args.personas or DEFAULT_PERSONAS
+        if not os.path.isdir(personas_dir):
+            print(f"personas directory {personas_dir!r} does not exist — the "
+                  "persona↔entry binding check could not run; refusing "
+                  "(fail-closed)")
+            return 2
+        personas = config.load_personas(personas_dir)
+        if not personas:
+            print(f"personas directory {personas_dir!r} holds no persona rows — "
+                  "the persona↔entry binding check could not run; refusing "
+                  "(fail-closed)")
+            return 2
+    slots: list[str] = []
+    if args.proxies:
+        slots = [s.name for s in net.load(args.proxies)]
+    refusals = registry.validate_all(
+        doc, lock, personas, slots,
+        expected_revision=args.expect_revision,
+    )
+    for line in refusals:
+        print(line)
+    return 0 if not refusals else 2
+
+
+def cmd_registry_lock(args) -> int:
+    """Validate the document and prior snapshot before the explicit re-lock."""
+    doc, errors = registry.load_registry(args.registry)
+    if doc is None:
+        for line in errors:
+            print(line)
+        return 2
+    refusals = registry.validate_document(doc)
+    if refusals:
+        for line in refusals:
+            print(line)
+        return 2
+    target = Path(args.lock)
+    # An existing malformed/unreadable target is never treated as bootstrap.
+    if target.exists() or target.is_symlink():
+        previous, errors = registry.load_lock(str(target))
+        refusals = errors if previous is None else registry.check_relock(doc, previous)
+        if refusals:
+            for line in refusals:
+                print(line)
+            return 2
+    lock = registry.write_lock(doc)
+    target.write_text(
+        yaml.safe_dump(lock, sort_keys=True), encoding="utf-8")
+    _emit({"ok": True, "lock": args.lock, "revision": doc["registry_revision"],
+           "entries": len(lock["entries"]), "domains": len(lock["domains"])})
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="xguerrilla",
                                  description=(__doc__ or "").splitlines()[0])
@@ -158,6 +249,25 @@ def build_parser() -> argparse.ArgumentParser:
     _common(p)
     p.add_argument("--personas", default=DEFAULT_PERSONAS)
     p.set_defaults(func=cmd_recover)
+
+    p = sub.add_parser("registry-check", help="read-only registry gate; refusals on stdout")
+    p.add_argument("--registry", required=True)
+    p.add_argument("--lock", default="")
+    p.add_argument("--personas", default=DEFAULT_PERSONAS,
+                   help="persona dir for the binding check (default: the repo "
+                        "personas; missing or empty refuses — fail-closed)")
+    p.add_argument("--skip-bindings", action="store_true", dest="skip_bindings",
+                   help="lock-only structural check: skip the persona↔entry "
+                        "binding check (the run says loudly that bindings were "
+                        "NOT checked)")
+    p.add_argument("--proxies", default="", help="proxy inventory for credential slot names")
+    p.add_argument("--expect-revision", type=int, default=None, dest="expect_revision")
+    p.set_defaults(func=cmd_registry_check)
+
+    p = sub.add_parser("registry-lock", help="re-lock ceremony: validate then snapshot the lock")
+    p.add_argument("--registry", required=True)
+    p.add_argument("--lock", required=True)
+    p.set_defaults(func=cmd_registry_lock)
     return ap
 
 

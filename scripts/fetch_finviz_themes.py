@@ -22,8 +22,10 @@ The pure assembly (snapshot → the JSON the frontend reads) lives in
 network.
 
 PIT ARCHIVAL (added 2026-07-04, append-only, zero breaking changes):
-* ``data/themes_heatmap/member_perf_history.jsonl`` — one line per NYSE **session**,
-  compact JSON: {"asof": "YYYY-MM-DD", "subsectors": {...}, "members": {...}}.
+* ``data/themes_heatmap/subsector_perf_history.jsonl`` — one line per NYSE
+  **session**, compact JSON: {"asof": "YYYY-MM-DD", "subsectors": {...}}.
+  (The file was originally drafted as ``member_perf_history.jsonl`` carrying both
+  levels; the member half was descoped at review and lives in the archive below.)
   Idempotent: if the asof date already exists in the file the append is skipped.
   It used to be one line per CALENDAR day, which is not the same thing: daily.yml
   fires ~22:30 UTC every night INCLUDING weekends, and Finviz themes perf is EOD,
@@ -36,9 +38,18 @@ PIT ARCHIVAL (added 2026-07-04, append-only, zero breaking changes):
 * ``data/themes_heatmap/tree_history.jsonl`` — one line per *change* in the tree,
   keyed by sha256(sort_keys JSON); appended only when the tree hash changes (or
   the file is empty). Format: {"asof": "YYYY-MM-DD", "sha256": "...", "tree": [...]}.
+* ``data/themes_heatmap/member_perf_archive/<asof>.jsonl.gz`` — one gzip'd
+  JSON-lines FILE per NYSE session (added 2026-11-11), capturing the per-MEMBER
+  horizon returns the fetch already pulled (rotation breadth research; Finviz's
+  member board cannot be re-fetched for a past date). Immutable once written: a
+  session file that already exists is skipped, never overwritten. First date
+  2026-11-11 — nothing earlier exists or can be synthesized. Non-fatal on
+  failure: the board and the two archives above must not be put at risk by the
+  member capture.
 
-Staging note: daily.yml stages ``data/`` broadly (``git add data/``), so the two
-new .jsonl files are picked up automatically — no workflow change needed.
+Staging note: daily.yml stages ``data/`` broadly (``git add data/``), so the
+.jsonl files and the member archive directory are picked up automatically — no
+workflow change needed.
 
 STRUCTURE REFRESH CONTRACT (added 2026-08-14, GMI Theme Graph W3A plan §3):
 ``--refresh-tree`` is a STRUCTURE-ONLY mode — it re-traces the source, diffs,
@@ -58,6 +69,7 @@ never happened.
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -87,6 +99,7 @@ TREE_PATH = OUT_DIR / "themes_tree.json"
 PERF_PATH = OUT_DIR / "perf_snapshot.json"
 SUBSECTOR_PERF_HISTORY_PATH = OUT_DIR / "subsector_perf_history.jsonl"
 TREE_HISTORY_PATH = OUT_DIR / "tree_history.jsonl"
+MEMBER_PERF_ARCHIVE_DIR = OUT_DIR / "member_perf_archive"
 TREE_REFRESH_RECEIPTS_DIR = OUT_DIR / "tree_refresh_receipts"
 # The probation queue is a data-plane sidecar shared with the theme graph
 # (plan §4). This module only ever APPENDS `kind=key_rename` rows to it and
@@ -483,10 +496,13 @@ def append_subsector_perf_history(
     Deliberately subsector-only (~15-20 KB/day, snapshots.jsonl-class): Finviz's
     subsector aggregates ride Finviz's FULL universe and cannot be rebuilt later —
     they are the irreplaceable PIT layer, together with the tree (below). The
-    per-MEMBER perf is NOT archived: member horizons are trailing returns fully
-    reconstructable from the accumulating whole-market massive_stock_day store
-    (nightly, R2-published), and ~100 KB/day of duplicated member JSON in git
-    history forever fails the repo's heavy-store discipline (r2 data plane)."""
+    per-MEMBER perf was originally not archived at all (trailing returns are
+    reconstructable from the whole-market massive_stock_day store, and raw member
+    JSON in the append-only file failed the heavy-store discipline); since
+    2026-11-11 it is captured SEPARATELY, compressed and per-session, in
+    ``write_member_perf_archive`` below (rotation breadth research — the vendor's
+    own member board cannot be re-fetched for a past date, and the compressed
+    per-file form keeps the ~53 KB/day out of this file's append path)."""
     p = path if path is not None else SUBSECTOR_PERF_HISTORY_PATH
     p.parent.mkdir(parents=True, exist_ok=True)
     if _last_asof(p) == asof:
@@ -508,6 +524,63 @@ def append_tree_history(
         return False
     _append_jsonl_line(p, {"asof": asof, "sha256": h, "tree": tree})
     return True
+
+
+def write_member_perf_archive(
+    asof: str,
+    fetched_at_utc: str,
+    tree: list,
+    member_perf: dict[str, dict[str, float]],
+    dir_path: Path | None = None,
+) -> tuple[bool, Path, int]:
+    """Write one session's per-MEMBER perf to ``member_perf_archive/<asof>.jsonl.gz``.
+
+    Returns ``(written, path, row_count)`` — ``written`` is False when the session
+    file already exists (skip, never overwrite; the file is immutable once written).
+
+    Capture-ONLY (2026-11-11, rotation breadth research): rows are the member
+    horizon returns the fetch already pulled, joined onto the committed tree's
+    memberships, exactly as fetched — no adjustment, no derived field. One row per
+    (theme, subsector, ticker) membership whose ticker the vendor priced; a ticker
+    in two subsectors yields two rows (breadth denominators are per-group). Members
+    the vendor did not price are absent — the nightly coverage tripwire reports
+    that gap, and membership itself is already PIT-archived in tree_history.jsonl.
+
+    File shape (gzip JSON lines, ~53 KB/day measured for ~2.3k memberships): first
+    line is a meta record carrying the fetch timestamp ONCE per file; every
+    following line is ``{"asof", "theme", "subsector", "ticker", "perf": {tf: pct}}``. mtime=0 so
+    the payload is byte-deterministic; the write goes through a fixed-name .tmp +
+    ``os.replace`` so a killed run can never leave a torn session file behind
+    (an existing file is always complete, and the exists-check above is therefore
+    a sound immutability gate). First date 2026-11-11 — earlier history does not
+    exist and must never be synthesized.
+    """
+    d = dir_path if dir_path is not None else MEMBER_PERF_ARCHIVE_DIR
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f"{asof}.jsonl.gz"
+    if p.exists():
+        return False, p, 0
+    rows: list[dict] = []
+    for t in tree or []:
+        theme_key = t.get("key")
+        for s in t.get("subsectors") or []:
+            sub_key = s.get("key")
+            for m in s.get("members") or []:
+                perf = (member_perf or {}).get(m)
+                if perf is None:
+                    continue
+                rows.append({"asof": asof, "theme": theme_key, "subsector": sub_key,
+                             "ticker": m, "perf": dict(perf)})
+    meta = {"asof": asof, "fetched_at_utc": fetched_at_utc,
+            "source": "finviz-themes", "row_count": len(rows)}
+    lines = [json.dumps(meta, separators=(",", ":"))]
+    lines.extend(json.dumps(r, separators=(",", ":")) for r in rows)
+    payload = gzip.compress(("\n".join(lines) + "\n").encode("utf-8"),
+                            compresslevel=9, mtime=0)
+    tmp = d / f"{asof}.jsonl.gz.tmp"
+    tmp.write_bytes(payload)
+    os.replace(tmp, p)
+    return True, p, len(rows)
 
 
 # --------------------------------------------------------------------------- #
@@ -1707,6 +1780,7 @@ def main() -> None:
     emit_member_coverage_warning(member_coverage_gap(members, mem_perf.keys()))
 
     asof = _asof_stamp()
+    fetched_at_utc = datetime.now(timezone.utc).isoformat(timespec="seconds")
     snap = {
         "source": "finviz-themes",
         # Finviz themes perf is end-of-day; stamp the NYSE SESSION the board
@@ -1746,6 +1820,26 @@ def main() -> None:
               "membership history is NOT archived for this day", file=sys.stderr)
     if not archival_ok:
         sys.exit(2)
+
+    # --- member perf archive (2026-11-11; capture-only breadth research) ------- #
+    # ISOLATED FROM THE TWO ARCHIVES ABOVE ON PURPOSE: those exit non-zero on
+    # failure because a lost day is unrecoverable; this one must never put the
+    # board or the irreplaceable subsector/tree PIT layers at risk — an archive
+    # failure is LOUD (Actions annotation) but non-fatal, and no fetch, parse or
+    # write of the snapshot above is repeated here. Same session-dedup rule as the
+    # aggregate archive: the file for an asof that already exists is skipped.
+    try:
+        mp_written, mp_path, mp_rows = write_member_perf_archive(
+            asof, fetched_at_utc, tree, mem_perf)
+        if mp_written:
+            print(f"member_perf_archive/{mp_path.name}: wrote {mp_rows} rows "
+                  f"({mp_path.stat().st_size / 1024:.1f} KB)")
+        else:
+            print(f"member_perf_archive/{mp_path.name}: skipped (session file exists)")
+    except Exception as e:  # noqa: BLE001 — non-fatal by design (see above)
+        print(f"::error::member perf archive FAILED (asof={asof}): {e!r} — non-fatal "
+              "by design; the snapshot and the subsector/tree PIT archives above "
+              "are unaffected", file=sys.stderr)
 
 
 if __name__ == "__main__":

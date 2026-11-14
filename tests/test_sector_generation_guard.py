@@ -130,7 +130,7 @@ def _central_seams(monkeypatch, artifact):
     monkeypatch.setattr(scg, "_load_rotation_artifact", lambda: artifact)
     monkeypatch.setattr(scg, "market_context", lambda: {"risk_on": 0.0, "gate_factor": 0.7, "heat": {}})
     monkeypatch.setattr(scg, "_trend_gates", lambda closes, rotation: {})
-    monkeypatch.setattr(scg, "_measured_read", lambda cyc: {"status": "unavailable"})
+    monkeypatch.setattr(scg, "_measured_read", lambda cyc, **kwargs: {"status": "unavailable"})
     import engine.sector_cycles as _sc
     monkeypatch.setattr(_sc, "compute", lambda: _minimal_cyc())
     seen = []
