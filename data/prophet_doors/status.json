@@ -1,33 +1,47 @@
 {
-  "appended": 0,
-  "asof": "2026-11-11",
+  "appended": 9,
+  "asof": "2026-11-13",
   "candidates": {
-    "R": 1,
-    "T": 10,
-    "W": 32
+    "R": 3,
+    "T": 6,
+    "W": 20
   },
   "deduped": {
     "R": 1,
-    "T": 10,
-    "W": 32
+    "T": 4,
+    "W": 15
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-11-14",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 11
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Energy Traditional": {
+          "theme_thrust_frac": 0.0,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 38,
+      "tickers_read": 49
     },
     "keys": [
       "relay_count_3d",
@@ -45,17 +59,33 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 145,
+      "n_covered": 88,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-11-13",
+      "n_tickers": 1551,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": false,
-      "n_asked": 0,
-      "n_covered": 0
+      "consulted": true,
+      "direction": "bull",
+      "grid": "W",
+      "horizon": "13w",
+      "n_asked": 5,
+      "n_covered": 5,
+      "reason": null,
+      "source": "engine.event_atlas.receipt"
     },
     "enabled": true,
     "keys": [
@@ -76,9 +106,21 @@
     ]
   },
   "flag_tickers": {
-    "R": [],
-    "T": [],
-    "W": []
+    "R": [
+      "AZTA",
+      "PLUS"
+    ],
+    "T": [
+      "CEG",
+      "SLB"
+    ],
+    "W": [
+      "GE",
+      "BKSY",
+      "FRT",
+      "MPWR",
+      "VTR"
+    ]
   },
   "n_universe": 1490,
   "overflow": {
@@ -86,41 +128,41 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-11-12 16:52:29",
-  "runtime_s": 189.7,
+  "run_utc": "2026-11-14 16:14:11",
+  "runtime_s": 104.0,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -1,
-    "asof": "2026-11-12",
-    "n_members": 126,
+    "age_days": 0,
+    "asof": "2026-11-13",
+    "n_members": 145,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 6.811,
+        "emerging_score": 3.942,
         "rank": 1,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 3.175,
-        "rank": 2,
-        "theme": "Defense & Aerospace"
-      },
-      {
-        "emerging_score": 2.275,
-        "rank": 3,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 1.537,
-        "rank": 4,
-        "theme": "Autonomous Systems"
+        "emerging_score": 3.667,
+        "rank": 2,
+        "theme": "Space Tech"
       },
       {
-        "emerging_score": 1.474,
-        "rank": 5,
+        "emerging_score": 2.19,
+        "rank": 3,
+        "theme": "Defense & Aerospace"
+      },
+      {
+        "emerging_score": 2.117,
+        "rank": 4,
         "theme": "Telecommunications"
+      },
+      {
+        "emerging_score": 1.271,
+        "rank": 5,
+        "theme": "Energy Traditional"
       }
     ]
   },
@@ -129,19 +171,19 @@
       "2B",
       "3B"
     ],
-    "aligned": 32,
-    "asof_max": "2026-11-11",
+    "aligned": 20,
+    "asof_max": "2026-11-13",
     "asof_mismatch": 0,
-    "asof_run": "2026-11-11",
-    "evaluated": 713,
-    "fresh": 32,
+    "asof_run": "2026-11-13",
+    "evaluated": 714,
+    "fresh": 20,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 23.9,
-    "skipped": 4,
+    "runtime_s": 19.3,
+    "skipped": 3,
     "source": "baskets/membership.json",
-    "state_turn": 60,
+    "state_turn": 63,
     "universe_n": 717
   }
 }

@@ -129,6 +129,28 @@ for (const file of [null, '../AFRM_2022.md', 'research/winners/cases/../other.md
 """)
 
 
+def test_context_candidate_disclosures_trace_source_and_count_only_displayed_rows():
+    _node_assert("""
+const esc = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
+const helpers = block('function contextCandidateEvidence(', 'RENDER.context_lobe =');
+const json = block('function iosEvidenceJson(', 'Object.assign(IOS_LABEL_ZH');
+const body = block('// ---- candidate_context table ----', '  v.innerHTML = ');
+const render = new Function('d', 'lobes', 'esc', json + helpers + body + '; return candidatesHtml;');
+const shared = {ticker:'SHARED', evidence_blocks:{}, kernel_fdr_cleared:false};
+const evidence = {ticker:'A"<', evidence_blocks:{analyst:{observed:0, flagged:false}, graph_conflicts:[{note:'<x>'}]}};
+const html = rows => render({candidates:rows,n_candidates_shown:rows.length,n_candidates_total:250},
+  {reliability:{standing_law:'Producer <guidance>'}}, esc);
+const mixed = html([shared,evidence]);
+assert.ok(mixed.includes('1 of 2 displayed tickers have ticker-specific evidence'));
+assert.ok(mixed.includes('No ticker-specific evidence in this snapshot.'));
+assert.ok(mixed.includes('FDR not cleared') && mixed.includes('Producer &lt;guidance>'));
+assert.ok(mixed.includes('observed: <code class="mono">0') && mixed.includes('flagged: <code class="mono">false'));
+assert.ok(mixed.includes('Inspect evidence for A&quot;&lt;') && !mixed.includes('<x>'));
+assert.ok(html([{ticker:'OLD'}]).includes('coverage is unavailable'));
+assert.ok(!html([{ticker:'OLD'}]).includes('No ticker-specific evidence'));
+""")
+
+
 def test_workspace_keeps_every_route_once_with_capacity_router_primary():
     _node_assert("""
 const groups = new Function(block('const NAV_GROUPS = [', 'const TAB_LABELS = ') + '; return NAV_GROUPS;')();

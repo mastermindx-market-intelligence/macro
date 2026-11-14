@@ -15392,6 +15392,24 @@ RENDER.long_hold = async () => {
 };
 
 /* ---- Context Lobe ------------------------------------------------------- */
+function contextCandidateEvidence(row, standingLaw) {
+  const ticker = esc(row.ticker || "—");
+  const blocks = row.evidence_blocks;
+  if (!blocks || typeof blocks !== "object" || Array.isArray(blocks)) return `<b>${ticker}</b>`;
+  const groups = Object.entries(blocks).map(([name, values]) => {
+    const facts = Object.entries(values).map(([key, value]) =>
+      `<li>${Array.isArray(values) ? "" : esc(key.replace(/_/g, " ")) + ": "}${iosEvidenceJson(value)}</li>`
+    ).join("");
+    return `<b>${esc(name.replace(/_/g, " "))}</b><ul>${facts}</ul>`;
+  }).join("");
+  const kernel = row.kernel_fdr_cleared;
+  const status = kernel === true ? "cleared" : "not cleared";
+  const caveat = typeof kernel === "boolean"
+    ? `<p>Shared kernel guidance · FDR ${status}</p>${standingLaw ? `<p class="sub">${esc(standingLaw)}</p>` : ""}` : "";
+  return `<details><summary aria-label="Inspect evidence for ${ticker}"><b>${ticker}</b></summary>
+    ${groups || "<p>No ticker-specific evidence in this snapshot.</p>"}${caveat}</details>`;
+}
+
 RENDER.context_lobe = async () => {
   const v = $("#view");
   v.innerHTML = `<div class="sub muted" style="margin-bottom:8px">Loading…</div>`;
@@ -15493,12 +15511,17 @@ RENDER.context_lobe = async () => {
   if (candidates.length === 0) {
     candidatesHtml = `<div class="sub muted">no candidate context rows</div>`;
   } else {
+    const known = candidates.filter(row => row.evidence_blocks && typeof row.evidence_blocks === "object" && !Array.isArray(row.evidence_blocks));
+    const evidenced = known.filter(row => Object.keys(row.evidence_blocks).length).length;
+    const coverage = known.length === candidates.length
+      ? `${evidenced} of ${candidates.length} displayed tickers have ticker-specific evidence.`
+      : "Ticker-specific evidence coverage is unavailable for this selection.";
     const cRows = candidates.map(row => {
       const nullDash = (v2) => v2 != null ? esc(String(v2)) : "—";
       const fmtF = (v2, dp) => v2 != null ? Number(v2).toFixed(dp != null ? dp : 2) : "—";
       const boolStr = (v2) => v2 == null ? "—" : (v2 ? "yes" : "no");
       return `<tr>
-        <td><b>${esc(row.ticker || "—")}</b></td>
+        <td>${contextCandidateEvidence(row, lobes.reliability?.standing_law)}</td>
         <td><span class="statpill">${nullDash(row.bottom_state)}</span></td>
         <td class="r mono">${row.trigger_age_ticks != null ? fmtF(row.trigger_age_ticks, 0) : "—"}</td>
         <td>${boolStr(row.coiled)}</td>
@@ -15515,7 +15538,7 @@ RENDER.context_lobe = async () => {
       </tr>`;
     }).join("");
     candidatesHtml = `
-      <div class="note muted" style="margin-bottom:6px">Showing ${d.n_candidates_shown} of ${d.n_candidates_total} tickers · sorted by sub-block richness · display-only context</div>
+      <div class="note muted" style="margin-bottom:6px">Showing ${d.n_candidates_shown} of ${d.n_candidates_total} tickers. ${coverage}</div>
       <table><thead><tr>
         <th>Ticker</th><th>Bottom state</th><th class="r">Trig age</th>
         <th>Coiled</th><th>Star</th>
