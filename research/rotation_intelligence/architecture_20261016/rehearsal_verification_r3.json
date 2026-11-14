@@ -1,0 +1,94 @@
+{
+  "scope": "SYNTHETIC_REFERENCE_AND_SOURCE_TESTS_ONLY",
+  "date": "2026-10-17",
+  "tested_package_head": "88545313d6d1e28b5457a198245b82dbe4e6c523",
+  "incumbent_source_commit": "ab5156a4b2c336181f3c5256e7c0766f04f99598",
+  "source_files": {
+    "allocation_rehearsal.py": {"bytes": 11240, "sha256": "c77c67923252b675238bd64054341cb10e2dad75011858005b07ab50d82d2f7c"},
+    "test_allocation_rehearsal.py": {"bytes": 10127, "sha256": "22194301b0c97662c2d10f94fc10f86112b869a5820016761fc41afb757ce127"},
+    "check_rehearsal_mutations.py": {"bytes": 3355, "sha256": "8c1c05e2ae8286fe9b9cc85c6a76cb667a2fe6c7907f9d9f99ca0212fe406384"},
+    "policy_accounting_witness.py": {"bytes": 5537, "sha256": "9a071d1b156ab9684e72f2032d06a51c8096089aef784c0c87ebfb5aa3a7281e", "unchanged": true}
+  },
+  "author_test_cycle": {
+    "initial_stub": {"assertion_failures": 3, "errors": 0},
+    "completed_reference": {"tests": 35, "failures": 0, "errors": 0},
+    "published_source_on_m2": {"tests": 35, "failures": 0, "errors": 0},
+    "local_python": "3.13.5",
+    "m2_python": "3.14.7",
+    "local_accounting_dependency": "exact rebalance function excerpt from the pinned research source",
+    "m2_accounting_dependency": "entire unchanged published policy_accounting_witness.py",
+    "shared_rebalance_ast_sha256": "62bc2987de6e1ce0c9744267bdc05b836fe4bad90a491dc86f587cdb4c1616a9"
+  },
+  "counterfactual_tests": {
+    "count": 8,
+    "each_has_one_intended_assertion_failure_and_zero_errors": true,
+    "names": ["wrong_lookback", "late_snapshot", "rewind_bad_vintage", "cash_hurdle_equality", "pretend_bill_trade_free", "omit_liquidation_from_drawdown", "ignore_unavailable_decision", "grant_investment_authority"],
+    "local_and_m2_result_sha256": "793035a96ff8c8e7ea94b5465d450ccfbe555b46c381342fe9c531e72c4075cf",
+    "independent_review": false
+  },
+  "synthetic_paths": {
+    "scenarios": ["flat", "leadership_then_reversal"],
+    "policies_per_scenario": ["B0", "B1", "B2", "B3", "B4"],
+    "cost_scenarios": [0.0005, 0.001, 0.0025, 0.005],
+    "path_combinations": 40,
+    "decision_anchors": [252, 272, 292],
+    "execution_labels": [253, 273, 293],
+    "terminal_label": 313,
+    "calendar_and_clocks": "invented ordered fixture labels and ticks, not exchange sessions or UTC",
+    "local_raw_result_sha256": "a90200fc82a2cc3a47c0fb60317b9ad2fb7f9d38cd87a2325077cf349f753ade",
+    "m2_raw_result_sha256": "66950eba9fd4b702583eaa69bfe91c4a627dfbf5dbc9eafb0bffa31cc8c8d333",
+    "raw_outputs_byte_identical": false,
+    "semantic_comparison": "All numeric fields rounded to 12 decimal places, recursive key ordering, omit only the synthetic-input prefix_digest fields; no actual-source identity waiver",
+    "local_and_m2_semantic_projection_sha256": "7963276d3f1ac6e114490908316e8a7f6b7444453c5b9957473e923551c02344",
+    "flat_10bp_terminal_wealth_all_policies_approximately": 0.998001998001998,
+    "flat_zero_cost_terminal_wealth": 1.0,
+    "reversal_10bp_example": {
+      "B0": 1.007024556595498,
+      "B1": 1.0345846060383939,
+      "B2": 0.9081961924443607,
+      "B3": 0.850529637682778,
+      "B4": 0.850529637682778,
+      "interpretation": "Constructed counterexample: a backward-looking absolute hurdle can retain former leaders during a reversal; this is not an empirical estimate or a forecast."
+    }
+  },
+  "incumbent_prefix_suite": {
+    "test_path": "tests/test_research_codegen_prefix_driver.py",
+    "test_git_blob": "25c93a70f5d93fc4f570318f72f739e9b3f3451b",
+    "bridge_git_blob": "c23394e1436e136fd7f728a7d4c608b1a40e3bc5",
+    "dependency_git_blob": "62615e4b0b8c881dc36b4f71fbe4f4353f9ae27f",
+    "dependency_path": "scripts/oracle_reversion_screen.py",
+    "initial_incomplete_snapshot": {"passed": 45, "failed": 1, "reason": "required original metric module absent from isolated source snapshot; diagnostic returned REFUSED"},
+    "completed_source_closure_files": 12,
+    "source_manifest_sha256": "7d2d02255b25a4b060ca3c2e864713786279776fd089555d699a9866bb82a3df",
+    "final": {"passed": 46, "failed": 0},
+    "final_log_sha256": "ab0f7dd98c38814402fdfe3a1f27e57d7c88b3fafd4afaaf06e403e3f4d30405",
+    "source_or_assertions_modified": false,
+    "engine_transport": "scripted fake; no provider/container runtime started",
+    "scientific_qualification": false
+  },
+  "calendar_and_cutoff": {
+    "source_path": "lib/nyse_calendar.py",
+    "source_git_blob": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+    "source_sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce",
+    "official_reference": "https://www.nyse.com/trade/hours-calendars",
+    "reviewed": "2026-10-17",
+    "assertions": 12,
+    "result_sha256": "fcba620446a9121853b1967acdc316d9cc3cd5b765c04b1b6a476233fdc9fcfb",
+    "session_cases": {"2026-07-03": false, "2026-11-26": false, "2026-11-27": true, "2026-12-24": true, "2026-12-25": false},
+    "next_session_cases": {"2026-07-02": "2026-07-06", "2026-11-25": "2026-11-27", "2026-12-24": "2026-12-28"},
+    "cutoff_0800_ET_in_UTC": {"2026-03-06": "2026-03-06T13:00:00+00:00", "2026-03-09": "2026-03-09T12:00:00+00:00", "2026-10-30": "2026-10-30T12:00:00+00:00", "2026-11-02": "2026-11-02T13:00:00+00:00"},
+    "early_close_time_modelled_by_this_owner": false,
+    "full_calendar_certified": false
+  },
+  "limits": {
+    "market_return_dataset_read": false,
+    "live_capture_activated": false,
+    "production_source_changed": false,
+    "native_protocol_amended": false,
+    "trial_or_vault_write": false,
+    "source_entitlement_proven": false,
+    "native_adapter_implemented": false,
+    "investment_authority": false,
+    "final_independent_review": false
+  }
+}

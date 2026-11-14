@@ -1,0 +1,127 @@
+{
+  "algebraic_crosschecks": 512,
+  "cash_is_uninvested_settlement_cash_not_BIL": true,
+  "cost_monotonicity_checks": 128,
+  "costs_are_synthetic_assumptions": true,
+  "deterministic_cases": [
+    {
+      "expected_wealth": 0.9990009990009991,
+      "name": "cash_to_fund",
+      "result": {
+        "budget_residual": -1.450662506785605e-16,
+        "fees": 0.0009990009990009992,
+        "gross_position_changes_including_settlement_cash": 1.9990009990009991,
+        "holdings": [
+          0.0,
+          0.9990009990009991,
+          0.0
+        ],
+        "post_wealth": 0.9990009990009991,
+        "securities_traded_notional": 0.9990009990009991
+      }
+    },
+    {
+      "expected_wealth": 0.9980019980019981,
+      "name": "fund_A_to_fund_B",
+      "result": {
+        "budget_residual": -6.765421556309548e-17,
+        "fees": 0.001998001998001998,
+        "gross_position_changes_including_settlement_cash": 1.998001998001998,
+        "holdings": [
+          0.0,
+          0.0,
+          0.9980019980019981
+        ],
+        "post_wealth": 0.9980019980019981,
+        "securities_traded_notional": 1.998001998001998
+      }
+    },
+    {
+      "expected_wealth": 1.0,
+      "name": "no_trade_at_drifted_weights",
+      "result": {
+        "budget_residual": 0.0,
+        "fees": 0.0,
+        "gross_position_changes_including_settlement_cash": 0.0,
+        "holdings": [
+          0.0,
+          0.6,
+          0.4
+        ],
+        "post_wealth": 1.0,
+        "securities_traded_notional": 0.0
+      }
+    },
+    {
+      "expected_wealth": 0.9998,
+      "name": "rebalance_drifted_weights",
+      "result": {
+        "budget_residual": -2.1982199047143602e-17,
+        "fees": 0.00019999999999999996,
+        "gross_position_changes_including_settlement_cash": 0.19999999999999996,
+        "holdings": [
+          0.0,
+          0.4999,
+          0.4999
+        ],
+        "post_wealth": 0.9998,
+        "securities_traded_notional": 0.19999999999999996
+      }
+    },
+    {
+      "expected_wealth": 0.999,
+      "name": "liquidate_to_settlement_cash",
+      "result": {
+        "budget_residual": -1.1015494072452725e-16,
+        "fees": 0.001,
+        "gross_position_changes_including_settlement_cash": 1.999,
+        "holdings": [
+          0.9990000000000001,
+          0.0,
+          0.0
+        ],
+        "post_wealth": 0.9990000000000001,
+        "securities_traded_notional": 1.0
+      }
+    },
+    {
+      "expected_wealth": 0.9980019980019981,
+      "name": "flat_price_round_trip",
+      "result": {
+        "budget_residual": -1.450662506785605e-16,
+        "fees": 0.0009990009990009992,
+        "gross_position_changes_including_settlement_cash": 1.9970029970029974,
+        "holdings": [
+          0.9980019980019983,
+          0.0,
+          0.0
+        ],
+        "post_wealth": 0.9980019980019983,
+        "securities_traded_notional": 0.9990009990009991
+      }
+    },
+    {
+      "expected_wealth": 1.0,
+      "name": "zero_cost_switch",
+      "result": {
+        "budget_residual": 0.0,
+        "fees": 0.0,
+        "gross_position_changes_including_settlement_cash": 2.0,
+        "holdings": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "post_wealth": 1.0,
+        "securities_traded_notional": 2.0
+      }
+    }
+  ],
+  "invalid_inputs_rejected": 8,
+  "market_data_read": false,
+  "maximum_relative_algebraic_error": 4.536289913420521e-16,
+  "native_evaluator_qualification": false,
+  "network_calls": 0,
+  "scope": "synthetic_accounting_design_only",
+  "source_sha256": "9a071d1b156ab9684e72f2032d06a51c8096089aef784c0c87ebfb5aa3a7281e"
+}
