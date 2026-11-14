@@ -40,6 +40,7 @@ from engine import cycle_ontology as onto
 _DOCTRINE_KEYS = ("doctrine_stance", "doctrine_stance_en", "doctrine_stance_zh", "doctrine_ink")
 
 from engine import cycle_phase_age
+from engine import sector_heads
 from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
@@ -1194,9 +1195,158 @@ def _stamp_hazard(rec: dict, family: str = "sector") -> None:
     try:
         hz = _hz_score(hf, direction, family, quad, liq_expanding)
         if hz is not None:
+            hz = _qualify_hazard(rec, hz, family)   # lane 8: current-MODEL gate
             nw["hazard"] = hz
     except Exception as exc:  # noqa: BLE001
         log.warning("hazard_score failed for %s: %s", rec.get("id", "?"), exc)
+
+
+def _turn_direction(rec: dict) -> str | None:
+    """Training-defined leg direction: last CONFIRMED turn trough -> up, peak -> down."""
+    confirmed = [t for t in (rec.get("turns") or []) if not t.get("provisional")]
+    if not confirmed:
+        return None
+    return {"trough": "up", "peak": "down"}.get(confirmed[-1].get("k"))
+
+
+def _qualify_hazard(rec: dict, hz: dict, family: str) -> dict:
+    """Lane 8 / B12 — emit a current MODEL cell only when every qualifier holds.
+
+    `hazard_score.qualify_current_model` checks parity (the recorded
+    LIVE_HAZARD_PARITY verdict), the record's turn epoch (turn_knowledge.epoch),
+    cohort, direction, structure basis, horizon and the whole curve; a failed
+    block is emitted unavailable with no 1m/3m/6m number at all (the KM PRIOR is
+    withheld too: B12 Q9).
+    """
+    from engine import hazard_score as _hs
+    try:
+        from engine.hazard_parity import LIVE_HAZARD_PARITY as _parity
+    except Exception:  # noqa: BLE001 — no recorded verdict = parity not held
+        _parity = None
+    tk = rec.get("turn_knowledge") if isinstance(rec.get("turn_knowledge"), dict) else {}
+    return _hs.qualify_current_model(
+        hz, parity=_parity, turn_epoch=tk.get("epoch"), family=family,
+        structure_basis=rec.get("basis"), turn_direction=_turn_direction(rec))
+
+
+def _structure_series(full: pd.Series, price: pd.Series | None) -> pd.Series:
+    """The series `record_series` ran the daily structure math on (no invert).
+
+    Mirrors record_series' basis resolution; `legacy_turn_knowledge` re-checks
+    the replayed pivots against the published turns, so any drift between this
+    mirror and record_series reads `detector_replay_mismatch`, never a guess."""
+    if price is None:
+        return full
+    struct = price.replace([np.inf, -np.inf], np.nan).dropna()
+    struct = struct.reindex(full.index).dropna()
+    return full if struct.empty else struct
+
+
+def _stamp_turn_knowledge(rec: dict, struct: pd.Series, pct: float,
+                          as_known_blockers: list[str] | None = None) -> None:
+    """Lane 8 / B05+B11 — versioned pivot + confirmation knowledge per record."""
+    try:
+        tk = onto.legacy_turn_knowledge(
+            struct, rec.get("turns") or [], pct=pct,
+            structure_basis=rec.get("basis") or "unknown",
+            as_known_blockers=as_known_blockers)
+        # The per-turn arrays ride ON the turns (so they travel with `turns` into
+        # whichever payload chunk carries them); the record keeps the contract
+        # header + anchor.  A turn without the keys was never stamped.
+        conf, lag = tk.pop("confirmed_at", None), tk.pop("confirmation_sessions", None)
+        if tk.get("status") == "measured" and conf is not None:
+            for t, c, n in zip(rec.get("turns") or [], conf, lag):
+                t["confirmed_at"] = c
+                t["confirmation_sessions"] = n
+        tk["per_turn_fields"] = ["confirmed_at", "confirmation_sessions"]
+        tk.pop("confirmation_rule", None)        # published once in meta.knowledge_contracts
+        rec["turn_knowledge"] = tk
+    except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
+        log.warning("sector_cycles: turn knowledge failed for %s: %s", rec.get("id"), e)
+
+
+def _stamp_forecast_heads(rec: dict) -> None:
+    """Lane 8 v1.1: the four remaining-opportunity heads, each withheld or qualified ALONE
+    (engine/sector_heads.py). Observed Cycles facts stay on the record either way."""
+    tk = rec.get("turn_knowledge") if isinstance(rec.get("turn_knowledge"), dict) else {}
+    rec["forecast_heads"] = sector_heads.head_capabilities(
+        record_kind=rec.get("kind") or "", turn_epoch=tk.get("epoch"))
+
+
+HISTORY_KNOWLEDGE_SCHEMA = "sector_cycles.history_knowledge.v1"
+_PRICE_VINTAGE_REASON = ("adjusted price vintages are not retained; history is "
+                         "computed on today's restated tape")
+
+
+def _history_knowledge_sector() -> dict:
+    """A single ETF: membership is trivially itself; price vintages are not kept."""
+    return {
+        "schema": HISTORY_KNOWLEDGE_SCHEMA,
+        "history_mode": "reconstructed_price_history",
+        "membership": {"kind": "single_instrument"},
+        "price_availability": {"status": "unavailable", "reason": _PRICE_VINTAGE_REASON},
+        "as_known_history": {"status": "unavailable",
+                             "reasons": ["price_vintage_not_retained"]},
+    }
+
+
+def _history_knowledge_basket(members: list, *, created: str | None,
+                              series_start: pd.Timestamp | None) -> dict:
+    """Membership evidence behind a basket's reconstructed (pit=False) history.
+
+    Effective rule (basket_index._live_mask, pit=False): a member counts from its
+    first traded bar until `removed`; `added` is ignored.  Knowledge evidence is
+    each member's `curated_added` (the date a curator put the name in, date-only;
+    read as known at that date's close, admissible from the next session).  A
+    member counted on dates before its `curated_added` is BACK-PROJECTED.  Price
+    vintages are not retained, so as-known history stays unavailable.
+    """
+    rows = [m for m in (members or []) if isinstance(m, dict) and m.get("ticker")]
+    removed = [m for m in rows if m.get("removed")]
+    current = [m for m in rows if not m.get("removed")]
+    known = [m.get("curated_added") for m in rows if m.get("curated_added")]
+    start = str(series_start.date()) if series_start is not None else None
+    back_projected = [m["ticker"] for m in rows
+                      if start is None or not m.get("curated_added")
+                      or str(m["curated_added"]) > start]
+    cur_known = [str(m["curated_added"]) for m in current if m.get("curated_added")]
+    reasons = ["price_vintage_not_retained"]
+    if back_projected:
+        reasons.append("current_roster_back_projected")
+    if len(known) < len(rows):
+        reasons.append("member_knowledge_time_missing")
+    return {
+        "schema": HISTORY_KNOWLEDGE_SCHEMA,
+        "history_mode": "reconstructed_price_history",
+        "membership": {
+            "kind": "curated_roster",
+            "source": "data/baskets/membership.json",
+            "construction": "equal_weight, pit=False",
+            "effective_rule": ("member counts from its first traded bar until "
+                               "`removed`; `added` ignored"),
+            "knowledge_field": "curated_added",
+            "knowledge_resolution": "date_only",
+            "knowledge_rule": ("known at the close of curated_added; admissible "
+                               "from the next session"),
+            "basket_created": created,
+            "n_members": len(rows),
+            "n_current": len(current),
+            "n_removed": len(removed),
+            "n_knowledge_dated": len(known),
+            "n_back_projected": len(back_projected),
+            # member first-trade dates are not read here, so a name listed after
+            # the series start but before curation still counts: an upper bound
+            "back_projection_rule": ("curated_added later than the series start "
+                                     "(upper bound)"),
+            "series_start": start,
+            # first date on which every CURRENT member had actually been curated:
+            # before it, the line contains names nobody had yet put in the basket
+            "current_roster_known_from": (max(cur_known) if cur_known
+                                          and len(cur_known) == len(current) else None),
+        },
+        "price_availability": {"status": "unavailable", "reason": _PRICE_VINTAGE_REASON},
+        "as_known_history": {"status": "unavailable", "reasons": reasons},
+    }
 
 
 def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
@@ -1227,7 +1377,12 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
     if _n_ex:
         rec["rs_history_rows_excluded_nonfinite"] = _n_ex
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
+    # Lane 8: pivot vs confirmation knowledge + history knowledge, BEFORE the
+    # hazard stamp (its current-MODEL gate reads the turn epoch).
+    _stamp_turn_knowledge(rec, _structure_series(full, price), _ZZ_PCT)
+    rec["history_knowledge"] = _history_knowledge_sector()
     _stamp_hazard(rec, family="sector")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
+    _stamp_forecast_heads(rec)
     return rec
 
 
@@ -1266,7 +1421,8 @@ def build_basket(bid: str, bmeta: dict, win_start: pd.Timestamp, last_ts: pd.Tim
     full = cand["close"].replace([np.inf, -np.inf], np.nan).dropna()
     if len(full) < 300:
         return None
-    core = _record_core(full, win_start, last_ts, pct=_zz_pct_for(full))
+    basket_pct = _zz_pct_for(full)
+    core = _record_core(full, win_start, last_ts, pct=basket_pct)
     if core is None:
         return None
     cat = bmeta.get("category") or "Thematic"
@@ -1283,7 +1439,14 @@ def build_basket(bid: str, bmeta: dict, win_start: pd.Timestamp, last_ts: pd.Tim
                 "n_stale_members": (cmeta or {}).get("n_stale_tail")})
     _apply_leadership(rec, _basket_rs(full, spy))
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
+    # Lane 8: turn knowledge + membership-knowledge evidence before the hazard gate.
+    _stamp_turn_knowledge(rec, full, basket_pct,
+                          as_known_blockers=["current_roster_back_projected"])
+    rec["history_knowledge"] = _history_knowledge_basket(
+        members, created=bmeta.get("created"),
+        series_start=full.index[0] if len(full) else None)
     _stamp_hazard(rec, family="basket")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
+    _stamp_forecast_heads(rec)
     return rec
 
 
@@ -1374,10 +1537,62 @@ def _stamp_rs_ranks(recs: list[dict]) -> None:
     the legacy rank every consumer already reads) + rs_21d_rank (the fast month lens
     the 2026-07 audit added, so a rolled-over former leader stops reading #1)."""
     for key, field in (("rs_63d", "rs_rank"), ("rs_21d", "rs_21d_rank")):
-        ranked = sorted([r for r in recs if r["now"].get(key) is not None],
+        ranked = sorted([r for r in recs if _rankable(r["now"].get(key))],
                         key=lambda r: r["now"][key], reverse=True)
         for n, r in enumerate(ranked, 1):
             r["now"][field] = n
+        # Lane 8: a null / NaN / bool value never holds an ordinal (NaN used to be
+        # ranked: it is not None, and it sorts arbitrarily).
+        for r in recs:
+            if not _rankable(r["now"].get(key)):
+                r["now"][field] = None
+
+
+def _rankable(v) -> bool:
+    """A finite real number (bool excluded) — the only values that get an ordinal."""
+    return (isinstance(v, (int, float)) and not isinstance(v, bool)
+            and bool(np.isfinite(v)))
+
+
+DISPLAY_ORDER_SCHEMA = "sector_cycles.display_order.v1"
+_DISPLAY_ORDER_FIELDS = (("rs_63d", "rs_rank", 63), ("rs_21d", "rs_21d_rank", 21))
+
+
+def display_order(recs: list[dict], *, cohort: str, benchmark: str) -> dict:
+    """Lane 8 / B04 — the owner-emitted ordinal for each RS horizon.
+
+    `ordered_ids` is exactly the order `_stamp_rs_ranks` assigned (descending
+    value; equal values keep producer-registry order via a stable sort), so a
+    consumer reads the ordinal instead of re-deriving it.  `tie_groups` lists
+    ids whose published (0.1-rounded) values are equal: their ordinals differ
+    only by registry order, not by measurement.  `unranked_ids` hold null or
+    non-finite values.  This is the 21/63-session SOURCE ordinal — not
+    conviction order, not a strategy score; every authority flag is false.
+    """
+    out = {"schema": DISPLAY_ORDER_SCHEMA, "cohort": cohort, "benchmark": benchmark,
+           "basis": "tr", "metric": "relative_wealth_pct",
+           "authority": {"may_rank": False, "may_gate": False, "may_size": False,
+                         "may_trade": False, "may_escalate": False},
+           "horizons": {}}
+    for key, field, sessions in _DISPLAY_ORDER_FIELDS:
+        ranked = sorted([r for r in recs if isinstance(r["now"].get(field), int)
+                         and not isinstance(r["now"].get(field), bool)],
+                        key=lambda r: r["now"][field])
+        groups: dict = {}
+        for r in ranked:
+            groups.setdefault(r["now"][key], []).append(r.get("id"))
+        out["horizons"][field] = {
+            "source_field": f"now.{key}",
+            "ordinal_field": f"now.{field}",
+            "horizon_sessions": sessions,
+            "order": "descending",
+            "tie_rule": "equal published values keep producer-registry order",
+            "ordered_ids": [r.get("id") for r in ranked],
+            "tie_groups": [ids for ids in groups.values() if len(ids) > 1],
+            "unranked_ids": [r.get("id") for r in recs
+                             if not _rankable(r["now"].get(key))],
+        }
+    return out
 
 
 def _latest_cycle_session(
@@ -1672,6 +1887,51 @@ def compute(asof: str | None = None) -> dict | None:
             # B12r2: the full recorded live-feature parity report, published
             # ONCE per payload (records carry only the report_ref pointer).
             "live_hazard_parity": live_hazard_parity,
+            # Lane 8 (B04): owner-emitted 21/63-session source ordinals per
+            # cohort.  Records are NOT in rank order (baskets are sorted for the
+            # chip rail), so consumers read these instead of re-sorting.
+            "display_order": {
+                "sectors": display_order(sectors, cohort="us_sectors_11",
+                                         benchmark=benchmark),
+                "baskets": display_order(baskets, cohort="us_theme_baskets",
+                                         benchmark="SPY"),
+                **{ns: display_order(recs, cohort=ns,
+                                     benchmark=_AMALGAM_FAMILIES[ns]["benchmark"])
+                   for ns, recs in amalgam_families.items()},
+            },
+            # Lane 8 (B05/B11): versioned knowledge contracts.  Records carry
+            # turn_knowledge (pivot vs confirmation) and history_knowledge
+            # (membership evidence); as-known history stays unavailable.
+            "knowledge_contracts": {
+                "turn_knowledge": {
+                    "schema": onto.TURN_KNOWLEDGE_SCHEMA,
+                    "detector": onto.LEGACY_DETECTOR_ID,
+                    "detector_version": onto.LEGACY_DETECTOR_VERSION,
+                    "confirmation_clock": onto.TURN_CONFIRMATION_CLOCK,
+                    "confirmation_rule": ("first bar whose close reverses by >= "
+                                          "threshold from the pivot extreme"),
+                    "per_turn_fields": ["confirmed_at", "confirmation_sessions"],
+                    "as_known": "unavailable",
+                },
+                "history_knowledge": {
+                    "schema": HISTORY_KNOWLEDGE_SCHEMA,
+                    "as_known": "unavailable",
+                    "reason": _PRICE_VINTAGE_REASON,
+                },
+                "forecast_heads": {
+                    "schema": sector_heads.FORECAST_HEADS_SCHEMA,
+                    "heads": list(sector_heads.HEADS),
+                    "protocol": sector_heads.PROTOCOL_REF,
+                    "rule": ("each head is qualified or withheld on its own; withdrawing "
+                             "one never removes a sibling or the observed Cycles facts"),
+                },
+                "hazard_current_model": {
+                    "schema": "sector_cycles.current_model_qualification.v1",
+                    "rule": ("MODEL only when parity, epoch, cohort, direction, "
+                             "basis, horizon and whole-curve qualifiers all hold; "
+                             "otherwise the KM PRIOR with the MODEL value withheld"),
+                },
+            },
             "rs_history": {
                 "schema": "sector_cycles.rs_history.v1",
                 "mode": "reconstructed_price_history",

@@ -2063,24 +2063,37 @@ def test_activity_history_reader_absent_blank_and_malformed_lines(
 
     monkeypatch.setattr(bake.store, "probation_path",
                         lambda: tmp_path / "probation" / "proposals.jsonl")
+    monkeypatch.setattr(bake, "_ACTIVITY_BINDING_ROOT", tmp_path)
+
+    def one_warning():
+        warning = [ln for ln in capsys.readouterr().out.splitlines()
+                   if ln.startswith("::")]
+        assert len(warning) == 1
+        assert warning[0].startswith(
+            "::warning title=theme graph activity history refused::")
+        return warning[0]
+
     # Absent ledger -> None, no output (today's production state).
     assert bake._activity_history_events() is None
     assert capsys.readouterr().out == ""
     ledger = tmp_path / "probation" / "activity_history_events.jsonl"
     ledger.parent.mkdir(parents=True, exist_ok=True)
+    # Blank lines are not events: an all-blank ledger is an honest empty history.
+    ledger.write_text("\n\n", encoding="utf-8")
+    assert bake._activity_history_events() == []
+    assert capsys.readouterr().out == ""
+    # Events no bridge receipt row binds refuse the WHOLE ledger (load-side binding:
+    # engine/theme_graph/activity_history_bridge.load_bound_activity_events).
     ledger.write_text(json.dumps({"schema": "x"}) + "\n\n"
                       + json.dumps({"schema": "y"}) + "\n", encoding="utf-8")
-    assert bake._activity_history_events() == [{"schema": "x"}, {"schema": "y"}]
-    assert capsys.readouterr().out == ""
+    assert bake._activity_history_events() is None
+    assert f"{ledger}: ACTIVITY_EVENT_UNBOUND: line 1" in one_warning()
     # ANY malformed line refuses the WHOLE ledger, with a line-start ::warning.
     ledger.write_text(json.dumps({"schema": "x"}) + "\n\nnot json\n",
                       encoding="utf-8")
     assert bake._activity_history_events() is None
-    warning = [ln for ln in capsys.readouterr().out.splitlines()
-               if ln.startswith("::")]
-    assert len(warning) == 1
-    assert warning[0].startswith("::warning title=theme graph activity history refused::")
-    assert f"{ledger}:3" in warning[0]
+    assert f"{ledger}: ACTIVITY_EVENTS_FILE_INVALID: line 3" in one_warning()
     # A line that parses but is not a JSON object is malformed too.
     ledger.write_text("[1, 2]\n", encoding="utf-8")
     assert bake._activity_history_events() is None
+    assert "ACTIVITY_EVENTS_FILE_INVALID: line 1: not a JSON object" in one_warning()

@@ -132,8 +132,14 @@ def _run_cycle(cid: str) -> dict | None:
     if hf:
         try:
             from engine.hazard_score import score as _hz_score, _UP_PHASES
-            direction = "up" if (now.get("phase") or "") in _UP_PHASES else "down"
-            hz = _hz_score(hf, direction, family="flagship")
+            phase = now.get("phase")
+            direction = ("up" if phase in _UP_PHASES else
+                         "down" if phase in {"Peak", "Downturn"} else None)
+            if direction is not None:
+                # Share the publication gate with the cycle-family producers;
+                # flagship is not a trained cohort. Unknown phases stay null.
+                hz = sc._qualify_hazard(
+                    rec, _hz_score(hf, direction, family="flagship"), "flagship")
         except Exception as _hz_exc:  # noqa: BLE001
             log.debug("commodity_cycle_state: hazard score failed for %r: %s", cid, _hz_exc)
 

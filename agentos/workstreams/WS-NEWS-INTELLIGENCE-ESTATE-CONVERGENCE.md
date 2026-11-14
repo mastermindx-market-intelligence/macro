@@ -64,6 +64,11 @@ waves:
     status: in_progress
     depends_on: [W2, W3]
     next_action: "2026-11-02 07:4xZ: M07b repair (validator rule S15) READY and armed on #10480 at 63f84724, not merged (CLEAN, behind the sweeper queue); §9.1 seven proofs built by ORCH-V91, independently reviewed by seat-routed Opus read-only reviewers, repaired and ARMED at V1 #10504 24416706, V2 #10495 135a3454, V3 #10491 1d4a7c88, V4 #10505 a77768ce, V5 #10488 a1eb0209, V6 #10506 46a83fd2, V7 #10497 4f087b7d (48 properties: 10 PROVEN / 28 PARTIAL / 6 ABSENT / 4 HUMAN_GATE). Main-side red (gmi-explorer scope, daily.yml size) is fixed by others' #10525/#10528; #10491 carries the sweeper's merge-blocked (07:35:47Z refusal) which the sweeper clears itself when the head moves: update-branch the V PRs after both merge, no manual label act. Then the doc-only V91_VERTICAL_PROOFS.md follow-up; E4 implementation blocked until B1-B4 qualified; F3/F4 signed-in observation is the human gate named once; M08/M13/M07c are contract gaps."
+artifacts:
+  - research/news_intelligence_estate_20261021/READ_FIRST_2026-10-31.md
+  - research/news_intelligence_estate_20261021/COMPLETION_MASTERPLAN_2026-10-31.md
+  - research/news_intelligence_estate_20261021/CENSUS_2026-10-31.json
+  - agentos/handoffs/NEWS-INTELLIGENCE-ESTATE-CONVERGENCE-2026-10-31.md
 next_action: "2026-11-02 07:4xZ — W4: S15 (#10480) and the seven §9.1 proof PRs (#10504 #10495 #10491 #10505 #10488 #10506 #10497) are reviewed and armed merge-on-green at the heads in the ninth handoff write; land them (update-branch after main-side fixes #10525/#10528 merge), then the doc-only V91_VERTICAL_PROOFS.md follow-up PR with independent review; remaining W4 gaps (E4 after B1-B4, F3/F4 human gate, M08/M13/M07c contracts) unchanged."
 ---
 
@@ -79,3 +84,23 @@ no store, scheduler, router or registry.
 Three outcomes are accepted independently (masterplan §Executive decision): factual
 delivery, contextual research, qualified quantitative influence. One global gate is never
 used.
+
+## 2026-10-31 research/design snapshot retained on 2026-11-06
+
+The four dated artifacts listed above retain the accepted input from Macro #10244:
+18 inherited estate segments, 11 plan families, A1–F5, seven journeys, 36 grouped
+source rows and 48 named PRs as observed in that census. Their 31 October custody,
+delivery and candidate descriptions are historical evidence. They do not replace
+the later operational next action, wave dispositions, custody or DO_NOT_REDO
+records in this workstream.
+
+This source composition preserves the accepted research and the original
+MASTERPLAN continuation links without repeating the census, restarting a worker
+or commissioning Fable. The paid consumer audit remains
+NO_OUTCOME / accepted=false after verification-summary validation failed;
+parent-qualified findings remain distinct from canonical worker acceptance.
+
+Factual delivery, contextual research and qualified quantitative influence retain
+their separate acceptance obligations. This documentation does not release a
+product hold, activate providers or inference, redraw a corpus, prove an installed
+generation or advance programme completion.
