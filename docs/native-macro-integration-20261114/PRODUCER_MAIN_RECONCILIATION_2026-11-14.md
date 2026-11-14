@@ -13,13 +13,17 @@ This candidate reconciles exactly:
 
 The resulting commit uses the existing producer head as first parent and the protected main input as its second parent. Its tree begins with the complete protected main tree; the eighteen producer paths and this record are the only changes on that tree. This preserves every disjoint protected source/data change without enumerating or replaying them individually.
 
-This is an **isolated, linked, non-releasing source candidate**, not a replacement release carrier for #11258. It does not advance the original branch, change either label, replay its opt-in, clear a hold, deploy or claim that stale CI is current.
+The first candidate was isolated and linked through #11281 while source effects were checked. The recovery revision below is prepared for the original #11258 source branch and its existing release request. It does not change either label, replay the opt-in, clear a hold, deploy or claim that stale CI is current.
 
-## Writer custody
+## Writer custody and original-carrier recovery
 
-The exact owner commit names `mastermindxryan` as author and committer at 2026-11-14T15:44:48Z. Its [durable continuation record](https://github.com/mastermindx-market-intelligence/macro/blob/5f464a227fd33799210bcfca294b8b63099d5c4a/research/market_intelligence_productization/NATIVE_MACRO_EXPERIENCE_2026-11-14.md) retains the existing branch, GitHub carrier, exact-parent CAS and new-head checks. It provides no subsequent writer handoff. A partial/unjoined runtime observation provides no contrary PR/session/grant binding.
+The first candidate was isolated while the current source effects were reconciled. Its original author/committer identity and absence of a later handoff were historical observations; they did not establish a live writer or an uncertain modifying operation. The earlier active/unknown-writer conclusion was too broad and is superseded here.
 
-The writer therefore remains active/unknown. The original `sol/market-ontology-native-experience-20261114-c3` ref and its `merge-on-green` / `merge-blocked` labels are preserved. No external message, review request, new release request or alternate mutation carrier is used.
+Chairman instruction 5 assigns recovery to the current session. A current session-target read returned no addressable targets; the partial Fabric observation was unjoined. Neither is a global inactivity proof, but no source-bound active grant or unresolved branch-write receipt was identified for this producer. Protect concurrent changes with the original exact-head lease rather than require an old-author acknowledgement.
+
+Fresh original-carrier reads preserve #11258 as Ready/open at `5f464a227fd33799210bcfca294b8b63099d5c4a`, with its original `merge-on-green` and `merge-blocked` labels and no native auto-merge request. The controller's existing receipt explicitly requests conflict resolution and leaves the label armed. It identifies no pending branch-write effect. GitHub's transient mergeability-calculation status is not an uncertain source mutation.
+
+The intended repair is a single compare-and-swap of that original branch through the existing GitHub carrier. It retains both labels and the same release request. No duplicate opt-in, hold clearing, alternate allowlist, workflow dispatch or direct protected-branch merge is introduced. A mismatched lease must be reconciled against the original ref.
 
 ## Complete conflict census and minimal union
 
@@ -79,6 +83,23 @@ Protected [#11277](https://github.com/mastermindx-market-intelligence/macro/pull
 
 ### Exact next action and acceptance
 
-Resolve current writer custody before integrating this candidate into the original producer ref. Re-read original head, current protected main, labels, reviews/holds and controller effects. If the owner or relevant protected source moved, reconcile the exact deltas rather than overwrite them. Once current custody authorizes source integration, use the original GitHub carrier with an exact-head lease, preserve the original opt-in and let the existing controller consume fresh binding checks. No direct-main or second release route is authorized by this candidate.
+The current-writer question is resolved by the same-carrier recovery ruling below; historical author identity does not require an acknowledgement. Integrate only through the original producer ref. Re-read original head, current protected main, labels, reviews/holds and controller effects. If the owner or relevant protected source moved, reconcile the exact deltas rather than overwrite them. Once current custody authorizes source integration, use the original GitHub carrier with an exact-head lease, preserve the original opt-in and let the existing controller consume fresh binding checks. No direct-main or second release route is authorized by this candidate.
 
 Then continue the existing producer build/served-byte proof, protected selected-reader and canonical registry/export chain, final Terminal admission and authenticated deployed daily Macro → Economy → workspace → source → return journeys. The original daily risk/actions and full Market Ontology masterplan remain binding. **MORE_WORK_EXISTS**.
+
+## Current protected input and one-pass recovery — 2026-11-14
+
+The previously verified candidate `35298a9dd0710c0ef62380ea8b08d6fccfd6bf9d` remains the first parent of this source update. Its complete eighteen-path producer union and 216 passing checks / one existing optional skip remain unchanged.
+
+The second parent is current protected main `821433ccb703694d47dc549fe1f4461cea121647`, tree `3b9ee68a1da09e21dc370526bc886dc1ac801ed4`. The complete delta from protected `bd7fc985d2de7112641b12d9a2a19c3ab9d3dd81` is two commits and four paths:
+
+- `data/research_vault/catalog.json` — `b4ad9b7d6d0db21f63bbd007c68dbaa1bc05ebb2`
+- `data/research_vault/excerpts.json` — `6b8eb9c4a272ceb984673799bf2c56d500f536e6`
+- `scripts/merge_on_green.py` — `826cdb188d5510029e80a14295583173c642626d`
+- `tests/test_merge_on_green.py` — `4305a39ac9ef0876dd3e0e1a73ea40afa356758a`
+
+None overlaps a producer path or CI definition. The new tree begins with that complete current protected tree and applies the unchanged eighteen producer postimages plus this corrected custody/proof record. The four protected postimages are therefore retained exactly; the controller correction is accepted protected source, not a new local controller edit or an assumption of free capacity.
+
+#11281's feature-base authority failure is `unsupported_base_ref`; it is not release proof. The recovery goes to the already existing main-based #11258, whose normal new-head checks and incumbent controller must determine eligibility. Preserve the original observations' source bindings; do not relabel old CI as new-head proof.
+
+After the exact-ref write, read back original head/tree and both release labels, then consume normal original-PR CI/controller evidence. Producer publication/served bytes, selected-reader and registry admission, final native integration, and authenticated deployed consumer acceptance remain open.
