@@ -981,13 +981,16 @@ def _membership_coverage(spec, *, as_of, used_members, source_version) -> dict:
 
 
 def _attach_strength(records: list[dict], *, peer_group: str, as_of: str | None) -> None:
-    """Add descriptive 63-session RS thirds; never feed them into setup or ordering.
+    """Add observed RS thirds; never feed them into setup or ordering.
 
     Rank finite price-ratio changes versus SPY within the complete, separate sector
     or basket board. Average ties before splitting the normalized rank into thirds;
     equal values never separate on input order or on the upstream ordinal RS rank.
     Three measured peers is a display-coverage rule, not a validated signal gate.
     The signed RS value remains available when there are too few peers to compare.
+    The legacy rs_63d field does not qualify a common session window or endpoint:
+    missing quotes can compress its retained series, and endpoints can be stale.
+    A board date is not a measurement date for these observations.
     """
     values = []
     for rec in records:
@@ -1017,9 +1020,10 @@ def _attach_strength(records: list[dict], *, peer_group: str, as_of: str | None)
         rec["strength"] = {
             "band": band, "reason": reason,
             "rs_63d": float(value) if np.isfinite(value) else None,
-            "horizon_sessions": 63, "benchmark": "SPY",
+            "horizon_sessions": None, "benchmark": "SPY",
             "peer_group": peer_group, "n_measured": n_measured,
-            "n_peers": len(records), "as_of": as_of,
+            "n_peers": len(records), "as_of": None, "board_as_of": as_of,
+            "window_status": "unqualified",
             "method": "rs63-average-rank-thirds-v1",
         }
 

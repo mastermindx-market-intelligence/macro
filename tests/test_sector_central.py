@@ -266,7 +266,10 @@ def test_compute_attaches_separate_peer_boards_without_changing_legacy_output(mo
         assert {row["strength"]["band"] for row in rows} == {"leading", "mid-pack", "lagging"}
         assert all(row["strength"]["peer_group"] == key for row in rows)
         assert all(row["strength"]["n_measured"] == 3 for row in rows)
-        assert all(row["strength"]["as_of"] == "2023-12-29" for row in rows)
+        assert all(row["strength"]["as_of"] is None for row in rows)
+        assert all(row["strength"]["board_as_of"] == "2023-12-29" for row in rows)
+        assert all(row["strength"]["horizon_sessions"] is None for row in rows)
+        assert all(row["strength"]["window_status"] == "unqualified" for row in rows)
         for row in rows:
             row.pop("strength")
     monkeypatch.setattr(sc, "_attach_strength", lambda *args, **kwargs: None)
@@ -550,8 +553,15 @@ def test_card_displays_strength_beside_setup_in_both_consumers(kind, language):
                         "n_peers": 11, "peer_group": "baskets" if kind == "basket" else "sectors"}}
     html = _render_central_card(row, language)
     assert ("示例" if language == "zh" else "Sample") in html
-    for text in ("Setup", "形态条件", "Lagging peers", "同组落后", "-12.0%", "vs SPY", "63 sessions"):
+    for text in ("Setup", "形态条件", "Lagging peers", "同组落后", "-12.0%", "vs SPY", "Observed strength"):
         assert text in html
+    strength = _re.search(r'<div class="strength-read".*?</div>', html, _re.S).group(0)
+    visible = _re.sub(r'<[^>]+>', '', strength)
+    assert "Window/end date unverified" in visible
+    assert "窗口/截至日期未核实" in visible
+    assert "may differ or be stale" in strength and "可能不同或陈旧" in strength
+    assert "63 sessions" not in strength and "63-session" not in strength
+    assert "63个交易日" not in strength
     assert 'class="conv-score">80<' in html
     assert "63d RS rank" not in html
     assert 'class="strength-read"' in html
@@ -569,3 +579,31 @@ def test_card_unknown_strength_never_falls_back_to_conviction_or_fast_rank():
     row["strength"] = {"band": "leading", "rs_63d": -1, "n_measured": 3, "n_peers": 3}
     html = _render_central_card(row)
     assert "Leading peers" in html and "-1.0%" in html
+
+
+@pytest.mark.parametrize("board_date", [None, "2023-12-29", "2026-11-14"])
+def test_strength_board_clock_cannot_qualify_an_unknown_observation_window(board_date):
+    rows = _strength_rows([-3, -2, -1])
+    before = deepcopy(rows)
+    sc._attach_strength(rows, peer_group="sectors", as_of=board_date)
+    for row, original in zip(rows, before):
+        reading = row["strength"]
+        assert reading["board_as_of"] == board_date
+        assert reading["as_of"] is None and reading["horizon_sessions"] is None
+        assert reading["window_status"] == "unqualified"
+        assert reading["rs_63d"] == original["momentum"]["rs_63d"]
+        assert {k: v for k, v in row.items() if k != "strength"} == original
+
+
+@_needs_node
+def test_old_strength_payload_cannot_make_an_unverified_window_current():
+    row = {"id": "sample", "name": "Sample", "kind": "sector",
+           "conviction": {"score": 80, "label_en": "Accumulate", "dir": "up"},
+           "strength": {"band": "leading", "rs_63d": -1, "n_measured": 3,
+                        "n_peers": 3, "horizon_sessions": 63, "as_of": "2026-11-14"}}
+    html = _render_central_card(row)
+    strength = _re.search(r'<div class="strength-read".*?</div>', html, _re.S).group(0)
+    visible = _re.sub(r'<[^>]+>', '', strength)
+    assert "Window/end date unverified" in visible and "窗口/截至日期未核实" in visible
+    assert "2026-11-14" not in strength
+    assert "63-session" not in strength and "63 sessions" not in strength

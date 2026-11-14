@@ -172,8 +172,8 @@ the top gives a 60-second orientation. The flow:
 - **Sector scoreboard**: rotation stage per sector (improving → leading →
   weakening → lagging) plus relative momentum and year-position.
 - **US Sector Intelligence** (`sector_central.html`): **Strength** and
-  **Setup** are separate readings. Strength compares the existing
-  63-session relative-strength values against SPY, classifying measured
+  **Setup** are separate readings. Observed strength compares the existing
+  relative-strength values against SPY, classifying available
   peers as leading, middle or lagging. Sectors and baskets are compared
   separately; ties share a rank. Fewer than three measured peers means
   the comparison is unavailable.
@@ -184,7 +184,10 @@ the top gives a 60-second orientation. The flow:
   **Data limitation:** missing observations can produce unequal RS
   lookback windows, and stale endpoints can retain the board's date.
   Until these are qualified, do not interpret strength as a verified
-  common-window, current-session comparison. See
+  common-window, current-session comparison. Cards disclose the unqualified
+  window/end date at the reading. New strength metadata leaves its session
+  horizon and measurement `as_of` unknown; `board_as_of` records only the
+  board date. The legacy producer and rank arithmetic are unchanged. See
   [PR #11179](https://github.com/mastermindx-market-intelligence/macro/pull/11179).
 - **Positioning**: who's crowded where; percentiles near 100 or 0 are
   contrarian context, detailed in the weekly report.
