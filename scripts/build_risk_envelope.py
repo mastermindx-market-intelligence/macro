@@ -34,6 +34,7 @@ import json
 import logging
 import math
 import os
+import subprocess
 import sys
 import tempfile
 from datetime import date, datetime, timezone
@@ -862,8 +863,66 @@ def build(root: Path | None = None, now: datetime | None = None) -> dict[str, An
 
 
 def write(root: Path | None = None, now: datetime | None = None) -> dict[str, Any]:
-    """Build and atomically write both copies. Never raises; returns the envelope."""
+    """Write settled copies only in a publisher lane; render-only lanes reuse evidence.
+
+    Site-only renders must not issue a new "settled" envelope whose durable
+    companion is left uncommitted. In read-only mode, reuse only an unchanged,
+    matching existing pair for the source session; otherwise withhold the
+    envelope rather than silently promote a provisional observation.
+    """
     try:
+        if os.environ.get("RISK_ENVELOPE_RENDER_READ_ONLY") == "1":
+            source_root = root or _REPO_ROOT
+            durable = data_path(source_root)
+            public = site_path(source_root)
+            try:
+                durable_bytes = durable.read_bytes()
+                public_bytes = public.read_bytes()
+                if durable_bytes != public_bytes:
+                    log.warning("risk_envelope: renderer-only settled mirrors differ; withholding")
+                    return {}
+                # A matching working-tree pair is not enough: a provisional
+                # source could have written both before a site-only commit.
+                # Reuse only the immutable bytes already in this checkout's HEAD.
+                committed_data = subprocess.check_output(
+                    ["git", "-C", str(source_root), "show", "HEAD:data/risk_envelope/latest.json"],
+                    stderr=subprocess.DEVNULL, timeout=15,
+                )
+                committed_site = subprocess.check_output(
+                    ["git", "-C", str(source_root), "show", "HEAD:site/riskdata/risk_envelope.json"],
+                    stderr=subprocess.DEVNULL, timeout=15,
+                )
+                if durable_bytes != committed_data or public_bytes != committed_site:
+                    log.warning("risk_envelope: renderer-only pair is not committed; withholding")
+                    return {}
+                existing = json.loads(durable_bytes)
+                market_state = _read_json(source_root / "data" / "market_state" / "latest.json")
+                if (
+                    not isinstance(existing, dict)
+                    or existing.get("schema") != "mastermind.risk_envelope/v1"
+                    or existing.get("revision") != "settled"
+                    or not isinstance(existing.get("bundle_id"), str)
+                    or not existing["bundle_id"]
+                    or not isinstance(existing.get("source_session"), str)
+                    or existing["source_session"] != existing.get("as_of")
+                    or not isinstance(market_state, dict)
+                    or market_state.get("asof") != existing["source_session"]
+                ):
+                    log.warning("risk_envelope: renderer-only source/session unqualified; withholding")
+                    return {}
+                # A site-only recompute can change the market score or its components
+                # without advancing the session. Reuse only the native source fields
+                # captured by the settled publisher, not another same-date reading.
+                transition = existing.get("market_transition")
+                snapshot = transition.get("current_snapshot") if isinstance(transition, dict) else None
+                if not isinstance(snapshot, dict) or canonical_json(snapshot) != canonical_json(_native_record(market_state)):
+                    log.warning("risk_envelope: renderer-only market snapshot differs; withholding")
+                    return {}
+                return existing
+            except (OSError, ValueError, TypeError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+                log.warning("risk_envelope: renderer-only source unavailable (%s); withholding", type(exc).__name__)
+                return {}
+
         env = build(root, now)
         payload = canonical_json(env) + "\n"
         _atomic_write(data_path(root), payload)

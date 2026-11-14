@@ -69,6 +69,7 @@ jobs:
     runs-on: [self-hosted, macstudio]
     timeout-minutes: 180
     env:
+      RISK_ENVELOPE_RENDER_READ_ONLY: "1" # this lane publishes provisional source pointers, not a settled envelope pair
       EARLYCLOSE: "1"
     steps:
       - uses: actions/checkout@v4
