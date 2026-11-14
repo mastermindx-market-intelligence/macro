@@ -64,13 +64,11 @@ def feature_panel(returns: pd.DataFrame, market: pd.Series, *,
                   basis: str = "reconstructed_price_history",
                   decision_dates: pd.DatetimeIndex | None = None,
                   min_industries: int = 20) -> pd.DataFrame:
-    """Build industry/date rows; input sessions must already be an explicit calendar.
+    """Backward-only features on an explicitly supplied session calendar.
 
-    Calendar integrity is an upstream contract: an omitted date is not inferable
-    from return values. Internal NaNs remain missing and invalidate required windows.
-    Cumulative log indices are used only inside complete, masked local windows.
-    The incomplete final calendar month is never implicitly selected; explicit
-    decision_dates are preferable for replay/live use.
+    Omitted sessions are not inferable from returns. Internal NaNs invalidate
+    required windows. Cumulative log indices are used only in complete masked
+    local windows. The incomplete final month is not implicitly selected.
     """
     if basis not in BASIS:
         raise ValueError("unsupported evidence basis")
@@ -117,7 +115,6 @@ def feature_panel(returns: pd.DataFrame, market: pd.Series, *,
         "participation": participation, "participation_change": participation - participation.shift(21),
     })
     if decision_dates is None:
-        # Exclude an incompletely observed last month; callers can explicitly add it.
         periods = r.index.to_period("M")
         chosen = r.index[np.r_[periods[:-1] != periods[1:], False]]
     else:
@@ -139,7 +136,6 @@ def feature_panel(returns: pd.DataFrame, market: pd.Series, *,
         for name in ("leading", "weakening", "improving", "lagging"):
             f[name] = (state == name).astype(float)
         f["state"] = state
-        # A complete old-beta window plus evaluation history is required.
         complete = lr[industry].rolling(273, min_periods=273).count().eq(273)
         complete &= lm.rolling(273, min_periods=273).count().eq(273)
         f = f.loc[chosen].loc[complete.loc[chosen]]
@@ -157,13 +153,14 @@ def feature_panel(returns: pd.DataFrame, market: pd.Series, *,
 def label_panel(features: pd.DataFrame, returns: pd.DataFrame, market: pd.Series, *,
                 horizon: int = 63, entry_delay: int = 1, barrier: float = .10,
                 round_trip_cost: float = .002) -> pd.DataFrame:
-    """Separate fixed-risk outcome builder; never called by feature_panel.
+    """Fixed-risk outcomes, separate from feature construction.
 
-    Entry at close t+entry_delay; returns start on the following session. Closing
-    first passage does not model intraday stop execution or executable gap fills.
+    Entry at close t+entry_delay; returns start next session. Closing first passage
+    is not intraday stop execution or an executable gap-fill model. Field suffix63
+    is reserved for the canonical horizon; other horizons require another schema.
     """
-    if horizon < 1 or entry_delay < 1 or not 0 < barrier < 1 or not 0 <= round_trip_cost < 1:
-        raise ValueError("invalid label convention")
+    if horizon != 63 or entry_delay < 1 or not 0 < barrier < 1 or not 0 <= round_trip_cost < 1:
+        raise ValueError("invalid label convention; canonical horizon is 63")
     r, m = validate_panel(returns, market)
     positions = {t: k for k, t in enumerate(r.index)}
     records = []
@@ -194,10 +191,10 @@ def label_panel(features: pd.DataFrame, returns: pd.DataFrame, market: pd.Series
 
 @dataclass
 class ConditionalModel:
-    """Low-capacity regularized multi-head model; estimated, not validated, probabilities.
+    """Regularized multi-head model; estimated, not validated, probabilities.
 
-    scipy owns optimization. One fixed l2 penalty is shared by declared tracks;
-    no hyperparameter search. Equal date weights prevent dense dates dominating.
+    scipy owns optimization. One fixed l2 penalty, no hyperparameter search.
+    Equal-date objective weights prevent dense dates dominating the objective.
     """
     features: tuple[str, ...]
     l2: float = .03
@@ -223,6 +220,10 @@ class ConditionalModel:
             raise ValueError("insufficient training rows or decision months")
         if not (pd.to_datetime(train.label_end) < prediction_start).all():
             raise ValueError("unmatured training label crosses prediction boundary")
+        if train.duplicated(["as_of", "industry"]).any():
+            raise ValueError("duplicate training decisions")
+        if not train.outcome.isin([0, 1, 2]).all() or not train.bad10.isin([0, 1]).all():
+            raise ValueError("invalid categorical or tail target")
         x = train[list(self.features)].to_numpy(dtype=float)
         if not np.isfinite(x).all() or not math.isfinite(self.l2) or self.l2 <= 0:
             raise ValueError("invalid training input or penalty")
@@ -231,7 +232,7 @@ class ConditionalModel:
         design = self._design(train)
         dates = pd.to_datetime(train.as_of)
         counts = dates.value_counts()
-        weights = dates.map(1 / counts).to_numpy(dtype=float)
+        weights = dates.map(1 / counts).to_numpy(dtype=float, copy=True)
         weights /= weights.sum()
         penalty = np.eye(design.shape[1]); penalty[0, 0] = 0
         y = train[["net63", "excess63"]].to_numpy(dtype=float)
@@ -287,6 +288,22 @@ class ConditionalModel:
         out["probability_status"] = "UNCALIBRATED_RESEARCH_ESTIMATE"
         return out
 
+    def explain(self, frame: pd.DataFrame, top_n: int = 5) -> list[dict[str, Any]]:
+        """Exact linear expected-excess decomposition; not causal feature attribution."""
+        self.predict(frame)
+        if not 1 <= top_n <= len(self.features):
+            raise ValueError("invalid explanation length")
+        contributions = self._design(frame)[:, 1:] * self.return_coef_[1:, 1]
+        out = []
+        for k, row in enumerate(frame.to_dict("records")):
+            ordering = np.argsort(-np.abs(contributions[k]))[:top_n]
+            out.append({"industry": row["industry"], "as_of": str(pd.Timestamp(row["as_of"]).date()),
+                        "intercept": float(self.return_coef_[0, 1]),
+                        "terms": [{"feature": self.features[j], "contribution": float(contributions[k, j])} for j in ordering],
+                        "remaining_contribution": float(contributions[k].sum() - contributions[k, ordering].sum()),
+                        "interpretation": "Predictive model arithmetic, not independent causal evidence."})
+        return out
+
     def to_dict(self) -> dict[str, Any]:
         if self.class_coef_ is None:
             raise ValueError("unfitted model")
@@ -296,3 +313,28 @@ class ConditionalModel:
                 "tail_coef": self.tail_coef_.tolist(), "fit_end": self.fit_end_,
                 "training_rows": self.train_rows_, "training_months": self.train_months_,
                 "financial_influence": False, "probability_status": "UNCALIBRATED_RESEARCH_ESTIMATE"}
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> "ConditionalModel":
+        if (payload.get("schema") != SCHEMA or payload.get("financial_influence") is not False
+                or payload.get("probability_status") != "UNCALIBRATED_RESEARCH_ESTIMATE"):
+            raise ValueError("unsupported model envelope")
+        names = tuple(payload.get("features", []))
+        if names not in MODEL_FEATURES.values():
+            raise ValueError("unsupported feature contract")
+        model = cls(names, l2=float(payload["l2"]))
+        n = len(names)
+        for name, shape in (("mean", (n,)), ("scale", (n,)), ("return_coef", (n + 1, 2)),
+                            ("class_coef", (n + 1, 3)), ("tail_coef", (n + 1,))):
+            array = np.asarray(payload[name], dtype=float)
+            if array.shape != shape or not np.isfinite(array).all():
+                raise ValueError("invalid model array " + name)
+            setattr(model, name + "_", array)
+        if (model.scale_ <= 0).any() or not math.isfinite(model.l2) or model.l2 <= 0:
+            raise ValueError("invalid model scaling or penalty")
+        model.fit_end_ = str(pd.Timestamp(payload["fit_end"]).date())
+        model.train_rows_ = int(payload["training_rows"])
+        model.train_months_ = int(payload["training_months"])
+        if model.train_rows_ < 100 or model.train_months_ < 24:
+            raise ValueError("invalid training support")
+        return model
