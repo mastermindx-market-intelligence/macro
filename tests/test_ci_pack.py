@@ -6270,6 +6270,79 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     (closure-required); natural successor CI must qualify the
     repaired source.
 
+    2026-11-12 (PR #7493, preserve Start coverage and browser fallback):
+    Receiver 0b26ae364676069354a53d1d84be21ee94cd78a0 preserves the
+    accepted Start data-base-shim contribution and landed #11051 browser
+    setup fallback, its regression suite and measured +1/+2/+1 accounting.
+    Carry only this original unrun-marketing-desk enrollment into that receiver,
+    preserving 401 owner positions, 400 sibling blocks and both histories.
+    Receiving weights 5969/5993/5727 compose to 5971/5995/5729.
+    These are source-derived expectations from the retained measured
+    contribution; actual paired contract/planner proof must qualify them.
+    Keep 137/138/131 job ceilings, ten packs and every runtime/selection
+    control. Source claim #7493 comment6811962082; original effect and
+    product acceptance boundaries remain separate and unreplayed.
+
+    2026-11-11 (PR #7493, current-main recovery):
+    Preserve main18597333's complete accepted owner catalog and proof history.
+    Enroll the existing marketing-copy supplier suite once in unrun-marketing-desk.
+    The unchanged native owner estimator measures 13 -> 15; its original +2
+    contribution yields 5968/5989/5726 from current 5966/5987/5724.
+    Retain 137/138/131 job ceilings, ten packs, every assertion and runtime limit.
+    The accepted Playwright 1.64.1 pins address the original pre-install refusal.
+    This is source/estimator qualification, not a full-tree planner or hosted pass.
+    The original private replay remains unknown and is not accessed or repeated.
+
+    MX/X preserving landed lifecycle coverage (#7493, 2026-11-09):
+    mainf3a8cf04 carries data-base-shim's accepted lifecycle/ledger union,
+    including its 800-character bucket crossing: receiver5958/5979/5716.
+    Preserve its complete provenance and this supplier's original measured+2
+    in the distinct unrun-marketing-desk owner (13->15,330->362 characters).
+    Add that marketing token exactly once and carry5960/5981/5718; no extra
+    cross-owner bucket cost, new job, pack or unmerged sibling allowance.
+    Keep400 owners,399 non-marketing blocks, jobs137/138/131 and ten packs;
+    all commands, selectors, assertions, runtime and admission controls stay.
+    This is source accounting for the actual new conflict; natural successor
+    proof remains owed and the original uncertain replay remains untouched.
+
+    MX/X receiving-main composition (#7493, 2026-11-09): main75e018ac
+    has landed #10226's ledger+3 on top of the existing F09 baseline.
+    Retain that entire history and this supplier's original measured+2.
+    The marketing command is still absent on main, so add it exactly once:
+    owner13->15, three commands,5->6 test references, same character bucket.
+    Current5948/5969/5706 plus only supplier2 yields5950/5971/5708.
+    Preserve400 owners,399 other blocks, jobs137/138/131 and ten packs.
+    All prior histories and runtime/selection assertions remain exact.
+    Source accounting only: successor CI must prove this combined head;
+    the old uncertain replay is neither accessed nor settled.
+
+    MX/X current-main composition (#7493, 2026-11-09): main9a13c64b has
+    actually landed F09#10192 and its separate data-base-shim cost23->25.
+    Preserve the complete F09 history below and this PR's original measured
+    marketing-owner13->15 receipt. They are distinct existing-owner suite
+    additions; identical old ceiling literals cannot deduplicate their costs.
+    Compose only this PR's own +2 onto current5945/5966/5703, yielding
+    5947/5968/5705. Keep job ceilings137/138/131 and ten packs. No #7620
+    or other unmerged sibling is funded. This is source accounting, not a
+    new planner execution; all assertions/selectors/runtime limits remain.
+
+    2026-11-09 (PR #7493, existing marketing-copy suite): natural contract
+    run 42597204752 / job 129092651216 measured head
+    3fe03917fee941410a6eec668c4bc1a2d36ae236 against base
+    e013dadb5ee85c1fdead2a15669941bab4b2e08b on tested merge
+    014b5eddd40779e59f7d873a842f0d40aa0598c2. Enrolling the existing
+    tests/test_marketing_copy_v2.py in unrun-marketing-desk changes its
+    estimator weight 13->15 (three commands unchanged, literal test references
+    5->6, command characters 330->362, same character bucket). The three
+    probes move 5943/5964/5701 -> 5945/5966/5703, with no newly selected
+    owner: fund only this measured +2 in each weight ceiling. These are
+    planning-weight seconds, not elapsed-runtime measurements. Job-count
+    ceilings 137/138/131, the ten-pack bound, all command/runtime limits,
+    selectors and assertions remain unchanged. This does not settle the old
+    base replay or authorize a replay/rerun; execution evidence stays in the
+    original PR receipt:
+    https://github.com/mastermindx-market-intelligence/Macro/pull/7493#issuecomment-6737165570
+
     2026-11-12 (PR #10211, preserve landed browser recovery):
     Receiver 9d8a0c8be5bbac0073b99762e46ae092235acf4f includes #11051's
     bounded browser-install fallback. Keep every current owner definition

@@ -762,9 +762,9 @@ def _build_candidates(overlaid: dict, root: Path, cfg: dict, pt: dict,
         if not members:
             continue
         # The names the TEXT may say (defect 1). `_theme_data.members` is left
-        # WHOLE — the card enumerates it, and the copy's "N names higher" count
-        # and average are computed from it, so truncating it here would make the
-        # picture and the breadth fact disagree with each other.
+        # WHOLE — the card enumerates the selected leaders. Participation and
+        # the aggregate belong to the full tracked universe in tl['breadth'];
+        # the cashtag safety cap cannot change that denominator.
         cashtags = _theme_text_cashtags(members, text_cap, proxy_tiers)
         if not cashtags:
             continue
@@ -1806,15 +1806,9 @@ def _theme_card_subtitle(cand: dict) -> str | None:
     theme item already authorised, so the picture cannot invent anything.
     """
     tl = cand.get("_theme_data") or {}
-    members = tl.get("members") or []
-    agg = tl.get("agg_pct")
-    if not members or agg is None:
-        return None
-    way = "lower" if str(tl.get("direction") or "") == "down" else "higher"
-    try:
-        return f"{len(members)} names {way}, average {float(agg):+.1f}%"
-    except (TypeError, ValueError):
-        return None
+    facts = movers_source.theme_facts(tl, asof=tl.get("asof"))
+    return next((str(f["text"]) for f in facts["facts"]
+                 if f.get("id") == "theme_question"), None)
 
 
 def _resolve_card(cand: dict, *, root: Path, cfg: dict, as_of: str,

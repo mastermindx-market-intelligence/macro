@@ -338,6 +338,7 @@ def test_no_rewritten_headline_is_stranded_on_a_connective():
         "top_fact_text": "FSLR surged +10.3% today (Technology).",
         "cashtag_list": "$A $B $C $D",
         "theme_question": "Breadth inside the group, not one leader.",
+        "theme_thesis": "Most tracked Solar names advanced.",
         "voice": "authoritative desk", "type": "mover",
     }
     bad = []
@@ -559,3 +560,261 @@ def test_validate_copy_rejects_an_instruction_on_a_mover_but_not_elsewhere():
     assert not [v for v in copywriter.validate_copy("$FSLR ran", dirty, runaway)
                 if "uncomputed stance" in v], (
         "the gate must not reach the kinds whose stance IS computed")
+
+
+def _participation_data(*, sign=1, other_return=-1.0):
+    members = [{"t": t, "perf": {"1D": sign * 20.0}}
+               for t in ("UONE", "UTWO", "UTHR", "UFOR")]
+    members += [{"t": "A" + chr(65 + i), "perf": {"1D": sign * other_return}}
+                for i in range(20)]
+    return {"theme_tiles": [{"sector": "AI", "asof": "2026-11-12", "members": members}],
+            "sp500_tiles": [], "asof": "2026-11-12"}
+
+
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("other_return", [-1.0, 0.0])
+def test_theme_caption_explains_measured_minority_and_clears_actual_queue_gates(sign, other_return):
+    from datetime import datetime, timezone
+    item = ms.theme_lists(_participation_data(sign=sign, other_return=other_return), n=4)[0]
+    assert item["breadth"]["total"] == 24 and len(item["members"]) == 4
+    assert item["agg_pct"] * sign > 0
+    copy = ms.theme_copy(item, now=datetime(2026, 11, 13, 12, tzinfo=timezone.utc))
+    verb = "advanced" if sign == 1 else "declined"
+    assert "came from a minority" in copy["headline"]
+    assert "Thursday" in copy["headline"]
+    assert copy["body"].endswith(f"Only 4 of 24 tracked names {verb}.")
+    assert "%" not in copy["body"] and "most fell" not in copy["headline"]
+    facts = ms.theme_facts(item, asof=item["asof"])
+    assert {"4", "24"} <= set(facts["numbers_whitelist"])
+    ctx = copywriter.build_context({"type": "theme_list", "_theme_data": item,
+        "cashtags": [f"${m['ticker']}" for m in item["members"]]}, facts=facts)
+    assert copywriter.validate_copy(copy["headline"], copy["body"], ctx) == []
+    text = copy["headline"] + "\n" + copy["body"]
+    assert copywriter.queued_voice_violations(text, kind="theme_list") == []
+    assert len(item["question"]) <= ms._TAIL_MAX_CHARS
+
+
+def test_theme_breadth_uses_distinct_finite_universe_before_cross_theme_selection():
+    data = _participation_data()
+    data["theme_tiles"][0]["members"] += [
+        {"t": "uone", "perf": {"1D": -90}},
+        {"t": "BAD", "perf": {"1D": float("nan")}},
+        {"t": "INF", "perf": {"1D": float("inf")}},
+        {"t": "FLAT", "perf": {"1D": 0}},
+    ]
+    # The higher-ranked theme consumes one shared leader; the denominator stays 25.
+    data["theme_tiles"].append({"sector": "Leader", "asof": "2026-11-12", "members": [
+        {"t": t, "perf": {"1D": 30}} for t in ("UONE", "BONE", "BTWO", "BTHR")]})
+    items = ms.theme_lists(data, n=4, min_members=3)
+    item = next(row for row in items if row["theme"] == "AI")
+    assert len(item["members"]) == 3
+    assert item["breadth"] == {"total": 25, "advancers": 4, "decliners": 20, "unchanged": 1}
+    assert item["question"] == "Only 4 of 25 tracked names advanced."
+
+
+@pytest.mark.parametrize("breadth", [None, {},
+    {"total": 4, "advancers": True, "decliners": 3, "unchanged": 0},
+    {"total": 24, "advancers": 4, "decliners": 1, "unchanged": 0},
+])
+def test_legacy_or_invalid_breadth_cannot_promote_a_whole_group_claim(breadth):
+    item = ms.theme_lists(_participation_data(), n=4)[0]
+    item.update(breadth=breadth, question="The whole group is bid, not one name.")
+    facts = ms.theme_facts(item)
+    tail = next(f["text"] for f in facts["facts"] if f["id"] == "theme_question")
+    assert tail == "Every name on the list is higher."
+    assert ms.theme_copy(item) == {"headline": "", "body": ""}
+
+
+@pytest.mark.parametrize("has_state", [True, False])
+def test_nightly_mover_copy_cites_each_observation_once(monkeypatch, has_state):
+    state = ms._state_from_closes("FSLR", _washed_out_then_reclaimed()) if has_state else None
+    monkeypatch.setattr(ms, "technical_state", lambda *a, **k: state)
+    facts = ms.mover_facts(_FSLR_MOVER, root=".", asof="2026-08-03")
+    copy = ms.mover_copy(_FSLR_MOVER, facts)
+    text = copy["headline"] + " " + copy["body"]
+    assert text.count("FSLR") == 1 and text.count("+10.3%") == 1
+    assert "context the number needs" not in text and "situation the move landed in" not in text
+    assert ("closed back above its 50-day" in copy["body"]) is has_state
+    assert bool(copy["body"]) is has_state
+    assert copywriter.queued_voice_violations(text, kind="mover") == []
+
+
+def test_actual_nightly_plan_uses_measured_theme_caption_and_chart(tmp_path, monkeypatch):
+    import engine.marketing.chart_render as cr
+    import engine.marketing.content_studio as cs
+    monkeypatch.setattr(ms, "load_movers", lambda *a, **k: _participation_data())
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "resolve_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cs, "_LADDER_SLOTS", ["S1", "S2", "S3", "S4"])
+    cfg = {"desk_network": {"stage": "A", "accounts": [{"id": "flagship", "kind": "branded",
+        "beat": "Market", "voice": "authoritative desk", "enabled": True,
+        "tilt": {"theme_list": 1.0}}]}}
+    plan = cs.content_plan(cfg, [], root=tmp_path)
+    themes = [item for account in plan["accounts"] for item in account["queue"]
+              if item.get("type") == "theme_list" and str(item.get("slot")).startswith("D1-")]
+    assert themes, plan.get("content", {}).get("movers")
+    item = themes[0]
+    assert "came from a minority" in item["headline"]
+    assert item["body"].endswith("Only 4 of 24 tracked names advanced.")
+    assert item["chart_id"]
+    charts = plan.get("featured_charts") or plan.get("content", {}).get("featured_charts") or []
+    chart = next(c for c in charts if c["id"] == item["chart_id"])
+    assert "20.0%" in chart["svg"] and "4 of 24" in chart["svg"]
+
+
+@pytest.mark.parametrize("disabled_by_override", [False, True])
+def test_all_disabled_desks_keep_empty_queues_and_writer_contexts(
+        tmp_path, monkeypatch, disabled_by_override):
+    import json
+    import engine.marketing.chart_render as cr
+    import engine.marketing.content_studio as cs
+
+    data = _participation_data()
+    assert ms.theme_lists(data, n=4), "The allocation test needs real reach supply"
+    assert ms.theme_copy(ms.theme_lists(data, n=4)[0])["headline"]
+    monkeypatch.setattr(ms, "load_movers", lambda *a, **k: data)
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "resolve_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cs, "_LADDER_SLOTS", ["S1", "S2", "S3", "S4"])
+    monkeypatch.delenv("MARKETING_LLM_ENABLED", raising=False)
+    seen_contexts = []
+    real_writer = copywriter.write_posts_deterministic
+
+    def record_writer_contexts(contexts, **kwargs):
+        seen_contexts.extend(contexts)
+        return real_writer(contexts, **kwargs)
+
+    monkeypatch.setattr(copywriter, "write_posts_deterministic", record_writer_contexts)
+    accounts = [{"id": desk, "kind": "branded", "beat": "Market",
+                 "voice": "authoritative desk", "enabled": disabled_by_override,
+                 "tilt": {"theme_list": 1.0}}
+                for desk in ("flagship", "receipts")]
+    cfg = {"desk_network": {"stage": "A", "accounts": accounts}}
+    if disabled_by_override:
+        path = tmp_path / "data/marketing/account_overrides.json"
+        path.parent.mkdir(parents=True)
+        path.write_text(json.dumps({desk["id"]: {"enabled": False} for desk in accounts}))
+    plan = cs.content_plan(cfg, [], root=tmp_path, defer_media=True)
+    assert len(plan["accounts"]) == 2
+    assert all(account["status"] == "planned" and not account["queue"]
+               for account in plan["accounts"])
+    assert plan["summary"]["total_posts"] == 0
+    assert seen_contexts == [], "Disabled desks must not reach the writer with posts"
+
+
+@pytest.mark.parametrize("voice", sorted({v for (t, v) in copywriter._TEMPLATES if t == "theme_list"}))
+@pytest.mark.parametrize("sign", [1, -1])
+@pytest.mark.parametrize("participating,thesis_word", [(4, "minority"), (12, "Half"), (14, "Most"), (24, "Every")])
+def test_live_theme_compiler_preserves_participation_and_clears_the_real_queue_gate(
+        voice, sign, participating, thesis_word):
+    from engine.marketing import publish_time_content as pt
+    data = _participation_data(sign=sign)
+    for index, member in enumerate(data["theme_tiles"][0]["members"][4:], start=4):
+        member["perf"]["1D"] = sign * (1.0 if index < participating else -1.0)
+    item = ms.theme_lists(data, n=4)[0]
+    candidate = {"type": "theme_list", "ticker": "",
+        "cashtags": [f"${m['ticker']}" for m in item["members"][:3]],
+        "_theme_data": item, "_theme_facts": ms.theme_facts(item, asof=item["asof"]),
+        "_lead_ticker": item["members"][0]["ticker"]}
+    text, headline, violations, bait = pt._render_copy_unbaited(candidate,
+        account="flagship", voice=voice, persona={}, slot="AM", has_chart=True,
+        theme_cashtag_cap=3)
+    assert violations == [] and bait is False, (text, violations)
+    assert thesis_word in headline
+    verb = "advanced" if sign == 1 else "declined"
+    expected = (f"All 24 tracked names {verb}." if participating == 24 else
+                f"{participating} of 24 tracked names {verb}.")
+    assert text.endswith(expected), text
+    assert len(re.findall(r"\$[A-Z]+", text)) == 3
+    assert "%" not in text  # the caption argues participation; returns stay in the card
+    assert copywriter.queued_voice_violations(text, kind="theme_list") == []
+    assert pt._theme_card_subtitle(candidate).endswith(expected)
+
+
+def test_compiler_does_not_trust_an_old_whole_group_tail():
+    import json
+    item = ms.theme_lists(_participation_data(), n=4)[0]
+    item.pop("breadth")
+    item["question"] = "The whole group is bid, not one name."
+    # Even a saved pre-upgrade packet must not turn its free-text tail into evidence.
+    facts = {"facts": [{"id": "theme_question", "text": item["question"], "numbers": []}]}
+    ctx = copywriter.build_context({"type": "theme_list", "_theme_data": item,
+        "cashtags": [f"${m['ticker']}" for m in item["members"]]}, facts=facts)
+    ctx.update(type="theme_list", voice="authoritative desk")
+    post = copywriter.write_posts_deterministic([ctx])[0]
+    text = post["headline"] + " " + post["body"]
+    assert "whole group" not in text and "tracked names" not in text
+    assert "on the list" in text
+    assert all("whole group" not in fact["text"] for fact in ctx["top_facts"])
+    payload = copywriter._v2_item_payload(ctx, persona_card={},
+        codex_by_account={}, memory_by_account={})
+    assert "whole group" not in json.dumps(payload)
+    assert payload["facts"] and payload["editorial_brief"]["claims"]
+
+
+@pytest.mark.parametrize("bad_session", ["missing", "mixed", "unparseable", "future"])
+def test_theme_requires_its_own_coherent_session_before_facts_copy_or_nightly_queue(
+        tmp_path, monkeypatch, bad_session):
+    from datetime import datetime, timezone
+    import engine.marketing.chart_render as cr
+    import engine.marketing.content_studio as cs
+    data = _participation_data()
+    tile = data["theme_tiles"][0]
+    if bad_session == "mixed":
+        tile["members"][0]["asof"] = "2026-11-11"
+    else:
+        tile["asof"] = {"missing": None, "unparseable": "unknown", "future": "2099-11-12"}[bad_session]
+    item = ms.theme_lists(data, n=4)[0]
+    now = datetime(2026, 11, 13, 12, tzinfo=timezone.utc)
+    assert ms.theme_copy(item, now=now) == {"headline": "", "body": ""}
+    assert ms.theme_facts(item, now=now) == {"facts": [], "numbers_whitelist": []}
+    assert ms.theme_facts(item, now=now, asof="2026-11-12")["facts"] == []
+    stale = {"facts": [{"id": "theme_question", "text": "The whole group is bid.",
+                       "numbers": ["999%"]}], "numbers_whitelist": ["999%"]}
+    ctx = copywriter.build_context({"type": "theme_list", "_theme_data": item}, facts=stale)
+    assert ctx["top_facts"] == [] and ctx["theme_thesis"] == ""
+    assert ctx["theme_agg_pct"] == "" and "999%" not in ctx["numbers_whitelist"]
+    monkeypatch.setattr(ms, "load_movers", lambda *a, **k: data)
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "resolve_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cs, "_LADDER_SLOTS", ["S1", "S2", "S3", "S4"])
+    cfg = {"desk_network": {"stage": "A", "accounts": [{"id": "flagship", "kind": "branded",
+        "beat": "Market", "voice": "authoritative desk", "enabled": True,
+        "tilt": {"theme_list": 1.0}}]}}
+    plan = cs.content_plan(cfg, [], root=tmp_path)
+    assert not [post for account in plan["accounts"] for post in account["queue"]
+                if post.get("type") == "theme_list" and post.get("provenance") == "movers_desk"]
+
+
+@pytest.mark.parametrize("field", ["aggregate", "member"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_theme_values_cannot_become_facts_or_writer_evidence(field, value):
+    item = ms.theme_lists(_participation_data(), n=4)[0]
+    if field == "aggregate":
+        item["agg_pct"] = value
+    else:
+        item["members"][0]["pct"] = value
+    assert ms.theme_facts(item) == {"facts": [], "numbers_whitelist": []}
+    ctx = copywriter.build_context({"type": "theme_list", "_theme_data": item})
+    assert ctx["top_facts"] == [] and ctx["theme_agg_pct"] == ""
+    assert all("nan" not in n.lower() and "inf" not in n.lower()
+               for n in ctx["numbers_whitelist"])
+
+
+def test_mixed_member_signs_do_not_inherit_an_aggregate_direction_claim():
+    item = ms.theme_lists(_participation_data(), n=4)[0]
+    item.pop("breadth")
+    item["members"][0]["pct"] = -1.0
+    item["direction"] = "down"  # a stale label cannot override the positive average
+    facts = ms.theme_facts(item)
+    agg = next(f for f in facts["facts"] if f["id"] == "theme_agg")
+    assert "+2.5%" in agg["text"] and "listed names higher" not in agg["text"]
+    assert not any(f["id"] == "theme_question" for f in facts["facts"])
+    ctx = copywriter.build_context({"type": "theme_list", "_theme_data": item}, facts=facts)
+    assert ctx["theme_direction"] == "up" and ctx["theme_question"] == ""
+
+
+@pytest.mark.parametrize("pct", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_mover_return_cannot_become_copy(pct):
+    mover = dict(_FSLR_MOVER, pct=pct)
+    assert ms.mover_copy(mover, ms.mover_facts(mover)) == {"headline": "", "body": ""}

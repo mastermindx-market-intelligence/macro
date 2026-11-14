@@ -3973,9 +3973,9 @@ def content_plan(
     # to accounts that will actually post — never to a planned (disabled) desk,
     # or the Sentinel would carry content for a desk that doesn't exist (F3d). A
     # planned row keeps its empty queue; enabled_rows drives every reach-item
-    # placement below. Falls back to all rows only if nothing is enabled (so a
-    # fully-planned network still produces a plan rather than crashing).
-    enabled_rows = [r for r in account_rows if r.get("status") != "planned"] or account_rows
+    # placement below. An entirely disabled network has no allocation pool;
+    # falling back to all rows would refill the deliberately empty queues.
+    enabled_rows = [r for r in account_rows if r.get("status") != "planned"]
 
     # ── Featured charts: EVERY post that names a ticker gets a card ───────────
     # Operator law, 2026-07-28: "we should always have illustrations for charting
@@ -4776,7 +4776,9 @@ def content_plan(
             top_movers as _top_movers_fn,
             theme_lists as _theme_lists_fn,
             mover_facts as _mover_facts_fn,
+            mover_copy as _mover_copy_fn,
             theme_facts as _theme_facts_fn,
+            theme_copy as _theme_copy_fn,
         )
         _ohlcv_root_mv: str = str(root) if root is not None else "."
         _movers_data = load_movers(_ohlcv_root_mv)
@@ -4819,8 +4821,8 @@ def content_plan(
                 _mover_tickers_used.add(_mv_ticker)
                 # Trend context (FSLR postmortem 2026-08-03): read the same
                 # daily closes the mover chart renders and bucket where this
-                # move LANDED, so the stance can't contradict the chart. Any
-                # failure degrades to "plain" = the generic pools below.
+                # move LANDED. Keep the metadata for downstream consumers; it
+                # does not license a canned trading stance in this producer.
                 _mv_trend = "plain"
                 try:
                     from engine.marketing.chart_render import load_closes as _lc  # noqa: PLC0415
@@ -4839,98 +4841,17 @@ def content_plan(
                 # read is local and cheap; an unreadable name simply gets no
                 # state fact and the reaction below stays in its no-state shape.
                 #
-                # BOTH legs are required: the bucket above only GATES which
-                # lines may be drawn, while `_mv_state` on the next line is the
-                # sentence a {mover_state} line RENDERS. Dropping `root=` here
-                # leaves that lookup permanently "" and ships the empty
-                # fragment "The state that move landed in: ."
+                # The fact packet, rather than a bucket or random phrase bank,
+                # supplies the exact statement the reader will see.
                 _mv_facts = _mover_facts_fn(_mv, _movers_data, now=_plan_now,
                                             root=_ohlcv_root_mv)
-                _mv_top_fact = _mv_facts["facts"][0]["text"] if _mv_facts["facts"] else ""
-                _mv_state = next(
-                    (str(f.get("text") or "").strip().rstrip(".")
-                     for f in _mv_facts["facts"] if f.get("id") == "mover_state"),
-                    "")
-                _mv_pct_str = f"{_mv['pct']:+.1f}%"
-                _mv_headline = " ".join(
-                    p for p in (f"${_mv_ticker}", _mv_pct_str, _day_word) if p)
-                # NO UNCOMPUTED DIRECTIONAL STANCE (operator, 2026-08-03).
-                #
-                # This block used to hold two direction-keyed banks of four
-                # canned stances: down movers got "I'd rather be late here than
-                # early", "No rush to be a hero on this one", "Nothing to do
-                # until it stops going down"; up movers got "Respect the move,
-                # don't pay for it", "Late entries here get punished", "I'm not
-                # paying this price". The rotation is a crc32 of the TICKER, and
-                # a crc32 has never looked at a chart — so the desk issued a
-                # timing call at random over every mover it posted and was wrong
-                # about half the time by construction. The publish-time sibling
-                # of this bank is what shipped "$FSLR ... either way I'd let it
-                # settle first" onto the flagship over a name that had just
-                # crossed up out of a two-month washout.
-                #
-                # THREE TIERS, strongest evidence first. Two lanes fixed this
-                # same postmortem in parallel and both fixes are kept, ordered by
-                # how much the engines actually knew:
-                #   1. a COMPUTED technical state ("closed back above its 50-day
-                #      for the first time since June") is a read we earned and it
-                #      survives being quoted back, so it wins outright;
-                #   2. the trend BUCKET is the coarse fallback, which at least
-                #      cannot contradict the chart it ships with;
-                #   3. the generic direction pools are last.
-                # Rotation is a crc32 of the ticker: deterministic, so the same
-                # name reads the same way twice, but the batch no longer speaks
-                # in one voice. No em dashes: rendered copy law.
-                _mv_rot = zlib.crc32(str(_mv_ticker or "").encode("utf-8"))
-                if _mv_state:
-                    _mv_pool = (
-                        f"{_mv_state}. That is the situation the move landed in.",
-                        f"The state underneath it: {_mv_state}.",
-                        f"{_mv_state}, which is the context the number needs.",
-                    )
-                elif (_mv.get("pct") or 0) < 0:
-                    _mv_pool = {
-                        "crack_from_highs": (
-                            "First real crack after a long run. One red day isn't "
-                            "a top, but every top starts with one.",
-                            "Air pocket in a strong name. Watching whether the "
-                            "buyers who chased it show up now.",
-                        ),
-                        "capitulation": (
-                            "A flush this deep into a decline is capitulation "
-                            "territory. Watching the close, not guessing the bottom.",
-                            "Selling this hard, this late, is either a low forming "
-                            "or the story breaking. The reclaim decides.",
-                        ),
-                    }.get(_mv_trend, (
-                        "The dip buyers get to find out who was early. Watching how "
-                        "it holds.",
-                        "I'd rather be late here than early. Levels are on the chart.",
-                        "No rush to be a hero on this one. Watching where it settles.",
-                        "Nothing to do until it stops going down. Chart's below.",
-                    ))
-                else:
-                    _mv_pool = {
-                        "washout_bounce": (
-                            "First green that means anything after months of "
-                            "selling. Bottoms and dead-cat bounces start "
-                            "identically. The next few closes decide which.",
-                            "That's a washed-out name finally swinging, not a dip "
-                            "getting bought. Now it has to hold it.",
-                        ),
-                        "breakout": (
-                            "Strength at the highs is a different animal than a "
-                            "bounce. Leaders look like this while it lasts.",
-                            "New-high tape. Good for anyone already in. Late "
-                            "entries pay the toll.",
-                        ),
-                    }.get(_mv_trend, (
-                        "Good for anyone already in. I'm not paying this price.",
-                        "Respect the move, don't pay for it. Levels are on the chart.",
-                        "Nice if you were early. Late entries here get punished.",
-                        "This is what leadership looks like while it lasts. Chart's below.",
-                    ))
-                _mv_body = f"{_mv_top_fact} " + _mv_pool[_mv_rot % len(_mv_pool)]
+                # The move and computed technical context each get one sentence.
+                # A missing state leaves a factual wire; it never buys a canned
+                # opinion about chasing, entries, bottoms or the next close.
+                _mv_copy = _mover_copy_fn(_mv, _mv_facts)
+                if not _mv_copy["headline"]:
+                    continue
+                _mv_headline, _mv_body = _mv_copy["headline"], _mv_copy["body"]
                 _mover_item_dict = {
                     "id": f"post-mover-{_mover_item_counter:03d}",
                     "type": "mover",
@@ -4961,20 +4882,13 @@ def content_plan(
             _theme_items_for_queue: list[dict] = []
             for _tl in _tl_result[:4]:
                 _tl_ticker = f"theme_{_tl['theme'].lower().replace(' ', '_').replace('/', '_')}"
-                _tl_facts = _theme_facts_fn(_tl, now=_plan_now)
+                _tl_facts = _theme_facts_fn(_tl, now=_plan_now, asof=_tl.get("asof"))
                 _tl_members = _tl["members"]
                 _cashtags = [f"${m['ticker']}" for m in _tl_members[:10]]
-                _cashtag_list_str = " ".join(_cashtags)
-                _agg_str = f"{_tl['agg_pct']:+.1f}%"
-                _member_list = " ".join(
-                    f"${m['ticker']} {m['pct']:+.1f}%" for m in _tl_members[:8]
-                    if m.get("pct") is not None
-                )
-                _tl_tone = _tl.get("tone") or ("selling off" if _tl["direction"] == "down" else "ripping")
-                _tl_headline = " ".join(
-                    p for p in (f"{_tl['theme']} {_tl_tone}, {_agg_str} avg",
-                                _day_word) if p)
-                _tl_body = f"{_member_list} {_tl['question']}"
+                _tl_copy = _theme_copy_fn(_tl, now=_plan_now)
+                if not _tl_copy["headline"]:
+                    continue
+                _tl_headline, _tl_body = _tl_copy["headline"], _tl_copy["body"]
                 _tl_item_dict = {
                     "id": f"post-theme-{_mover_item_counter:03d}",
                     "type": "theme_list",

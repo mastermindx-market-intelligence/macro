@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import threading
@@ -913,6 +914,14 @@ def build_context(
 
     plan = item.get("_plan") or {}
     receipt = item.get("_receipt") or {}
+    theme_data = item.get("_theme_data") or {}
+    safe_theme_facts = {"facts": [], "numbers_whitelist": []}
+    if item.get("type") == "theme_list":
+        from engine.marketing.movers_source import theme_copy, theme_facts
+        # Saved caller packets can contain an obsolete whole-group assertion.
+        # Canonicalize before either deterministic copy or model evidence sees it.
+        safe_theme_facts = theme_facts(theme_data, asof=theme_data.get("asof"))
+        facts = safe_theme_facts
 
     # Top 3 chart facts — POLARITY-AWARE for directional posts. A bullish signal
     # post must never lead with a bearish fact ("lost its 50-day — that's why
@@ -1033,41 +1042,35 @@ def build_context(
         else:
             emoji_budget = 1
 
-    # For theme_list items: add member cashtag % strings to whitelist
-    # (these appear in the body as "$NVDA -2.1% $AMD -4.3% ...")
-    theme_data = item.get("_theme_data") or {}
-    theme_members = theme_data.get("members") or []
-    _theme_member_pcts: list[str] = []
-    for _tm in theme_members:
-        _tm_pct = _tm.get("pct")
-        if _tm_pct is not None:
-            try:
-                _tm_s = f"{float(_tm_pct):+.1f}%"
-                if _tm_s not in whitelist:
-                    whitelist.append(_tm_s)
-                _theme_member_pcts.append(_tm_s)
-            except (TypeError, ValueError):
-                pass
-    # Also add agg_pct for theme
-    _agg = theme_data.get("agg_pct")
-    if _agg is not None:
-        try:
-            _agg_s = f"{float(_agg):+.1f}%"
-            if _agg_s not in whitelist:
-                whitelist.append(_agg_s)
-        except (TypeError, ValueError):
-            pass
+    # Theme prose, model facts and numbers all use the same validated packet.
+    theme_thesis = ""
+    theme_question = ""
+    theme_direction = ""
+    _agg = None
+    if item.get("type") == "theme_list" and safe_theme_facts["facts"]:
+        editorial = theme_copy(theme_data)
+        theme_thesis = editorial.get("headline", "")
+        question_fact = next((f for f in safe_theme_facts["facts"]
+                              if f.get("id") == "theme_question"), {})
+        theme_question = str(question_fact.get("text") or "")
+        if not theme_thesis and theme_question:
+            theme_thesis = f"{theme_data.get('theme', '')}: selected names"
+        _agg = float(theme_data["agg_pct"])
+        theme_direction = "down" if _agg < 0 else ("up" if _agg > 0 else "flat")
 
     # For mover items: add mover pct to whitelist
     mover_data = item.get("_mover_data") or {}
     _mv_pct = mover_data.get("pct")
     if _mv_pct is not None:
         try:
-            _mv_s = f"{float(_mv_pct):+.1f}%"
-            if _mv_s not in whitelist:
+            _mv_pct = float(_mv_pct)
+            if not math.isfinite(_mv_pct):
+                _mv_pct = None
+            _mv_s = f"{_mv_pct:+.1f}%" if _mv_pct is not None else ""
+            if _mv_s and _mv_s not in whitelist:
                 whitelist.append(_mv_s)
         except (TypeError, ValueError):
-            pass
+            _mv_pct = None
 
     # ── Whitelist finishing pass (contract §Rounding, §Writer API) ────────────
     # (a) Every percent is also licensed in its DISPLAY spelling. The producers
@@ -1191,8 +1194,9 @@ def build_context(
         "signal_date": effective_public_plan_date(plan) or "",
         # Theme/mover extras
         "theme_name": theme_data.get("theme", ""),
-        "theme_direction": theme_data.get("direction", ""),
-        "theme_question": theme_data.get("question", ""),
+        "theme_direction": theme_direction,
+        "theme_question": theme_question,
+        "theme_thesis": theme_thesis,
         "theme_agg_pct": (f"{float(_agg):+.1f}%" if _agg is not None else ""),
         "mover_pct": (f"{float(_mv_pct):+.1f}%" if _mv_pct is not None else ""),
         # "" whenever the engines did not supply a state. See the block above.
@@ -2026,10 +2030,10 @@ SHAPE_CONTRACT: dict[str, str] = {
     "stack": (
         "STACK: 2 to 5 lines separated by single newlines, no blank lines, no "
         f"headline, 275 chars total, at most {_SHAPE_NUMBER_BUDGET['stack']} "
-        "numbers in the whole post. The lines are ONE argument, not three "
-        "separate claims: line 1 is today's number, line 2 is the base it is "
-        "measured against (the prior print, the average, the same week a year "
-        "ago), line 3 says what the two of them together change. A line that "
+        "numbers in the whole post. The lines develop ONE observation: "
+        "the change, its supplied comparison, and a supported explanation "
+        "when useful. Use only as many lines as the material needs; an "
+        "explanatory line does not need another number. A line that "
         "adds a number without saying what it is measured against is a data "
         "dump, and a data dump is the shape a person scrolls past."
     ),
@@ -2043,8 +2047,9 @@ SHAPE_CONTRACT: dict[str, str] = {
         "add up to."
     ),
     "caption": (
-        "CAPTION: 90 characters max, one line, no headline. A chart is attached "
-        "and it does the talking. Say the one thing the chart cannot. At most "
+        "CAPTION: 90 characters max, one line, no headline. Name one useful "
+        "observation in plain words. An observed chart can carry detail; "
+        "unknown media cannot supply a missing subject or reference. At most "
         f"{_SHAPE_NUMBER_BUDGET['caption']} numbers, and usually one."
     ),
 }
@@ -2145,24 +2150,28 @@ def chart_copy_block() -> str:
     """
     lines = [
         "CHART-FAMILY COPY (kinds: " + ", ".join(sorted(CHART_FAMILY_KINDS)) + ").",
-        "A picture is attached and it is doing the talking. Say the one thing "
-        "it cannot.",
+        "Use editorial_brief.media.state to distinguish an observed image "
+        "from text_only or unknown media. Never assume a chart is attached. "
+        "The text identifies the subject and what changed in ordinary words.",
         f"- Budget: aim for {CHART_CAPTION_WORDS[0]} to "
         f"{CHART_CAPTION_WORDS[1]} words. Hard cap {CHART_CAPTION_MAX_CHARS} "
-        "characters on the single-line shapes. The real corpus median for this "
-        "family is 11 words, 61 characters.",
-        "- The horizon is printed in the chart header (TICKER WEEKLY). Never "
-        "spend caption words restating it.",
-        "- Numbers live in the IMAGE. Only a quarter of these captions carry a "
-        "hard number at all, and the percent-bearing ones underperform. If you "
-        "do print a number, the chart has to restate it in frame already. A "
-        "validator checks that and drops the post when it does not.",
+        "characters on the single-line shapes; the assigned shape can be "
+        "stricter. These are ceilings, not instructions to remove the verb or "
+        "the noun. Stack and two_part are explanations, not short captions.",
+        "- Keep the reference noun and any horizon needed to understand the "
+        "claim: a 50-day average is not a 50-day high. Use only the reference "
+        "and time window supplied by the facts. A chart header may carry "
+        "additional detail; it cannot supply words missing from the sentence.",
+        "- When an image is present, printed numbers must also be supported "
+        "in frame. For text_only or unknown media, the supplied facts and "
+        "number budget still bind; do not claim that a chart shows anything.",
         "- One terminal stance glyph is allowed, at the END, from this set: "
         + " ".join(CHART_STANCE_GLYPHS)
         + ". Tension reads better than celebration here. No alarm glyph and no "
           "ledger glyph in this family; those belong to other lanes.",
-        "- Chart labels may name indicators. YOUR TEXT MAY NOT. The picture "
-        "showing the average is exactly why you never have to write its name.",
+        "- Chart labels may name indicators. YOUR TEXT MAY NOT use study "
+        "jargon. Explain the measured reference in plain words, such as "
+        "the average price paid since the supplied date.",
         "- Stage language in plain words: base building, marking up, stalling "
         "out, under distribution. The numbered form is a chart label, never a "
         "caption.",
@@ -2689,6 +2698,8 @@ _MACHINE_RISK_PATTERNS: tuple[tuple[str, str], ...] = (
     ("past performance", r"\bpast performance\b"),
     ("size appropriately", r"\bsize (?:appropriately|accordingly)\b"),
     ("not financial advice", r"\bnot financial advice\b"),
+    ("research context only", r"\bresearch context only\b"),
+    ("not a trading recommendation", r"\bnot (?:a )?trading recommendation\b"),
 )
 
 # A terse symmetrical two-beat clause pair, both halves short, joined by a comma
@@ -2839,8 +2850,9 @@ def no_reaction_violations(text: str) -> list[str]:
     for label, pattern in _NO_REACTION_PATTERNS:
         if re.search(pattern, low):
             out.append(
-                f"no-reaction post '{label}': a fact with no reaction is not a "
-                f"post; give a reaction that costs you something or cut it"
+                f"no-reaction post '{label}': remove the stock dismissal; "
+                f"explain a supplied comparison or consequence if one exists. "
+                f"Do not invent a reaction, position or trading condition"
             )
     return out[:2]
 
@@ -3026,9 +3038,9 @@ def abstention_violations(text: str) -> list[str]:
             continue
         out.append(
             f"advertised abstention '{m.group(0).strip()}' ({label}): a post "
-            f"whose reaction is that you did nothing has no reader. Name the "
-            f"level, the condition, or the thing that would change our mind — "
-            f"or do not post"
+            f"about the narrator's inaction gives the reader no evidence. "
+            f"Remove that narration and explain a supplied comparison or "
+            f"consequence when useful. Do not invent a closing condition"
         )
     return out[:2]
 
@@ -4115,6 +4127,65 @@ _TARGET_LADDER_RE = re.compile(
     re.IGNORECASE,
 )
 
+# A source's 200-day window cannot become a price of 200. This is deliberately
+# a conservative exclusion, not a universal unit/target-role classifier. The
+# shared target regex above is also used by approval_desk; keep its semantics
+# unchanged for reported analyst targets and the separate distance check.
+_DURATION_SUFFIX_RE = re.compile(
+    r"\s*(?:-\s*)?(?:days?|weeks?|months?|years?|sessions?|minutes?|hours?)\b",
+    re.IGNORECASE,
+)
+_DURATION_SOURCE_NUMBER_RE = re.compile(
+    r"(?<![\d.,])\d+(?:,\d{3})*(?:\.\d+)?(?!\d|[.,]\d)"
+)
+_TARGET_IS_RE = re.compile(
+    r"\btarget\s+is\s+\$?\s*(\d+(?:,\d{3})*(?:\.\d+)?)"
+    r"(?![\d.]*\s*(?:%|x\b))(?!\w|[.,]\d)", re.IGNORECASE,
+)
+
+
+def _duration_only_fallback_tokens(ctx: dict, candidates: set[str]) -> set[str]:
+    """Values whose selected source occurrences are all explicit durations.
+
+    An absent/ambiguous occurrence, currency use, typed observed level or
+    competing pack value preserves the incumbent fallback. Observed levels
+    never join the stricter forward-plan set.
+    """
+    facts = [f for f in (ctx.get("top_facts") or [])[:3] if isinstance(f, dict)]
+    if not facts:
+        return set()
+
+    def pack_mentions(value: Any, number: float) -> bool:
+        if isinstance(value, dict):
+            return any(pack_mentions(v, number) for v in value.values())
+        if isinstance(value, (list, tuple)):
+            return any(pack_mentions(v, number) for v in value)
+        return any(_finite(m.group().replace(",", "")) == number
+                   for m in _DURATION_SOURCE_NUMBER_RE.finditer(str(value or "")))
+
+    excluded: set[str] = set()
+    for token in candidates:
+        number = _finite(token.replace(",", ""))
+        if (number is None or pack_mentions(ctx.get("pack"), number)
+                or any(pack_mentions(f.get("count"), number) for f in facts)):
+            continue
+        if any(_level_is_allowed(token, allowed_level_tokens({"target_str": f["level"]}))
+               for f in facts if _finite(f.get("level")) is not None):
+            continue
+        occurrences = []
+        for fact in facts:
+            source = str(fact.get("text") or "")
+            for match in _DURATION_SOURCE_NUMBER_RE.finditer(source):
+                if _finite(match.group().replace(",", "")) != number:
+                    continue
+                currency = re.search(r"(?:[$€£¥]|USD|EUR|GBP|JPY)\s*$",
+                                     source[:match.start()], re.IGNORECASE)
+                occurrences.append(not currency and bool(
+                    _DURATION_SUFFIX_RE.match(source[match.end():])))
+        if occurrences and all(occurrences):
+            excluded.add(token)
+    return excluded
+
 #: The ctx fields that ARE the plan's forward levels. Nothing else licenses a
 #: target: `numbers_whitelist` deliberately does not appear here, because the
 #: whole defect is a chart fact being promoted to a price objective.
@@ -4174,8 +4245,9 @@ def invented_level_violations(text: str, ctx: dict) -> list[str]:
       fact sitting in `numbers_whitelist`, and promoting a fact to a price
       objective is the fabrication, not the number itself.
     * The item has NO forward levels (a chart or macro post: there is no plan to
-      contradict). Then the bar falls back to the packet's own numbers, which is
-      the honest bar available. It still closes half the hole, because the
+      contradict). Then the bar falls back to the packet's own numbers, except
+      values supplied exclusively as explicit time windows. Unknown or mixed
+      roles retain the incumbent fallback. It still closes half the hole, because the
       target LANGUAGE this gate reads ("toward 228", "then 260") is language no
       slot word introduces, so `price_slot_tokens` never looked at those tokens
       on any kind of item.
@@ -4187,14 +4259,28 @@ def invented_level_violations(text: str, ctx: dict) -> list[str]:
     src = str(text or "")
     levels = allowed_level_tokens(ctx)
     allowed = levels or {str(n) for n in ((ctx or {}).get("numbers_whitelist") or [])}
+    durations = _duration_only_fallback_tokens(ctx or {}, allowed) if not levels else set()
+    allowed = allowed - durations
+    duration_values = {_finite(n.replace(",", "")) for n in durations}
     source = "this item's plan levels" if levels else "this item's fact packet"
     out: list[str] = []
     seen: set[str] = set()
 
-    def _report(tok: str) -> None:
+    def _report(tok: str, *, end: int) -> None:
         if tok in seen or _level_is_allowed(tok, allowed):
             return
+        if (_finite(tok.replace(",", "")) in duration_values
+                and re.match(r"(?:\w|[.,]\d)", src[end:])):
+            # The shared matcher can stop before a compact suffix. Its old
+            # fallback accepted this prefix; do not call 200k a 200-day value.
+            return
         seen.add(tok)
+        if _finite(tok.replace(",", "")) in duration_values:
+            out.append(
+                f"invented_level '{tok}': this value was supplied only as a "
+                f"time window, not a price. Do not turn a duration into a target"
+            )
+            return
         have = ", ".join(sorted(allowed)) if allowed else "none"
         out.append(
             f"invented_level '{tok}': a level the reader is asked to aim at has "
@@ -4203,10 +4289,12 @@ def invented_level_violations(text: str, ctx: dict) -> list[str]:
         )
 
     for m in _TARGET_SLOT_RE.finditer(src):
+        if _DURATION_SUFFIX_RE.match(src[m.end():]):
+            continue  # e.g. toward 200-day average, not toward a price of 200
         nxt = re.match(r"\s*([A-Za-z']+)", src[m.end():])
         if nxt and nxt.group(1).lower() in _SLOT_NON_LEVEL_NOUNS:
             continue  # a duration or a tally, not a level
-        _report(m.group(1))
+        _report(m.group(1), end=m.end())
         # Walk the ladder: "190, then 228, then 260" is three targets.
         pos = m.end()
         while True:
@@ -4214,9 +4302,18 @@ def invented_level_violations(text: str, ctx: dict) -> list[str]:
             if not step:
                 break
             after = re.match(r"\s*([A-Za-z']+)", src[pos + step.end():])
-            if not (after and after.group(1).lower() in _SLOT_NON_LEVEL_NOUNS):
-                _report(step.group(1))
+            if not (_DURATION_SUFFIX_RE.match(src[pos + step.end():])
+                    or (after and after.group(1).lower() in _SLOT_NON_LEVEL_NOUNS)):
+                _report(step.group(1), end=pos + step.end())
             pos += step.end()
+    # Bound the additional natural-language form to the demonstrated unit
+    # confusion. Do not globally reinterpret analyst reports for approval_desk.
+    for match in _TARGET_IS_RE.finditer(src):
+        after = re.match(r"\s*([A-Za-z']+)", src[match.end():])
+        if (_finite(match.group(1).replace(",", "")) in duration_values
+                and not _DURATION_SUFFIX_RE.match(src[match.end():])
+                and not (after and after.group(1).lower() in _SLOT_NON_LEVEL_NOUNS)):
+            _report(match.group(1), end=match.end())
     return out[:3]
 
 
@@ -5509,147 +5606,27 @@ _TEMPLATES: dict[tuple[str, str], list[tuple[str, str]]] = {
         ),
     ],
 
-    # ── theme_list (all voices) — the multi-cashtag group post ────────────────
-    # MUST contain ≥4 cashtags from {cashtag_list}.
-    # {cashtag_list} = "$NVDA $AMD $SMCI $AVGO"
-    # {theme_name} = "Artificial Intelligence"
-    # {theme_direction} = "down" | "up"
-    # {theme_agg_pct} = "-2.1%"
-    # {theme_question} = the structural tail from movers_source. THE NAME IS
-    #   HISTORICAL: under voice doctrine v5 that bank is fact-forward statements
-    #   (a volume multiple, a gap rank, a streak), never a question. The token
-    #   keeps its name because movers_source builds the key; the CONTENT law is
-    #   in movers_source._TAIL_UP/_TAIL_DOWN and in `voice_v5_violations`, which
-    #   rejects any post that ends on "?" whatever produced it.
-    # {top_fact} = theme aggregate text
-    # Optional 3rd element = applicability tags (see _variant_allowed): a
-    # down-flavored headline must never ship on an up-tape theme.
+    # ── theme_list — one measured participation argument ───────────────────
+    # The source owner supplies a conditional minority/majority/unanimity thesis.
+    # Keep its numerator and denominator together; member returns live in the
+    # existing chart. No template may invent group unanimity, cause or precedent.
     ("theme_list", "authoritative desk"): [
-        (
-            "{theme_name} names all getting hit today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "The whole {theme_name} group moved together",
-            "{cashtag_list}\nOne name is noise. This many is a message. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name}, {theme_agg_pct} average today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} tape, worst first",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} moved as one group",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} is {theme_direction} across the board today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "dry, receipts-forward"): [
-        (
-            "{theme_name} | {theme_agg_pct} average",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} ranked by today's move",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | the whole list",
-            "{cashtag_list}\nNumbers below, commentary optional. {top_fact} "
-            "{theme_question}",
-        ),
-        (
-            "{theme_name} tape today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "specialist"): [
-        (
-            "{theme_name} does not move like this on nothing",
-            "{cashtag_list}\nBreadth, not one name: the whole group printed "
-            "the same direction. {top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | pressure across the group",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "Every {theme_name} name on the list moved today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | breadth did the work",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "educational"): [
-        (
-            "A whole group moving at once is the signal",
-            "{cashtag_list}\nA group-wide move says more than any single name. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "This is what group-wide selling looks like",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} | a group move in real time",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "The {theme_name} tape is one lesson today",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "fast, reactive"): [
-        (
-            "{theme_name} names getting hit 👀",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "Every {theme_name} name is {theme_direction} right now",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | tape check",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | moving as one",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
     ("theme_list", "pattern/history"): [
-        (
-            "{theme_name} has moved this cleanly before",
-            "{cashtag_list}\nGroup moves this clean have marked turns before. "
-            "{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} under pressure | a familiar shape",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-            ("down_only",),
-        ),
-        (
-            "{theme_name} | a rhyme with a precedent",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
-        (
-            "{theme_name} | the old pattern is back",
-            "{cashtag_list}\n{top_fact} {theme_question}",
-        ),
+        ("{theme_thesis}", "{cashtag_list}\n{theme_question}"),
     ],
 
     # ── mover (all voices) — biggest single mover, charted ────────────────────
@@ -6550,6 +6527,7 @@ def _render_template(template: str, ctx: dict) -> str:
         "{theme_direction}": ctx.get("theme_direction", ""),
         "{theme_agg_pct}": ctx.get("theme_agg_pct", ""),
         "{theme_question}": ctx.get("theme_question", ""),
+        "{theme_thesis}": ctx.get("theme_thesis", ""),
         "{mover_pct}": ctx.get("mover_pct", ""),
         # The COMPUTED technical state (defect 4). Only the "needs_state" mover
         # variants carry this token and _variant_allowed makes those unselectable
@@ -7515,8 +7493,9 @@ def write_posts_llm(
 # reaches a reader on a diary-register lane.
 # ─────────────────────────────────────────────────────────────────────────────
 
-#: Corpus exemplars, verbatim from the 2026-07-29 fintwit corpus (286 original
-#: posts, 17 accounts; `x_corpus/exemplars.md`). Grouped by register because the
+#: Register exemplars combine historical corpus samples with original teaching
+#: examples. They calibrate writing; they are never evidence for a new post.
+#: Grouped by register because the
 #: registers differ structurally, not just tonally — the wire desk writes one
 #: caps line, the numbers desk stacks blank-line-separated escalations, the
 #: trader voice runs dense multi-line call-outs. Kept as a constant so the test
@@ -7539,15 +7518,15 @@ CORPUS_EXEMPLARS: dict[str, tuple[str, ...]] = {
         "the summer is now underneath.",
         "$WS held the same long-term trendline for the fifth time in a year. "
         "Five touches since last August, five holds. The line is 41.20.",
-        "SPX breadth: 4 of 11 sectors above their 50-day.\n\n"
+        "SPX breadth: 4 of 11 sectors above their 50-day averages.\n\n"
         "The index made a high anyway. Thin leadership is the pattern that "
         "preceded both prior pullbacks this year.",
     ),
     "dry juxtaposition (two facts set against each other, tension left standing)": (
-        "Powell takes four dissents and the 2-year doesn't move a basis point. "
-        "The bond market graded that meeting before the presser started.",
-        "GDPNow tracking 5.8% while claims run 12% below last year. The "
-        "growth-scare trade keeps paying for not existing.",
+        "The Fed's vote was split, but the 2-year yield was unchanged after "
+        "the decision.",
+        "GDPNow is tracking 5.8% growth.\n\nClaims are 12% below last year, "
+        "so that strong growth estimate still sits alongside relatively low layoffs.",
         "The Nasdaq 100 $QQQ is down 5%+ over the last week, while the S&P 500 "
         "Equalweight $RSP is up 2%+.",
     ),
@@ -7582,12 +7561,11 @@ CORPUS_EXEMPLARS: dict[str, tuple[str, ...]] = {
         "Shortest: 12 months",
     ),
     "rotation desk (group move, leaders with aligned %, breadth inside it)": (
-        "Metals did the work today: group +7.2% average.\n"
-        "$WWR +88% $AREC +21% $CENX +12% $CDE +11%\n"
-        "Third straight session the group has led. Breadth inside the group: "
-        "19 of 22 green.",
-        "Software's bid is back. $TEAM +35% on earnings, the group +3.7%, 8 of "
-        "10 leaders green. First group-wide move since the July selloff.",
+        "Metals advanced across 19 of 22 stocks.\n"
+        "$AREC $CENX $CDE were among the leaders.\n"
+        "The gain extended well beyond the top performer.",
+        "Software finished higher, but just 4 of 24 stocks rose.\n\n"
+        "A positive average hides how few names joined the gain.",
         "$TSLA down 9 of the last 10 days\n$AMZN down 8 of the last 9 days\n"
         "$META down 9 days in a row",
     ),
@@ -7615,10 +7593,10 @@ CORPUS_EXEMPLARS: dict[str, tuple[str, ...]] = {
         "99th percentile.",
     ),
     "macro stat stack (dense prints, the read only when the prints carry it)": (
-        "jobless claims 199k. gdpnow 5.8%. median cpi 2.1%. the soft landing "
-        "isn't a forecast anymore, it's the print.",
-        "9 of 11 sectors green. equal-weight beat cap-weight by 80bps. broad "
-        "days like this opened the last three legs up, not closed them.",
+        "median cpi slowed to 2.1% from 2.6%. inflation is easing, but prices "
+        "are still rising.",
+        "9 of 11 sectors rose.\nequal-weight beat cap-weight by 80bps.\n"
+        "the advance reached beyond the largest companies.",
         "June new home sales rose +1.6% m/m vs. +4.8% est. & -4.3% prior "
         "(revised up from -7.3%)",
     ),
@@ -7632,10 +7610,10 @@ CORPUS_EXEMPLARS: dict[str, tuple[str, ...]] = {
         "12% of households earning over 250,000 say they live paycheck to paycheck.",
         "China is 28% of world manufacturing output. The US is 17%.",
     ),
-    "chart caption with an image attached (a label, not the analysis)": (
-        "$NET back above the November shelf 👀",
-        "Best day for the group since April.",
-        "Fourth test of 122. Still holding.",
+    "chart caption with an observed image (one intelligible observation)": (
+        "$NET regained the price that held through November.",
+        "Banks had their strongest session since April.",
+        "$CALM fell back from its 50-day average again.",
     ),
 }
 
@@ -7669,11 +7647,10 @@ ANTI_EXEMPLARS: tuple[tuple[str, str], ...] = (
         "the screen' points at a dashboard the reader has never seen.",
     ),
     (
-        "$TEL near entry in my corner\n\nTEL has closed green 6 sessions in a "
-        "row. Not finished setting up. Close.",
-        "bot cadence: three clipped fragments in a row, each shorter than the "
-        "last, none of them a stance. A human types one sentence, not a "
-        "telegram in three parts.",
+        "$ENPH back under 30.4. the 24.2 invalidation is the whole trade.",
+        "bot cadence: a clipped opening followed by a dramatic stock ending. "
+        "Neither sentence explains what its level measures. Name the supplied "
+        "reference in a connected thought; do not force a trade into the post.",
     ),
 )
 
@@ -7719,7 +7696,7 @@ def _anti_exemplar_block() -> str:
 # reads.
 V2_PAYLOAD_CONTRACT_KEYS: tuple[str, ...] = (
     "account", "persona", "kind", "shape", "shape_contract", "number_budget",
-    "angle",
+    "angle", "editorial_brief",
     "cashtag", "cashtags", "facts", "entry", "t1", "t2", "invalidation",
     "win_rate", "numbers_whitelist", "pack", "lead_with", "sibling_texts",
     "franchise", "codex",
@@ -7734,8 +7711,9 @@ _V2_PAYLOAD_CONTRACT_BLOCK = (
     "- account: which desk is posting. It is not content; never name it.\n"
     "- persona.voice: the register you write in. It is the card below, in "
     "short form.\n"
-    "- persona.example_lines: lines this person has actually written. "
-    "Calibration for the register, never lines to reuse or paraphrase.\n"
+    "- persona.example_lines: writing samples for the register. They are "
+    "style examples, not evidence about this item or an author's history. "
+    "Never reuse their wording, numbers or claims.\n"
     "- kind: what class of post this is (signal, chart, receipt, macro, "
     "earnings, wire...). It sets what the post is FOR.\n"
     "- shape / shape_contract: the form, assigned. Write exactly that form; the "
@@ -7743,12 +7721,17 @@ _V2_PAYLOAD_CONTRACT_BLOCK = (
     "- number_budget: the most DISTINCT numbers this post may carry, computed "
     "for THIS item's kind and shape, and the exact count a validator will "
     "apply to what you write. It is a ceiling, never a target: most posts want "
-    "fewer, and one number with a reaction that costs you beats four numbers "
-    "and no stance. Every number after the first has to be what the one before "
+    "fewer. A supported comparison is more useful than unrelated figures "
+    "or a performed reaction. Every number after the first has to be what the one before "
     "it is measured against, not a new claim. shape_contract quotes the SHAPE "
     "half of this figure and is never higher than it, so where the two differ, "
     "this is the one that counts.\n"
     "- angle: the job this post does. Write that job.\n"
+    "- editorial_brief: deterministic projection of this item's existing fields; "
+    "revision/digest identify the exact brief. Missing source or media state "
+    "stays null/unknown rather than being guessed. Its takeaway is the "
+    "suggested leading observation, not a separate proven thesis. Explain "
+    "a relationship only when the supplied claims support it.\n"
     "- cashtag / cashtags: the tickers this post is about. If a cashtag is "
     "present it must appear in the post, spelled exactly as given.\n"
     "- facts / facts[].text: what our engine actually computed, already in "
@@ -7806,14 +7789,22 @@ _V2_SYSTEM_PROMPT_BASE = (
     # stalls here", "Am I getting a second session out of this?". The premise is
     # now the desk's actual job. Everything downstream of this paragraph that
     # grounds a claim in the packet is UNCHANGED.
-    "You write for a market desk that publishes on X. Not a brand, not a "
-    "research note, not a narrator with feelings about a trade. Your readers "
-    "are market professionals and men grinding toward financial freedom; they "
-    "clock AI text instantly and punish cheese with the quote-tweet. Your one "
-    "job: surface the fact that changes the picture, plus the context that "
-    "makes it mean something. The read is in what you SELECT, never in a "
-    "reaction you perform. If a line would sound weird said out loud on a "
-    "trading desk, rewrite it.\n\n"
+    "You write concise market commentary for people who follow markets. "
+    "Explain one useful observation in ordinary, connected language: what "
+    "changed, and the supplied comparison that makes it matter. The read "
+    "belongs in the evidence you select and explain. Use a complete thought "
+    "with a clear subject and verb, not a string of compressed labels. "
+    "Use contractions where they sound natural. Vary the sentence length "
+    "with the material, not with a fixed hook-fact-punchline formula.\n\n"
+    "ANALYSIS. Give a supported interpretation when the facts earn one: "
+    "a contrast, a change from the prior reading, or a condition explicitly "
+    "present in the packet. Explain why that relationship matters in plain "
+    "words. Distinguish an inference from an observed fact through ordinary "
+    "phrasing. Never add a cause, motive, consensus, forecast or trading "
+    "condition the evidence does not establish. A second sentence must add "
+    "information, not announce that the first sentence matters. Significant "
+    "breaking news may end on the verified event. Routine data needs a useful "
+    "relationship, not a compulsory opinion, dramatic ending or empty slogan.\n\n"
     "You write ONE post. The item you are given carries the account's persona, "
     "the facts our engine computed, the shape this post must take, and the "
     "angle it must work. The engine decides WHAT. You decide how it is said.\n\n"
@@ -7837,16 +7828,19 @@ _V2_SYSTEM_PROMPT_BASE = (
     "STRUCTURE. Line breaks are punctuation, not decoration:\n"
     "- A break separates the CLAIM from the numbers that support it. Claim on "
     "one line, stats under it. Never break mid-thought for rhythm.\n"
-    "- A stack is a list of facts, one per line, each carrying its own figure. "
+    "- A stack develops one observation across the supplied evidence and "
+    "comparison. A supported explanatory line need not carry a new figure. "
     "If two lines could be one sentence, they are one sentence.\n"
     "- A quote ships flat, as `Name: statement`. No 'said', no scare quotes "
     "wrapped around the whole thing, no commentary bolted on. The attribution "
     "is the first word and the statement follows it.\n"
     "- An opener like 'BREAKING' belongs to the news desk and to no other. An "
     "analytical desk states the move; it does not announce a bulletin.\n"
-    "- When your item ships an image, the picture is doing the analysis. The "
-    "caption is a label: ten words at the outside, and it must not restate what "
-    "the reader can already see.\n\n"
+    "- Follow the assigned shape. A short caption names what changed; an "
+    "attached picture can carry detail. Stack and two_part may explain a "
+    "supported relationship in connected sentences. Do not apply a caption's "
+    "word limit to every post with an image. Never assume an attachment when "
+    "editorial_brief.media.state is text_only or unknown.\n\n"
 
     "NUMBERS ARE COMPARATIVE. A figure on its own is trivia; a figure against "
     "something is a read. Whenever your item's facts carry the comparison, "
@@ -7884,6 +7878,9 @@ _V2_SYSTEM_PROMPT_BASE = (
     "industry groups are moving today' or do not write the count at all.\n"
     "- Every 'it', 'that', 'this' needs a thing it points at, already named in "
     "this post.\n"
+    "- Keep the reference noun and grammatical action. 'At the 50-day' "
+    "does not say whether this is an average or a high; name the reference "
+    "the packet actually supplies. Brevity must not remove the meaning.\n"
     "- If the post's whole point is a level, PRINT THE LEVEL. A level with no "
     "number is a mood.\n"
     "- Say what a thing IS, never what a study calls it. Not 'the anchored "
@@ -7918,16 +7915,16 @@ _V2_SYSTEM_PROMPT_BASE = (
     "HEDGES MUST BIND. An uncertainty tail may only be about a stat that is "
     "actually in the post: 'that 78% is history, not a promise' needs the 78%. "
     "A floating 'Historical, not a promise.' on a post with no base rate is "
-    "banned, and so is any compliance-desk phrasing. On a post with no base "
-    "rate, honesty is a CONDITION, a LEVEL or an ADMISSION, never a caveat:\n"
-    "- the condition you are waiting on: 'this only matters if it holds "
-    "through the close'.\n"
-    "- the level that changes the read: 'under 33.8 the whole thing is a "
-    "different conversation'.\n"
-    "- what you do not know, said flatly and with nobody narrating it: 'no "
-    "corroborated driver on the tape for it yet'.\n"
-    "- what the next session settles: 'the next close either holds the "
-    "reclaim or it does not'.\n"
+    "banned, and so is any compliance-desk phrasing. Missing a base rate "
+    "does not require a closing caveat or condition. Use one of these only "
+    "when the packet supports it and it helps explain the claim:\n"
+    "- the condition you are waiting on, when supplied: 'the breakout still "
+    "needs a close above 42'.\n"
+    "- the level that changes the read, when supplied: 'a close below 33.8 "
+    "would break the support that held this week'.\n"
+    "- what you do not know, when material: 'the filing gives the purchase "
+    "amount, but does not explain the director's reason'.\n"
+    "Do not append a generic next-close test, prediction, or trading frame.\n"
     "If you have a base rate, the base rate IS the hedge. Print it and let it "
     "do the work: '11 of 14 since March, which is also 3 that did not'.\n\n"
 
@@ -7967,12 +7964,12 @@ _V2_SYSTEM_PROMPT_BASE = (
     "chase, fade). No meta-language about the setup or the post. End on a "
     "fact, not a shrug. If the packet supports no consequence, end on the "
     "strongest fact.\n"
-    "- The consequence is a fact about the LEVEL, never about your confidence. "
-    "'Below 209 the volume shelf is gone' is the shape. 'I trust it only above "
-    "209' is the shape that gets the post dropped.\n"
-    "- X is casual. Contractions always. Fragments are fine. Short is good, "
-    "but natural-short, the way people type, not clipped telegraph style. "
-    "Three fragments in a row is a telegram, not a voice.\n"
+    "- A consequence, when supported, concerns the measured relationship, "
+    "never the writer's confidence. A level is useful when its role is clear; "
+    "it is not a compulsory ending for every market observation.\n"
+    "- X is casual. Use natural contractions and connected sentences. A "
+    "fragment can work when its meaning is complete; do not stack fragments "
+    "or delete ordinary connecting words to sound terse.\n"
     "- The default humor is deadpan understatement ('Ugly.' 'Not ideal.'). "
     "Most posts carry zero jokes; when wit shows up it carries the read, it "
     "never decorates it. One dry line, never two.\n"
@@ -8000,7 +7997,8 @@ _V2_SYSTEM_PROMPT_BASE = (
     "notes', 'narrator:', 'plot twist', 'hold my beer', 'well, that happened'.\n"
     "- Risk never attaches to your ego: 'I'm wrong below 33.8', 'proves me "
     "wrong', 'my trigger' are banned. Compliance caveats are banned too: "
-    "'historical, not a guarantee', 'past performance', 'size appropriately'.\n"
+    "'historical, not a guarantee', 'past performance', 'size appropriately', "
+    "'research context only', 'not a trading recommendation'.\n"
     # THIS LINE USED TO SAY "ONE number per post" (W4e, 2026-08-02). It was a
     # blanket house rule sitting in the same prompt as a per-shape contract that
     # orders up to six, and above a validator (`number_budget_for`) that has
@@ -8262,8 +8260,9 @@ def persona_prompt_section(persona_card: dict | None) -> str:
     if voice:
         out.append(f"Register: {voice}")
     if lines:
-        out.append("Lines this person has actually written. Match the rhythm "
-                   "and the stance, never the words or the numbers:")
+        out.append("Writing samples for register, not evidence or personal "
+                   "history. Match the clarity and rhythm, never the wording, "
+                   "numbers or claims:")
         out.extend(f'  "{l}"' for l in lines)
     return "\n".join(out)
 
@@ -8511,6 +8510,101 @@ def reset_writer_stats() -> None:
 #: to carry.
 _PAYLOAD_WHITELIST_MAX = 24
 
+EDITORIAL_BRIEF_REVISION = "marketing.editorial_brief.v2"
+_EDITORIAL_BRIEF_MEDIA_STATES = frozenset({"image_present", "text_only", "unknown"})
+_EDITORIAL_BRIEF_PROHIBITIONS: tuple[str, ...] = (
+    "no_fabricated_facts",
+    "no_unwhitelisted_numbers",
+    "no_performed_first_person",
+    "no_questions",
+    "no_unbacked_image_assumption",
+)
+
+
+def _optional_text(value: object) -> str | None:
+    text = str(value or "").strip()
+    return text or None
+
+
+def _compile_editorial_brief(
+    ctx: dict,
+    *,
+    persona_card: dict | None,
+    number_budget: int,
+) -> dict:
+    """Compact deterministic projection of fields the v2 writer already owns."""
+    claims: list[dict[str, Any]] = []
+    for fact in (ctx.get("top_facts") or [])[:3]:
+        if not isinstance(fact, dict):
+            continue
+        text = _optional_text(fact.get("text"))
+        if not text:
+            continue
+        row: dict[str, Any] = {
+            "claim_ref": _optional_text(fact.get("id")),
+            "text": text,
+        }
+        if isinstance(fact.get("count"), dict):
+            row["count"] = dict(fact["count"])
+        claims.append(row)
+
+    media_raw = ctx.get("media_context")
+    media_raw = media_raw if isinstance(media_raw, dict) else {}
+    media_state = str(media_raw.get("state") or "unknown").strip().lower()
+    if media_state not in _EDITORIAL_BRIEF_MEDIA_STATES:
+        media_state = "unknown"
+    media: dict[str, Any] = {
+        "state": media_state,
+        "required": str(ctx.get("shape") or DEFAULT_SHAPE) == "caption",
+    }
+    media_kind = _optional_text(media_raw.get("kind"))
+    if media_kind:
+        media["kind"] = media_kind
+
+    examples = [
+        str(line).strip()
+        for line in ((persona_card or {}).get("example_lines") or [])
+        if str(line).strip()
+    ][:3]
+    win_rate = _optional_text(ctx.get("win_rate_str"))
+    shape = str(ctx.get("shape") or DEFAULT_SHAPE)
+    brief: dict[str, Any] = {
+        "revision": EDITORIAL_BRIEF_REVISION,
+        "medium": "x",
+        "audience": "market professionals",
+        "beat": _optional_text(ctx.get("angle")) or _optional_text(ctx.get("type")),
+        "takeaway": claims[0]["text"] if claims else None,
+        "claims": claims,
+        "display_values": list(ctx.get("numbers_whitelist") or [])[:_PAYLOAD_WHITELIST_MAX],
+        "clocks": {
+            "observation_date": _optional_text(ctx.get("as_of")),
+            "source_date": _optional_text(ctx.get("source_as_of")),
+            "plan_public_date": _optional_text(ctx.get("signal_date")),
+        },
+        "media": media,
+        "uncertainty": {"base_rate": win_rate} if win_rate else None,
+        "positive_examples": examples,
+        "prohibitions": list(_EDITORIAL_BRIEF_PROHIBITIONS),
+        "format": {"shape": shape, "number_budget": int(number_budget)},
+    }
+    brief["digest"] = hashlib.sha256(
+        json.dumps(brief, sort_keys=True, separators=(",", ":"),
+                   ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return brief
+
+
+def _attach_editorial_contract(result: dict, payload: dict) -> dict:
+    """Attach only the immutable compiled-contract identity to a writer result."""
+    out = dict(result or {})
+    brief = payload.get("editorial_brief") if isinstance(payload, dict) else None
+    if isinstance(brief, dict) and brief.get("revision") and brief.get("digest"):
+        out["editorial_contract"] = {
+            "revision": str(brief["revision"]),
+            "digest": str(brief["digest"]),
+        }
+    return out
+
 
 def _v2_item_payload(
     ctx: dict,
@@ -8526,6 +8620,7 @@ def _v2_item_payload(
     prose agree by construction.
     """
     shape = str(ctx.get("shape") or DEFAULT_SHAPE)
+    number_budget = number_budget_for(kind=str(ctx.get("type") or ""), shape=shape)
     facts_out: list[dict] = []
     for f in (ctx.get("top_facts") or [])[:3]:
         row: dict[str, Any] = {"text": f.get("text")}
@@ -8548,9 +8643,10 @@ def _v2_item_payload(
         # earnings post is allowed four whatever its shape says). The gate does
         # not move — `number_budget_for` is unchanged and is the single source
         # of truth for BOTH sides now. The writer is simply told what it is.
-        "number_budget": number_budget_for(kind=str(ctx.get("type") or ""),
-                                           shape=shape),
+        "number_budget": number_budget,
         "angle": ctx.get("angle") or None,
+        "editorial_brief": _compile_editorial_brief(
+            ctx, persona_card=persona_card, number_budget=number_budget),
         "cashtag": ctx.get("cashtag") or None,
         "cashtags": ctx.get("cashtags") or None,
         "facts": facts_out,
@@ -8943,6 +9039,7 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
 
     def _one(idx: int) -> dict:
         ctx = contexts[idx]
+        payload: dict = {}
         try:
             persona_id = str(ctx.get("account", ""))
             persona_raw = (personas_cfg.get(persona_id)
@@ -8968,17 +9065,23 @@ def write_posts_llm_v2(contexts: list[dict], cfg: dict, *, root: Any = None) -> 
             # present on the repair turn too (which restates only violations)
             # and sits beside the house defaults it is allowed to override.
             system_prompt = _prompt_for(persona_id, persona_card)
-            return _v2_write_one(
-                ctx, payload, providers=providers, system_prompt=system_prompt,
-                max_tokens=max_tokens, cfg=cfg,
-                recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
+            return _attach_editorial_contract(
+                _v2_write_one(
+                    ctx, payload, providers=providers, system_prompt=system_prompt,
+                    max_tokens=max_tokens, cfg=cfg,
+                    recent=list(recent_seed.get(str(ctx.get("account", "")) or "", [])),
+                ),
+                payload,
             )
         except Exception as exc:  # noqa: BLE001 — ONE item's failure, ONE drop
             log.warning("copywriter v2: item %d raised (%s: %s) — dropped",
                         idx, type(exc).__name__, exc)
-            return {"mode": "dropped",
-                    "reasons": [f"writer_exception:{type(exc).__name__}"],
-                    "stage": "provider"}
+            return _attach_editorial_contract(
+                {"mode": "dropped",
+                 "reasons": [f"writer_exception:{type(exc).__name__}"],
+                 "stage": "provider"},
+                payload,
+            )
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         for i, res in enumerate(pool.map(_one, range(len(contexts)))):
