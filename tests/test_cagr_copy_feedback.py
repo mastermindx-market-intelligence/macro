@@ -472,3 +472,201 @@ def test_negative_control_old_lacks_failure_and_manual_recovery(old_results, res
     # no manual select wiring in the old handler at all
     for r in old_results.values():
         assert r["selectButtonWired"] is False
+
+
+
+# Complete date pairs own the horizon; a rejected pair cannot borrow Years.
+# These tests execute both native inline controllers, not a copied calculator.
+# The DOM/clipboard objects are test doubles, not browser acceptance.
+DATE_HARNESS_JS = r"""
+const fs = require('node:fs'), vm = require('node:vm');
+const script = fs.readFileSync(process.argv[2], 'utf8');
+const actions = JSON.parse(fs.readFileSync(process.argv[3], 'utf8'));
+const elements = {}, events = {}, writes = [], pending = [], errors = [];
+const timers = new Map(); let serial = 0, lang = 'en';
+function node(id) {
+  return elements[id] || (elements[id] = {
+    id, value: '', textContent: '', className: '', hidden: true, style: {},
+    events: {}, dataset: {},
+    classList: { values: new Set(), add(x) { this.values.add(x); },
+      remove(x) { this.values.delete(x); }, contains(x) { return this.values.has(x); } },
+    addEventListener(name, fn) { this.events[name] = fn; },
+    setAttribute() {}, focus() {}, select() {}
+  });
+}
+for (const mode of ['find', 'project']) node('button-' + mode).dataset.v = mode;
+node('mode-seg').querySelectorAll = () => [node('button-find'), node('button-project')];
+node('mode-seg').querySelector = s => node('button-' + s.match(/='([^']+)'/)[1]);
+const document = {
+  documentElement: { getAttribute() { return lang; } },
+  addEventListener(name, fn) { events[name] = fn; }, getElementById: node,
+  createElement() { return node('temporary-textarea'); },
+  body: { appendChild() {}, removeChild() {} }, execCommand() { return true; }
+};
+const navigator = { clipboard: { writeText(line) {
+  writes.push(line); return { then(ok, fail) { pending.push({ ok, fail }); } };
+} } };
+vm.runInNewContext(script, { document, navigator,
+  setTimeout(fn) { timers.set(++serial, fn); return serial; },
+  clearTimeout(id) { timers.delete(id); }, console: { error(...args) { errors.push(args); } }
+});
+events.DOMContentLoaded();
+const snapshots = [];
+for (const action of actions) {
+  if (action.set) {
+    for (const [key, value] of Object.entries(action.set)) node(key).value = String(value);
+    node('v0').events.input();
+  }
+  if (action.mode) node('mode-seg').events.click({ target: {
+    closest() { return node('button-' + action.mode); }
+  } });
+  if (action.language) { lang = action.language; if (events.langchange) events.langchange(); }
+  if (action.copy) node('copy-result').events.click();
+  if (action.settle) pending[action.settle.index][action.settle.outcome]();
+  snapshots.push({ main: node('out-main').textContent, gain: node('out-gain').textContent,
+    years: node('out-years').textContent, plain: node('out-plain').textContent,
+    success: node('copied').classList.contains('show'), fail: !node('copy-fail').hidden,
+    manual: !node('copy-manual').hidden, manualText: node('copy-manual-text').value,
+    writes: [...writes], errors: [...errors], activeTimers: timers.size });
+}
+process.stdout.write(JSON.stringify(snapshots));
+"""
+
+DATE_VALID = {"v0": "10000", "v1": "12100", "years": "2", "cagr-rate": "10",
+              "date-start": "", "date-end": ""}
+
+
+@pytest.fixture(params=["template", "committed-page"])
+def date_script(request):
+    if request.param == "template":
+        return extract_script(TEMPLATE_PATH.read_text(encoding="utf-8"))
+    page = TEMPLATE_PATH.resolve().parents[2] / "site/tools/calculators/cagr.html"
+    scripts = [s for s in re.findall(r"<script[^>]*>(.*?)</script>",
+                                    page.read_text(encoding="utf-8"), re.S)
+               if "function compute(inp)" in s]
+    assert len(scripts) == 1
+    return scripts[0]
+
+
+def date_run(script, actions):
+    with tempfile.TemporaryDirectory(prefix="cagr-date-test-") as td:
+        root = Path(td)
+        (root / "source.js").write_text(script, encoding="utf-8")
+        (root / "runner.cjs").write_text(DATE_HARNESS_JS, encoding="utf-8")
+        (root / "actions.json").write_text(json.dumps(actions), encoding="utf-8")
+        proc = subprocess.run([NODE, str(root / "runner.cjs"), str(root / "source.js"),
+                               str(root / "actions.json")], capture_output=True,
+                              text=True, timeout=30)
+    assert proc.returncode == 0, proc.stderr
+    observations = json.loads(proc.stdout)
+    assert all(not row["errors"] for row in observations)
+    return observations
+
+
+def assert_date_refused(row):
+    assert (row["main"], row["gain"], row["years"]) == ("—", "—", "—")
+    assert row["success"] is False and row["fail"] is False
+    assert row["manual"] is False and row["manualText"] == ""
+
+
+@pytest.mark.parametrize("mode", ["find", "project"])
+@pytest.mark.parametrize("end", ["2023-01-01", "2024-01-01"])
+def test_complete_nonpositive_date_pair_never_uses_retained_years(date_script, mode, end):
+    actions = [{"set": DATE_VALID, "mode": mode, "copy": True},
+               {"settle": {"index": 0, "outcome": "ok"}}]
+    for years in ("2", "5", "", "nonnumeric"):
+        actions.append({"set": {"date-start": "2024-01-01", "date-end": end,
+                                "years": years}, "copy": True})
+    rows = date_run(date_script, actions)
+    assert rows[1]["success"] is True
+    for row in rows[2:]:
+        assert_date_refused(row)
+        assert row["plain"] == "The end date must be after the start date."
+        assert len(row["writes"]) == 1
+        assert row["activeTimers"] == 0
+
+
+@pytest.mark.parametrize("mode", ["find", "project"])
+def test_date_override_recovery_and_bilingual_errors(date_script, mode):
+    rows = date_run(date_script, [
+        {"set": {**DATE_VALID, "date-start": "2024-01-01", "date-end": "2023-01-01"}, "mode": mode},
+        {"language": "zh", "copy": True}, {"language": "en"},
+        {"set": {"date-start": "2024-02-30", "date-end": "2025-01-01"}, "language": "zh"},
+        {"language": "en"},
+        *[{"set": {"date-start": "2024-01-01", "date-end": "2025-01-01", "years": years},
+           "copy": True} for years in ("2", "5", "", "nonnumeric")],
+        {"set": DATE_VALID, "copy": True},
+    ])
+    for row in rows[:5]:
+        assert_date_refused(row)
+        assert row["writes"] == []
+    assert rows[1]["plain"] == "终止日期必须晚于起始日期。"
+    assert rows[2]["plain"] == "The end date must be after the start date."
+    assert rows[3]["plain"] == "请输入两个有效日期。"
+    assert rows[4]["plain"] == "Enter two valid dates."
+    for row in rows[5:9]:
+        assert row["main"] == ("+20.95%" if mode == "find" else "$11,002")
+        assert row["years"] == "1.00 yr" and "1.0 years" in row["writes"][-1]
+    assert rows[-1]["main"] == ("+10.00%" if mode == "find" else "$12,100")
+    assert "2.0 years" in rows[-1]["writes"][-1]
+
+
+@pytest.mark.parametrize("mode", ["find", "project"])
+def test_numeric_and_incomplete_date_behavior_preserved(date_script, mode):
+    actions = []
+    for dates in ({}, {"date-start": "2024-01-01"}, {"date-end": "2023-01-01"}):
+        actions.append({"set": {**DATE_VALID, **dates}, "mode": mode, "copy": True})
+    rows = date_run(date_script, actions)
+    assert {r["main"] for r in rows} == {"+10.00%" if mode == "find" else "$12,100"}
+    assert {r["years"] for r in rows} == {"2.00 yr"}
+    assert len(set(rows[-1]["writes"])) == 1
+
+
+@pytest.mark.parametrize("outcome", ["ok", "fail"])
+@pytest.mark.parametrize("transition", ["invalid", "valid", "mode", "language"])
+def test_pending_copy_cannot_restore_prior_render_feedback(date_script, outcome, transition):
+    change = {
+        "invalid": {"set": {"date-start": "2024-01-01", "date-end": "2023-01-01"}},
+        "valid": {"set": {"years": "5"}}, "mode": {"mode": "project"},
+        "language": {"language": "zh"},
+    }[transition]
+    rows = date_run(date_script, [
+        {"set": DATE_VALID, "copy": True}, change,
+        {"settle": {"index": 0, "outcome": outcome}},
+        {"set": DATE_VALID, "copy": True}, {"settle": {"index": 1, "outcome": "ok"}},
+    ])
+    row = rows[2]
+    assert row["success"] is False and row["fail"] is False and row["manual"] is False
+    assert row["manualText"] == ""
+    assert rows[-1]["success"] is True
+
+
+def test_gregorian_dates_and_independent_horizon_oracle(date_script):
+    from datetime import date, timedelta
+    pairs = [(date(y, 2, 28), date(y, 3, 1)) for y in (1, 4, 99, 100, 400, 1900, 2000, 2024, 2100)]
+    pairs += [(date(1950, 1, 1) + timedelta(days=i * 67),
+               date(1950, 1, 1) + timedelta(days=i * 67 + 25 + i)) for i in range(80)]
+    actions = [{"set": DATE_VALID}]
+    expected = []
+    for start, end in pairs:
+        for first, last in ((start, end), (end, start), (start, start)):
+            actions.append({"set": {"date-start": first.isoformat(), "date-end": last.isoformat()}})
+            days = (last - first).days
+            expected.append(days / 365.25 if days > 0 else None)
+    rows = date_run(date_script, actions)[1:]
+    for row, horizon in zip(rows, expected):
+        if horizon is None:
+            assert_date_refused(row)
+        else:
+            shown = float(row["years"].removesuffix(" yr"))
+            assert abs(shown - horizon) <= (0.005 if horizon >= 1 else 0.00005)
+
+
+@pytest.mark.parametrize("invalid", ["1900-02-29", "2024-02-30", "0000-01-01", "2024-13-01",
+                                     "2024-1-01", "not-a-date", "275760-09-14"])
+def test_invalid_complete_dates_do_not_normalize_or_fall_back(date_script, invalid):
+    row = date_run(date_script, [{"set": {**DATE_VALID, "date-start": invalid,
+                                         "date-end": "2025-01-01"}, "copy": True}])[0]
+    assert_date_refused(row)
+    assert row["plain"] == "Enter two valid dates."
+    assert row["writes"] == []
