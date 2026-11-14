@@ -2756,3 +2756,681 @@ rows increment is neither merged nor served (27.7).
   window.
 - The standing limits are unchanged from section 25, which lists them (25.24); this window added
   none and removed none.
+
+
+## 28. Status at 15:00Z on 2026-11-11 — section 27 merged; #10924 resolved and READY in the queue; #10981 reopened; #11024 armed; lane 10 opened; the duty officer became an Opus operating deputy
+
+Sub-sections 28.1 to 28.23 fold the notes written between 03:17Z and 14:57Z on 2026-11-11 —
+the first heading after section 27's coverage through the last heading present when the
+notes were read for this section — grouped by subject rather than by clock time. A later note that
+supersedes an earlier line governs; 28.20 records the corrections. In this window section 27
+reached main (#10997 MERGED at 05:23:47Z, so sections 1 to 27 are on main), lane 8's #10924
+had its real conflict with main resolved, checked READY and armed, #10981 was closed by
+accident and reopened, the breadth archive #11024 was armed at 13:54Z, and three new unarmed
+Macro drafts arrived (#11030, #11035, #11039). The Chairman ordered rotation work and lane 10
+opened. Terminal deploys were observed to be automatic and beta already serves the merged
+Sector Intelligence Terminal rounds — the first deployment-rung fact this programme has
+recorded. Nothing of v1.1 is served to members today: production Macro has no serving code
+for the generation endpoint (it exists only on the unmerged lane 1 stack), the row wire is
+entitled-only, Terminal's merged interim path still decodes only the preview audience, and
+beta is the app's own gated surface, not the member production site. Nothing is
+production-proven. Armed is not merged: at the 15:00Z re-read #11024, #10924 and #10981 were
+all open in the controller queue.
+
+### 28.1 What changed in this window
+
+- Section 27 reached main: #10997 MERGED at 05:23:47Z on 2026-11-11, so sections 1 to 27 are
+  on main and this section is the next status pull request (28.2).
+- Lane 8's #10924: the content conflict with main was resolved by this programme's worker
+  (merge commit `526099636618e57a5961715d0a6e5eb6fb1f1a9f`, pushed at about 04:24Z), an
+  independent check returned READY at the checked head, one recording comment was posted,
+  and the pull request sits armed in the controller queue. Not merged (28.3).
+- #10981 was CLOSED at 05:23:48Z — not by anyone's decision: #10997's description contained
+  the two words "producer" and "fix" directly before the #10981 reference, which GitHub read
+  as a closing keyword. The COO reopened it at about 09:16Z; its label and head never moved.
+  Armed, not merged (28.4).
+- The breadth archive #11024 was delivered as a draft, survived a head change and an addendum
+  check, outlived a hung CI shard, and was armed at 13:54Z at head
+  `0cc39be059c157ff42ab7a85be2feee7d28339e4` (28.6).
+- Three new unarmed Macro drafts: #11030 (prepare-scripts restore, independently READY,
+  28.12), #11035 (member price state, check READY, then both should-fixes fixed, 28.7) and
+  #11039 (rotation context, check READY, arm held on one red CI shard, 28.9).
+- The lane 1 whole-stack review on Opus returned NOT READY; ruling 9 ordered a debt increment
+  owning items A to F, then a whole-stack re-review, then the frozen final pass (28.10).
+- Lane 3's entitled-read build survived two silent worker stops; a successor thread was
+  started on the same worktree and then sat the afternoon out at a deliberate load gate with
+  a 15:38Z stop deadline, still open at the last note (28.13).
+- Lane 10 (rotation signals) opened on the Chairman's word; its evidence reads returned; two
+  nightly capture records were built (#11024 first, then #11035 and #11039) (28.14, 28.6,
+  28.7, 28.9).
+- The joint Rotation Core v2 header with the Prophet programme was reviewed, objected to,
+  amended and frozen; the v1 engine was audited NOT SAFE and is being corrected on their side
+  (28.15).
+- The five outside research runs were blocked by the browser tool, the harness lane was
+  routed to the Hermes Engineering programme, the browser healed, and a replacement submission
+  operator started at 14:31Z after the first was quarantined at zero sends (28.16, 28.17).
+- The duty officer's seat moved to Opus under ruling 10 with wider decision rights; this
+  section was commissioned by that seat (28.11).
+- Terminal merged #1452, #1453, #1454 and #1455, all by other sessions; deploys are automatic
+  and beta served the merged Sector Intelligence rounds as observed at 04:59Z (28.19).
+
+### 28.2 Section 27 (#10997): cross-checked, armed, MERGED
+
+- The section 27 worker's output was delivered as Macro pull request #10997 at head
+  `e74bc5bce8e0990f369a28ed45ac22e50b634eb2`, one file, +517/-0, sections 1 to 26 untouched,
+  no labels, not a draft. A DeepSeek Flash fact cross-check returned `VERDICT: CLEAN` at that
+  head — every one of the 39 shas, 26 pull-request numbers and 73 UTC times in the new
+  section was placed in the notes or re-read on GitHub, and the diff was proved append-only
+  three independent ways. Its one should-fix (three shas printed only in 12-character form)
+  was stated by the checker not to hold the arm.
+- Armed with `merge-on-green` at about 04:14Z (the notes print both 04:13:43Z and 04:14:16Z;
+  28.20), after the duty officer re-read the pull request (head, not a draft, base main, no
+  labels, zero comments).
+- MERGED at 05:23:47Z on 2026-11-11. Re-read at 15:00Z on 2026-11-11: state MERGED. Sections
+  1 to 27 are on main.
+- The accident it caused: GitHub read the two words "producer" and "fix" placed directly
+  before the #10981 reference in its description as a closing keyword, and closed it one
+  second later (28.4). New standing rule from ruling 4: no close, fix or resolve word
+  directly before `#<number>` in anything this programme writes, including pull-request
+  descriptions and comments.
+
+### 28.3 Lane 8, #10924: conflict resolved, checked READY, armed, in the queue
+
+- The resolution worker (started 03:04Z, recorded in 27.11) first returned BLOCKED with
+  nothing pushed: the merge of main existed locally at `ea6ac1b60350`, but the merged-tree
+  free-content packing probe measured 6,006 weight-seconds, which needs 11 CI packs against
+  the recorded ceiling of 10. Neither side crossed the 6,000 line alone (the pull request
+  5,998; main 5,987); the crossing is the composition of two accepted contributions. The
+  recorded rule on origin/main already accepted the measured cost, so the worker was resumed
+  with the one approved edit: raise the pack ceiling from 10 to 11 with a dated docstring
+  recording the composition.
+- Returned RESOLVED AND PUSHED at about 04:24Z: merge commit `526099636618e57a5961715d0a6e5eb
+  6fb1f1a9f` (parents `3f28ce8cede1` and main `e30c643b4e96`), pushed as a plain
+  fast-forward. Both local gates green at that head: the curation probe test passed in 206
+  seconds, and contract-delta (the CI job that checks test-registration closures) reported 0
+  introduced, 0 inherited. A skip-worktree data rollback the worker caught at amend time was
+  repaired before the push.
+- The independent check (GLM, six-point checklist) was cut once by a platform restart at
+  05:25:55Z and resumed on the same thread; it returned READY at the checked head
+  `526099636618` — checks 1, 2, 3, 4 and 6 pass with quoted diffs; contract-delta 0/0;
+  suites 98 passed, 21 skipped; the probe re-measured at 5,971 / 6,006 / 5,729 seconds with
+  11 packs and zero breaches.
+- The merge controller refreshed the pull request at 05:23Z (a merge of main that also
+  removed `merge-blocked`; read from the label history at 07:24Z), moving the head to
+  `ff133abbe6c2cb2b9ffb5762eb3b009a90459dee`. Per ruling 2 the programme performed no label
+  act: exactly one recording comment was posted (issuecomment-6791365438) naming the verdict,
+  the head checked and the current head. The check at the pre-refresh head counts.
+- Re-read at 15:00Z on 2026-11-11: OPEN, `merge-on-green`, head `ff133abbe6c2` — armed, in
+  the controller queue, not merged. Nothing waits on it but the queue.
+
+### 28.4 #10981: closed by a closing keyword, reopened, armed
+
+- The duty officer found #10981 CLOSED at the 09:14Z wake — head unchanged at
+  `4988fc0915645b8961bccfc49e1af9613a23d432`, `merge-on-green` still attached, no merge
+  timestamp. Playbook C (its three follow-up items) had never fired.
+- Cause, read by the COO: the section 27 merge (#10997, at 05:23:47Z) closed it at
+  05:23:48Z through the closing keyword in the description (28.2).
+- The COO reopened it at about 09:16Z with a comment explaining the cause. The label never
+  left, the head never moved, review r2's READY stands. Rung: open and armed, not merged.
+- Re-read at 15:00Z on 2026-11-11: OPEN, `merge-on-green`, head `4988fc091564`, in the
+  controller queue. The three follow-up items owed after it merges are unchanged from 27.6.
+
+### 28.5 The backlog census, ruling 1's reads, and the serve path
+
+- **Kimi reserved.** At about 03:35Z the Chairman cut Kimi's pool by 70 percent and asked for
+  it to be reserved for harder problems. The duty officer's brief now allows Kimi only for a
+  security review of a change that decides who may see paid data, or a design GLM could not
+  settle, one worker at a time. The backlog census, already started on Kimi, was cancelled
+  and rerun on GLM 5.3.
+- **The census returned** (`/tmp/si_plan/deputy/BACKLOG.md`): three items startable today,
+  four waiting on a human (H1 migration enrollment; H2 a cursor-signing secret; H3 an
+  optional point-in-time dataset; H4 a Chinese company-names source), everything else waiting
+  on a merge, a deploy or a nightly. Critical path: #10924, then the lane 1 stack release,
+  then nightly serving, then lane 9 phase B.
+- **Ruling 1 (04:26Z)** started five read-only DeepSeek reads and one GLM order-drafter. The
+  reads all returned: the lane 4 review notes NEW-1..3 are verified closed on Terminal master
+  (all three fixes were already inside merged #1431; no lane 4 increment is owed); a
+  nesting-depth cap of 12 was proposed for carried values (observed maximum 6; a cap of 5
+  would reject three of the four universe row blocks); the cursor-secret request was drafted
+  as a one-step on-host instruction (held); and the two serve-path reads below.
+- **The Macro serve path (read A4).** The generation endpoint exists only on #10973's head —
+  production source has none of it today. Once #10973 merges, the VPS side is automatic
+  (the update cron fetches main and restarts the service within about three minutes). What
+  stays manual is one operator environment line plus a restart; without it the route answers
+  503. Two host-history facts (whether the snapshot timer was ever installed, and whether it
+  publishes) cannot be proven from the repository.
+- **The Terminal deploy path (read A5).** A push to Terminal master deploys automatically
+  (28.19).
+- **The bundled host request.** Ruling 2 approved one bundled request to the Chairman — the
+  generations-root environment line plus the cursor-signing secret line, one restart, checks
+  first, one rollback — drafted and duty-verified (18 lines), held until #10973 merges. The
+  never-paste-the-secret rule is in it verbatim.
+- **Two held order drafts.** The GLM drafter delivered the lane 8 `withdrawn_asof` order and
+  the lane 1 `hazard_qualification` order, both stamped DO NOT SEND until their gates. Seven
+  design choices in them were escalated and answered by ruling 2 (ISO date; the key absent
+  when undated; the date a required argument; schema stays v1 — a bump would blind the reader
+  already on beta; a model-level verdict line, `qualified` true only when every sector record
+  qualifies, otherwise false with the sorted union of failing names; absent only for an
+  absent or malformed source; no date wrapper; plus the depth cap of 12 added to the lane 1
+  order). The drafts were amended and are final, still held.
+
+### 28.6 Ruling 5 — the breadth archive #11024: custody, the hung shard, the arm
+
+- **What it is.** Member-level breadth is not stored anywhere today; each unarchived day is
+  lost for good. Ordered at 09:25Z: a nightly append-only archive of the member-level
+  performance the build already fetches — capture only, no signal or page change, no
+  backfill, an unarmed draft, stopping if one day exceeds 2 MB compressed.
+- **Ruling 5 (10:33Z)** gave the duty officer custody: repair, one GLM check, arm on READY,
+  and prove the first nightly file after merge. Delivered as draft #11024 at head
+  `2b664eb23185` (2,321 rows, 52.7 KB a day) with `ci-plan` red. The builder registered its
+  test (head `743645ca94ae`), and the red proved to be a runner checkout failure, not a
+  registration miss; ruling 5 was amended at 10:36Z: skip the repair worker, go to the
+  independent check, arm on READY. The check returned READY at `743645ca94ae`.
+- **The head moved again** to `0cc39be059c157ff42ab7a85be2feee7d28339e4` (the builder's
+  return did not say what the commit changed; the builder then declared itself done with the
+  branch). The same checker read only the diff between the two heads against ruling 5's one
+  allowed shape — the pull request's own test registration, including a measured ceiling
+  re-base recorded in the docstring; no allowlist, no skip, no loosened assertion, nothing
+  outside the frozen spec — and its addendum returned READY naming `0cc39be059c1`.
+- **The hung shard.** Every required check was green on that head except ci-pack-0 (one shard
+  of the CI pack), hung twice and still in progress across three reads spanning more than
+  forty minutes while its eleven sibling shards all completed. Escalation 6 was ruled at 13:48Z: classify first with
+  one read (the pull request's own defect, systemic, or unclear); only an own defect gets a
+  repair worker. The shard completed green on its own at 13:44:46Z, after fifty-nine and a
+  half minutes; the final gate check turned green nine seconds later; the escalation went
+  moot and the classification read was cancelled. No rerun was ever ordered.
+- **The arm.** With the head re-verified unmoved, the pull request still an unlabeled draft,
+  its comments holding no open finding, and the recording comment grepped clean under the
+  closing-keyword rule, the arm ran at 13:54Z exactly as pre-authorized: evidence comment,
+  mark ready, add `merge-on-green`, in that order. Armed, not merged.
+- Re-read at 15:00Z on 2026-11-11: OPEN, `merge-on-green`, head `0cc39be059c1`, in the
+  controller queue. On merge: the merge line, the first nightly member file proved with
+  whatever date is really on it, and the answer owed to the Prophet programme (the squash sha
+  and the real first-file date).
+
+### 28.7 Ruling 6 — the member price-state record #11035
+
+- **What it is.** Ordered at 11:09Z because #11024 alone does not store the measure the
+  joint rotation protocol arms on: a nightly per-member price-state record — above the
+  50-day and the 200-day line, new highs and lows, raw per member — as an unarmed draft
+  stacked on #11024. Amended at 11:12Z: the roster is the union of the vendor subsector
+  members and the dated S&P 500 members; the fields add a membership flag, the GICS sector,
+  the 60-session return, the index weight with its snapshot date when held, and the price
+  vintage.
+- **Delivered at 13:49Z** as #11035 at head `dd94ac2f1de9` (12-character form as recorded),
+  an unarmed draft stacked on the breadth archive, verified open, unlabeled and correctly
+  based by the duty officer's own read. Measured gates sit far inside the limits: about
+  88 KB a day against the 2 MB ceiling, and four and a half seconds against twenty; 1,126
+  rows on the fixture night; the S&P roster at 503 members; index weights taken from the
+  dated SPY holdings snapshot of 2026-06-11 with its own date recorded, never a later one.
+  One deviation logged: the builder returned in its completion message instead of writing
+  the return file; the content was complete and the pull-request state was verified directly.
+- **The independent check**, started on Opus at 13:45Z inside the window (28.8), returned
+  READY at `dd94ac2f1de9` by 14:12Z, with two should-fixes (S1 and S2) and both escalation
+  points E1 and E2 accepted — E1 with a runner-timing condition, E2 as it stood.
+- **The fix round landed by 14:45Z**: the pull request now stands at head
+  `508e03620193726abba10f45e05fa03a0e196850` (re-read at 15:00Z), a fast-forward carrying
+  only the capture module and its tests. Both should-fixes are closed: the normalisation now
+  sits at both places the snapshot is keyed, a null helper turns every null spelling into a
+  real null, and two new tests fail against the pre-fix module and pass at the head; the
+  suite is 26 green. The E1 addendum (the step records its own elapsed seconds in the timing
+  record the nightly already writes) was queued as the same worker's next turn, and the fresh
+  check waits for that final head so one check covers both changes.
+- Still an unarmed stacked draft (re-read at 15:00Z: draft, no labels). The arm stays what
+  ruling 6 set: after the breadth archive merges, this draft is retargeted to main and armed
+  only on a ready verdict with the required checks green, and the first nightly file is the
+  proof.
+
+### 28.8 Ruling 7 — the Opus window until 16:00Z
+
+- At 13:01Z the Chairman opened Opus capacity until 16:00Z and asked for the hardest work to
+  go there. Three Opus lanes started at effort high: two reviews of the joint rotation
+  engine (signals and accounting; statistics, seals, staged release and the frozen header —
+  the GLM frozen-header check, which had ended its turn waiting on a worktree mint, was
+  folded into the second), and an analyst answering the five research prompts (it returned
+  five of five at 13:30Z).
+- Ruling 7 to the duty officer: hard checks and the entitled-read security review start on
+  Opus during the window. Executed at 13:15Z: the lane 1 whole-stack review (28.10) runs on
+  Opus; the price-state check started on Opus at 13:45Z (28.7); the entitled-read security
+  review starts on Opus the moment lane 3 has a pushed head; the rotation-context build and
+  its check ran on Opus (28.9). No Opus start was needed for #11024's addendum check (the GLM
+  addendum was already READY).
+- The research-prompt answers produced five build rulings at 13:30Z: the #11024 merge stays
+  with the duty officer; a per-group breadth derivation is not built now (derivable later
+  from the raw files, no loss); a separate forward paper ledger is not built (the joint
+  forward tier owns it); yardstick changes are dropped (the frozen header already has four;
+  the attribution wording was adopted); the as-observed context capture started as ruling 8;
+  the washout event study was registered with the other programme as a successor idea,
+  nothing computed.
+
+### 28.9 Ruling 8 — the rotation-context capture #11039
+
+- **What it is.** Ordered at 13:30Z from the analyst's fourth build action: a capture-only
+  nightly record of the market-context series exactly as observed, so the rotation work can
+  later prove what the data said on the day. The build worker (Opus, own worktree, started
+  13:34Z) ran the fifteen-minute reuse check first — no dated as-written copy of these series
+  exists in the repository, independently spot-checked — so the capture was needed.
+- **Delivered at 14:26Z** as unarmed draft #11039 at head
+  `4d29b577434f5f84ce413f6dcc54059a2e0676ce` (re-read at 15:00Z): eleven as-observed series —
+  eight from FRED and three from CBOE — each with its own observation date and the store
+  file's modification time, plus the SPY and QQQ concentration blocks taken from the latest
+  stored snapshot on or before the session date, with the snapshot's own date stated and no
+  renormalisation. Gates far under: 537 bytes a day against the 50 KB limit, and well under a
+  second warm against the five-second limit.
+- **The ceiling interaction.** #11024 and #11039 carry the same plus-two probe re-base from
+  the same base; both touch the same three lines to the same values, so whichever merges
+  second must re-measure and compose — a plain merge would take the change silently. The
+  probe test re-measures at CI time, so arming before #11024's fate resolves cannot produce a
+  wrong merge: a wrong composition goes red and blocks.
+- **The check returned READY** at 14:57Z at head `4d29b577434f` — no blockers, no
+  should-fixes, six notes — re-running the seven tests itself. Its one open point (the
+  checker ran source-level only, its guard having refused GitHub, pytest and git) was
+  resolved by the seat under its new decision rights: pre-arm reads verified the live head,
+  the draft state, the empty label set and the commit messages, and the head's own CI run
+  stands as the suite evidence.
+- **The arm did not fire.** The seat's own read showed ci-pack-9 completed as a failure while
+  nine sibling shards still ran. A fresh reader is classifying the shard failure: only a
+  verdict of this branch's own defect gets a repair worker; a systemic verdict goes to the
+  CI-owning session as a note; anything unclear goes to the COO. No rerun is authorized for
+  this pull request. One inline return defect was caught: the worker's return line named the
+  capture commit rather than the final head; the check was ordered to pin both and verify the
+  second commit touches nothing but the ceiling.
+
+### 28.10 Ruling 9 — the lane 1 whole-stack review NOT READY; the debt increment
+
+- The whole-stack review (Opus, running since 13:12Z on the top of the stack, head
+  `19b8c5bc5fde58235b7b79c04bccffb8d92d69ae`, reviewing the accumulated five-pull-request
+  diff against main) returned
+  NOT READY: contract-delta at 1172 introduced (the stack's import closures grew without the
+  CI paths lists naming the new files), four stack-caused CI failures still live on #10929,
+  and two red tests behind disabled CI jobs.
+- **Ruling 9 (14:12Z, stamped before a clock read; 28.20):** one Opus debt-increment worker
+  owning exactly items A to F — registration to a real contract-delta of zero introduced; the
+  render.yml ownership; the ew-p4 receipt regenerated by its own generator with an honest
+  stop if none can produce it; the two update.sh defects plus the reconcile failure
+  dispositioned with evidence; the six re-anchors and the twenty-nine B04 citations; and the
+  two disabled-job red tests fixed at the cause. Then one independent whole-stack re-review
+  at the new head that runs contract-delta itself and reads #10929's real reds itself. Only
+  on READY does the frozen final pass run as written. The lane 1 release and the bundled host
+  request move later accordingly.
+- **Standing correction recorded:** a claim that stacked reds clear on the retarget is never
+  accepted again without the named check re-run at the top head.
+- Executed at first try at 14:15Z: the debt-increment worker on Opus, own worktree, an
+  unarmed draft stacked on `19b8c5bc5fde`. The re-review model is Opus while the window is
+  open, otherwise the Kimi slot. Running at the last note.
+
+### 28.11 Ruling 10 — the duty officer becomes an Opus operating deputy
+
+- At about 14:47Z (stamped before a clock read; 28.20) the Chairman directed orchestration to
+  the Opus tier with Fable as the escalation layer. Adopted at once: the duty-officer thread
+  moved to Opus, and it stays on Opus after 16:00Z.
+- **Wider decision rights.** The seat now decides worker choice, re-briefs, repair orders,
+  check re-runs, sequencing, additive test changes and pre-authorized arms itself, recording
+  each as a DECIDED line in its state file, inside a frozen reserved list and escalation
+  format. Its first three decisions (accepting the #11035 fix round, queueing the E1
+  addendum so one check covers both changes, and commissioning this section beside the
+  pattern-document lane) were all inside the limits.
+- **The pattern-doc lane.** A build worker (GLM, own worktree, running since 14:41Z, branch
+  `claude/meta-ceo-operating-deputy-20261111`, no pull request at 14:53Z) carries the
+  operating-deputy pattern into the repository guide (one section plus one pointer
+  paragraph). When the Chairman asked at 14:52Z which sessions need a deputy and which model
+  pairs make sense, the answer was decided: shape by mission — no deputy under about ten
+  returns; a watch-only cheap deputy for waiting-heavy work; an Opus deputy for many lanes;
+  a domain lead under the deputy for a separable domain; a same-model deputy only on long
+  many-lane missions; no cheap-on-cheap pair; a Fable principal only when judgment is the
+  deliverable; gating reviews report to the decider; at most three levels. At 14:55Z the
+  pattern (shape table plus ten rules) was forwarded to the Prophet programme and the Hermes
+  Engineering programme as an offer, no reply needed.
+
+### 28.12 The prepare-scripts increment #11030
+
+- The sector-inputs read (09:14Z) found a serve-path hole: #10973's head imports
+  `scripts/prepare_sector_snapshot.py` and `scripts/prepare_sector_native_inputs.py`, which
+  exist only at `37fc2399151c` on another engineer's branch — present at neither the head nor
+  main. Without them the snapshot lane cannot publish the `sector` generation the new route
+  reads, and the bundled host request's first check could not pass from the stack alone.
+- Ruling 4 (09:18Z) ordered one GLM worker to restore them now as an unarmed draft increment
+  stacked on #10973 — a byte copy, plus a test that the imports resolve and that the lane
+  publishes a generation the reader reads back, stopping if the stack had removed them on
+  purpose (it never contained them).
+- **Delivered at 12:58Z** as unarmed draft #11030 at head
+  `19b8c5bc5fde58235b7b79c04bccffb8d92d69ae` (re-read at 15:00Z: still a draft, no labels),
+  stacked on #10973 exactly as ordered. The restore is byte-identical from `37fc2399151c` —
+  an empty git diff over all sixty copied paths, machine-proven — and the ancestry check
+  confirms the stack never contained the two scripts. The new orchestrator test fails at the
+  base with the import error and passes at the head. The worker went beyond the order and
+  classified all six failures it met running the fifty-seven incumbent test files over the
+  replaced modules: four pre-exist on the stack base (the lane 1 final pass owns them), two
+  are mechanical re-anchors with named remedies — including proof that the other engineer's
+  own tree fails the same B04 citation audit, so the final pass re-anchors one doc line
+  rather than taking his files.
+- **Independently READY at 13:38Z.** A fresh GLM checker (started at 12:57Z under the new
+  worker-start rules) returned READY at `19b8c5bc5fde` with zero blockers, zero should-fixes
+  and three
+  non-blocking notes, re-deriving every axis itself: the two scripts appear in exactly three
+  commits in the whole history and were never present at any stack head or on main; the
+  base's own capture entry point serves the restored script's call; the closing-keyword
+  greps are empty; the only red checks are the designed stacked-base signature and the
+  always-red pilot. The verdict is recorded on #11030.
+- The increment stands for the lane 1 final pass exactly as ruled; the release, the retarget
+  and the arming of the stack stay with the COO. Unarmed stacked draft.
+
+### 28.13 Lane 3, the entitled read: two silent stops, a successor, the load gate
+
+- **Design and rulings (recorded in 27.7; frozen this window at 03:17Z).** The spec returned
+  (86 lines, one open decision) and the COO froze five rulings: lane 3 is the single writer
+  of the six listed Terminal files; the server asks for the entitled document first and only
+  on a 403 asks once for the preview document, from a closed set of two fixed paths under one
+  shared 6-second deadline, the outcome never remembered, Macro alone deciding the audience;
+  a document is accepted only when the path, both audience fields and the receipt path agree;
+  nine named mutations the checker must kill; and the interim audience rule is removed in the
+  same increment, which merges dark. The build order went to lane 3's thread at 03:17Z.
+- **First silent stop, 04:11:45Z.** A provider error killed the run with the diff stashed and
+  the tree clean; no return, no pull request. The failure rule applied: the same thread
+  resumed, restored its own stash by tag, and nearly finished — static gates, 39 generation
+  journeys, 48 screenshot tests, unit suites green, 48 fixture PNGs, the pull-request body
+  and commit message drafted.
+- **Second silent stop, 05:05:22Z.** The completion wake died in eleven seconds — the same
+  provider-side death shape — leaving the work uncommitted in its worktree. The COO ordered
+  one fresh GLM successor in a new Terminal thread bound to that existing worktree (no
+  rebuild); the old thread retired; a third stop is escalated, never retried with a fourth
+  worker.
+- **Deliberate waits.** At 09:14Z the successor ended a run with the responsive matrix
+  running detached under a background watchdog that re-invokes it on completion, first
+  failure or a heartbeat. From late morning it sat at a load gate: the shared machine's load
+  was readings 75 and 173 in the notes, "well above 30 all day" at 13:15Z, so the worker
+  holds by design rather than burn the machine, with a stop deadline of 15:38Z — still open
+  at the last note (14:57Z). The notes do not record the individual run counts or the load
+  sample count for this hold; not recorded.
+- No pull request existed at the last note. On a pushed head: the GLM mechanical check with
+  the nine mutations, the Kimi security review (Opus while the window is open, per ruling 7),
+  both verdicts escalated, arming never by the worker. The merged interim path on master
+  still hardcodes the preview audience; this increment is what replaces it (28.19).
+
+### 28.14 Lane 10 opens: the Chairman's rotation word, and the evidence gathered
+
+- **The word.** At about 07:45Z, answering the report that lane 8's sector-allocation rule
+  lost to plain SPY (9.7 against 11.5 percent a year after costs, 2008 to 2026 — most of the
+  gap time out of the market, the rule's only alternative to a qualifying sector was cash, it
+  never rotated into defensives, and it was scored against SPY alone): "Well its your job to
+  beat it. We need to redefine what it means to beat the sector too." RSP beside SPY; cash an
+  option; the rotation likely to beat the market is getting out of high-beta technology when
+  conditions turn against it and into defensives, and back, tied to rates, real rates,
+  discount rates, credit spreads and competition for bond capital. This opened lane 10
+  inside the same team — the 05:21Z note had said no new lane without the Chairman's word.
+  A second message at 08:04Z (with screenshots of the live site) named the clues: money
+  movement between sectors, key names inside a sector, breadth divergence inside sectors and
+  themes, competing sectors' breadth, topping patterns — "We have ample prebuilt things
+  inside macro for this already." Ruling: study and formalize the existing signals first;
+  nothing new is invented until the inventory says what exists.
+- **The split with the Prophet programme (agreed 05:21Z, unchanged):** Sector Intelligence
+  proposes the yardstick, the signals and the rules; Prophet owns the evaluation harness and
+  the verdict; lane 8 is the single writer of the comparator set; neither product presents a
+  rotation call as more than descriptive until the frozen protocol says it earned it; signal
+  definitions are pinned by version and date; their code reads our modules through their
+  public functions and writes none of them.
+- **The evidence returned this window.** Signal inventory 1: 23 on-page signals, 13
+  replayable point-in-time; the subsector archive starts 2026-07-05; the same quadrant and
+  turn math on the 11 sector funds and the onset panel replays from 1998; member-level
+  breadth is not stored at all (why #11024 exists). The data census: 75 of 80 listed tickers
+  carry daily total-return prices (SPY from 1993, QQQ 1999, RSP 2003, sector funds
+  1998-12-22, equal-weight sector funds 2006-11-07; rates curve 1962, VIX 1990, high-yield
+  spread 1996, breakevens 2003; investment-grade spread only from 2023-04); the 49 baskets
+  have no honest index before 2026-07 (survivorship-contaminated); index weights only from
+  2026-06-11; recorded kill verdicts to respect; the harness to reuse is the lab backtest
+  with its trial ledger at 5 basis points one-way. Signal inventory 2: the forward track
+  record holds 1,398 calls over 49 days — running 35.8 percent hit at 21 days (1,236 calls),
+  coiling 27.8 (36), coil-confirmed 61.0 (41) — but the group-level base rate is not
+  computable (no dated per-group membership ledger); the stock-level proxy is 45.9 percent of
+  S&P members beating SPY over the same windows. The 2026 case study (hypothesis-generating
+  only, one episode): member breadth peaked 44 to 91 trading days before price; defensive
+  breadth turned three to four weeks before semiconductor breadth peaked; the stack was most
+  bullish six to eight days before the October top; health care read "Weakening" through its
+  whole run to highs.
+- The three nightly records that came out of this lane are #11024 (28.6), #11035 (28.7) and
+  #11039 (28.9). The five outside research runs belong here too (28.16).
+
+### 28.15 Rotation Core v2 with the Prophet programme
+
+- **v1 closed on their side, audited on ours.** Their v1 protocol froze before our review
+  window; its Stage D found none of 15 candidates clears the development gates; power is
+  about 6 points a year minimum detectable edge after correction across 10 tests; the
+  hold-out from 2020-01-02 is sealed and only they open it. Their own outside run A audited
+  the v1 engine NOT SAFE as-is — 19 findings, two blockers (a stale forward-filled execution
+  mark; fees and returns on different NAV bases). They confirmed both and rerun on a
+  corrected engine; nothing in v2 runs before that correction and a Stage D rerun.
+- **The joint v2 header.** Our proposal (four-part yardstick, a two-key breadth switch with a
+  price-only control, disclosure of the earlier falsified defensive-rotation test, 2020 to
+  2025 reported apart from 2026) was adopted in substance. Our one read of their draft header
+  (before freeze) carried three objections — the month-end revert makes the defensive leg a
+  roughly ten-session calendar hold rather than the claim; the breadth comparison must
+  recompute on the current leg after each monthly re-formation; the forward tier's arming key
+  needs 126 recorded nights, not 50 — plus seven text points. They adopted the three
+  objections and the text points. On the washout clock we answered that the clock runs from
+  the lowest breadth close of the spell, not the first close at or below 25 percent; they
+  accepted the mirror definition, with fewer than about 11 firing spells in 1998 to 2019
+  meaning the header calls that leg close to untested. They froze v2 at 12:45Z.
+- **The reviews we owed.** The Kimi review of v1 (resumed once after its worker stopped
+  without a report) confirmed the two known blockers, found no further code majors and seven
+  protocol gaps; sent to them at 12:45Z. The Kimi v2 engine review completed at 13:17Z (0
+  blockers, 1 major, 3 minor, 5 unread) with our severity call. The Opus final engine review
+  (both halves, at their head `b7ef827b1da8`) went at 13:36Z: one stage-1 blocker (no
+  stage-2 evaluator in code), three fix-before items (a warm-up flat line, a zero-filled
+  level, a leg rebalancing reading), plus hardening and minors. They accepted all at about
+  13:45Z.
+- **The change-set reader.** They sent change set `0eeca4f5ead3` (the S1-S12 list, the fund
+  tier, conventions); one Opus read-only reader started (due 15:35Z), steered after their own
+  reader found three release-path blockers: treat those as known and spend the time on signal
+  and accounting. Running at the last note.
+
+### 28.16 The outside research runs and the browser
+
+- **The runs.** The Chairman authorized research runs in the outside research service's web
+  sessions (near-unlimited capacity: about 200 turns per account a week across four accounts)
+  and widened one broad prompt into five focused ones — washout bottoms and tops read from
+  breadth; whether the technology-versus-defensives seesaw is predictable from rates, credit
+  and dispersion; index concentration and a benchmark ladder for what "beat the market" must
+  mean; and statistical power, multiple-testing correction and holdout design. The prompts
+  name no person, account or repository; design data ends in 2024 and 2025 to 2026 are
+  reported as untouched. The Chairman's two operating rules: launch inside the service's
+  project folder so the project instructions are included, and paste, never type.
+- **Blocked.** All five runs were blocked at 08:38Z to 08:39Z by the browser tool: every page
+  action needs a snapshot and the snapshot step failed on every tab; nothing was sent, no
+  conversation existed. Routed to the Hermes Engineering programme with evidence (28.17); the
+  duty officer was told never to resubmit. The Chairman later ordered all harness problems
+  handed to that programme outright.
+- **Healed, with two limits.** At 14:16Z the page read worked in all four profiles, but the
+  fill step was proven only to about 1,900 characters — a 6,001-character send was refused
+  and newlines may flatten. The five prompts were 5.3 to 6.3 thousand characters, so the
+  decision (amendment 5 to ruling 5): send short versions today, at most 1,800 characters,
+  layout-free, weighted to what the local Opus answers could not verify; the long versions
+  are not sent. An Opus worker wrote the five short prompts (1,772 to 1,796 characters each);
+  the COO read and accepted them; the privacy search was clean.
+- **The snapshot recipe.** The morning probes had failed for a knowable reason: the snapshot
+  call needs all five coordinates at once — the browser id, the connection id, the host, the
+  tab id and the page fingerprint; with any one missing the bridge answers INVALID_ARGUMENTS.
+  With all five, the snapshot reads the page.
+- **The operator lesson.** The first submission operator, started 14:20Z, was quarantined by
+  a session-root hook before it could send anything: it typed nothing, touched no tab (the
+  second profile's only open tab is another agent's live conversation, and it is barred
+  there), and could not even write its owner file. The cause was its start shape: it was
+  started read-only, but an operator writes — it drives the browser and creates record files
+  — and under the worker-start rules a worker that must write starts with its own worktree.
+  The replacement started at 14:31Z as a writing worker with its own worktree (it edits
+  nothing there; the worktree exists only to admit the session), checks status first because
+  connection ids change, uses the five-field snapshot call, spaces sends at least a minute
+  apart, and stops at zero of five with the verbatim refusal if the browser tool is still
+  refused after one remedy. The first-fill safety sentence stands: anything other than
+  APPLIED stops all runs and the receipt goes to the harness owner. Running at the last note;
+  collection begins no earlier than sixty minutes after each send.
+
+### 28.17 The Hermes harness lane and the worker-start rules
+
+- The cross-repository limit (this programme's threads cannot start a subagent in another
+  repository; tested and refused) was routed to the Hermes Engineering programme at 03:53Z
+  with four tested facts. They adopted it as a lane (their statement; it lands in the
+  Mastermind OS server build, not in the app this programme runs in — nothing changes for us
+  until then).
+- The Chairman ordered every harness problem handed to them (09:04Z): one lane, twelve
+  numbered items, one line back per item. Status this window: the browser page access fixed
+  in all four profiles by 14:16Z; computer use for T3 sessions not ready (it needs macOS
+  grants from the Chairman and works only when the Mac is idle); the cross-project worker
+  change waits on an app rebuild; one item needs human action — the interactive authorization
+  of two MCP servers, relayed to the Chairman; neither blocks any lane of this programme.
+  Programme rule from 09:04Z: no harness diagnosis in this thread; a harness failure is one
+  message to the harness owner.
+- **Worker-start rules, three generations in one window.** Tightened at 12:12Z from the
+  harness programme's findings: read-only children (the submission operator, result
+  collectors) start with shared isolation carrying the line "Work in the checkout you start
+  in; do not create a worktree."; anything that writes to a repository keeps its own
+  worktree; a worker needing compound shell commands starts with full access; a quiet worker
+  gets one message to its own thread as step one of the failure rule. Rules v3 installed at
+  13:49Z: a read-only child is told a quarantine notice needs no remedy and that a
+  still-running command must be waited on in the foreground, with single plain commands only;
+  two already-running children keep the lines they started with, lawfully. The 14:31Z
+  operator quarantine proved the writer-start half in practice (28.16).
+- One operational warning stays: the `startFromOrigin` launch flag did not produce a fresh
+  checkout in the lane 4 read (the checkout began weeks stale while the remote had advanced);
+  the explicit fetch-first instruction in every Terminal order remains mandatory (28.20).
+
+### 28.18 The sector URL unknown-keys read; Prophet's Terminal #1460
+
+- The Prophet programme added two `prophet`-prefixed query keys to the sector page URL in
+  their own Terminal file, pull request #1460 (open, not merged; re-read at 15:00Z). No
+  objection from this programme; one question owed an answer: does our sector URL writer
+  preserve unknown query keys, or drop them?
+- The read (DeepSeek, read-only, at master and at lane 3's working head) answered: preserved.
+  The workspace never builds a fresh query — `writeSectorState` in
+  `terminal/lib/sectorIntelligence.ts:429` sets and deletes only its own known keys on the
+  URL taken from `window.location.href`, reached through `change()` in
+  `SectorIntelligenceWorkspace.tsx:396` on master and `:405` on lane 3's head; the two trees
+  are identical on this path. The `prophet`-prefixed keys survive every tab, group and
+  selection change. No lane 3 fix was owed; the line went to Prophet. They named their two
+  keys (`prophetPopulationGroup`, `prophetPopulationQ`; their own test pins the survival).
+- A constraint for lane 3 was added to the standing brief: keep copying unknown query keys
+  through; never use the prophet prefix.
+
+### 28.19 Terminal: deploys are automatic; beta serves the merged rounds; other sessions' merges
+
+- The deploy-path read (04:59Z, one unauthenticated GET as evidence): a push to Terminal
+  `master` deploys automatically — the workflow resolves the current protected master sha
+  itself and builds on the VPS; the beta half runs only when the beta service is active and
+  enabled, and a stopped beta is deliberately untouched. The deployed commit is observable
+  without logging in: at 04:59Z the status endpoint answered with buildId
+  `4e896ea831cf6367f7581e5e22c92b90c1e76644` — exactly one commit behind the remote master of
+  that moment, and the missing commit was another session's CI-workflow change. **So the
+  merged Sector Intelligence round-2 work (#1450) and rows follow-up (#1451) were already
+  deployed to beta** — the first deployment-rung fact this programme has recorded. Later
+  merges deploy the same way; not re-observed in this window.
+- Beta is the app's own gated surface, not the member production site, and nothing of v1.1's
+  entitled read is served: the merged interim path still hardcodes the preview audience
+  (`lib/sectorNativeGeneration.ts:12`), which the lane 3 increment replaces (28.13). No
+  member sees the row tables (27.7 stands).
+- Terminal merged four pull requests this window, all by other sessions (re-read at 15:00Z
+  on 2026-11-11): #1452 at 04:44:43Z, #1453 at 06:28:45Z, #1454 at 08:21:37Z and #1455 at
+  09:42:38Z. Context only; none is this programme's. Prophet's #1460 stays open (28.18).
+
+### 28.20 Corrections recorded in this window
+
+1. **The `startFromOrigin` flag did not do what it said.** Installed at 04:01Z on every
+   Terminal launch; the lane 4 read at 04:56Z found its checkout starting weeks stale while
+   the remote had advanced. The explicit fetch-first instruction stays mandatory (28.17).
+2. **A serve-path read corrected.** Read A4 called the sector-inputs lane "manual-only";
+   the follow-up read found the bars timer already runs it hourly. Only its bootstrap form
+   is manual (09:18Z).
+3. **Three note entries were stamped without a clock read** — those printed 14:16Z, 14:30Z
+   and 14:47Z. A clock-checked entry records that the real order is as listed, all between
+   14:14Z and 14:28Z. The ruling-9 decision (28.10) and the ruling-10 direction (28.11) are
+   among them.
+4. **#10997's arm time differs between notes** — 04:13:43Z in the 04:14Z note, 04:14:16Z in
+   the 04:26Z note. The merge time (05:23:47Z) is the fact that matters.
+5. **A message's own text disagreed with the clock**: the v2 proposal to the Prophet CEO sent
+   at 10:33Z says 10:40Z in its text. One their-clock timestamp in their messages is recorded
+   with the local time beside it (their 12:05Z was about our 11:08Z, roughly an hour ahead);
+   noted where used (28.15).
+6. **A worker return named the wrong commit**: #11039's inline return line named the capture
+   commit rather than the final head; the check was ordered to pin both (28.9).
+
+### 28.21 Macro pull requests as last read
+
+All rows re-read on GitHub at 15:00Z on 2026-11-11 in this run.
+
+| Pull request | Head (15:00Z) | Labels | Holder | State at 15:00Z |
+|---|---|---|---|---|
+| #10924 | `ff133abbe6c2` | `merge-on-green` | Lane 8 (this programme) | Open; conflict resolved (merge commit `526099636618`), check READY recorded 08:28Z; armed; in the controller queue (28.3) |
+| #10929 | `c5d8c31db57d` | `merge-blocked`, `hold`, `do-not-merge` | Lane 1 (held draft) | Open draft; hold labels are this programme's; whole-stack release now runs through ruling 9's chain (28.10) |
+| #10931 | `d56981c932b0` | `merge-on-green`, `merge-blocked` | Another session | Open; head moved since section 27's read; #10956 waits on it |
+| #10954 | `0d43d893cc70` | none | Lane 1 (round 3) | Open; in the stack |
+| #10956 | `ffec9a8d6f64` | none | Lane 5 | Open; waits on #10931 |
+| #10965 | `a089d2f9b4d7` | none | Lane 1 (point-in-time) | Open; in the stack |
+| #10973 | `2a1bc1f71fc4` | none | Lane 1 (rows) | Open; not armed; the stack grew #11030 on top (28.12) |
+| #10981 | `4988fc091564` | `merge-on-green` | S&P Chinese labels | Open; reopened 09:16Z after the accidental close; armed; in the queue (28.4) |
+| #10997 | `e74bc5bce8e0` | — | Status record | MERGED 05:23:47Z on 2026-11-11; sections 1 to 27 on main |
+| #11024 | `0cc39be059c1` | `merge-on-green` | Lane 10 (breadth archive) | Open; armed 13:54Z; in the queue; on merge the first nightly file is the proof (28.6) |
+| #11030 | `19b8c5bc5fde` | none (draft) | Lane 1 (prepare scripts) | Open unarmed stacked draft; independent READY recorded 13:38Z (28.12) |
+| #11035 | `508e03620193` | none (draft) | Lane 10 (price state) | Open unarmed stacked draft; S1/S2 fixed; timing addendum pending; arm waits on #11024's merge (28.7) |
+| #11039 | `4d29b577434f` | none (draft) | Lane 10 (rotation context) | Open unarmed draft; check READY 14:57Z; arm held on the ci-pack-9 classification (28.9) |
+
+Release order at the last note: the queue holds #11024, #10924 and #10981, none merged; on
+#11024's merge, #11035 is retargeted to main and armed on its own ready verdict; the lane 1
+stack waits on ruling 9's chain (debt increment, re-review, frozen final pass); #11039's arm
+waits on the shard classification. #10956 is outside the stack (another session's #10931).
+
+### 28.22 Rung reached at 15:00Z on 2026-11-11, per lane
+
+| Lane or item | Pull requests | Rung at 15:00Z on 2026-11-11 |
+|---|---|---|
+| Lane 3 (Terminal) | #1429, #1450 merged earlier; entitled read in flight | MERGED to Terminal master, and deployed to beta as observed at 04:59Z (not the member site, not production-proven); the entitled-read increment RUNNING — successor at its load gate, no pull request yet (28.13) |
+| Lane 4 (Terminal) | #1431, #1443 | MERGED earlier; review notes NEW-1..3 verified closed this window; no increment owed |
+| Lane 6 (Terminal) | #1436, #1444 | MERGED earlier; deployed to beta with master (28.19); not production-proven |
+| Lane 7 (Terminal) | #1419, #1445, #1448, #1451 | MERGED; deployed to beta as observed; no member sees the row tables — the rows wire is entitled-only, Terminal decodes only the preview audience, and Macro serves nothing (27.7) |
+| Lane 1 (Macro) | #10929, #10954, #10965, #10973, #11030 | DELIVERED to pull requests; whole-stack review NOT READY; the ruling-9 debt increment RUNNING; none merged |
+| Lane 5 (Macro) | #10956 | DELIVERED; waits on #10931 (another session's) |
+| Lane 8 (Macro) | #10924 | DELIVERED; conflict resolved; check READY recorded; armed; in the queue; not merged |
+| Lane 9 (Macro) | not re-read in this window | DELIVERED, as last recorded; critical path reaches it after nightly serving |
+| Lane 10 (Macro) | #11024, #11035, #11039 | #11024 DELIVERED, armed, in the queue; #11035 and #11039 DELIVERED as unarmed drafts; the five research runs at 0 of 5 submitted (replacement operator running) |
+| S&P Chinese labels (Macro) | #10981 | DELIVERED; reopened after the accidental close; armed; not merged |
+| Status record | sections 1-27; section 28 | Sections 1 to 27 MERGED on Macro main (#10997 at 05:23:47Z); this section's pull request DELIVERED |
+
+Nothing of v1.1 is served to members today. Production Macro has no serving code for the
+generation endpoint (it exists only on the unmerged lane 1 stack); the row wire is
+entitled-only; Terminal's merged interim path decodes only the preview audience; the beta
+deployment is the app's own gated surface. Nothing is production-proven.
+
+### 28.23 Open items, and the items that need a person
+
+- **The queue.** #11024, #10924 and #10981 are armed with the merge controller; none merged
+  at the 15:00Z re-read.
+- **On #11024's merge:** the merge line; the first nightly member file proved with its real
+  date; the squash sha and the real first-file date owed to Prophet; then #11035 retargeted
+  to main and armed on its own ready verdict.
+- **#11035:** the elapsed-seconds addendum (E1) as the same worker's next turn; then one
+  fresh check at the final head; over twenty seconds on the runner is a blocker with the
+  remedy already decided.
+- **#11039:** the ci-pack-9 classification (own defect, systemic, or unclear); no rerun is
+  authorized; then the arm on READY with the required checks green.
+- **Lane 1:** the debt increment (items A to F) running; then the whole-stack re-review; only
+  on READY the frozen final pass; the release, the host request and the two held order drafts
+  wait on that chain. The PR-duty repair on #10929 rides the final pass.
+- **Lane 3:** the load gate with the 15:38Z stop deadline, open at the last note; on a pushed
+  head, the mechanical check and the security review (Opus while the window is open, then the
+  Kimi slot); arming never by the worker.
+- **Lane 10:** the replacement research operator running (0 of 5 at its start; collection no
+  earlier than sixty minutes after each send); the Rotation Core change-set reader due 15:35Z;
+  the lane's proposal work continues after the frozen header.
+- **The pattern-document lane:** build worker running since 14:41Z, no pull request at
+  14:53Z; the re-copy of the revised pattern texts was queued after the Chairman's deputy
+  question changed them mid-build.
+- **Owed to the Prophet programme:** the lane 1 squash line when it lands; the entitled-read
+  pull-request number when it exists; the change-set read; the #11024 merge facts.
+- **HUMAN ITEMS.** (1) The Terminal migration-ownership enrollment (H1, unchanged): until it
+  is done, #1410 and #1425 stay parked and untouched. (2) The bundled host request — the
+  generations-root environment line plus the cursor-signing secret line, one restart, checks
+  first, one rollback — is drafted and held; the COO carries it to the Chairman when #10973
+  merges. (3) H3 (an optional point-in-time classification dataset) and H4 (a Chinese
+  company-names source) remain open from the census. (4) The interactive authorization of two
+  MCP servers (harness item 12) needs human action; it blocks no lane of this programme. No
+  credential or secret value is recorded anywhere in this section.
+- The standing limits are unchanged from section 25, which lists them (25.24). This window
+  added two standing rules of its own: the closing-keyword rule (28.2) and the ruling-9
+  correction on stacked reds (28.10).
