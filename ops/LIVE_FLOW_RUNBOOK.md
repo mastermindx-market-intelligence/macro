@@ -343,7 +343,7 @@ from **two different deploy trees** — a recurring source of confusion:
 
 | Plist | Job | Schedule | WorkingDirectory | Log paths |
 |---|---|---|---|---|
-| `com.mastermind.liveflow.plist` | Live poller (RTH) | Weekdays 09:25 ET | `/Users/chriswong/liveflow-ops-wt` | `/tmp/liveflow.stdout.log` `/tmp/liveflow.stderr.log` |
+| `com.mastermind.liveflow.plist` | Live poller (RTH) | Weekdays 06:25 and 07:25 on fixed-MST M1; one aligns with 09:25 ET across DST | `/Users/chriswong/liveflow-ops-wt` | `/tmp/liveflow.stdout.log` `/tmp/liveflow.stderr.log` |
 | `com.mastermind.optionshub.plist` | Nightly hub builder | Weekdays 16:45 ET | `/Users/chriswong/hub-ops-wt` | `/tmp/optionshub.stdout.log` `/tmp/optionshub.stderr.log` |
 
 Both plists use `ops/launchd/run_with_env.sh` to source `.env` before launching
@@ -442,7 +442,7 @@ The `com.mastermind.liveflow` job MUST run from a **dedicated deploy tree**
 shared agent checkout.  A shared checkout's git HEAD is controlled by many
 concurrent agent sessions and is frequently parked at a detached HEAD that does
 **not** contain `scripts/live_flow_poller.py`; a launchd run rooted there dies
-with `ModuleNotFoundError` at the next 06:25 PT fire.  The launchd
+with `ModuleNotFoundError` at the next eligible fixed-MST 06:25/07:25 fire.  The launchd
 `ProgramArguments`, `WorkingDirectory`, and `PYTHONPATH` therefore all point at
 the deploy tree.
 
@@ -1072,6 +1072,19 @@ The poller logs a warning if the day-state JSON exceeds 50 MB:
 poller: day_state size N MB exceeds 50 MB threshold
 ```
 If this fires regularly, reduce `top_names` or `retention_hours` in config.yml.
+
+### Per-root fetch latency (read-only diagnostics)
+
+The live poller logs one `root_fetch_completed root=… state=complete|partial|failed
+worker_elapsed_sec=…` entry for each scheduled worker. The time includes
+ThetaData requests, contention, retries, and local parsing, **not just wire
+round-trip time**. It is not a feed/quote timestamp or evidence that R2
+published the root. The provider's per-expiration timing experiment remains
+owned by its original source lane; this producer log adds only root-level
+attribution. The concurrency cap is enforced at **two workers** even when
+launchd environment or config asks for more. A configured limit of one is
+still honored. Never increase capacity solely to improve a CI timing number:
+the Theta terminal is shared with independent option-data writers.
 
 ## API endpoints
 

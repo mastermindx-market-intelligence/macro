@@ -3784,6 +3784,14 @@ live_flow:
   retention_hours: 24       # trailing event window in feed_current.json
   state_retention_days: 5   # local day_state_*.json files kept (newest N sessions; current day never pruned)
   top_names: 128            # bounded rotating single-name roots after ETF anchors
+  # Reserve coverage within the same budget when basket data is missing or reordered.
+  # Each share class has its own options tape. Remaining slots still follow gex_symbols().
+  priority_names:
+    [AAPL, MSFT, NVDA, AMZN, GOOGL, GOOG, META, TSLA, AMD, AVGO,
+     MU, WDC, STX, SNDK, INTC, QCOM, ARM, PLTR, ORCL, CRM,
+     ADBE, AMAT, PANW, CRWD, NFLX, DIS, UBER, ABNB, COIN, HOOD,
+     JPM, BAC, C, GS, V, MA, XOM, CVX, CAT, BA,
+     GE, WMT, COST, HD, NKE, SBUX, TGT, LLY, UNH, PFE]
   near_dte_cap_days: 90     # current-day fallback: cap per-expiration pulls to <=90 DTE (near-dated flow, where notable premium lives)
   # etf_anchors: []         # defaults to 22 anchors (see live_flow_poller._resolve_universe)
   # Flow-Surface store (scripts/build_flow_surface.py) — per-strike net-premium grids for the

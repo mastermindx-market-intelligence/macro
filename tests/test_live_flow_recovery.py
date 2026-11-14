@@ -337,6 +337,37 @@ class TestDayStateLearningWal:
         assert payload["KeepAlive"] == {"SuccessfulExit": False}
         assert payload["ThrottleInterval"] == 60
 
+    def test_launchd_has_one_eastern_preopen_fire_in_both_dst_seasons(self):
+        """A fixed-MST Mac must not miss the U.S. open after Eastern DST changes.
+
+        M1 logged a clean --rth-only exit at 06:25 MST on 2026-11-02,
+        which was 08:25 EST.  With SuccessfulExit=False it was not restarted.
+        This validates the EXISTING launchd service schedule, not a new daemon.
+        """
+        import plistlib
+        from datetime import date, datetime, time
+        from zoneinfo import ZoneInfo
+
+        repo = Path(__file__).resolve().parent.parent
+        payload = plistlib.loads(
+            (repo / "ops/launchd/com.mastermind.liveflow.plist").read_bytes()
+        )
+        fire_points = payload["StartCalendarInterval"]
+        assert len(fire_points) == len({(r["Weekday"], r["Hour"], r["Minute"]) for r in fire_points})
+        assert {r["Weekday"] for r in fire_points} == {1, 2, 3, 4, 5}
+        for day in (date(2026, 10, 30), date(2026, 11, 2)):
+            local = [
+                datetime.combine(day, time(r["Hour"], r["Minute"]), ZoneInfo("America/Phoenix"))
+                for r in fire_points
+                if r["Weekday"] == day.isoweekday()
+            ]
+            eastern_fires = [
+                dt.astimezone(ZoneInfo("America/New_York")).strftime("%H:%M")
+                for dt in local
+            ]
+            assert eastern_fires.count("09:25") == 1, (day, eastern_fires)
+        assert payload["KeepAlive"] == {"SuccessfulExit": False}
+
     def test_rth_only_post_close_error_exits_zero_without_publication_or_sleep(
         self, tmp_path, monkeypatch,
     ):
