@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ETR-BULL-20260623",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.6,
@@ -11,21 +11,21 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 19.5,
-    "pace": 2.0,
-    "retention": 100.0,
-    "overlay": 36.0
+    "progress": 22.1,
+    "pace": 0.0,
+    "retention": 82.8,
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.283,
-    "dist_to_t1_r": 1.217,
-    "dist_to_t2_r": 2.717,
-    "horizon_pct_used": 146.7,
-    "p1": 0.1886,
-    "p2": 0.0943,
+    "dist_to_stop_r": 1.335,
+    "dist_to_t1_r": 1.165,
+    "dist_to_t2_r": 2.665,
+    "horizon_pct_used": 157.8,
+    "p1": 0.2234,
+    "p2": 0.1117,
     "p3": null,
-    "move_r": 0.283,
-    "mfe_r": 0.283,
+    "move_r": 0.335,
+    "mfe_r": 0.405,
     "mae_r": -0.872
   },
   "rr_ratio": 1.5,
@@ -39,14 +39,14 @@
     "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 3.2500030517578153,
+  "_mfe": 4.64999694824219,
   "_mae": -10.020001220703122,
-  "_max_p1": 0.1885699478826699,
+  "_max_p1": 0.26979964886812824,
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 66,
-  "tau": 1.4667,
+  "days_elapsed": 71,
+  "tau": 1.5778,
   "closed": true,
   "outcome": "EXPIRED"
 }

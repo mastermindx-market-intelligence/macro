@@ -1,0 +1,1454 @@
+{
+ "label": "IN-SAMPLE 2020-01-02..2026-11-10; paper sleeve, alert at d close -> bills d+1",
+ "results": {
+  "Radar loud": {
+   "name": "Radar loud",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.1915,
+   "longest_under_water_sessions": 488,
+   "share_sessions_under_water": 0.8614,
+   "sharpe_excess": 0.7878,
+   "sortino_excess": 1.081,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.5351,
+     "drawdown_avoided_pooled": 0.526,
+     "gains_kept_outside_declines": 0.694,
+     "rebound_kept": 0.4118,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1303,
+       "avoided": 0.5031
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.5031,
+     "drawdown_avoided_pooled": 0.4428,
+     "gains_kept_outside_declines": 0.7188,
+     "rebound_kept": 0.5165,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1303,
+       "avoided": 0.5031
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0842,
+       "avoided": 0.055
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.3677,
+     "gains_kept_outside_declines": 0.7465,
+     "rebound_kept": 0.5749,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0511,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1303,
+       "avoided": 0.5031
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0507,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0842,
+       "avoided": 0.055
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0592,
+       "avoided": 0.0
+      }
+     ]
+    }
+   },
+   "cagr": 0.1325
+  },
+  "Radar risk-off": {
+   "name": "Radar risk-off",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.1741,
+   "longest_under_water_sessions": 359,
+   "share_sessions_under_water": 0.8376,
+   "sharpe_excess": 0.9752,
+   "sortino_excess": 1.3643,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.5391,
+     "drawdown_avoided_pooled": 0.5815,
+     "gains_kept_outside_declines": 0.7705,
+     "rebound_kept": 0.5653,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.0858,
+       "avoided": 0.6808
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.5351,
+     "drawdown_avoided_pooled": 0.489,
+     "gains_kept_outside_declines": 0.7885,
+     "rebound_kept": 0.6364,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.0858,
+       "avoided": 0.6808
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0842,
+       "avoided": 0.055
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.4061,
+     "gains_kept_outside_declines": 0.8093,
+     "rebound_kept": 0.6803,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0511,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.0858,
+       "avoided": 0.6808
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0507,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0842,
+       "avoided": 0.055
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0592,
+       "avoided": 0.0
+      }
+     ]
+    }
+   },
+   "cagr": 0.1645
+  },
+  "HY OAS top decile": {
+   "name": "HY OAS top decile",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.3148,
+   "longest_under_water_sessions": 615,
+   "share_sessions_under_water": 0.8741,
+   "sharpe_excess": 0.6888,
+   "sortino_excess": 0.9587,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.5391,
+     "drawdown_avoided_pooled": 0.3606,
+     "gains_kept_outside_declines": 0.7557,
+     "rebound_kept": 0.548,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1171,
+       "avoided": 0.6972
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.299,
+       "avoided": -0.2641
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.3389,
+     "drawdown_avoided_pooled": 0.3251,
+     "gains_kept_outside_declines": 0.7643,
+     "rebound_kept": 0.6211,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1171,
+       "avoided": 0.6972
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.299,
+       "avoided": -0.2641
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0564,
+       "avoided": 0.3389
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0915,
+       "avoided": -0.0311
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.2809,
+     "gains_kept_outside_declines": 0.7811,
+     "rebound_kept": 0.6619,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1171,
+       "avoided": 0.6972
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0511,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.299,
+       "avoided": -0.2641
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0564,
+       "avoided": 0.3389
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0538,
+       "avoided": -0.0636
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0915,
+       "avoided": -0.0311
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0426,
+       "avoided": 0.2864
+      }
+     ]
+    }
+   },
+   "cagr": 0.1266
+  },
+  "VIX>=25": {
+   "name": "VIX>=25",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.2165,
+   "longest_under_water_sessions": 552,
+   "share_sessions_under_water": 0.8933,
+   "sharpe_excess": 0.5355,
+   "sortino_excess": 0.7279,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.3937,
+     "drawdown_avoided_pooled": 0.5927,
+     "gains_kept_outside_declines": 0.5204,
+     "rebound_kept": 0.3233,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.0466,
+       "avoided": 0.8841
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1755,
+       "avoided": 0.3132
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1183,
+       "avoided": 0.3937
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.3132,
+     "drawdown_avoided_pooled": 0.5105,
+     "gains_kept_outside_declines": 0.5542,
+     "rebound_kept": 0.3948,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.0466,
+       "avoided": 0.8841
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1755,
+       "avoided": 0.3132
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1183,
+       "avoided": 0.3937
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0719,
+       "avoided": 0.1979
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.018,
+     "drawdown_avoided_pooled": 0.4247,
+     "gains_kept_outside_declines": 0.5976,
+     "rebound_kept": 0.4606,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.0466,
+       "avoided": 0.8841
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0502,
+       "avoided": 0.018
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1755,
+       "avoided": 0.3132
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1183,
+       "avoided": 0.3937
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0507,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0719,
+       "avoided": 0.1979
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0592,
+       "avoided": 0.0
+      }
+     ]
+    }
+   },
+   "cagr": 0.0903
+  },
+  "SPY": {
+   "name": "SPY",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.3372,
+   "longest_under_water_sessions": 488,
+   "share_sessions_under_water": 0.8527,
+   "sharpe_excess": 0.6442,
+   "sortino_excess": 0.9059,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.0,
+     "gains_kept_outside_declines": 1.0,
+     "rebound_kept": 1.0,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3372,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.245,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1876,
+       "avoided": 0.0
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.0,
+     "gains_kept_outside_declines": 1.0,
+     "rebound_kept": 1.0,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3372,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.245,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1876,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0888,
+       "avoided": 0.0
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.0,
+     "gains_kept_outside_declines": 1.0,
+     "rebound_kept": 1.0,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3372,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0511,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.245,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1876,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0507,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0888,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0592,
+       "avoided": 0.0
+      }
+     ]
+    }
+   },
+   "cagr": 0.1475
+  },
+  "RSP": {
+   "name": "RSP",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.3904,
+   "longest_under_water_sessions": 517,
+   "share_sessions_under_water": 0.8939,
+   "sharpe_excess": 0.5069,
+   "sortino_excess": 0.7131,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.163,
+     "drawdown_avoided_pooled": 0.0051,
+     "gains_kept_outside_declines": 0.9007,
+     "rebound_kept": 0.8918,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3903,
+       "avoided": -0.203
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2029,
+       "avoided": 0.1929
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1596,
+       "avoided": 0.163
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.1929,
+     "drawdown_avoided_pooled": 0.0744,
+     "gains_kept_outside_declines": 0.8721,
+     "rebound_kept": 0.8911,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3903,
+       "avoided": -0.203
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2029,
+       "avoided": 0.1929
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0517,
+       "avoided": 0.3952
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1596,
+       "avoided": 0.163
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0505,
+       "avoided": 0.4426
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.2648,
+     "drawdown_avoided_pooled": 0.1504,
+     "gains_kept_outside_declines": 0.8332,
+     "rebound_kept": 0.8928,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.3903,
+       "avoided": -0.203
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0379,
+       "avoided": 0.2648
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2029,
+       "avoided": 0.1929
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0531,
+       "avoided": 0.0075
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0517,
+       "avoided": 0.3952
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1596,
+       "avoided": 0.163
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0327,
+       "avoided": 0.3621
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0505,
+       "avoided": 0.4426
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": 0.0214,
+       "avoided": 1.3469
+      }
+     ]
+    }
+   },
+   "cagr": 0.118
+  },
+  "60/40 SPY/IEF": {
+   "name": "60/40 SPY/IEF",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.2102,
+   "longest_under_water_sessions": 540,
+   "share_sessions_under_water": 0.8608,
+   "sharpe_excess": 0.5387,
+   "sortino_excess": 0.7599,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.46,
+     "drawdown_avoided_pooled": 0.3843,
+     "gains_kept_outside_declines": 0.6242,
+     "rebound_kept": 0.6436,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1913,
+       "avoided": 0.4836
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2051,
+       "avoided": 0.183
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1061,
+       "avoided": 0.46
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.46,
+     "drawdown_avoided_pooled": 0.3987,
+     "gains_kept_outside_declines": 0.6157,
+     "rebound_kept": 0.6345,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1913,
+       "avoided": 0.4836
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2051,
+       "avoided": 0.183
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.039,
+       "avoided": 0.5466
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1061,
+       "avoided": 0.46
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0544,
+       "avoided": 0.3988
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.4216,
+     "drawdown_avoided_pooled": 0.3966,
+     "gains_kept_outside_declines": 0.6156,
+     "rebound_kept": 0.6307,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.1913,
+       "avoided": 0.4836
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0365,
+       "avoided": 0.2914
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.2051,
+       "avoided": 0.183
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0436,
+       "avoided": 0.1895
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.039,
+       "avoided": 0.5466
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1061,
+       "avoided": 0.46
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0297,
+       "avoided": 0.4216
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0544,
+       "avoided": 0.3988
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0232,
+       "avoided": 0.6142
+      }
+     ]
+    }
+   },
+   "cagr": 0.0909
+  },
+  "SPY-or-bills 200d": {
+   "name": "SPY-or-bills 200d",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.1811,
+   "longest_under_water_sessions": 497,
+   "share_sessions_under_water": 0.8765,
+   "sharpe_excess": 0.7094,
+   "sortino_excess": 0.9604,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.5373,
+     "drawdown_avoided_pooled": 0.5367,
+     "gains_kept_outside_declines": 0.6366,
+     "rebound_kept": 0.3146,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1219,
+       "avoided": 0.5373
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.5351,
+     "drawdown_avoided_pooled": 0.4717,
+     "gains_kept_outside_declines": 0.6559,
+     "rebound_kept": 0.4084,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1219,
+       "avoided": 0.5373
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0641,
+       "avoided": 0.2879
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.0,
+     "drawdown_avoided_pooled": 0.3918,
+     "gains_kept_outside_declines": 0.6897,
+     "rebound_kept": 0.4798,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.174,
+       "avoided": 0.5351
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.0511,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1219,
+       "avoided": 0.5373
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0535,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0841,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.0913,
+       "avoided": 0.5391
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.0507,
+       "avoided": 0.0
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0641,
+       "avoided": 0.2879
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0592,
+       "avoided": 0.0
+      }
+     ]
+    }
+   },
+   "cagr": 0.1167
+  },
+  "SPY+bills vol-matched (w=0.66)": {
+   "name": "SPY+bills vol-matched (w=0.66)",
+   "window": [
+    "2020-01-02",
+    "2026-11-10"
+   ],
+   "max_drawdown": -0.2333,
+   "longest_under_water_sessions": 383,
+   "share_sessions_under_water": 0.8347,
+   "sharpe_excess": 0.6442,
+   "sortino_excess": 0.9059,
+   "by_depth": {
+    "dd10": {
+     "n_episodes": 3,
+     "drawdown_avoided_median": 0.3542,
+     "drawdown_avoided_pooled": 0.3583,
+     "gains_kept_outside_declines": 0.7052,
+     "rebound_kept": 0.6978,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.2333,
+       "avoided": 0.3542
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1625,
+       "avoided": 0.3688
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1259,
+       "avoided": 0.3523
+      }
+     ]
+    },
+    "dd7": {
+     "n_episodes": 5,
+     "drawdown_avoided_median": 0.3542,
+     "drawdown_avoided_pooled": 0.3582,
+     "gains_kept_outside_declines": 0.6996,
+     "rebound_kept": 0.6939,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.2333,
+       "avoided": 0.3542
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1625,
+       "avoided": 0.3688
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0553,
+       "avoided": 0.3518
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1259,
+       "avoided": 0.3523
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0575,
+       "avoided": 0.3634
+      }
+     ]
+    },
+    "dd5": {
+     "n_episodes": 9,
+     "drawdown_avoided_median": 0.3556,
+     "drawdown_avoided_pooled": 0.3577,
+     "gains_kept_outside_declines": 0.6942,
+     "rebound_kept": 0.6917,
+     "per_episode": [
+      {
+       "onset": "2020-02-20",
+       "trough": "2020-03-23",
+       "spy": -0.3372,
+       "sleeve": -0.2333,
+       "avoided": 0.3542
+      },
+      {
+       "onset": "2021-09-03",
+       "trough": "2021-10-04",
+       "spy": -0.0511,
+       "sleeve": -0.034,
+       "avoided": 0.341
+      },
+      {
+       "onset": "2022-01-04",
+       "trough": "2022-10-12",
+       "spy": -0.245,
+       "sleeve": -0.1625,
+       "avoided": 0.3688
+      },
+      {
+       "onset": "2024-03-28",
+       "trough": "2024-04-19",
+       "spy": -0.0535,
+       "sleeve": -0.0346,
+       "avoided": 0.3595
+      },
+      {
+       "onset": "2024-07-17",
+       "trough": "2024-08-05",
+       "spy": -0.0841,
+       "sleeve": -0.0553,
+       "avoided": 0.3518
+      },
+      {
+       "onset": "2025-02-20",
+       "trough": "2025-04-08",
+       "spy": -0.1876,
+       "sleeve": -0.1259,
+       "avoided": 0.3523
+      },
+      {
+       "onset": "2025-10-30",
+       "trough": "2025-11-20",
+       "spy": -0.0507,
+       "sleeve": -0.033,
+       "avoided": 0.3556
+      },
+      {
+       "onset": "2026-01-28",
+       "trough": "2026-03-30",
+       "spy": -0.0888,
+       "sleeve": -0.0575,
+       "avoided": 0.3634
+      },
+      {
+       "onset": "2026-10-07",
+       "trough": "2026-11-05",
+       "spy": -0.0592,
+       "sleeve": -0.0381,
+       "avoided": 0.3628
+      }
+     ]
+    }
+   },
+   "cagr": 0.1111
+  }
+ }
+}

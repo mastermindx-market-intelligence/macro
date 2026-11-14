@@ -1,0 +1,6686 @@
+{
+ "radar_loud": {
+  "name": "radar_loud",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.1566,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 270,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.1333,
+    "lift": 3.82,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 270,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.2593,
+    "lift": 3.2201,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 270,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.4,
+    "lift": 2.2859,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 15.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 15.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 15.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4137,
+      "rebound_forgone_sum": 0.6052,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 15.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 16
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4094,
+      "rebound_forgone_sum": 0.5762,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 16.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 16
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4094,
+      "rebound_forgone_sum": 0.5762,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 16.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 16
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4094,
+      "rebound_forgone_sum": 0.5762,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 16.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 16
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4094,
+      "rebound_forgone_sum": 0.5762,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": -0.1915,
+      "net_per_year": -0.028,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 16.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 22
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 16
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 25,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     }
+    }
+   }
+  },
+  "calibration_h21": {
+   "horizon": 21,
+   "depth": 0.05,
+   "n": 1703,
+   "base_rate_used": 0.175,
+   "base_rate_source": "window",
+   "brier": 0.13404,
+   "brier_base": 0.14437,
+   "brier_skill": 0.0716,
+   "reliability": [
+    {
+     "bin": [
+      0.1,
+      0.15
+     ],
+     "n": 380,
+     "mean_p": 0.13,
+     "observed": 0.0368
+    },
+    {
+     "bin": [
+      0.15,
+      0.2
+     ],
+     "n": 1053,
+     "mean_p": 0.16,
+     "observed": 0.1671
+    },
+    {
+     "bin": [
+      0.2,
+      0.3
+     ],
+     "n": 31,
+     "mean_p": 0.25,
+     "observed": 0.0323
+    },
+    {
+     "bin": [
+      0.3,
+      0.4
+     ],
+     "n": 239,
+     "mean_p": 0.33,
+     "observed": 0.4477
+    }
+   ]
+  }
+ },
+ "radar_riskoff": {
+  "name": "radar_riskoff",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.1386,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 239,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.1506,
+    "lift": 4.3155,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 239,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.2887,
+    "lift": 3.5858,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 239,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.4477,
+    "lift": 2.5585,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 10.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 10.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 10.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4661,
+      "rebound_forgone_sum": 0.4597,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 10.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 28,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4617,
+      "rebound_forgone_sum": 0.4306,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4617,
+      "rebound_forgone_sum": 0.4306,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4617,
+      "rebound_forgone_sum": 0.4306,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4617,
+      "rebound_forgone_sum": 0.4306,
+      "outside_return_forgone_sum": 0.0247,
+      "net_avoided_minus_cost_sum": 0.0064,
+      "net_per_year": 0.0009,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 10
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 28,
+      "runs_true": 0,
+      "runs_in_episode": 25,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": true
+     }
+    }
+   }
+  }
+ },
+ "radar_caution_plus": {
+  "name": "radar_caution_plus",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.7796,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 1339,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.0448,
+    "lift": 1.2838,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 1334,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.1027,
+    "lift": 1.2755,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 1323,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.2147,
+    "lift": 1.2268,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 1.1797,
+      "rebound_forgone_sum": 1.1125,
+      "outside_return_forgone_sum": 0.7222,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.938,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.994,
+        "lead_to_breach": 6,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.94,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.987,
+        "lead_to_breach": 13,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.879,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 91
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.897,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.972,
+        "lead_to_breach": 11,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.938,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.899,
+        "lead_to_breach": 38,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.795,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 4
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.717,
+       1.0
+      ],
+      "caught_at_onset": 9,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 3.0,
+      "caught_by_breach": 9,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 18.0,
+      "alert_runs": 71,
+      "runs_true": 7,
+      "runs_in_episode": 33,
+      "false_alarms": 31,
+      "false_alarms_per_year": 4.5313,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 1.1797,
+      "rebound_forgone_sum": 1.1125,
+      "outside_return_forgone_sum": 0.7222,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.925,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.992,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.94,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.993,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.965,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 91
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.925,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.917,
+        "lead_to_breach": 13,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.552,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.837,
+        "lead_to_breach": 40,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.643,
+        "lead_to_breach": 26,
+        "trough_to_all_clear": 4
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.717,
+       1.0
+      ],
+      "caught_at_onset": 9,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 5.0,
+      "caught_by_breach": 9,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 20.0,
+      "alert_runs": 71,
+      "runs_true": 7,
+      "runs_in_episode": 33,
+      "false_alarms": 31,
+      "false_alarms_per_year": 4.5313,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 1.1797,
+      "rebound_forgone_sum": 1.1125,
+      "outside_return_forgone_sum": 0.7222,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.71,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.952,
+        "lead_to_breach": 13,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.576,
+        "lead_to_breach": 28,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.65,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 91
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.666,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.924,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.233,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 41,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.755,
+        "lead_to_breach": 31,
+        "trough_to_all_clear": 4
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.717,
+       1.0
+      ],
+      "caught_at_onset": 9,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 9,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 25.0,
+      "alert_runs": 71,
+      "runs_true": 8,
+      "runs_in_episode": 33,
+      "false_alarms": 30,
+      "false_alarms_per_year": 4.3852,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 1.1797,
+      "rebound_forgone_sum": 1.1125,
+      "outside_return_forgone_sum": 0.7222,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.674,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.938,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.507,
+        "lead_to_breach": 39,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 31,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.34,
+        "lead_to_breach": 36,
+        "trough_to_all_clear": 91
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.498,
+        "lead_to_breach": 33,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.914,
+        "lead_to_breach": 29,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.457,
+        "lead_to_breach": 36,
+        "trough_to_all_clear": 15
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 41,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.674,
+        "lead_to_breach": 42,
+        "trough_to_all_clear": 4
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.717,
+       1.0
+      ],
+      "caught_at_onset": 9,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 9,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 36.0,
+      "alert_runs": 71,
+      "runs_true": 14,
+      "runs_in_episode": 33,
+      "false_alarms": 24,
+      "false_alarms_per_year": 3.5081,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 1.0065,
+      "rebound_forgone_sum": 0.9327,
+      "outside_return_forgone_sum": 0.7287,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.972,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.994,
+        "lead_to_breach": 6,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.987,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.897,
+        "lead_to_breach": 16,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.972,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.899,
+        "lead_to_breach": 44,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 5,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 3.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 15.0,
+      "alert_runs": 71,
+      "runs_true": 4,
+      "runs_in_episode": 27,
+      "false_alarms": 40,
+      "false_alarms_per_year": 5.8469,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 1.0065,
+      "rebound_forgone_sum": 0.9327,
+      "outside_return_forgone_sum": 0.7287,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.925,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.992,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.993,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.925,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.917,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.837,
+        "lead_to_breach": 46,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 5,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 5.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 17.0,
+      "alert_runs": 71,
+      "runs_true": 4,
+      "runs_in_episode": 27,
+      "false_alarms": 40,
+      "false_alarms_per_year": 5.8469,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 1.0065,
+      "rebound_forgone_sum": 0.9327,
+      "outside_return_forgone_sum": 0.7287,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.806,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.952,
+        "lead_to_breach": 13,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.666,
+        "lead_to_breach": 23,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.924,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 47,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 5,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 22.0,
+      "alert_runs": 71,
+      "runs_true": 4,
+      "runs_in_episode": 27,
+      "false_alarms": 40,
+      "false_alarms_per_year": 5.8469,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 1.0065,
+      "rebound_forgone_sum": 0.9327,
+      "outside_return_forgone_sum": 0.7287,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.779,
+      "median_trough_to_all_clear": 18.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.938,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 33,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.498,
+        "lead_to_breach": 34,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.914,
+        "lead_to_breach": 33,
+        "trough_to_all_clear": 18
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 47,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 5,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 33.0,
+      "alert_runs": 71,
+      "runs_true": 7,
+      "runs_in_episode": 27,
+      "false_alarms": 37,
+      "false_alarms_per_year": 5.4084,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.8421,
+      "rebound_forgone_sum": 0.7256,
+      "outside_return_forgone_sum": 0.7714,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.987,
+      "median_trough_to_all_clear": 24.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.994,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.987,
+        "lead_to_breach": 36,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.972,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 18
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 3.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 18.0,
+      "alert_runs": 71,
+      "runs_true": 3,
+      "runs_in_episode": 20,
+      "false_alarms": 48,
+      "false_alarms_per_year": 7.0162,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.8421,
+      "rebound_forgone_sum": 0.7256,
+      "outside_return_forgone_sum": 0.7714,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.992,
+      "median_trough_to_all_clear": 24.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.992,
+        "lead_to_breach": 10,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.993,
+        "lead_to_breach": 38,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.917,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 18
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 5.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 20.0,
+      "alert_runs": 71,
+      "runs_true": 3,
+      "runs_in_episode": 20,
+      "false_alarms": 48,
+      "false_alarms_per_year": 7.0162,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.8421,
+      "rebound_forgone_sum": 0.7256,
+      "outside_return_forgone_sum": 0.7714,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.924,
+      "median_trough_to_all_clear": 24.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.952,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 43,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.924,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 18
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 25.0,
+      "alert_runs": 71,
+      "runs_true": 3,
+      "runs_in_episode": 20,
+      "false_alarms": 48,
+      "false_alarms_per_year": 7.0162,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.8421,
+      "rebound_forgone_sum": 0.7256,
+      "outside_return_forgone_sum": 0.7714,
+      "net_avoided_minus_cost_sum": -0.6549,
+      "net_per_year": -0.0957,
+      "median_loss_avoided_share": 0.914,
+      "median_trough_to_all_clear": 24.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.938,
+        "lead_to_breach": 26,
+        "trough_to_all_clear": 24
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 54,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.914,
+        "lead_to_breach": 36,
+        "trough_to_all_clear": 18
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 1.0,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 36.0,
+      "alert_runs": 71,
+      "runs_true": 6,
+      "runs_in_episode": 20,
+      "false_alarms": 45,
+      "false_alarms_per_year": 6.5777,
+      "thin": true
+     }
+    }
+   }
+  }
+ },
+ "base_spy_below_200": {
+  "name": "base_spy_below_200",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.1932,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 333,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.1081,
+    "lift": 3.0973,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 333,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.2192,
+    "lift": 2.7228,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 333,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.3453,
+    "lift": 1.9736,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.0,
+      "median_trough_to_all_clear": 0.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.0,
+       0.283
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 0,
+      "share_caught_by_breach": 0.0,
+      "median_lead_to_breach": null,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 6
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 6
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 6
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4442,
+      "rebound_forgone_sum": 0.744,
+      "outside_return_forgone_sum": 0.0,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.269,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 6
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.189,
+       0.924
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 0.6,
+      "median_lead_to_breach": 0.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 18,
+      "false_alarms": 0,
+      "false_alarms_per_year": 0.0,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4187,
+      "rebound_forgone_sum": 0.6758,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 34.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 17,
+      "false_alarms": 1,
+      "false_alarms_per_year": 0.1462,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4187,
+      "rebound_forgone_sum": 0.6758,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 34.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 17,
+      "false_alarms": 1,
+      "false_alarms_per_year": 0.1462,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4187,
+      "rebound_forgone_sum": 0.6758,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 34.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 17,
+      "false_alarms": 1,
+      "false_alarms_per_year": 0.1462,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4187,
+      "rebound_forgone_sum": 0.6758,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2998,
+      "net_per_year": -0.0438,
+      "median_loss_avoided_share": 0.642,
+      "median_trough_to_all_clear": 34.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.642,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 44
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.66,
+        "lead_to_breach": 21,
+        "trough_to_all_clear": 34
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 18,
+      "runs_true": 0,
+      "runs_in_episode": 17,
+      "false_alarms": 1,
+      "false_alarms_per_year": 0.1462,
+      "thin": true
+     }
+    }
+   }
+  }
+ },
+ "base_vix_ge_20": {
+  "name": "base_vix_ge_20",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.4118,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 708,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.072,
+    "lift": 2.0638,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 706,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.1346,
+    "lift": 1.6713,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 706,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.2479,
+    "lift": 1.4165,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.6929,
+      "rebound_forgone_sum": 1.081,
+      "outside_return_forgone_sum": 0.3952,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.666,
+      "median_trough_to_all_clear": 6.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.666,
+        "lead_to_breach": 14,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.56,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.711,
+        "lead_to_breach": 29,
+        "trough_to_all_clear": 7
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.414,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.571,
+       0.994
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 8,
+      "share_caught_by_breach": 0.8889,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 39,
+      "false_alarms": 26,
+      "false_alarms_per_year": 3.8005,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.6929,
+      "rebound_forgone_sum": 1.081,
+      "outside_return_forgone_sum": 0.3952,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.666,
+      "median_trough_to_all_clear": 6.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.666,
+        "lead_to_breach": 14,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.56,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.711,
+        "lead_to_breach": 29,
+        "trough_to_all_clear": 7
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.414,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.571,
+       0.994
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 8,
+      "share_caught_by_breach": 0.8889,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 39,
+      "false_alarms": 26,
+      "false_alarms_per_year": 3.8005,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.6929,
+      "rebound_forgone_sum": 1.081,
+      "outside_return_forgone_sum": 0.3952,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.666,
+      "median_trough_to_all_clear": 6.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.666,
+        "lead_to_breach": 14,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.233,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 41,
+        "trough_to_all_clear": 7
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.414,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.571,
+       0.994
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 8,
+      "share_caught_by_breach": 0.8889,
+      "median_lead_to_breach": 8.5,
+      "alert_runs": 65,
+      "runs_true": 3,
+      "runs_in_episode": 39,
+      "false_alarms": 23,
+      "false_alarms_per_year": 3.3619,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.6929,
+      "rebound_forgone_sum": 1.081,
+      "outside_return_forgone_sum": 0.3952,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.414,
+      "median_trough_to_all_clear": 6.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.396,
+        "lead_to_breach": 30,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 31,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.014,
+        "lead_to_breach": 29,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 41,
+        "trough_to_all_clear": 7
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.414,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.571,
+       0.994
+      ],
+      "caught_at_onset": 4,
+      "share_caught_at_onset": 0.4444,
+      "median_lead_to_onset": 13.0,
+      "caught_by_breach": 8,
+      "share_caught_by_breach": 0.8889,
+      "median_lead_to_breach": 16.0,
+      "alert_runs": 65,
+      "runs_true": 8,
+      "runs_in_episode": 39,
+      "false_alarms": 18,
+      "false_alarms_per_year": 2.6311,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.6878,
+      "rebound_forgone_sum": 0.9994,
+      "outside_return_forgone_sum": 0.4716,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.757,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 7,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.711,
+        "lead_to_breach": 35,
+        "trough_to_all_clear": 7
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 5.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 31,
+      "false_alarms": 34,
+      "false_alarms_per_year": 4.9698,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.6878,
+      "rebound_forgone_sum": 0.9994,
+      "outside_return_forgone_sum": 0.4716,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.757,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 5,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 7,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.711,
+        "lead_to_breach": 35,
+        "trough_to_all_clear": 7
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 5.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 31,
+      "false_alarms": 34,
+      "false_alarms_per_year": 4.9698,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.6878,
+      "rebound_forgone_sum": 0.9994,
+      "outside_return_forgone_sum": 0.4716,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.757,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 7,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 47,
+        "trough_to_all_clear": 7
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 2,
+      "share_caught_at_onset": 0.4,
+      "median_lead_to_onset": 8.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 7.0,
+      "alert_runs": 65,
+      "runs_true": 2,
+      "runs_in_episode": 31,
+      "false_alarms": 32,
+      "false_alarms_per_year": 4.6775,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.6878,
+      "rebound_forgone_sum": 0.9994,
+      "outside_return_forgone_sum": 0.4716,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.757,
+      "median_trough_to_all_clear": 23.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 33,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 6
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 7,
+        "trough_to_all_clear": 23
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.71,
+        "lead_to_breach": 47,
+        "trough_to_all_clear": 7
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 2,
+      "share_caught_at_onset": 0.4,
+      "median_lead_to_onset": 13.5,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 7.0,
+      "alert_runs": 65,
+      "runs_true": 5,
+      "runs_in_episode": 31,
+      "false_alarms": 29,
+      "false_alarms_per_year": 4.239,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.6256,
+      "rebound_forgone_sum": 0.8015,
+      "outside_return_forgone_sum": 0.6074,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.86,
+      "median_trough_to_all_clear": 35.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 26,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 10,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 10.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 23,
+      "false_alarms": 42,
+      "false_alarms_per_year": 6.1392,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.6256,
+      "rebound_forgone_sum": 0.8015,
+      "outside_return_forgone_sum": 0.6074,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.86,
+      "median_trough_to_all_clear": 35.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.887,
+        "lead_to_breach": 26,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 10,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 10.0,
+      "alert_runs": 65,
+      "runs_true": 0,
+      "runs_in_episode": 23,
+      "false_alarms": 42,
+      "false_alarms_per_year": 6.1392,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.6256,
+      "rebound_forgone_sum": 0.8015,
+      "outside_return_forgone_sum": 0.6074,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.806,
+      "median_trough_to_all_clear": 35.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.806,
+        "lead_to_breach": 43,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 10,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 10.0,
+      "alert_runs": 65,
+      "runs_true": 1,
+      "runs_in_episode": 23,
+      "false_alarms": 41,
+      "false_alarms_per_year": 5.993,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.6256,
+      "rebound_forgone_sum": 0.8015,
+      "outside_return_forgone_sum": 0.6074,
+      "net_avoided_minus_cost_sum": -0.7833,
+      "net_per_year": -0.1145,
+      "median_loss_avoided_share": 0.779,
+      "median_trough_to_all_clear": 35.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 226
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 54,
+        "trough_to_all_clear": 35
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.757,
+        "lead_to_breach": 10,
+        "trough_to_all_clear": 23
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 10.0,
+      "alert_runs": 65,
+      "runs_true": 4,
+      "runs_in_episode": 23,
+      "false_alarms": 38,
+      "false_alarms_per_year": 5.5545,
+      "thin": true
+     }
+    }
+   }
+  }
+ },
+ "base_vix_ge_25": {
+  "name": "base_vix_ge_25",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.203,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 348,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.1006,
+    "lift": 2.8815,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 348,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.1638,
+    "lift": 2.0344,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 348,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.2615,
+    "lift": 1.4944,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4961,
+      "rebound_forgone_sum": 0.7934,
+      "outside_return_forgone_sum": 0.1571,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.234,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.234,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 9,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 33,
+      "false_alarms": 12,
+      "false_alarms_per_year": 1.7541,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4961,
+      "rebound_forgone_sum": 0.7934,
+      "outside_return_forgone_sum": 0.1571,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.234,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.234,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 9,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 33,
+      "false_alarms": 12,
+      "false_alarms_per_year": 1.7541,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4961,
+      "rebound_forgone_sum": 0.7934,
+      "outside_return_forgone_sum": 0.1571,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.234,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.234,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.233,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 9,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.1111,
+      "median_lead_to_onset": 10.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 8.0,
+      "alert_runs": 45,
+      "runs_true": 1,
+      "runs_in_episode": 33,
+      "false_alarms": 11,
+      "false_alarms_per_year": 1.6079,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4961,
+      "rebound_forgone_sum": 0.7934,
+      "outside_return_forgone_sum": 0.1571,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.234,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.234,
+        "lead_to_breach": 8,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 31,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.233,
+        "lead_to_breach": 25,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 9,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.345,
+       0.902
+      ],
+      "caught_at_onset": 2,
+      "share_caught_at_onset": 0.2222,
+      "median_lead_to_onset": 15.5,
+      "caught_by_breach": 6,
+      "share_caught_by_breach": 0.6667,
+      "median_lead_to_breach": 8.5,
+      "alert_runs": 45,
+      "runs_true": 2,
+      "runs_in_episode": 33,
+      "false_alarms": 10,
+      "false_alarms_per_year": 1.4617,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4952,
+      "rebound_forgone_sum": 0.7566,
+      "outside_return_forgone_sum": 0.1929,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.626,
+      "median_trough_to_all_clear": 12.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 30,
+      "false_alarms": 15,
+      "false_alarms_per_year": 2.1926,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4952,
+      "rebound_forgone_sum": 0.7566,
+      "outside_return_forgone_sum": 0.1929,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.626,
+      "median_trough_to_all_clear": 12.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 30,
+      "false_alarms": 15,
+      "false_alarms_per_year": 2.1926,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4952,
+      "rebound_forgone_sum": 0.7566,
+      "outside_return_forgone_sum": 0.1929,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.626,
+      "median_trough_to_all_clear": 12.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 30,
+      "false_alarms": 15,
+      "false_alarms_per_year": 2.1926,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4952,
+      "rebound_forgone_sum": 0.7566,
+      "outside_return_forgone_sum": 0.1929,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.626,
+      "median_trough_to_all_clear": 12.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 33,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 3
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 12
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.626,
+        "lead_to_breach": 15,
+        "trough_to_all_clear": 2
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.549,
+       1.0
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.2,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 1.0,
+      "alert_runs": 45,
+      "runs_true": 1,
+      "runs_in_episode": 30,
+      "false_alarms": 14,
+      "false_alarms_per_year": 2.0464,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.4788,
+      "rebound_forgone_sum": 0.6591,
+      "outside_return_forgone_sum": 0.2741,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.735,
+      "median_trough_to_all_clear": 17.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 12
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 23,
+      "false_alarms_per_year": 3.3619,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.4788,
+      "rebound_forgone_sum": 0.6591,
+      "outside_return_forgone_sum": 0.2741,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.735,
+      "median_trough_to_all_clear": 17.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 12
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 23,
+      "false_alarms_per_year": 3.3619,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.4788,
+      "rebound_forgone_sum": 0.6591,
+      "outside_return_forgone_sum": 0.2741,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.735,
+      "median_trough_to_all_clear": 17.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.735,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 12
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 45,
+      "runs_true": 0,
+      "runs_in_episode": 22,
+      "false_alarms": 23,
+      "false_alarms_per_year": 3.3619,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.4788,
+      "rebound_forgone_sum": 0.6591,
+      "outside_return_forgone_sum": 0.2741,
+      "net_avoided_minus_cost_sum": -0.4544,
+      "net_per_year": -0.0664,
+      "median_loss_avoided_share": 0.779,
+      "median_trough_to_all_clear": 17.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.86,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 52
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.779,
+        "lead_to_breach": 54,
+        "trough_to_all_clear": 17
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 12
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 21.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 45,
+      "runs_true": 1,
+      "runs_in_episode": 22,
+      "false_alarms": 22,
+      "false_alarms_per_year": 3.2158,
+      "thin": true
+     }
+    }
+   }
+  }
+ },
+ "base_hy_oas_chg21_top_decile": {
+  "name": "base_hy_oas_chg21_top_decile",
+  "window": [
+   "2020-01-02",
+   "2026-11-10"
+  ],
+  "outcomes_through": "2026-11-10",
+  "n_sessions": 1724,
+  "budget": 0.1096,
+  "seen_history": true,
+  "day_level": {
+   "h5": {
+    "n_days": 1719,
+    "n_alert_days": 189,
+    "events": 60,
+    "base_rate": 0.0349,
+    "precision": 0.1376,
+    "lift": 3.9413,
+    "thin": false
+   },
+   "h10": {
+    "n_days": 1714,
+    "n_alert_days": 189,
+    "events": 138,
+    "base_rate": 0.0805,
+    "precision": 0.2063,
+    "lift": 2.5629,
+    "thin": false
+   },
+   "h21": {
+    "n_days": 1703,
+    "n_alert_days": 180,
+    "events": 298,
+    "base_rate": 0.175,
+    "precision": 0.4222,
+    "lift": 2.4129,
+    "thin": false
+   }
+  },
+  "episode_level": {
+   "dd5": {
+    "n_episodes": 9,
+    "episodes": [
+     {
+      "depth": 0.05,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.05,
+      "peak": "2021-09-02",
+      "onset": "2021-09-03",
+      "breach": "2021-09-30",
+      "trough": "2021-10-04",
+      "recovery": "2021-10-20",
+      "max_loss": -0.05114
+     },
+     {
+      "depth": 0.05,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-19",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-03-27",
+      "onset": "2024-03-28",
+      "breach": "2024-04-19",
+      "trough": "2024-04-19",
+      "recovery": "2024-05-14",
+      "max_loss": -0.05354
+     },
+     {
+      "depth": 0.05,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-02",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-04",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.05,
+      "peak": "2025-10-29",
+      "onset": "2025-10-30",
+      "breach": "2025-11-20",
+      "trough": "2025-11-20",
+      "recovery": "2025-12-10",
+      "max_loss": -0.05071
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-19",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     },
+     {
+      "depth": 0.05,
+      "peak": "2026-10-06",
+      "onset": "2026-10-07",
+      "breach": "2026-11-05",
+      "trough": "2026-11-05",
+      "recovery": null,
+      "max_loss": -0.05916
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.3125,
+      "rebound_forgone_sum": 0.4782,
+      "outside_return_forgone_sum": 0.0404,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 1.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.651,
+        "lead_to_breach": 12,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.795,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.1111,
+      "median_lead_to_onset": 3.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 12.0,
+      "alert_runs": 36,
+      "runs_true": 1,
+      "runs_in_episode": 32,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.3125,
+      "rebound_forgone_sum": 0.4782,
+      "outside_return_forgone_sum": 0.0404,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 1.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.651,
+        "lead_to_breach": 12,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.643,
+        "lead_to_breach": 26,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.1111,
+      "median_lead_to_onset": 5.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 12.0,
+      "alert_runs": 36,
+      "runs_true": 1,
+      "runs_in_episode": 32,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.3125,
+      "rebound_forgone_sum": 0.4782,
+      "outside_return_forgone_sum": 0.0404,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 1.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.651,
+        "lead_to_breach": 12,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.708,
+        "lead_to_breach": 28,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.1111,
+      "median_lead_to_onset": 7.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 12.0,
+      "alert_runs": 36,
+      "runs_true": 1,
+      "runs_in_episode": 32,
+      "false_alarms": 3,
+      "false_alarms_per_year": 0.4385,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.3125,
+      "rebound_forgone_sum": 0.4782,
+      "outside_return_forgone_sum": 0.0404,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.545,
+      "median_trough_to_all_clear": 1.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.87,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2021-09-03",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-03-28",
+        "loss_avoided_share": 0.0,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2025-10-30",
+        "loss_avoided_share": 0.014,
+        "lead_to_breach": 29,
+        "trough_to_all_clear": 0
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 18,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2026-10-07",
+        "loss_avoided_share": 0.708,
+        "lead_to_breach": 28,
+        "trough_to_all_clear": 0
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.251,
+       0.831
+      ],
+      "caught_at_onset": 3,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 14.0,
+      "caught_by_breach": 5,
+      "share_caught_by_breach": 0.5556,
+      "median_lead_to_breach": 20.0,
+      "alert_runs": 36,
+      "runs_true": 3,
+      "runs_in_episode": 32,
+      "false_alarms": 1,
+      "false_alarms_per_year": 0.1462,
+      "thin": false
+     }
+    }
+   },
+   "dd7": {
+    "n_episodes": 5,
+    "episodes": [
+     {
+      "depth": 0.07,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-25",
+      "trough": "2020-03-23",
+      "recovery": "2020-11-11",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.07,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-01-21",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.07,
+      "peak": "2024-07-16",
+      "onset": "2024-07-17",
+      "breach": "2024-08-05",
+      "trough": "2024-08-05",
+      "recovery": "2024-09-19",
+      "max_loss": -0.08406
+     },
+     {
+      "depth": 0.07,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-10",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     },
+     {
+      "depth": 0.07,
+      "peak": "2026-01-27",
+      "onset": "2026-01-28",
+      "breach": "2026-03-27",
+      "trough": "2026-03-30",
+      "recovery": "2026-04-14",
+      "max_loss": -0.08885
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.3009,
+      "rebound_forgone_sum": 0.4713,
+      "outside_return_forgone_sum": 0.0357,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.343,
+       0.99
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 4,
+      "share_caught_by_breach": 0.8,
+      "median_lead_to_breach": 0.5,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 29,
+      "false_alarms": 7,
+      "false_alarms_per_year": 1.0232,
+      "thin": false
+     },
+     "h5": {
+      "loss_avoided_sum": 0.3009,
+      "rebound_forgone_sum": 0.4713,
+      "outside_return_forgone_sum": 0.0357,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.343,
+       0.99
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 4,
+      "share_caught_by_breach": 0.8,
+      "median_lead_to_breach": 0.5,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 29,
+      "false_alarms": 7,
+      "false_alarms_per_year": 1.0232,
+      "thin": false
+     },
+     "h10": {
+      "loss_avoided_sum": 0.3009,
+      "rebound_forgone_sum": 0.4713,
+      "outside_return_forgone_sum": 0.0357,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.343,
+       0.99
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 4,
+      "share_caught_by_breach": 0.8,
+      "median_lead_to_breach": 0.5,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 29,
+      "false_alarms": 7,
+      "false_alarms_per_year": 1.0232,
+      "thin": false
+     },
+     "h21": {
+      "loss_avoided_sum": 0.3009,
+      "rebound_forgone_sum": 0.4713,
+      "outside_return_forgone_sum": 0.0357,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 2.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.87,
+        "lead_to_breach": 20,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": null,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2024-07-17",
+        "loss_avoided_share": 0.327,
+        "lead_to_breach": 1,
+        "trough_to_all_clear": 2
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 0,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2026-01-28",
+        "loss_avoided_share": 0.788,
+        "lead_to_breach": 24,
+        "trough_to_all_clear": 1
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.343,
+       0.99
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.2,
+      "median_lead_to_onset": 17.0,
+      "caught_by_breach": 4,
+      "share_caught_by_breach": 0.8,
+      "median_lead_to_breach": 10.5,
+      "alert_runs": 36,
+      "runs_true": 1,
+      "runs_in_episode": 29,
+      "false_alarms": 6,
+      "false_alarms_per_year": 0.877,
+      "thin": false
+     }
+    }
+   },
+   "dd10": {
+    "n_episodes": 3,
+    "episodes": [
+     {
+      "depth": 0.1,
+      "peak": "2020-02-19",
+      "onset": "2020-02-20",
+      "breach": "2020-02-27",
+      "trough": "2020-03-23",
+      "recovery": "2020-08-10",
+      "max_loss": -0.33717
+     },
+     {
+      "depth": 0.1,
+      "peak": "2022-01-03",
+      "onset": "2022-01-04",
+      "breach": "2022-02-22",
+      "trough": "2022-10-12",
+      "recovery": "2023-12-13",
+      "max_loss": -0.24496
+     },
+     {
+      "depth": 0.1,
+      "peak": "2025-02-19",
+      "onset": "2025-02-20",
+      "breach": "2025-03-13",
+      "trough": "2025-04-08",
+      "recovery": "2025-06-26",
+      "max_loss": -0.18755
+     }
+    ],
+    "by_h": {
+     "h3": {
+      "loss_avoided_sum": 0.2762,
+      "rebound_forgone_sum": 0.4397,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 2,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 23,
+      "false_alarms": 13,
+      "false_alarms_per_year": 1.9002,
+      "thin": true
+     },
+     "h5": {
+      "loss_avoided_sum": 0.2762,
+      "rebound_forgone_sum": 0.4397,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 2,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 23,
+      "false_alarms": 13,
+      "false_alarms_per_year": 1.9002,
+      "thin": true
+     },
+     "h10": {
+      "loss_avoided_sum": 0.2762,
+      "rebound_forgone_sum": 0.4397,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.775,
+        "lead_to_breach": 2,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 0,
+      "share_caught_at_onset": 0.0,
+      "median_lead_to_onset": null,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 3.0,
+      "alert_runs": 36,
+      "runs_true": 0,
+      "runs_in_episode": 23,
+      "false_alarms": 13,
+      "false_alarms_per_year": 1.9002,
+      "thin": true
+     },
+     "h21": {
+      "loss_avoided_sum": 0.2762,
+      "rebound_forgone_sum": 0.4397,
+      "outside_return_forgone_sum": 0.0426,
+      "net_avoided_minus_cost_sum": -0.2061,
+      "net_per_year": -0.0301,
+      "median_loss_avoided_share": 0.603,
+      "median_trough_to_all_clear": 14.0,
+      "per_episode": [
+       {
+        "onset": "2020-02-20",
+        "loss_avoided_share": 0.87,
+        "lead_to_breach": 22,
+        "trough_to_all_clear": 14
+       },
+       {
+        "onset": "2022-01-04",
+        "loss_avoided_share": 0.603,
+        "lead_to_breach": 17,
+        "trough_to_all_clear": 1
+       },
+       {
+        "onset": "2025-02-20",
+        "loss_avoided_share": 0.545,
+        "lead_to_breach": 3,
+        "trough_to_all_clear": 14
+       }
+      ],
+      "share_caught_by_breach_ci90": [
+       0.368,
+       1.0
+      ],
+      "caught_at_onset": 1,
+      "share_caught_at_onset": 0.3333,
+      "median_lead_to_onset": 17.0,
+      "caught_by_breach": 3,
+      "share_caught_by_breach": 1.0,
+      "median_lead_to_breach": 17.0,
+      "alert_runs": 36,
+      "runs_true": 1,
+      "runs_in_episode": 23,
+      "false_alarms": 12,
+      "false_alarms_per_year": 1.7541,
+      "thin": true
+     }
+    }
+   }
+  }
+ }
+}

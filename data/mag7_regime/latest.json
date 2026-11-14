@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-11",
+  "as_of": "2026-11-13",
   "weights_basis": "polygon_mktcap",
   "trend_state": "cooling",
   "structure": {
-    "dd_from_252d_high": -0.088553,
+    "dd_from_252d_high": -0.096838,
     "chip": "drawdown"
   },
   "run": {
@@ -14,27 +14,27 @@
   },
   "k7": {
     "trend": 4,
-    "rs": 4
+    "rs": 5
   },
   "cw": {
-    "r2": -0.006635,
-    "r5": -0.031478,
-    "r10": -0.049202,
-    "r20": -0.072536,
-    "rel20": -0.059815
+    "r2": -0.009091,
+    "r5": -0.003146,
+    "r10": -0.01517,
+    "r20": -0.064009,
+    "rel20": -0.052375
   },
   "ew": {
-    "r10": -0.033236,
-    "r20": -0.057322
+    "r10": 0.001171,
+    "r20": -0.040568
   },
   "members": [
     {
       "sym": "AAPL",
       "w": 0.207287,
-      "r5": 0.01751,
-      "r10": 0.034319,
-      "r20": 0.036943,
-      "rs20": 0.049664,
+      "r5": 0.04139,
+      "r10": 0.034561,
+      "r20": 0.038085,
+      "rs20": 0.049719,
       "above50": true,
       "above200": true,
       "mtf": null,
@@ -43,10 +43,10 @@
     {
       "sym": "MSFT",
       "w": 0.162458,
-      "r5": -0.062379,
-      "r10": -0.018606,
-      "r20": -0.023534,
-      "rs20": -0.010813,
+      "r5": -0.012683,
+      "r10": 0.003775,
+      "r20": -0.009772,
+      "rs20": 0.001862,
       "above50": true,
       "above200": true,
       "mtf": null,
@@ -55,10 +55,10 @@
     {
       "sym": "NVDA",
       "w": 0.213824,
-      "r5": -0.131914,
-      "r10": -0.193379,
-      "r20": -0.214957,
-      "rs20": -0.202236,
+      "r5": -0.127465,
+      "r10": -0.204212,
+      "r20": -0.239481,
+      "rs20": -0.227847,
       "above50": false,
       "above200": false,
       "mtf": null,
@@ -67,10 +67,10 @@
     {
       "sym": "AMZN",
       "w": 0.111514,
-      "r5": 0.000526,
-      "r10": 0.045444,
-      "r20": 0.047583,
-      "rs20": 0.060304,
+      "r5": 0.028384,
+      "r10": 0.109465,
+      "r20": 0.06664,
+      "rs20": 0.078274,
       "above50": true,
       "above200": true,
       "mtf": null,
@@ -79,10 +79,10 @@
     {
       "sym": "GOOGL",
       "w": 0.172255,
-      "r5": 0.015644,
-      "r10": -0.096771,
-      "r20": -0.15588,
-      "rs20": -0.143159,
+      "r5": 0.038591,
+      "r10": 0.056925,
+      "r20": -0.131595,
+      "rs20": -0.119961,
       "above50": false,
       "above200": false,
       "mtf": null,
@@ -91,22 +91,22 @@
     {
       "sym": "META",
       "w": 0.074727,
-      "r5": -0.001952,
-      "r10": 0.02658,
-      "r20": -0.147477,
-      "rs20": -0.134756,
+      "r5": 0.051692,
+      "r10": 0.043415,
+      "r20": -0.095358,
+      "rs20": -0.083724,
       "above50": false,
-      "above200": false,
+      "above200": true,
       "mtf": null,
       "contrib10": null
     },
     {
       "sym": "TSLA",
       "w": 0.057936,
-      "r5": 0.014668,
-      "r10": -0.033101,
-      "r20": 0.064495,
-      "rs20": 0.077216,
+      "r5": 0.089331,
+      "r10": -0.023986,
+      "r20": 0.100079,
+      "rs20": 0.111713,
       "above50": true,
       "above200": true,
       "mtf": null,
@@ -116,95 +116,80 @@
   "generals": {
     "now": [],
     "joining": [
-      "GOOGL",
-      "TSLA"
+      "TSLA",
+      "AAPL"
     ],
     "coverage": 0.0
   },
   "spread20": {
-    "max": 0.064495,
-    "min": -0.214957,
-    "range": 0.279452
+    "max": 0.100079,
+    "min": -0.239481,
+    "range": 0.33956
   },
   "mags": {
-    "px": 68.55,
-    "asof": "2026-11-10",
+    "px": 68.86,
+    "asof": "2026-11-12",
     "since_run": null
   },
+  "mags": null,
   "tech_legs": [
     {
       "id": "mag7",
       "en": "Mag 7",
       "zh": "\u4e03\u5de8\u5934",
-      "r10_rel": -0.01746,
-      "r20_rel": -0.043397,
+      "r10_rel": 0.004635,
+      "r20_rel": -0.027138,
       "word": "flat"
     },
     {
       "id": "ai_semiconductors",
       "en": "AI chips",
       "zh": "AI\u82af\u7247",
-      "r10_rel": -0.107909,
-      "r20_rel": -0.094929,
-      "word": "falling hard"
+      "r10_rel": -0.045672,
+      "r20_rel": -0.085115,
+      "word": "falling"
     },
     {
       "id": "memory_storage",
       "en": "Memory",
       "zh": "\u5b58\u50a8",
-      "r10_rel": -0.181831,
-      "r20_rel": -0.146869,
+      "r10_rel": -0.162602,
+      "r20_rel": -0.120748,
       "word": "falling hard"
     },
     {
       "id": "ai_software",
       "en": "Software",
       "zh": "\u8f6f\u4ef6",
-      "r10_rel": -0.11471,
-      "r20_rel": -0.11998,
-      "word": "falling hard"
+      "r10_rel": -0.018933,
+      "r20_rel": -0.110984,
+      "word": "flat"
     }
   ],
   "flow": null,
   "events": {
-    "as_of": "2026-11-11",
-    "display": true,
+    "as_of": "2026-11-13",
+    "display": false,
     "window_note": "descriptive percentiles of realized 5- and 21-session returns vs the member's own full trading history; no forecast",
-    "members": [
-      {
-        "sym": "GOOGL",
-        "window": "21d",
-        "ret": -0.17053,
-        "pctile": 1.53,
-        "tier": "extreme",
-        "n_windows": 5573,
-        "hist_years": 22.2,
-        "last_larger_date": "2026-11-10",
-        "source": "deep"
-      }
-    ],
+    "members": [],
     "cohort": {
       "kind": null,
       "up": [],
       "down": [
         {
-          "sym": "MSFT",
-          "r5": -0.062379
-        },
-        {
           "sym": "NVDA",
-          "r5": -0.131914
+          "r5": -0.127465
         }
       ],
       "generals": {
         "now": [],
         "joining": [
-          "GOOGL",
-          "TSLA"
+          "TSLA",
+          "AAPL"
         ],
         "coverage": 0.0
       }
     }
   },
-  "_timing_s": 0.31
+  "_timing_s": 0.12
 }
