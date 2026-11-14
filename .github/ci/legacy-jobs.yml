@@ -50042,6 +50042,26 @@ jobs:
   site20-s4-chart-brief-js:
     if: ${{ false }}
     gate: code
+    paths:
+      - site/odds.js
+      - tests/test_odds_export_identity.py
+      - tests/fixtures/odds_export_identity.cjs
+      - site/charts.js
+      - site/radar_panel.js
+      - site/stock_seasonality.js
+      - site/stockbrief.js
+      - templates/charts.js
+      - templates/stock_seasonality.js
+      - templates/stockbrief.js
+      - tests/js/charts_rescale.test.mjs
+      - tests/js/radar_panel_claims_tile.test.mjs
+      - tests/js/radar_panel_horizon.test.mjs
+      - tests/js/radar_panel_ledger.test.mjs
+      - tests/js/radar_panel_names.test.mjs
+      - tests/js/radar_panel_open_checks.test.mjs
+      - tests/js/radar_panel_trail.test.mjs
+      - tests/js/stockbrief_freshness.test.mjs
+      - tests/js/test_stock_seasonality_selection.cjs
     # site20 S4: charts.js zoom bounds ignore missing observations (S4-01) and
     # legend-hidden traces incl. the plotly_restyle show/hide lifecycle (S4-02);
     # stockbrief.js generation fence + identity check (S4-04). Runs against the
@@ -50053,6 +50073,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install Odds Desk test dependencies
+        run: python -m pip install pytest
+      - name: Odds Desk pending-symbol and export identity
+        run: python -m pytest -q tests/test_odds_export_identity.py
       - name: charts.js rescale + stockbrief.js freshness (templates)
         run: node --test tests/js/charts_rescale.test.mjs tests/js/stockbrief_freshness.test.mjs
       - name: same suites against the shipped site/ copies

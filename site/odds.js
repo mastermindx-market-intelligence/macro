@@ -1222,6 +1222,10 @@
       if (priceChart) { try { priceChart.destroy(); } catch (e) {} priceChart = null; }
       pc.innerHTML = '<div class="od-skel-block" style="position:absolute;left:0;right:0;top:6px;bottom:6px"></div>';
     }
+    // Other analyzer tabs must retire their previous-symbol evidence too.
+    ["#od-path-chart", "#od-hist-chart", "#od-strip-chart", "#od-path-note"].forEach(function (id) {
+      var el = $(id); if (el) el.innerHTML = "";
+    });
     var vs = $("#od-vol-strip"); if (vs) vs.hidden = true;
     var tbl = $("#od-days-table");
     if (tbl) tbl.innerHTML = '<tbody><tr><td style="border-bottom:none">' +
@@ -1232,6 +1236,8 @@
   function loadTicker(t) {
     if (!t) return;
     S.ticker = t;
+    // A pending pick must never reuse the previous symbol's evidence.
+    S.matrix = null; S.matches = []; S.stats = null; S.base = null;
     var seq = ++S.loadSeq;
     var inp = $("#od-tk-input"); if (inp) inp.value = t;
     renderSkeletons();
@@ -1485,6 +1491,7 @@
   function buildShareCard(btn) {
     try {
       var st = S.stats, base = S.base, m = S.matrix;
+      var ticker = S.ticker, horizon = S.horizon, range = S.range, loadSeq = S.loadSeq;
       if (!st || !m || st.n < 5) return;
       var zh = isZh();
       var W = 1200, H = 630;
@@ -1505,6 +1512,9 @@
         : DOW_EN[D.getUTCDay()] + ", " + MON_EN[D.getUTCMonth()] + " " + D.getUTCDate() + " " + D.getUTCFullYear();
 
       function finish(logoEl) {
+        // Logo loading is asynchronous; do not mix an old result with new labels.
+        if (S.loadSeq !== loadSeq || S.matrix !== m || S.stats !== st ||
+            S.ticker !== ticker || S.horizon !== horizon || S.range !== range) return;
         /* card chrome — always the dark brand card */
         ctx.fillStyle = "#0B0E14"; ctx.fillRect(0, 0, W, H);
         rrect(ctx, 36, 36, W - 72, H - 72, 24);
@@ -1646,3 +1656,4 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })();
+
