@@ -374,20 +374,28 @@
   // Never returns NaN/Infinity.
   function compute(inp){
     var C=inp.C, V=inp.V, n=inp.n;
-    if(!(C>0)) return {ok:false, msg:"Enter your initial investment (above zero)."};
+    if(!isFinite(C) || !(C>0)) return {ok:false, msg:"Enter your initial investment (above zero)."};
     if(!isFinite(V)) return {ok:false, msg:"Enter what the investment is worth now."};
     var netProfit = V - C;
-    var roiPct = 100 * netProfit / C;
+    var roiPct = (netProfit / C) * 100;
+    if(!isFinite(netProfit) || !isFinite(roiPct)){
+      return {ok:false, rangeError:true, msg:"The result is outside the supported numeric range."};
+    }
     var annualPct = null;
+    var annualOutOfRange = false;
     var shortHold = false;
     if(isFinite(n) && n > 0){
       // annualized needs a positive final value (V/C)^(1/n) is only real when V>0
-      if(V > 0){ annualPct = 100 * (Math.pow(V / C, 1 / n) - 1); }
+      if(V > 0){
+        annualPct = V === C ? 0 : 100 * (Math.pow(V / C, 1 / n) - 1);
+        if(!isFinite(annualPct)){ annualPct = null; annualOutOfRange = true; }
+      }
       if(n < 1) shortHold = true;
     }
     return {
       ok:true, netProfit:netProfit, roiPct:roiPct,
-      annualPct:annualPct, shortHold:shortHold, gain:(netProfit>=0)
+      annualPct:annualPct, annualOutOfRange:annualOutOfRange,
+      shortHold:shortHold, gain:(netProfit>=0)
     };
   }
 
@@ -424,11 +432,19 @@
     function dash(){ outMain.textContent="—";
       [outProfit,outRoi,outAnnual].forEach(function(e){e.textContent="—"; e.className="";}); }
 
+    function rangeText(en, zh){
+      return document.documentElement.getAttribute("data-lang") === "zh" ? zh : en;
+    }
     var last=null;
     function render(){
       var inp={ C:numFrom(els.cost), V:numFrom(els.value), n:numFrom(els.years) };
       var res=compute(inp); last=res;
-      if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
+      if(!res.ok){
+        dash();
+        outPlain.textContent = res.rangeError ? rangeText(
+          "The result is outside the supported numeric range.", "结果超出支持的数值范围。") : res.msg;
+        outPlain.className="co-plain"; return;
+      }
 
       var cls = res.gain ? "pos" : "neg";
       outMain.textContent = pct(res.roiPct);
@@ -439,7 +455,8 @@
         outAnnual.textContent = pct(res.annualPct);
         outAnnual.className = (res.annualPct>=0?"pos":"neg");
       } else {
-        outAnnual.textContent = "—"; outAnnual.className = "";
+        outAnnual.textContent = res.annualOutOfRange ? rangeText("Out of range", "超出数值范围") : "—";
+        outAnnual.className = "";
       }
 
       // Law 3: plain-word interpretation under the number
@@ -448,6 +465,10 @@
         " — a " + pct(res.roiPct) + " return on what was put in.";
       if(res.annualPct != null){
         plain += " That works out to " + pct(res.annualPct) + " per year over the holding period.";
+      }
+      if(res.annualOutOfRange){
+        plain += rangeText(" Annualized return is unavailable because it exceeds the supported numeric range.",
+          " 年化回报超出支持的数值范围，暂无法显示。");
       }
       if(res.shortHold){
         plain += " The period is under a year, so the annualized figure extrapolates a short result.";
@@ -462,6 +483,9 @@
       if(!last || !last.ok) return "";
       var line = "ROI: " + pct(last.roiPct) + " · net " + money(last.netProfit);
       if(last.annualPct != null){ line += " · " + pct(last.annualPct) + "/yr annualized"; }
+      if(last.annualOutOfRange){
+        line += rangeText(" · annualized unavailable (numeric range)", " · 年化回报无法显示（超出数值范围）");
+      }
       return line + " — mastermind-x.com";
     }
     copyBtn.addEventListener("click", function(){
@@ -475,6 +499,7 @@
     ["cost","value","years"].forEach(function(id){
       els[id].addEventListener("input", render);
     });
+    document.addEventListener("langchange", render);
     render();
   });
 })();
