@@ -481,14 +481,19 @@ def test_disk_summary_prints_the_count_day(tmp_path: Path):
     """build_site renders with no in-memory summary, so the file stamp must show."""
     root = Path(__file__).resolve().parents[1]
     (tmp_path / "templates").symlink_to(root / "templates")
+    # The disk read refuses projections older than PUBLIC_SUMMARY_MAX_AGE_DAYS
+    # against the wall clock, so a fixed stamp expires and turns this red for
+    # every PR (it did on 2026-11-12). Stamp it relative to now instead.
+    stamped = datetime.now(timezone.utc) - timedelta(days=1)
+    day = stamped.date().isoformat()
     _write_public_summary(
         tmp_path,
         {"companies": 1240, "findings": 3417, "top_symbol": "SMCI"},
-        generated_at="2026-10-12T21:36:01+00:00",
+        generated_at=stamped.isoformat(),
     )
     html = render_shell(tmp_path).read_text(encoding="utf-8")
-    assert "Counted 2026-10-12" in html
-    assert "统计日 2026-10-12" in html
+    assert f"Counted {day}" in html
+    assert f"统计日 {day}" in html
 
 
 def test_in_memory_summary_prints_its_own_day(tmp_path: Path):

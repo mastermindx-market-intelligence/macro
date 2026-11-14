@@ -105,7 +105,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-30",
+        "source_asof": "2026-11-06",
         "status": "PRESENT"
       },
       {
@@ -117,7 +117,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-11-04",
+        "source_asof": "2026-11-11",
         "status": "PRESENT"
       },
       {
@@ -129,7 +129,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-11-05",
+        "source_asof": "2026-11-12",
         "status": "PRESENT"
       },
       {
@@ -141,7 +141,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-11-05",
+        "source_asof": "2026-11-12",
         "status": "PRESENT"
       },
       {
@@ -153,7 +153,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-11-06",
+        "source_asof": "2026-11-12",
         "status": "PRESENT"
       }
     ],
@@ -168,7 +168,7 @@
         "components": [
           {
             "component_id": "rates_channel",
-            "contribution": 14.1,
+            "contribution": 14.7,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -178,14 +178,14 @@
             "null_reason": null,
             "owner_field": "channels.rates_channel_score",
             "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
-            "raw_value": 97.0,
+            "raw_value": 99.0,
             "sign": 1,
-            "standardized_value": 97.0,
+            "standardized_value": 99.0,
             "weight": 0.3
           },
           {
             "component_id": "credit_channel",
-            "contribution": 5.71,
+            "contribution": -2.17,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -195,14 +195,14 @@
             "null_reason": null,
             "owner_field": "channels.credit_channel_score",
             "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
-            "raw_value": 69.04,
+            "raw_value": 42.76,
             "sign": 1,
-            "standardized_value": 69.04,
+            "standardized_value": 42.76,
             "weight": 0.3
           },
           {
             "component_id": "dollar_funding_channel",
-            "contribution": -0.49,
+            "contribution": -0.88,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -212,14 +212,14 @@
             "null_reason": null,
             "owner_field": "channels.dollar_funding_channel_score",
             "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
-            "raw_value": 47.54,
+            "raw_value": 45.6,
             "sign": 1,
-            "standardized_value": 47.54,
+            "standardized_value": 45.6,
             "weight": 0.2
           },
           {
             "component_id": "equities_vol_channel",
-            "contribution": -4.53,
+            "contribution": -3.62,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -229,9 +229,9 @@
             "null_reason": null,
             "owner_field": "channels.equities_vol_channel_score",
             "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
-            "raw_value": 27.36,
+            "raw_value": 31.88,
             "sign": 1,
-            "standardized_value": 27.36,
+            "standardized_value": 31.88,
             "weight": 0.2
           }
         ],
@@ -262,7 +262,7 @@
           }
         },
         "transformation": "weighted mean of 4 Mastermind channel scores (renormalized over available channels; the 'lending' channel is declared but always ABSENT/NOT_COVERED -- no owner source exists): rates 0.30 (real-10y-yield percentile only, min_components=1/coverage_floor=1.0), credit 0.30 (HY OAS z 0.45 + NFCI credit subindex 0.25 + IG OAS declared-not-sourced 0.30, min_components=2/coverage_floor=0.5), dollar_funding 0.20 (OFR FSI funding functional leg 0.50 + broad-dollar-index declared-not-sourced 0.50, min_components=1/coverage_floor=0.5), equities_vol 0.20 (vol-regime risk score 0.60 + MOVE percentile 0.40, min_components=1/coverage_floor=0.5). boundary=50.0, hysteresis_band=5.0. NONE of these channel inputs is the blended official nfci/ofr_fsi value itself (those are published separately, unmodified, as their own metrics) -- no hidden blend (architecture 7.9/10.8).",
-        "value": 64.79,
+        "value": 58.02,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of 4 channel-score components, weights renormalized over available channels; rates_channel 0.30, credit_channel 0.30, dollar_funding_channel 0.20, equities_vol_channel 0.20 (a 5th declared channel, lending, is always ABSENT/NOT_COVERED and carries no weight here -- see the lending_channel_score metric for its own disclosure)"
       },
@@ -272,7 +272,7 @@
         "components": [
           {
             "component_id": "nfci_change_13w",
-            "contribution": 2.91,
+            "contribution": 3.01,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -282,14 +282,14 @@
             "null_reason": null,
             "owner_field": "conditions.financial_conditions.nfci_change_13w",
             "owner_ref": "engine.conditions.financial_conditions",
-            "raw_value": 0.08300000000000002,
+            "raw_value": 0.08600000000000002,
             "sign": 1,
-            "standardized_value": 58.3,
+            "standardized_value": 58.6,
             "weight": 0.35
           },
           {
             "component_id": "ofr_fsi_change_13w",
-            "contribution": 12.27,
+            "contribution": 15.17,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -299,14 +299,14 @@
             "null_reason": null,
             "owner_field": "conditions.systemic_stress.ofr_fsi_change_13w",
             "owner_ref": "engine.conditions.systemic_stress",
-            "raw_value": 0.701,
+            "raw_value": 0.867,
             "sign": 1,
-            "standardized_value": 85.05,
+            "standardized_value": 93.35,
             "weight": 0.35
           },
           {
             "component_id": "real_10y_chg_63d_bp",
-            "contribution": 5.4,
+            "contribution": 13.5,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -316,9 +316,9 @@
             "null_reason": null,
             "owner_field": "rate_inflation_transmission.state.rates.real_10y_chg_63d_bp",
             "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
-            "raw_value": 18.0,
+            "raw_value": 45.0,
             "sign": 1,
-            "standardized_value": 68.0,
+            "standardized_value": 95.0,
             "weight": 0.3
           }
         ],
@@ -349,7 +349,7 @@
           }
         },
         "transformation": "weighted mean of 3 momentum legs (13-week/63-day rate-of-change, distinct from R1A's LEVEL-only funding_pressure axis, which never reads a _change field): NFCI 13w change 0.35 (scale=0.5 index-pt -> full half-swing), OFR FSI 13w change 0.35 (scale=1.0), real-10y-yield 63d change 0.30 (scale=50bp). min_components=2/coverage_floor=0.5. boundary=50.0, hysteresis_band=5.0, positive move = tightening impulse (sign=+1 on all three legs).",
-        "value": 70.57,
+        "value": 81.68,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of 3 owner-native momentum legs, weights renormalized over available; nfci_change_13w 0.35, ofr_fsi_change_13w 0.35, real_10y_chg_63d_bp 0.30"
       }
@@ -359,23 +359,23 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 64.79,
-        "delta": -0.04,
+        "current_value": 58.02,
+        "delta": -2.04,
         "metric_id": "financial_conditions_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 64.83
+        "prior_value": 60.06
       },
       {
-        "current_value": 70.57,
-        "delta": 2.03,
+        "current_value": 81.68,
+        "delta": 2.02,
         "metric_id": "financial_conditions_impulse",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 68.54
+        "prior_value": 79.66
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-11-06",
-    "prior_generation_id": "financial_conditions-US-05cd4c728c589754",
+    "prior_effective_date": "2026-11-12",
+    "prior_generation_id": "financial_conditions-US-0f36b5b5a4916972",
     "prior_method_version": "financial_conditions.compose.v1",
     "status": "PRESENT"
   },
@@ -383,23 +383,23 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "financial_conditions-US-05cd4c728c589754"
+    "predecessor_generation_id": "financial_conditions-US-0f36b5b5a4916972"
   },
   "drivers": {
     "balance_sheet": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "ofr_funding_functional",
-        "impact_magnitude": 1.23,
+        "impact_magnitude": 2.2,
         "impact_sign": -1,
         "label": {
           "en": "OFR FSI funding functional leg",
           "zh": "OFR 压力指数-融资功能分项"
         },
-        "note": "signed push = (standardized-50)*weight toward tighter; standardized=47.54, weight=0.5",
+        "note": "signed push = (standardized-50)*weight toward tighter; standardized=45.6, weight=0.5",
         "owner_field": "conditions.systemic_stress.functional.funding",
         "unit": "z_score",
-        "value": -0.123
+        "value": -0.22
       },
       {
         "coverage_state": "ABSENT",
@@ -427,65 +427,65 @@
         "note": "signed push = (standardized-50)*weight toward tighter; standardized=0.0, weight=0.6",
         "owner_field": "vol_regime.risk_score",
         "unit": "ratio_0_1",
-        "value": -0.523
+        "value": -0.303
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "move_pctile",
-        "impact_magnitude": 7.36,
+        "impact_magnitude": 11.88,
         "impact_sign": 1,
         "label": {
           "en": "MOVE (bond vol) percentile",
           "zh": "MOVE（债券波动率）分位"
         },
-        "note": "signed push = (standardized-50)*weight toward tighter; standardized=68.4, weight=0.4",
+        "note": "signed push = (standardized-50)*weight toward tighter; standardized=79.7, weight=0.4",
         "owner_field": "vol_regime.move_pctile",
         "unit": "percentile",
-        "value": 0.684
+        "value": 0.797
       }
     ],
     "rate_side": [
       {
         "coverage_state": "PRESENT",
         "driver_id": "real_10y_pctile",
-        "impact_magnitude": 47.0,
+        "impact_magnitude": 49.0,
         "impact_sign": 1,
         "label": {
           "en": "Real 10Y yield percentile",
           "zh": "10年期实际收益率分位"
         },
-        "note": "signed push = (standardized-50)*weight toward tighter; standardized=97.0, weight=1.0",
+        "note": "signed push = (standardized-50)*weight toward tighter; standardized=99.0, weight=1.0",
         "owner_field": "rate_inflation_transmission.state.rates.real_10y_pctile",
         "unit": "percentile",
-        "value": 0.97
+        "value": 0.99
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "hy_oas_z_credit_leg",
-        "impact_magnitude": 13.32,
-        "impact_sign": 1,
+        "impact_magnitude": 5.04,
+        "impact_sign": -1,
         "label": {
           "en": "HY OAS z-score (credit channel)",
           "zh": "高收益利差 z 值（信用分项）"
         },
-        "note": "signed push = (standardized-50)*weight toward tighter; standardized=79.6, weight=0.45",
+        "note": "signed push = (standardized-50)*weight toward tighter; standardized=38.8, weight=0.45",
         "owner_field": "liquidity_quality.stress_overlay.hy_oas_z",
         "unit": "z_score",
-        "value": 1.48
+        "value": -0.56
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "nfci_credit_subindex",
-        "impact_magnitude": 0.01,
-        "impact_sign": 1,
+        "impact_magnitude": 0.03,
+        "impact_sign": -1,
         "label": {
           "en": "NFCI credit subindex",
           "zh": "NFCI 信用分项"
         },
-        "note": "signed push = (standardized-50)*weight toward tighter; standardized=50.04, weight=0.25",
+        "note": "signed push = (standardized-50)*weight toward tighter; standardized=49.9, weight=0.25",
         "owner_field": "conditions.financial_conditions.subindices.nfci_credit",
         "unit": "z_score",
-        "value": 0.002
+        "value": -0.005
       },
       {
         "coverage_state": "ABSENT",
@@ -504,16 +504,16 @@
     ]
   },
   "generation": {
-    "built_at": "2026-11-10T11:36:38Z",
-    "calculation_as_of": "2026-11-09",
-    "code_version": "7e115b6f1f10832b4b123149215ea7a041279753",
-    "content_sha256": "201599ae41ff7746d9e5ffbede022382eb66083e053b67bbfb41b809a35db23f",
-    "generation_id": "financial_conditions-US-201599ae41ff7746",
+    "built_at": "2026-11-14T08:24:51Z",
+    "calculation_as_of": "2026-11-13",
+    "code_version": "b6524ff299ef2dae2e6cebf181c5b70fd18a92a2",
+    "content_sha256": "60cb408d1377c0d3dec330c426a2c3d181b60c8059d2a2e4bda44a248333af99",
+    "generation_id": "financial_conditions-US-60cb408d1377c0d3",
     "producer": "engine.market_os.macro_workspaces.financial_conditions",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-11-09",
+    "effective_date": "2026-11-13",
     "hysteresis": {
       "applied": true,
       "band": 5.0,
@@ -524,27 +524,27 @@
     "movement_state": null,
     "nearest_boundary": {
       "axis": "conditions_level",
-      "distance": 14.79,
+      "distance": 8.02,
       "null_reason": null
     },
     "null_reason": null,
     "one_month_vector": {
-      "dx": -0.04,
-      "dy": 2.03,
+      "dx": -2.04,
+      "dy": 2.02,
       "null_reason": null,
       "status": "PRESENT",
       "x_axis_id": "financial_conditions_level",
       "y_axis_id": "financial_conditions_impulse"
     },
     "prior_state": {
-      "effective_date": "2026-11-06",
+      "effective_date": "2026-11-12",
       "method_version": "financial_conditions.compose.v1",
       "state_id": "B"
     },
     "quadrant": {
-      "x": 64.79,
+      "x": 58.02,
       "x_status": "PRESENT",
-      "y": 70.57,
+      "y": 81.68,
       "y_status": "PRESENT"
     },
     "state_id": "B",
@@ -557,7 +557,7 @@
       "en": "Financial conditions regime",
       "zh": "金融条件体制"
     },
-    "transition_distance": 2.03
+    "transition_distance": 2.87
   },
   "implications": {
     "items": [
@@ -581,8 +581,8 @@
         "horizon": "current",
         "implication_id": "state_descriptive",
         "text": {
-          "en": "US financial conditions read B - Tight conditions / Tightening impulse (level 64.8, impulse 70.6, boundary 50).",
-          "zh": "美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 64.8，边际冲量 70.6，分界 50）。"
+          "en": "US financial conditions read B - Tight conditions / Tightening impulse (level 58.0, impulse 81.7, boundary 50).",
+          "zh": "美国金融条件读数为 B - 紧张条件 / 边际收紧（水平 58.0，边际冲量 81.7，分界 50）。"
         },
         "trace_ref": "data/regime/latest.json#conditions"
       },
@@ -648,7 +648,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-30",
+        "calculation_as_of": "2026-11-06",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.financial_conditions.nfci",
@@ -659,10 +659,10 @@
         "metric_id": "nfci",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-30",
+        "observed_at": "2026-11-06",
         "owner_ref": "engine.conditions.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#nfci",
-        "reference_period": "2026-10-30",
+        "reference_period": "2026-11-06",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -677,14 +677,14 @@
           "value": null
         },
         "unit": "stddev",
-        "value": -0.459,
+        "value": -0.462,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-30",
+        "calculation_as_of": "2026-11-06",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.financial_conditions.nfci_pctile",
@@ -695,10 +695,10 @@
         "metric_id": "nfci_pctile",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-30",
+        "observed_at": "2026-11-06",
         "owner_ref": "engine.conditions.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#nfci_pctile",
-        "reference_period": "2026-10-30",
+        "reference_period": "2026-11-06",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -713,14 +713,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 0.3884920634920635,
+        "value": 0.38492063492063494,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-04",
+        "calculation_as_of": "2026-11-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.systemic_stress.ofr_fsi",
@@ -731,10 +731,10 @@
         "metric_id": "ofr_fsi",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-04",
+        "observed_at": "2026-11-11",
         "owner_ref": "engine.conditions.systemic_stress",
         "reference_id": "mastermind.market_reference/v1#ofr_fsi",
-        "reference_period": "2026-11-04",
+        "reference_period": "2026-11-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -749,14 +749,14 @@
           "value": null
         },
         "unit": "stddev",
-        "value": -2.162,
+        "value": -1.95,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-04",
+        "calculation_as_of": "2026-11-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.systemic_stress.ofr_fsi_pctile",
@@ -767,10 +767,10 @@
         "metric_id": "ofr_fsi_pctile",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-04",
+        "observed_at": "2026-11-11",
         "owner_ref": "engine.conditions.systemic_stress",
         "reference_id": "mastermind.market_reference/v1#ofr_fsi_pctile",
-        "reference_period": "2026-11-04",
+        "reference_period": "2026-11-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -785,14 +785,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 0.21031746031746032,
+        "value": 0.29642857142857143,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-05",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "liquidity_quality.stress_overlay.hy_oas_pct",
@@ -803,10 +803,10 @@
         "metric_id": "hy_oas_pct",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.regime.liquidity_quality",
         "reference_id": "mastermind.market_reference/v1#hy_oas_pct",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -821,14 +821,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 3.48,
+        "value": 3.2,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-05",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "liquidity_quality.stress_overlay.hy_oas_z",
@@ -839,10 +839,10 @@
         "metric_id": "hy_oas_z",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.regime.liquidity_quality",
         "reference_id": "mastermind.market_reference/v1#hy_oas_z",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -857,14 +857,14 @@
           "value": null
         },
         "unit": "stddev",
-        "value": 1.48,
+        "value": -0.56,
         "value_type": "z_score"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-05",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "rate_inflation_transmission.state.rates.real_10y",
@@ -875,10 +875,10 @@
         "metric_id": "real_10y",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#real_10y",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -893,14 +893,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 2.6,
+        "value": 2.86,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-05",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "rate_inflation_transmission.state.rates.real_10y_pctile",
@@ -911,10 +911,10 @@
         "metric_id": "real_10y_pctile",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#real_10y_pctile",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -929,14 +929,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 0.97,
+        "value": 0.99,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "roc_63d",
-        "calculation_as_of": "2026-11-05",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "rate_inflation_transmission.state.rates.real_10y_chg_63d_bp",
@@ -947,10 +947,10 @@
         "metric_id": "real_10y_chg_63d_bp",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-05",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
         "reference_id": "mastermind.market_reference/v1#real_10y_chg_63d_bp",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -965,14 +965,14 @@
           "value": null
         },
         "unit": "bp",
-        "value": 18.0,
+        "value": 45.0,
         "value_type": "basis_points"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "roc_13w",
-        "calculation_as_of": "2026-10-30",
+        "calculation_as_of": "2026-11-06",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.financial_conditions.nfci_change_13w",
@@ -983,10 +983,10 @@
         "metric_id": "nfci_change_13w",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-30",
+        "observed_at": "2026-11-06",
         "owner_ref": "engine.conditions.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#nfci_change_13w",
-        "reference_period": "2026-10-30",
+        "reference_period": "2026-11-06",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1001,14 +1001,14 @@
           "value": null
         },
         "unit": "index_pts",
-        "value": 0.08300000000000002,
+        "value": 0.08600000000000002,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "roc_13w",
-        "calculation_as_of": "2026-11-04",
+        "calculation_as_of": "2026-11-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.systemic_stress.ofr_fsi_change_13w",
@@ -1019,10 +1019,10 @@
         "metric_id": "ofr_fsi_change_13w",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-04",
+        "observed_at": "2026-11-11",
         "owner_ref": "engine.conditions.systemic_stress",
         "reference_id": "mastermind.market_reference/v1#ofr_fsi_change_13w",
-        "reference_period": "2026-11-04",
+        "reference_period": "2026-11-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1037,14 +1037,14 @@
           "value": null
         },
         "unit": "index_pts",
-        "value": 0.701,
+        "value": 0.867,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-10-30",
+        "calculation_as_of": "2026-11-06",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.financial_conditions.subindices.nfci_credit",
@@ -1055,10 +1055,10 @@
         "metric_id": "nfci_credit_subindex",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-30",
+        "observed_at": "2026-11-06",
         "owner_ref": "engine.conditions.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#nfci_credit_subindex",
-        "reference_period": "2026-10-30",
+        "reference_period": "2026-11-06",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1073,14 +1073,14 @@
           "value": null
         },
         "unit": "stddev",
-        "value": 0.002,
+        "value": -0.005,
         "value_type": "z_score"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-04",
+        "calculation_as_of": "2026-11-11",
         "collected_at": null,
         "coverage": null,
         "definition_id": "conditions.systemic_stress.functional.funding",
@@ -1091,10 +1091,10 @@
         "metric_id": "ofr_funding_functional",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-04",
+        "observed_at": "2026-11-11",
         "owner_ref": "engine.conditions.systemic_stress",
         "reference_id": "mastermind.market_reference/v1#ofr_funding_functional",
-        "reference_period": "2026-11-04",
+        "reference_period": "2026-11-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1109,14 +1109,14 @@
           "value": null
         },
         "unit": "stddev",
-        "value": -0.123,
+        "value": -0.22,
         "value_type": "z_score"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "vol_regime.vix",
@@ -1127,10 +1127,10 @@
         "metric_id": "vix",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.vol_regime",
         "reference_id": "mastermind.market_reference/v1#vix",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1145,14 +1145,14 @@
           "value": null
         },
         "unit": "vol_pts",
-        "value": 25.64,
+        "value": 18.7,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "vol_regime.risk_score",
@@ -1163,10 +1163,10 @@
         "metric_id": "vol_regime_risk_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.vol_regime",
         "reference_id": "mastermind.market_reference/v1#vol_regime_risk_score",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1181,14 +1181,14 @@
           "value": null
         },
         "unit": "ratio_0_1",
-        "value": -0.523,
+        "value": -0.303,
         "value_type": "ratio"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-06",
+        "calculation_as_of": "2026-11-12",
         "collected_at": null,
         "coverage": null,
         "definition_id": "vol_regime.move_pctile",
@@ -1199,10 +1199,10 @@
         "metric_id": "move_pctile",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-06",
+        "observed_at": "2026-11-12",
         "owner_ref": "engine.vol_regime",
         "reference_id": "mastermind.market_reference/v1#move_pctile",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1217,14 +1217,14 @@
           "value": null
         },
         "unit": "pct",
-        "value": 0.684,
+        "value": 0.797,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "risk_state.score",
@@ -1235,10 +1235,10 @@
         "metric_id": "risk_appetite_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.risk_state",
         "reference_id": "mastermind.market_reference/v1#risk_appetite_score",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1253,7 +1253,7 @@
           "value": null
         },
         "unit": "score",
-        "value": 48.6,
+        "value": 33.1,
         "value_type": "score_0_100"
       },
       {
@@ -1368,7 +1368,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1379,10 +1379,10 @@
         "metric_id": "rates_channel_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#rates_channel_score",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1397,14 +1397,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 97.0,
+        "value": 99.0,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1415,10 +1415,10 @@
         "metric_id": "credit_channel_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#credit_channel_score",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1433,14 +1433,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 69.04,
+        "value": 42.76,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1451,10 +1451,10 @@
         "metric_id": "dollar_funding_channel_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#dollar_funding_channel_score",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1469,14 +1469,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 47.54,
+        "value": 45.6,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1487,10 +1487,10 @@
         "metric_id": "equities_vol_channel_score",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#equities_vol_channel_score",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1505,14 +1505,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 27.36,
+        "value": 31.88,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1523,10 +1523,10 @@
         "metric_id": "financial_conditions_level",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#financial_conditions_level",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1541,14 +1541,14 @@
           "value": null
         },
         "unit": "score",
-        "value": 64.79,
+        "value": 58.02,
         "value_type": "score_0_100"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "composite_prior_only",
-        "calculation_as_of": "2026-11-09",
+        "calculation_as_of": "2026-11-13",
         "collected_at": null,
         "coverage": null,
         "definition_id": "N/A",
@@ -1559,10 +1559,10 @@
         "metric_id": "financial_conditions_impulse",
         "model_version": "financial_conditions.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-11-09",
+        "observed_at": "2026-11-13",
         "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
         "reference_id": "mastermind.market_reference/v1#financial_conditions_impulse",
-        "reference_period": "2026-11-09",
+        "reference_period": "2026-11-13",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1577,17 +1577,17 @@
           "value": null
         },
         "unit": "score",
-        "value": 70.57,
+        "value": 81.68,
         "value_type": "score_0_100"
       }
     ]
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "financial_conditions-US-05cd4c728c589754"
+      "generation_id": "financial_conditions-US-0f36b5b5a4916972"
     },
     "headline": {
-      "effective_date": "2026-11-06",
+      "effective_date": "2026-11-12",
       "hysteresis": {
         "applied": true,
         "band": 5.0,
@@ -1598,27 +1598,27 @@
       "movement_state": null,
       "nearest_boundary": {
         "axis": "conditions_level",
-        "distance": 14.83,
+        "distance": 10.06,
         "null_reason": null
       },
       "null_reason": null,
       "one_month_vector": {
-        "dx": 2.19,
-        "dy": -8.02,
+        "dx": -0.24,
+        "dy": 1.75,
         "null_reason": null,
         "status": "PRESENT",
         "x_axis_id": "financial_conditions_level",
         "y_axis_id": "financial_conditions_impulse"
       },
       "prior_state": {
-        "effective_date": "2026-11-05",
+        "effective_date": "2026-11-11",
         "method_version": "financial_conditions.compose.v1",
         "state_id": "B"
       },
       "quadrant": {
-        "x": 64.83,
+        "x": 60.06,
         "x_status": "PRESENT",
-        "y": 68.54,
+        "y": 79.66,
         "y_status": "PRESENT"
       },
       "state_id": "B",
@@ -1631,7 +1631,7 @@
         "en": "Financial conditions regime",
         "zh": "金融条件体制"
       },
-      "transition_distance": 8.31
+      "transition_distance": 1.77
     },
     "metrics": {
       "items": [
@@ -1639,7 +1639,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-10-30",
+          "calculation_as_of": "2026-11-06",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.financial_conditions.nfci",
@@ -1650,10 +1650,10 @@
           "metric_id": "nfci",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-30",
+          "observed_at": "2026-11-06",
           "owner_ref": "engine.conditions.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#nfci",
-          "reference_period": "2026-10-30",
+          "reference_period": "2026-11-06",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1668,14 +1668,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": -0.459,
+          "value": -0.462,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-10-30",
+          "calculation_as_of": "2026-11-06",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.financial_conditions.nfci_pctile",
@@ -1686,10 +1686,10 @@
           "metric_id": "nfci_pctile",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-30",
+          "observed_at": "2026-11-06",
           "owner_ref": "engine.conditions.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#nfci_pctile",
-          "reference_period": "2026-10-30",
+          "reference_period": "2026-11-06",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1704,14 +1704,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 0.3888888888888889,
+          "value": 0.38531746031746034,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-04",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.systemic_stress.ofr_fsi",
@@ -1722,10 +1722,10 @@
           "metric_id": "ofr_fsi",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-04",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.conditions.systemic_stress",
           "reference_id": "mastermind.market_reference/v1#ofr_fsi",
-          "reference_period": "2026-11-04",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1740,14 +1740,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": -2.162,
+          "value": -1.834,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-04",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.systemic_stress.ofr_fsi_pctile",
@@ -1758,10 +1758,10 @@
           "metric_id": "ofr_fsi_pctile",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-04",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.conditions.systemic_stress",
           "reference_id": "mastermind.market_reference/v1#ofr_fsi_pctile",
-          "reference_period": "2026-11-04",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1776,14 +1776,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 0.21071428571428572,
+          "value": 0.35079365079365077,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-05",
+          "calculation_as_of": "2026-11-11",
           "collected_at": null,
           "coverage": null,
           "definition_id": "liquidity_quality.stress_overlay.hy_oas_pct",
@@ -1794,10 +1794,10 @@
           "metric_id": "hy_oas_pct",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-11",
           "owner_ref": "engine.regime.liquidity_quality",
           "reference_id": "mastermind.market_reference/v1#hy_oas_pct",
-          "reference_period": "2026-11-05",
+          "reference_period": "2026-11-11",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1812,14 +1812,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 3.48,
+          "value": 3.3,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-05",
+          "calculation_as_of": "2026-11-11",
           "collected_at": null,
           "coverage": null,
           "definition_id": "liquidity_quality.stress_overlay.hy_oas_z",
@@ -1830,10 +1830,10 @@
           "metric_id": "hy_oas_z",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-11",
           "owner_ref": "engine.regime.liquidity_quality",
           "reference_id": "mastermind.market_reference/v1#hy_oas_z",
-          "reference_period": "2026-11-05",
+          "reference_period": "2026-11-11",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1848,14 +1848,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": 1.49,
+          "value": 0.21,
           "value_type": "z_score"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-05",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "rate_inflation_transmission.state.rates.real_10y",
@@ -1866,10 +1866,10 @@
           "metric_id": "real_10y",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
           "reference_id": "mastermind.market_reference/v1#real_10y",
-          "reference_period": "2026-11-05",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1884,14 +1884,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 2.6,
+          "value": 2.78,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-05",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "rate_inflation_transmission.state.rates.real_10y_pctile",
@@ -1902,10 +1902,10 @@
           "metric_id": "real_10y_pctile",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
           "reference_id": "mastermind.market_reference/v1#real_10y_pctile",
-          "reference_period": "2026-11-05",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1920,14 +1920,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 0.97,
+          "value": 0.99,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "roc_63d",
-          "calculation_as_of": "2026-11-05",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "rate_inflation_transmission.state.rates.real_10y_chg_63d_bp",
@@ -1938,10 +1938,10 @@
           "metric_id": "real_10y_chg_63d_bp",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-05",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
           "reference_id": "mastermind.market_reference/v1#real_10y_chg_63d_bp",
-          "reference_period": "2026-11-05",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1956,14 +1956,14 @@
             "value": null
           },
           "unit": "bp",
-          "value": 17.0,
+          "value": 34.0,
           "value_type": "basis_points"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "roc_13w",
-          "calculation_as_of": "2026-10-30",
+          "calculation_as_of": "2026-11-06",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.financial_conditions.nfci_change_13w",
@@ -1974,10 +1974,10 @@
           "metric_id": "nfci_change_13w",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-30",
+          "observed_at": "2026-11-06",
           "owner_ref": "engine.conditions.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#nfci_change_13w",
-          "reference_period": "2026-10-30",
+          "reference_period": "2026-11-06",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1992,14 +1992,14 @@
             "value": null
           },
           "unit": "index_pts",
-          "value": 0.08300000000000002,
+          "value": 0.08200000000000002,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "roc_13w",
-          "calculation_as_of": "2026-11-04",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.systemic_stress.ofr_fsi_change_13w",
@@ -2010,10 +2010,10 @@
           "metric_id": "ofr_fsi_change_13w",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-04",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.conditions.systemic_stress",
           "reference_id": "mastermind.market_reference/v1#ofr_fsi_change_13w",
-          "reference_period": "2026-11-04",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2028,14 +2028,14 @@
             "value": null
           },
           "unit": "index_pts",
-          "value": 0.602,
+          "value": 0.948,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-10-30",
+          "calculation_as_of": "2026-11-06",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.financial_conditions.subindices.nfci_credit",
@@ -2046,10 +2046,10 @@
           "metric_id": "nfci_credit_subindex",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-30",
+          "observed_at": "2026-11-06",
           "owner_ref": "engine.conditions.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#nfci_credit_subindex",
-          "reference_period": "2026-10-30",
+          "reference_period": "2026-11-06",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2064,14 +2064,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": 0.002,
+          "value": -0.005,
           "value_type": "z_score"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-04",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "conditions.systemic_stress.functional.funding",
@@ -2082,10 +2082,10 @@
           "metric_id": "ofr_funding_functional",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-04",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.conditions.systemic_stress",
           "reference_id": "mastermind.market_reference/v1#ofr_funding_functional",
-          "reference_period": "2026-11-04",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2100,14 +2100,14 @@
             "value": null
           },
           "unit": "stddev",
-          "value": -0.123,
+          "value": -0.216,
           "value_type": "z_score"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "vol_regime.vix",
@@ -2118,10 +2118,10 @@
           "metric_id": "vix",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.vol_regime",
           "reference_id": "mastermind.market_reference/v1#vix",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2136,14 +2136,14 @@
             "value": null
           },
           "unit": "vol_pts",
-          "value": 25.64,
+          "value": 19.46,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "vol_regime.risk_score",
@@ -2154,10 +2154,10 @@
           "metric_id": "vol_regime_risk_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.vol_regime",
           "reference_id": "mastermind.market_reference/v1#vol_regime_risk_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2172,14 +2172,14 @@
             "value": null
           },
           "unit": "ratio_0_1",
-          "value": -0.523,
+          "value": -0.45,
           "value_type": "ratio"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-10",
           "collected_at": null,
           "coverage": null,
           "definition_id": "vol_regime.move_pctile",
@@ -2190,10 +2190,10 @@
           "metric_id": "move_pctile",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-10",
           "owner_ref": "engine.vol_regime",
           "reference_id": "mastermind.market_reference/v1#move_pctile",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-10",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2208,14 +2208,14 @@
             "value": null
           },
           "unit": "pct",
-          "value": 0.684,
+          "value": 0.678,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "risk_state.score",
@@ -2226,10 +2226,10 @@
           "metric_id": "risk_appetite_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.risk_state",
           "reference_id": "mastermind.market_reference/v1#risk_appetite_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2244,7 +2244,7 @@
             "value": null
           },
           "unit": "score",
-          "value": 60.0,
+          "value": 36.8,
           "value_type": "score_0_100"
         },
         {
@@ -2359,7 +2359,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2370,10 +2370,10 @@
           "metric_id": "rates_channel_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#rates_channel_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2388,14 +2388,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 97.0,
+          "value": 99.0,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2406,10 +2406,10 @@
           "metric_id": "credit_channel_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#credit_channel_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2424,14 +2424,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 69.17,
+          "value": 52.66,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2442,10 +2442,10 @@
           "metric_id": "dollar_funding_channel_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#dollar_funding_channel_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2460,14 +2460,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 47.54,
+          "value": 45.68,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2478,10 +2478,10 @@
           "metric_id": "equities_vol_channel_score",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#equities_vol_channel_score",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2496,14 +2496,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 27.36,
+          "value": 27.12,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2514,10 +2514,10 @@
           "metric_id": "financial_conditions_level",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#financial_conditions_level",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2532,14 +2532,14 @@
             "value": null
           },
           "unit": "score",
-          "value": 64.83,
+          "value": 60.06,
           "value_type": "score_0_100"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "composite_prior_only",
-          "calculation_as_of": "2026-11-06",
+          "calculation_as_of": "2026-11-12",
           "collected_at": null,
           "coverage": null,
           "definition_id": "N/A",
@@ -2550,10 +2550,10 @@
           "metric_id": "financial_conditions_impulse",
           "model_version": "financial_conditions.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-11-06",
+          "observed_at": "2026-11-12",
           "owner_ref": "engine.market_os.macro_workspaces.financial_conditions",
           "reference_id": "mastermind.market_reference/v1#financial_conditions_impulse",
-          "reference_period": "2026-11-06",
+          "reference_period": "2026-11-12",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -2568,7 +2568,7 @@
             "value": null
           },
           "unit": "score",
-          "value": 68.54,
+          "value": 79.66,
           "value_type": "score_0_100"
         }
       ]
@@ -2672,7 +2672,7 @@
         },
         "owner_ref": "engine.conditions.financial_conditions",
         "provider": "Chicago Fed / FRED",
-        "reference_period": "2026-10-30",
+        "reference_period": "2026-11-06",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2693,7 +2693,7 @@
         },
         "owner_ref": "engine.conditions.systemic_stress",
         "provider": "OFR",
-        "reference_period": "2026-11-04",
+        "reference_period": "2026-11-11",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2714,7 +2714,7 @@
         },
         "owner_ref": "engine.regime.liquidity_quality",
         "provider": "ICE BofA / FRED",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2735,7 +2735,7 @@
         },
         "owner_ref": "engine.sector_rate_inflation.rate_inflation_transmission",
         "provider": "Treasury / FRED",
-        "reference_period": "2026-11-05",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2756,7 +2756,7 @@
         },
         "owner_ref": "engine.vol_regime",
         "provider": "CBOE / ICE",
-        "reference_period": "2026-11-06",
+        "reference_period": "2026-11-12",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

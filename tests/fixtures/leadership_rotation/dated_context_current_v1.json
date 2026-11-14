@@ -1,0 +1,364 @@
+{
+  "schema": "sector_dated_context/v1",
+  "status": "dated_context",
+  "scope": "configured_theme_example_with_market_global_risk",
+  "theme": {
+    "status": "available",
+    "reasons": [],
+    "theme_key": "memory_storage",
+    "name": "Memory, HBM & Storage",
+    "roster": [
+      "MU",
+      "WDC",
+      "SNDK",
+      "STX",
+      "NTAP"
+    ],
+    "roster_size": 5,
+    "membership_basis": "configured_theme_roster"
+  },
+  "observations": {
+    "status": "available",
+    "reasons": [],
+    "clocks": {
+      "regime_asof": "2026-11-06",
+      "regime_built_at": "2026-11-07T00:11:01Z",
+      "regime_freshness": {
+        "asof": "2026-11-06",
+        "built_at": "2026-11-07T00:11:01Z",
+        "age_days": 1,
+        "age_sessions": 0,
+        "max_age_sessions": 1,
+        "stale": false
+      },
+      "theme_revisions_asof": "2026-11-06",
+      "bottleneck_asof": "2026-09-01"
+    },
+    "units": {
+      "breadth": "mean member net-up share [-1,1]",
+      "est_drift_90d": "median member 90d consensus-EPS drift %",
+      "breadth_accel": "theme breadth now - breadth ~prior_snapshot ago (PIT, the broadening gauge)",
+      "breadth_cov": "W2a coverage-normalised breadth: mean of (up-dn)/n_covering over members with n_covering>=MIN_COVERING; None when fewer than MIN_MEMBERS_COV members have coverage data",
+      "est_chg_90d": "member 90d consensus-EPS drift %",
+      "net_up_total": "count of net-up revisions",
+      "coverage": "covered members over configured members",
+      "n_covered": "count of covered configured members",
+      "n_members": "count of configured members",
+      "n_analysts": "count of covering analysts",
+      "n_covering": "count of covering estimates",
+      "breadth_accel_basis_days": "days to the declared prior snapshot basis"
+    },
+    "revision_state": {
+      "asof": "2026-11-06",
+      "level_state": "POSITIVE",
+      "breadth": 0.746,
+      "est_drift_90d": 21.89,
+      "breadth_accel": -0.204,
+      "breadth_cov": 0.2269,
+      "coverage": 0.6,
+      "net_up_total": 24.0,
+      "n_covered": 3,
+      "n_members": 5,
+      "breadth_accel_basis_days": 22,
+      "broadening_state": "ROLLING"
+    },
+    "contributors": [
+      {
+        "ticker": "WDC",
+        "breadth": 0.33,
+        "est_chg_90d": 21.9,
+        "breadth_cov": 0.0455,
+        "n_analysts": 3,
+        "n_covering": 22
+      },
+      {
+        "ticker": "MU",
+        "breadth": 0.91,
+        "est_chg_90d": 24.5,
+        "breadth_cov": 0.5278,
+        "n_analysts": 21,
+        "n_covering": 36
+      },
+      {
+        "ticker": "NTAP",
+        "breadth": 1.0,
+        "est_chg_90d": 13.6,
+        "breadth_cov": 0.2,
+        "n_analysts": 4,
+        "n_covering": 20
+      }
+    ],
+    "bottleneck": {
+      "asof": "2026-09-01",
+      "name": "Memory, HBM & Storage",
+      "naics": "3344",
+      "band": "NEUTRAL",
+      "numeric_band": "NEUTRAL",
+      "tightness": 0.11,
+      "numeric_composite": 0.0,
+      "cap_u_latest": 76.51,
+      "ppi_yoy_latest": -2.2,
+      "language_accel": 0.5,
+      "n_legs": 6,
+      "language_hits": 3,
+      "language_n_filers": 2,
+      "regime": false,
+      "text_only": false,
+      "leg6_detail": {
+        "value": 0.5,
+        "accel": 0.5,
+        "hits": 3,
+        "n_filers": 2,
+        "provisional": true
+      },
+      "fingerprint": {
+        "theme": "memory_storage",
+        "basis": "annual",
+        "fingerprint_tightness": -0.091,
+        "leg7_member_inventory": -0.091,
+        "leg8_member_backlog": null,
+        "n_legs_live": 1,
+        "provisional": true,
+        "components": {
+          "leg7_member_inventory": {
+            "value": -0.091,
+            "n_reporting": 5,
+            "latest_fy": 2027,
+            "min_required": 3,
+            "met_gate": true
+          },
+          "leg8_member_backlog": {
+            "value": null,
+            "n_reporting": 2,
+            "latest_fy": 2022,
+            "min_required": 3,
+            "met_gate": false
+          }
+        }
+      }
+    }
+  },
+  "comparison": {
+    "status": "available",
+    "reasons": [],
+    "evaluation": "prospective_unevaluated",
+    "entries": [
+      {
+        "id": "earnings_expectations",
+        "evaluation": "prospective_unevaluated",
+        "status": "supported",
+        "statement": "Positive revision breadth in the supplied snapshot is consistent with improving covered-member expectations; price cause is not established.",
+        "evidence_refs": [
+          "observations.revision_state.level_state",
+          "observations.revision_state.breadth",
+          "observations.revision_state.n_covered",
+          "observations.revision_state.n_members"
+        ],
+        "falsifier": {
+          "check": "A later qualified same-cohort snapshot that loses positive revision breadth would challenge this reading; check revision dates, coverage and revision counts.",
+          "met": false
+        },
+        "reasons": []
+      },
+      {
+        "id": "narrow_or_fading_revisions",
+        "evaluation": "prospective_unevaluated",
+        "status": "supported",
+        "statement": "Coverage of 3 of 5 configured members with source-native broadening state ROLLING warrants caution on breadth and momentum despite a POSITIVE level state.",
+        "evidence_refs": [
+          "observations.revision_state.coverage",
+          "observations.revision_state.n_covered",
+          "observations.revision_state.n_members",
+          "observations.revision_state.broadening_state",
+          "observations.revision_state.level_state"
+        ],
+        "falsifier": {
+          "check": "Later qualified broadening evidence with wider coverage would challenge this caution; no coverage threshold is asserted here.",
+          "met": false
+        },
+        "reasons": []
+      },
+      {
+        "id": "physical_supply_constraint",
+        "evaluation": "prospective_unevaluated",
+        "status": "supported",
+        "statement": "The separately dated bottleneck snapshot (band NEUTRAL, as of 2026-09-01) does not confirm contemporaneous physical tightness in the revision snapshot dated 2026-11-06. Its language leg and member fingerprint are provisional.",
+        "evidence_refs": [
+          "observations.bottleneck.band",
+          "observations.bottleneck.asof",
+          "observations.bottleneck.numeric_composite",
+          "observations.bottleneck.fingerprint"
+        ],
+        "falsifier": {
+          "check": "Qualified contemporaneous physical-supply owner evidence could change this assessment; provisional language-leg and fingerprint signals are insufficient alone.",
+          "met": false
+        },
+        "reasons": []
+      },
+      {
+        "id": "market_or_other_causes",
+        "evaluation": "prospective_unevaluated",
+        "status": "unresolved",
+        "statement": "Market-global risk is descriptive context, not a causal explanation of the theme revision state; resolving this alternative needs owner evidence that establishes or contradicts a specified mechanism.",
+        "evidence_refs": [
+          "market_risk.measured_state.verdict",
+          "market_risk.data_state",
+          "market_risk.hazard_summary.stage_reason",
+          "market_risk.coherence.state"
+        ],
+        "falsifier": {
+          "check": "Owner evidence that establishes or contradicts a specified non-theme mechanism would be required to resolve this alternative.",
+          "met": false
+        },
+        "reasons": [
+          "alternatives_not_resolved_by_supplied_evidence"
+        ]
+      }
+    ]
+  },
+  "market_risk": {
+    "status": "available",
+    "reasons": [],
+    "scope": "market_global",
+    "definition_id": "grey-deer-v1-2026-08-19",
+    "market": "US",
+    "bundle_id": "fbf32d0f9123bafd",
+    "source_session": "2026-11-06",
+    "as_of": "2026-11-06",
+    "observed_at": "2026-11-07T04:12:49Z",
+    "produced_at": "2026-11-07T04:12:49Z",
+    "revision": "settled",
+    "data_state": "DEGRADED",
+    "stale_after": null,
+    "measured_state": {
+      "verdict": "RISK_OFF",
+      "score": 40,
+      "usable": true,
+      "as_of": "2026-11-06",
+      "role": "slow_confirmed_trend",
+      "source_artifact": "market-state-latest"
+    },
+    "hazard_summary": {
+      "stage": null,
+      "stage_reason": "required_coverage_unavailable",
+      "stage_since_basis": "no_episode_lifecycle_in_v0",
+      "primary_episode_id": null,
+      "active_episode_count": 0,
+      "contributing_sources": [
+        "risk-radar-us"
+      ],
+      "unreadable_sources": [
+        "leadership-crack-latest"
+      ],
+      "capped_sources": [],
+      "unmapped_required_sources": [],
+      "display_only": true
+    },
+    "freshness": {
+      "source_session": "2026-11-06",
+      "all_on_session": false,
+      "off_session_sources": [
+        "leadership-crack-latest",
+        "site-marketdata-rotation-events"
+      ],
+      "per_source": {
+        "leadership-crack-latest": {
+          "as_of": "2026-11-05",
+          "matches_session": false,
+          "state": "STALE"
+        },
+        "market-state-latest": {
+          "as_of": "2026-11-06",
+          "matches_session": true,
+          "state": "FRESH"
+        },
+        "risk-radar-us": {
+          "as_of": "2026-11-06",
+          "matches_session": true,
+          "state": "FRESH"
+        },
+        "site-marketdata-rotation-events": {
+          "as_of": "2026-11-05",
+          "matches_session": false,
+          "state": "STALE"
+        }
+      }
+    },
+    "coherence": {
+      "state": "MIXED",
+      "contradiction_count": 0,
+      "contradictions": [],
+      "compares": [
+        "measured_state",
+        "hazard_evidence"
+      ],
+      "excludes": [
+        "policy_summary"
+      ],
+      "scope": "market_reads",
+      "display_only": true
+    },
+    "policy_summary": {
+      "posture": "NORMAL",
+      "basis": "zero_active_policies",
+      "policy_count": 0,
+      "active_policy_ids": [],
+      "display_only": true
+    },
+    "source_authority": {
+      "envelope_may_execute": false,
+      "envelope_may_gate": false,
+      "envelope_may_rank": false,
+      "envelope_may_size": false,
+      "policy_actions_require_individual_authority": true
+    }
+  },
+  "provenance": {
+    "status": "available",
+    "reasons": [],
+    "source_attribution": {
+      "regime_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/data/regime/latest.json",
+        "raw_sha256": "1ec062ec0805727adb900c86a52de4c17612c4ee80ddad36a67e9405f2000f8a"
+      },
+      "config_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/config.yml",
+        "raw_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      "public_risk_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/site/riskdata/risk_envelope.json",
+        "raw_sha256": "93f5b3da1dca0e6e464ef42c44cde22369ff2b2b57c521594374cc00f5ac804a"
+      }
+    },
+    "attribution_verification": "not_established_by_projection",
+    "projection": {
+      "schema": "sector_dated_context/v1",
+      "deterministic": true,
+      "reads": [
+        "regime_document",
+        "config_document",
+        "public_risk_document",
+        "source_attribution"
+      ],
+      "writes": []
+    }
+  },
+  "limitations": {
+    "current_sector_usable": false,
+    "historically_admissible": false,
+    "sector_mapping": {
+      "status": "unavailable",
+      "reason": "native_sector_mapping_not_supplied"
+    },
+    "original_available_at": null,
+    "availability_reason": "native_availability_and_revision_selection_not_supplied",
+    "attribution_verification": "not_established_by_projection"
+  },
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_escalate": false
+  }
+}

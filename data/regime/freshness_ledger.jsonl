@@ -72,3 +72,7 @@
 {"asof": "2026-11-05", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 31, "degraded": false}
 {"asof": "2026-11-06", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 31, "degraded": false}
 {"asof": "2026-11-09", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 31, "degraded": false}
+{"asof": "2026-11-10", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 31, "degraded": false}
+{"asof": "2026-11-11", "quad": "Q2", "label_quad": "Q2", "freshness_bitmask": 31, "degraded": false}
+{"asof": "2026-11-12", "quad": "Q1", "label_quad": "Q1", "freshness_bitmask": 31, "degraded": false}
+{"asof": "2026-11-13", "quad": "Q1", "label_quad": "Q1", "freshness_bitmask": 31, "degraded": false}
