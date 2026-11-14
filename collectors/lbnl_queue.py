@@ -69,6 +69,7 @@ from __future__ import annotations
 import io
 import json
 import logging
+import math
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -196,7 +197,8 @@ def _parse_annual_totals(xlsx_bytes: bytes) -> pd.DataFrame:
     tbl["year"] = pd.to_numeric(tbl["year"], errors="coerce")
     tbl["total_gw"] = pd.to_numeric(tbl["total_gw"], errors="coerce")
     tbl = tbl.dropna(subset=["year", "total_gw"])
-    tbl["year"] = tbl["year"].astype(int)
+    # Preserve fractional/non-finite years for the pair validator below. Casting
+    # here would turn a malformed 2024.5/2025.5 pair into apparently annual data.
     tbl = tbl.sort_values("year").reset_index(drop=True)
     if len(tbl) < 2:
         raise ValueError(
@@ -224,9 +226,22 @@ def compute_yoy(tbl: pd.DataFrame) -> dict:
     total_gw_yoy is in PERCENT units (18.5 == +18.5%/yr).
     The engine contract requires percent; the reader divides by 20.0.
     """
+    if len(tbl) < 2:
+        raise ValueError("lbnl_queue: need two annual rows for YoY")
     latest = tbl.iloc[-1]
     prior = tbl.iloc[-2]
-    yoy_pct = (float(latest["total_gw"]) / float(prior["total_gw"]) - 1.0) * 100.0
+    years = [float(y) for y in tbl["year"]]
+    if (not all(math.isfinite(y) and y.is_integer() and 1 <= y <= 9999 for y in years)
+            or any(b <= a for a, b in zip(years, years[1:]))
+            or years[-1] - years[-2] != 1):
+        raise ValueError("lbnl_queue: YoY requires consecutive integer data years")
+    prior_gw, latest_gw = float(prior["total_gw"]), float(latest["total_gw"])
+    if (not math.isfinite(prior_gw) or prior_gw <= 0
+            or not math.isfinite(latest_gw) or latest_gw < 0):
+        raise ValueError("lbnl_queue: YoY requires finite nonnegative GW and positive prior GW")
+    yoy_pct = (latest_gw / prior_gw - 1.0) * 100.0
+    if not math.isfinite(yoy_pct):
+        raise ValueError("lbnl_queue: non-finite YoY")
     return {
         "total_gw_yoy": round(yoy_pct, 2),
         "asof_year": int(latest["year"]),
@@ -307,7 +322,7 @@ class LbnlQueueAdapter(Adapter):
         # Write the JSON cache the engine reads
         p = config.data_dir() / "eia" / "interconnection_queue.json"
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(out, separators=(",", ":")))
+        p.write_text(json.dumps(out, separators=(",", ":"), allow_nan=False))
         log.info(
             "lbnl_queue: wrote %s — total_gw_yoy=%.1f%% (asof %d, %.0f GW)",
             p, out["total_gw_yoy"], out["asof_year"], out["total_gw"],

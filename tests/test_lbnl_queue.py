@@ -315,3 +315,132 @@ def test_end_to_end_seed_format(monkeypatch, tmp_path):
         f"compute_yoy output (+20% -> total_gw_yoy=20.0) should yield z=1.0, "
         f"got {z!r}"
     )
+
+
+"""Synthetic XLSX -> native collector -> temporary cache -> native engine proof.
+
+Run against source/ and candidate/ separately by placing that directory first
+on PYTHONPATH. Network and clock-independent FRED reads are injected only at I/O.
+"""
+import io
+import json
+import math
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from collectors import lbnl_queue as q
+from engine import power_scarcity as p
+
+SEED = b'{"total_gw_yoy":-10.0,"asof_year":2025,"total_gw":2061.0,"prior_year":2024,"prior_gw":2290.0}'
+
+
+def workbook(rows):
+    buf = io.BytesIO()
+    pd.DataFrame(rows, columns=['Year', 'Total capacity (GW)']).to_excel(
+        buf, index=False, sheet_name='Annual totals')
+    return buf.getvalue()
+
+
+def point_cache(monkeypatch, tmp_path, contents=SEED):
+    f = tmp_path / 'eia' / 'interconnection_queue.json'
+    f.parent.mkdir(parents=True, exist_ok=True)
+    f.write_bytes(contents)
+    monkeypatch.setattr(q.config, 'data_dir', lambda: tmp_path)
+    return f
+
+
+def inject_workbook(monkeypatch, rows):
+    blob = workbook(rows)
+    monkeypatch.setattr(q, '_try_fetch_xlsx', lambda year: (blob, []))
+
+
+INVALID_ROWS = [
+    ('missing_prior_year', [(2023, 1000), (2025, 2000)]),
+    ('duplicate_latest_year', [(2025, 1000), (2025, 2000)]),
+    ('duplicate_prior_year', [(2024, 500), (2024, 1000), (2025, 2000)]),
+    ('fractional_years', [(2024.5, 1000), (2025.5, 2000)]),
+    ('positive_infinite_latest', [(2024, 1000), (2025, 'inf')]),
+    ('negative_infinite_latest', [(2024, 1000), (2025, '-inf')]),
+    ('infinite_prior', [(2024, 'inf'), (2025, 1000)]),
+    ('negative_latest', [(2024, 1000), (2025, -1)]),
+    ('negative_prior', [(2024, -1000), (2025, 1000)]),
+    ('zero_prior', [(2024, 0), (2025, 1000)]),
+    ('overflow_ratio', [(2024, 1e-300), (2025, 1e300)]),
+]
+
+
+@pytest.mark.parametrize('label,rows', INVALID_ROWS, ids=[x[0] for x in INVALID_ROWS])
+def test_invalid_workbook_preserves_prior_cache(monkeypatch, tmp_path, label, rows):
+    f = point_cache(monkeypatch, tmp_path)
+    inject_workbook(monkeypatch, rows)
+    with pytest.raises(ValueError, match='lbnl_queue:'):
+        q.LbnlQueueAdapter().fetch()
+    assert f.read_bytes() == SEED, label
+    assert p._queue_pull() == -0.5, label
+
+
+VALID_ROWS = [
+    ('positive', [(2024, 1000), (2025, 1200)], 20.0, 1.0),
+    ('negative', [(2024, 1200), (2025, 900)], -25.0, -1.25),
+    ('unchanged', [(2024, 1000), (2025, 1000)], 0.0, 0.0),
+    ('zero_latest', [(2024, 1000), (2025, 0)], -100.0, -2.0),
+    ('fraction_unit_tripwire', [(2024, 1000), (2025, 1002)], 0.2, 0.01),
+    ('descending_sheet', [(2025, 1200), (2024, 1000)], 20.0, 1.0),
+    ('older_gap_not_latest', [(2020, 10), (2024, 1000), (2025, 1200)], 20.0, 1.0),
+    ('current_seed_figures', [(2024, 2290), (2025, 2061)], -10.0, -0.5),
+]
+
+
+@pytest.mark.parametrize('label,rows,yoy,z', VALID_ROWS, ids=[x[0] for x in VALID_ROWS])
+def test_valid_workbook_retains_native_contract(monkeypatch, tmp_path, label, rows, yoy, z):
+    f = point_cache(monkeypatch, tmp_path)
+    inject_workbook(monkeypatch, rows)
+    frames = q.LbnlQueueAdapter().fetch()
+    data = json.loads(f.read_text(), parse_constant=lambda v: pytest.fail(v))
+    assert data['total_gw_yoy'] == yoy
+    assert data['asof_year'] == 2025 and data['prior_year'] == 2024
+    assert p._queue_pull() == z
+    assert frames['lbnl_queue__ingest'].iloc[0]['total_gw_yoy'] == yoy
+    monkeypatch.setattr(p, '_first', lambda ids: None)
+    payload = p.compute_power_scarcity(write_ledger=False)
+    assert payload['legs'] == {'queue_buildout': z}
+    assert payload['n_legs'] == 1
+    assert len(payload['themes']) == 5
+    json.dumps(payload, allow_nan=False)
+
+
+BAD_CACHES = [
+    ('array', '[]'), ('null_root', 'null'),
+    ('nan', '{"total_gw_yoy":NaN}'),
+    ('infinity', '{"total_gw_yoy":Infinity}'),
+    ('negative_infinity', '{"total_gw_yoy":-Infinity}'),
+    ('string_nan', '{"total_gw_yoy":"NaN"}'),
+    ('overflow', '{"total_gw_yoy":1e999}'),
+    ('bool', '{"total_gw_yoy":true}'),
+    ('junk', '{"total_gw_yoy":"unavailable"}'),
+    ('nested', '{"total_gw_yoy":[]}'),
+]
+
+
+@pytest.mark.parametrize('label,raw', BAD_CACHES, ids=[x[0] for x in BAD_CACHES])
+def test_bad_cache_omits_queue_without_losing_fred(monkeypatch, tmp_path, label, raw):
+    point_cache(monkeypatch, tmp_path, raw.encode())
+    idx = pd.date_range('2020-01-01', periods=60, freq='MS')
+    s = pd.Series(np.r_[np.full(48, 100.), np.linspace(102., 140., 12)], index=idx)
+    monkeypatch.setattr(p, '_first', lambda ids: s)
+    assert p._queue_pull() is None
+    out = p.compute_power_scarcity(write_ledger=False)
+    assert out['n_legs'] == 3
+    assert 'queue_buildout' not in out['legs']
+    assert len(out['themes']) == 5
+    assert all(math.isfinite(v) for v in out['legs'].values())
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize('value,want', [(0,0.),(20.,1.),(-20.,-1.),(100.,2.),(-100.,-2.),('20',1.)])
+def test_finite_reader_controls(monkeypatch, tmp_path, value, want):
+    point_cache(monkeypatch, tmp_path, json.dumps({'total_gw_yoy':value}).encode())
+    assert p._queue_pull() == want
