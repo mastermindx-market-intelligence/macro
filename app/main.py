@@ -2678,6 +2678,9 @@ app.include_router(prophet_daily_brief_router)
 from app.catalyst_opportunity import router as catalyst_opportunity_router  # noqa: E402
 app.include_router(catalyst_opportunity_router)
 
+from app.market_calendar import router as market_calendar_router  # noqa: E402
+app.include_router(market_calendar_router)
+
 # Capital Structure observed filing-state desk.  This is an authenticated
 # artifact-serving boundary: it reads the verified projection only and does not
 # calculate financing terms, capacity, runway, or probability in the API tier.
