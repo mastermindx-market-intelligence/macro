@@ -153,6 +153,23 @@ def _canonical(value) -> bytes:
     return n._canonical(value)
 
 
+# This lane's own run reports (pin/packet/propose) are not disclosure objects, so
+# the owner's 16 KB object cap does not bound them: a 51-target pin report is
+# larger than that. Same canonical encoding, a separate fixed ceiling.
+MAX_REPORT_BYTES = 1024 * 1024
+
+
+def report_bytes(report: dict) -> bytes:
+    try:
+        raw = json.dumps(report, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+                         allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError, UnicodeError):
+        raise ValueError("REPORT_JSON_INVALID") from None
+    if not 0 < len(raw) <= MAX_REPORT_BYTES:
+        raise ValueError("REPORT_TOO_LARGE")
+    return raw
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -321,7 +338,7 @@ def run_pin(targets_path, raw_root, archive_root, out, *, local_store=None,
         "snapshot_at": snapshot.snapshot_at,
         "targets": rows,
     }
-    (out / "pin_report.json").write_bytes(_canonical(report))
+    (out / "pin_report.json").write_bytes(report_bytes(report))
     return report
 
 
@@ -549,7 +566,7 @@ def run_packet(request_path, snapshot_id, out, *, local_store=None, identity_rea
     report = {"schema": PACKET_REPORT_SCHEMA, "snapshot_id": snapshot_id,
               "outcome": _outcome(sum(1 for r in results if r["status"] == "REFUSED"), len(results)),
               "rows": results}
-    (out / "packet_report.json").write_bytes(_canonical(report))
+    (out / "packet_report.json").write_bytes(report_bytes(report))
     return report
 
 
@@ -631,7 +648,7 @@ def run_propose(manifest_path, out, *, python=None, runner=None) -> dict:
     report = {"schema": PROPOSE_REPORT_SCHEMA,
               "outcome": _outcome(sum(1 for r in results if r["exit_code"] != 0), len(results)),
               "rows": results}
-    (out / "propose_report.json").write_bytes(_canonical(report))
+    (out / "propose_report.json").write_bytes(report_bytes(report))
     return report
 
 

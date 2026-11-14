@@ -122,7 +122,7 @@ class _FakeSession:
         return _FakeResponse(url, body, status, headers)
 
 
-def _pin(tmp_path, body, *, primary_headers=None):
+def _pin(tmp_path, body, *, primary_headers=None, tickers=(TICKER,)):
     """Drive run_pin end to end through a fake session into a LocalStore."""
     manifest = build_filing_manifests(SUBMISSIONS, cik=CIK, ticker=TICKER,
                                       recorded_at=RECORDED)[0]
@@ -140,7 +140,7 @@ def _pin(tmp_path, body, *, primary_headers=None):
     targets_path = tmp_path / "targets.json"
     targets_path.write_text(json.dumps({
         "schema": m.TARGETS_SCHEMA,
-        "targets": [{"ticker": TICKER, "cik": CIK, "forms": ["10-K", "10-K/A"]}],
+        "targets": [{"ticker": t, "cik": CIK, "forms": ["10-K", "10-K/A"]} for t in tickers],
     }), encoding="utf-8")
     out = tmp_path / "out"
     store = tmp_path / "store"
@@ -341,7 +341,7 @@ def test_pin_writes_report_snapshot_and_never_creates_latest_pointer(tmp_path):
     assert re.fullmatch(r"ffsecsrc_[0-9a-f]{64}", report["snapshot_id"])
     # The snapshot clock is the injected now (owner may normalize microseconds).
     assert report["snapshot_at"].startswith("2024-03-01T12:00:00")
-    assert (pin.out / "pin_report.json").read_bytes() == n._canonical(report)
+    assert (pin.out / "pin_report.json").read_bytes() == m.report_bytes(report)
     row = pin.row
     assert row["ticker"] == TICKER and row["cik"] == CIK
     assert row["form"] == "10-K" and row["accession"] == ACCESSION
@@ -353,6 +353,26 @@ def test_pin_writes_report_snapshot_and_never_creates_latest_pointer(tmp_path):
     # The shared filing-forensics latest pointer is NEVER published by this lane.
     latest = pin.store / "fundamental_forensics" / "sec-source" / "v1" / "latest.json"
     assert not latest.exists() and not latest.is_symlink()
+
+
+def test_pin_report_for_the_full_target_list_is_written_past_the_owner_object_cap(tmp_path):
+    # Run 43564756554 (51 targets) crashed writing its report: the owner's 16 KB
+    # object cap applies to disclosure objects, not to this lane's run report.
+    tickers = tuple(f"T{i:02d}" for i in range(60))
+    pin = _pin(tmp_path, SEG_BODY, tickers=tickers)
+    raw = (pin.out / "pin_report.json").read_bytes()
+    assert len(raw) > n.MAX_OBJECT_BYTES
+    assert raw == m.report_bytes(pin.report)
+    assert [r["ticker"] for r in json.loads(raw)["targets"]] == list(tickers)
+    assert all("refusal" not in r for r in pin.report["targets"])
+
+
+def test_report_bytes_is_canonical_and_bounded():
+    assert m.report_bytes({"b": 1, "a": "é"}) == '{"a":"é","b":1}'.encode("utf-8")
+    with pytest.raises(ValueError, match="REPORT_JSON_INVALID"):
+        m.report_bytes({"a": float("nan")})
+    with pytest.raises(ValueError, match="REPORT_TOO_LARGE"):
+        m.report_bytes({"a": "x" * m.MAX_REPORT_BYTES})
 
 
 def test_pin_leaves_an_existing_latest_pointer_byte_identical(tmp_path):
