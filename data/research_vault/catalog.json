@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T13:42:01.503031+00:00",
-  "count": 3368,
+  "generated_at": "2026-11-14T13:56:50.137382+00:00",
+  "count": 3369,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -323,6 +323,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3lru6xjaafz-88693a",
+      "title": "BofA Morning Market Tidbits Adding another hike to our Fed call",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:47Z",
+      "summary_points": [
+        "Fed Hike Timeline: 25bp hikes at Dec, Jan, Mar '27 targeting 4.5-4.75% terminal rate, driven by inflation lag post-Oct CPI.",
+        "Policy Gap: Markets price ~50bp hikes next two meetings; Fed may delay/skip last hike if data softens or financial tightening intensifies.",
+        "GDP Beat: US GDP tracking unchanged at 3.9% q/q (exceeding BoFA's 3.4% forecast), driven by strong Final Sales (5.0%) and PCE (3.8%).",
+        "PPI & Speakers: Oct PPI estimate (0.3%) below prior (0.7%) signals slowing inflation; Fed speakers (Jefferson, Logan, Bowman, Collins, Daly) to shape policy expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
