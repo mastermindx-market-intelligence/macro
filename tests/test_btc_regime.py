@@ -150,3 +150,32 @@ def test_live_parquet_smoke(df):
     assert f["ok"]
     m = btc_correlation_regime.lean(df)
     assert m["ok"]
+
+
+@pytest.mark.parametrize('legs,missing,available', [
+    (['etf_flow_z'], 120, False), (['real_yield', 'dxy'], 120, False),
+    (['etf_flow_z', 'real_yield', 'dxy'], 120, False),
+    (['etf_flow_z'], 46, False), (['etf_flow_z'], 45, True),
+    (['etf_flow_z'], 1, True),
+])
+def test_mode_requires_current_window(legs, missing, available):
+    d = _synth(320)
+    d.loc[d.index[-missing]:, legs] = np.nan
+    out = btc_correlation_regime.lean(d)
+    assert out['ok'] is available
+    if available:
+        assert out['display_only'] and out['non_numeric']
+
+
+def test_expired_mode_is_unavailable_in_native_ledger(tmp_path):
+    import json
+    from engine import btc_regime_ledger
+    d = _synth(320)
+    d.loc[d.index[-120]:, 'etf_flow_z'] = np.nan
+    scorecard = btc_regime.compute(d)
+    assert scorecard['ok'] and scorecard['display_only']
+    assert not scorecard['mode_lean']['ok']
+    row = btc_regime_ledger.stamp(scorecard, asof=d.index[-1].date(), root=tmp_path)
+    saved = json.loads((tmp_path / 'data/vector/regime_ledger.jsonl').read_text())
+    assert saved == row
+    assert saved['mode_lean'] is None

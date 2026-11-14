@@ -47,11 +47,16 @@ def lean(df: pd.DataFrame) -> dict:
             flow = _roll_abs_corr(ret, df[flow_src].diff() if flow_src == "etf_flow_sum"
                                   else df[flow_src])
 
-        m = float(macro.dropna().iloc[-1]) if macro.dropna().size else None
-        f = float(flow.dropna().iloc[-1]) if flow.dropna().size else None
-
+        # A mode at the current row cannot reuse another date's strength.
+        m = float(macro.iloc[-1]) if len(macro) and np.isfinite(macro.iloc[-1]) else None
+        f = float(flow.iloc[-1]) if len(flow) and np.isfinite(flow.iloc[-1]) else None
         if f is None and m is None:
             return {"ok": False}
+        if macro_parts and m is None:
+            return {"ok": False, "reason": "current_macro_correlation_unavailable"}
+        if flow_src and f is None:
+            return {"ok": False, "reason": "current_flow_correlation_unavailable"}
+
         if f is None:                       # pre-ETF era
             mode, word, zh = "macro", "+macro", "宏观主导"
         else:
