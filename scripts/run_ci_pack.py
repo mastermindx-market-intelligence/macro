@@ -5290,6 +5290,7 @@ EXACT_BASE_REPLAY_SAFE_PARENT_ENV: frozenset[str] = frozenset({
     "SHELL",
     "LANG",
     "CI",
+    "BUILD_NUMBER",
     "LANGUAGE",
     "LC_ALL",
     "TZ",
