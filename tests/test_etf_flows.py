@@ -168,3 +168,134 @@ def test_proxy_json_flow_signs(tmp_path):
     assert result is not None
     xlk = next(f for f in result["funds"] if f["ticker"] == "XLK")
     assert xlk["flow_1d"] > 0, "growing SO → positive flow (creation)"
+"""Source-bound acceptance for the proxy sibling explicitly excluded by #10970."""
+from pathlib import Path
+import ast, json, logging, subprocess
+import numpy as np
+import pandas as pd
+import pytest
+from engine import etf_flows as native
+
+ROOT = Path(__file__).resolve().parents[1]
+DATES = pd.bdate_range('2026-09-14', periods=30)
+
+def save(tmp_path, df):
+    p=tmp_path/'flows.parquet'; df.to_parquet(p); return p
+
+def invoke(tmp_path, values):
+    df=pd.DataFrame(values, index=DATES[-len(next(iter(values.values()))):])
+    return native.proxy_json(proxy_path=save(tmp_path,df))
+
+def fund(out,ticker='XLK'):
+    return next(f for f in out['funds'] if f['ticker']==ticker)
+
+@pytest.mark.parametrize('missing_at',[-1,-2,-4])
+def test_missing_dates_do_not_pull_older_rows(tmp_path, missing_at):
+    a=[100.]+[1.]*5; a[missing_at]=np.nan
+    out=invoke(tmp_path,{'XLK_flow_mn':a,'XLF_flow_mn':[-2.]*6})
+    assert fund(out)['flow_5d'] is None
+    assert fund(out)['flow_21d'] is None
+    assert fund(out)['flow_1d']==(None if missing_at==-1 else 1.)
+
+@pytest.mark.parametrize('missing', [np.nan,np.inf,-np.inf,'bad'])
+def test_stale_or_nonfinite_latest_is_not_current(tmp_path, missing):
+    values=['100','100',missing] if isinstance(missing,str) else [100.,100.,missing]
+    out=invoke(tmp_path,{'XLK_flow_mn':values, 'XLF_flow_mn':[-10.]*3})
+    assert fund(out)['flow_1d'] is None
+    assert out['net_flow_1d'] is None
+    assert out['asof']==str(DATES[-1].date())
+    json.dumps(out,allow_nan=False)
+
+@pytest.mark.parametrize('gap',[-1,-2])
+def test_all_fund_gap_retains_date_and_window(tmp_path,gap):
+    a=[1.,2.,3.,4.,5.,6.];a[gap]=np.nan
+    out=invoke(tmp_path,{'XLK_flow_mn':a,'XLF_flow_mn':a})
+    assert out['asof']==str(DATES[-1].date())
+    assert out['depth']==6
+    assert fund(out)['flow_5d'] is None
+
+@pytest.mark.parametrize('n',[2,3,5,21,30])
+def test_complete_history_matches_native_short_history_policy(tmp_path,n):
+    a=np.arange(1.,n+1);b=-a
+    out=invoke(tmp_path,{'XLK_flow_mn':a,'XLF_flow_mn':b})
+    for key,w in [('flow_1d',1),('flow_5d',5),('flow_21d',21)]:
+        assert fund(out)[key]==sum(a[-w:])
+    assert out['net_flow_1d']==0.
+
+def test_zero_is_an_observation(tmp_path):
+    out=invoke(tmp_path,{'XLK_flow_mn':[0.]*6,'XLF_flow_mn':[0.]*6})
+    assert fund(out)['flow_5d']==0.
+    assert out['net_flow_1d']==0.
+
+def test_all_missing_fund_is_retained_unavailable(tmp_path):
+    out=invoke(tmp_path,{'XLK_flow_mn':[np.nan]*6,'XLF_flow_mn':[-1.]*6})
+    assert fund(out)['flow_1d'] is None
+    assert out['net_flow_1d'] is None
+
+def test_leading_diff_only_rows_remain_excluded(tmp_path):
+    out=invoke(tmp_path,{'XLK_flow_mn':[np.nan,np.nan,2.,3.],'XLF_flow_mn':[np.nan,np.nan,4.,5.]})
+    assert out['depth']==2
+    assert fund(out)['flow_5d']==5.
+
+@pytest.mark.parametrize('v',[1e308,-1e308])
+def test_overflow_is_unavailable(tmp_path,v):
+    out=invoke(tmp_path,{'XLK_flow_mn':[v]*3,'XLF_flow_mn':[v]*3})
+    assert fund(out)['flow_5d'] is None
+    assert out['net_flow_1d'] is None
+    json.dumps(out,allow_nan=False)
+
+def test_row_order_does_not_change_result_or_input(tmp_path):
+    df=pd.DataFrame({'XLK_flow_mn':[1.,2.,3.,4.,5.,6.]},index=DATES[-6:])
+    p=save(tmp_path,df.iloc[::-1]);before=p.read_bytes()
+    out=native.proxy_json(proxy_path=p)
+    assert out['asof']==str(DATES[-1].date()) and fund(out)['flow_5d']==20.
+    assert before==p.read_bytes()
+
+def test_real_temp_parquet_builder_and_options_html(tmp_path,monkeypatch):
+    # Complete native Parquet reader -> unchanged native builder function ->
+    # unchanged actual Options renderer. No live acquisition or full app claim.
+    p=save(tmp_path,pd.DataFrame({'XLK_flow_mn':[100.,100.,np.nan],
+        'XLF_flow_mn':[-10.,-10.,-10.]},index=DATES[-3:]))
+    monkeypatch.setattr(native,'_PROXY_PATH',p)
+    src=(ROOT/'scripts/build_flow_desk.py').read_text()
+    node=next(n for n in ast.parse(src).body if isinstance(n,ast.FunctionDef) and n.name=='build_etf_tile')
+    ns={'Path':Path,'log':logging.getLogger('acceptance'),'ETF_LABEL':'proxy (creation/redemption)'}
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'unchanged_builder','exec'),ns)
+    tile=ns['build_etf_tile'](tmp_path)
+    template=(ROOT/'templates/options.html.j2').read_text()
+    # Each function ends at the next column-zero function declaration. Trailing
+    # comment text is harmless; the fixture omits DOM initialization by design.
+    names=['esc','bi','num','money','smoney','flSoft','flEtfPanel']
+    import re
+    chunks=[]
+    for name in names:
+        start=template.index('function '+name+'(')
+        end=template.find('\nfunction ',start+1)
+        segment=template[start:end]
+        # Each selected function's final closing brace is before any next block
+        # comment. Keep through last line-ending/one-line closing brace.
+        if name=='flEtfPanel': segment=segment[:segment.index('\n/*')]
+        if name=='flSoft': segment=segment[:segment.index('\n/*')]
+        chunks.append(segment)
+    js='\n'.join(chunks)+'\nconsole.log(flEtfPanel('+json.dumps({'etf_tile':tile})+'));'
+    html=subprocess.run(['node','-e',js],text=True,capture_output=True,check=True).stdout
+    (tmp_path/'rendered.html').write_text(html)
+    assert '~+$100M' not in html
+    assert '5D — · 21D —' in html
+    assert '~−$10M' in html
+    assert str(DATES[-1].date()) in html
+    assert tile['net_flow_1d'] is None
+
+
+def test_native_rebuild_with_asymmetric_source_histories(tmp_path):
+    dates=DATES[-4:]
+    pd.DataFrame({'so_mn':[10.,11.,12.], 'nav':[100.]*3},index=dates[:3]).to_parquet(tmp_path/'XLK.parquet')
+    pd.DataFrame({'so_mn':[10.,9.9,9.8,9.7], 'nav':[100.]*4},index=dates).to_parquet(tmp_path/'XLF.parquet')
+    output=tmp_path/'proxy.parquet'
+    native.rebuild(tickers=('XLK','XLF'),flows_dir=tmp_path,proxy_path=output)
+    out=native.proxy_json(proxy_path=output)
+    assert fund(out)['flow_1d'] is None
+    assert fund(out,'XLF')['flow_1d']==pytest.approx(-10.)
+    assert out['net_flow_1d'] is None
+    assert out['asof']==str(dates[-1].date())
+
