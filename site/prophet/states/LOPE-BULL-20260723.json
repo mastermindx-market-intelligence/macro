@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LOPE-BULL-20260723",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.6,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.644,
+    "dist_to_stop_r": -0.519,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -1.0961,
-    "p2": -0.548,
+    "horizon_pct_used": 95.6,
+    "p1": -1.0124,
+    "p2": -0.5062,
     "p3": null,
-    "move_r": -1.644,
+    "move_r": -1.519,
     "mfe_r": 0.417,
     "mae_r": -1.644
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-09",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444,
+  "days_elapsed": 43,
+  "tau": 0.9556,
   "closed": true,
   "outcome": "INVALIDATED"
 }

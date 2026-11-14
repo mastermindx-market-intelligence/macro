@@ -4828,6 +4828,18 @@ modules:
       - data/regime/latest.json
       - site/marketdata/sp500_heatmap.json
       - data/us_sector_rotation/latest.json
+      # Sector generation carry (lib/sector_central_carry.py -> sector_central.json[carried]);
+      # each carried block states its own source and as-of, so a source written earlier
+      # or later than this step is carried as written, never relabelled.
+      - site/basketdata/si_handoff.json
+      - site/stagedata/screener.json
+      - site/marketdata/subsector_confluence.json
+      - site/marketdata/subsector_confluence_nasdaq.json
+      - site/marketdata/subsector_confluence_russell.json
+      - site/marketdata/subsector_confluence_china.board.json
+      - site/marketdata/basket_confluence.json
+      - data/baskets/membership.json
+      - data/flows/XL*.parquet
     writes:
       - site/sector_central.html
       - site/sector_central_data.js
