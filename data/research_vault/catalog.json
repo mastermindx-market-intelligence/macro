@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T14:11:44.847872+00:00",
-  "count": 3370,
+  "generated_at": "2026-11-14T14:42:00.747114+00:00",
+  "count": 3371,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -942,6 +942,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 74,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wsjcaxpbejq-7f2942",
+      "title": "BofA Hartnett The Flow Show Why save, why short, why risk off",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T12:02:41Z",
+      "summary_points": [
+        "Equity Inflows vs.",
+        "Contrarian Signals: $98.3bn global equity inflows (largest since Jun'26) conflict with BoFA Bull & Bear Indicator at 7.4 (Sell zone), signaling extreme positioning despite risk-off dynamics.",
+        "Rate Hike Timeline & Liquidity Retreat: Global tightening cycle ends Apr 2027; US$ surge/gold < $54k indicates liquidity retreat, with oil down 15% and cyclical sectors pressured.",
+        "Inflation Policy Risk: Small businesses planning price hikes (highest since Jul'22) strongly correlate with ≥3.4% CPI; Fed’s credibility eroded by missed rate hike dates (Dec 9, Jan 27, Mar 17).",
+        "Cash Levels & Complacency: Cash at 3.9%-4.2% amid $1.4tn annualized equity inflows and \"boom\" expectations (47% institutional decline), indicating minimal risk aversion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
