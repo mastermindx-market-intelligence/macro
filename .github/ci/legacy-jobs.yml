@@ -342,6 +342,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -2530,6 +2533,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -3624,6 +3630,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8308,6 +8317,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -12639,6 +12651,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -17341,6 +17356,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -30003,6 +30021,11 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "tests/test_market_calendar.py"
+      - "tests/test_market_calendar_api.py"
+      - "scripts/build_market_calendar.py"
+      - "scripts/watch_release_publications.py"
+      - "scripts/official_release_parsers.py"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -30097,7 +30120,8 @@ jobs:
       - name: Catalyst projection, reader and entitled API contracts
         run: >
           python -m pytest tests/test_catalyst_opportunity_projection.py
-          tests/test_catalyst_opportunity_api.py -q
+          tests/test_catalyst_opportunity_api.py
+          tests/test_market_calendar.py tests/test_market_calendar_api.py -q
 
   biocatalyst-deploy-integration:
     if: ${{ false }}
@@ -31829,6 +31853,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -41792,6 +41819,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -45239,6 +45269,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -46534,6 +46567,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51992,6 +52028,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/market_calendar.py"
+      - "app/market_calendar_contracts.py"
+      - "app/market_calendar_projection.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
