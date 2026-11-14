@@ -26,6 +26,10 @@ QUADRANTS = ("cpi_cold_ppi_cold", "cpi_hot_ppi_hot", "cpi_hot_ppi_cold", "cpi_co
 CONDITIONS = (*QUADRANTS, "agreement", "disagreement", "agreement_vs_disagreement")
 DEFAULT_HORIZONS = (1, 5, 10, 20)
 DEFAULT_SYMBOLS = ("SPY", "QQQ", "IWM")
+# 168 declared hypotheses: 800 draws imposed a 0.2097 minimum first Holm p.
+# This fixed default resolves 0.05 without dropping family members. It is not
+# evidence of power, source quality or prospective validation.
+DEFAULT_BOOTSTRAP_DRAWS = 9_999
 FEATURES = ("cpi_surprise", "ppi_surprise", "agreement")
 
 
@@ -166,9 +170,32 @@ def _describe(values: np.ndarray, rows: list[dict]) -> dict:
             "mean_close_max_drawdown_pct": float(np.mean([r["max_drawdown_pct"] for r in rows]))}
 
 
+def _bootstrap_mean_gaps(values: np.ndarray, selected: np.ndarray,
+                         reference: np.ndarray, indices: np.ndarray) -> np.ndarray:
+    """Same shared bootstrap estimand, bounded temporary arrays, no NaN imputation.
+
+    Zeros below are masked numerator padding only; counts exclude absent rows.
+    Chunking avoids a large values/masks copy for every complete resample family.
+    """
+    selected_values = np.where(selected, values, 0.0)
+    reference_values = np.where(reference, values, 0.0)
+    parts = []
+    for start in range(0, len(indices), 256):
+        block = indices[start:start + 256]
+        selected_n = selected[block].sum(axis=1)
+        reference_n = reference[block].sum(axis=1)
+        valid = (selected_n > 0) & (reference_n > 0)
+        if valid.any():
+            selected_sum = selected_values[block].sum(axis=1)
+            reference_sum = reference_values[block].sum(axis=1)
+            parts.append(selected_sum[valid] / selected_n[valid]
+                         - reference_sum[valid] / reference_n[valid])
+    return np.concatenate(parts) if parts else np.array([], dtype=float)
+
+
 def evaluate_matrix(
     rows: Iterable[dict], *, symbols: Sequence[str] = DEFAULT_SYMBOLS,
-    horizons: Sequence[int] = DEFAULT_HORIZONS, draws: int = 800, seed: int = 7,
+    horizons: Sequence[int] = DEFAULT_HORIZONS, draws: int = DEFAULT_BOOTSTRAP_DRAWS, seed: int = 7,
     min_cell_n: int = 30, mean_block: float = 3.0,
 ) -> dict:
     """Predeclared complete family, shared time-block resampling and Holm control.
@@ -224,31 +251,38 @@ def evaluate_matrix(
                               "baseline": _describe(values[reference], [r for r, keep in zip(group, reference) if keep]),
                               "baseline_kind": "disagreement_same_event_sample" if condition == "agreement_vs_disagreement" else "all_paired_event_months_same_clock",
                               "distinct_macro_periods": observed_n, "gap_pct": None, "gap_ci95": None,
-                              "p_bootstrap_approx": None, "status": "insufficient_evidence"}
+                              "p_bootstrap_approx": None, "valid_bootstrap_draws": 0,
+                              "raw_p_resolution_floor": None, "status": "insufficient_evidence"}
                     pvalues[key] = 1.0  # missing cells retain their slot in the declared family
                     if selected.any() and reference.any():
                         gap = float(np.mean(values[selected]) - np.mean(values[reference]))
                         report["gap_pct"] = gap
                         complement_n = int(((~selected) & present).sum()) if condition != "agreement_vs_disagreement" else int(reference.sum())
                         if idx is not None and selected.sum() >= min_cell_n and complement_n >= min_cell_n:
-                            simulated = []
-                            for indices in idx:
-                                sm, rm = selected[indices], reference[indices]
-                                if sm.any() and rm.any():
-                                    simulated.append(float(np.mean(values[indices][sm]) - np.mean(values[indices][rm])))
-                            if len(simulated) >= draws // 2 and np.ptp(simulated) > 1e-12:
-                                boot = np.array(simulated)
+                            boot = _bootstrap_mean_gaps(values, selected, reference, idx)
+                            if len(boot) >= draws // 2 and np.ptp(boot) > 1e-12:
                                 p = float((np.sum(np.abs(boot - gap) >= abs(gap)) + 1) / (len(boot) + 1))
                                 report.update({"gap_ci95": [float(x) for x in np.quantile(boot, [0.025, 0.975])],
-                                               "p_bootstrap_approx": p, "status": "exploratory_estimate"})
+                                               "p_bootstrap_approx": p, "valid_bootstrap_draws": len(boot),
+                                               "raw_p_resolution_floor": 1.0 / (len(boot) + 1),
+                                               "status": "exploratory_estimate"})
                                 pvalues[key] = p
                     reports.append(report)
     adjusted = holm_adjust(pvalues)
     for report in reports:
         report["p_holm"] = adjusted[report["hypothesis_id"]] if report["p_bootstrap_approx"] is not None else None
+        report["first_holm_step_resolution_floor"] = (min(1.0, len(pvalues) * report["raw_p_resolution_floor"])
+            if report["raw_p_resolution_floor"] is not None else None)
+    resolution_floor = min(1.0, len(pvalues) / (draws + 1))
     return {"cells": reports, "declared_hypotheses": len(pvalues), "bootstrap_draws": draws,
             "bootstrap_mean_block_periods": mean_block, "seed": seed, "min_cell_n": min_cell_n,
             "resampling_clock": "shared_complete_reference_month_calendar", "calendar_months": len(timeline),
+            "monte_carlo_resolution": {
+                "best_possible_first_holm_p": resolution_floor,
+                "minimum_draws_for_first_holm_p_below_005": 20 * len(pvalues),
+                "supports_005_first_rejection": resolution_floor < 0.05,
+                "status": "adequate_resolution_only" if resolution_floor < 0.05 else "resolution_limited",
+                "caveat": "Not statistical power, evidence of no effect, source qualification or trading permission."},
             "multiplicity": "Holm_all_declared_pair_asset_horizon_conditions_including_unavailable",
             "inference": "exploratory_time_block_bootstrap_not_prospective_validation",
             "authority": authority()}

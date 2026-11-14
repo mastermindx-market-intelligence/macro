@@ -21,7 +21,7 @@ from engine.release_surprise_confirmation import (
     digest, instant, read_jsonl,
 )
 from engine.release_surprise_study import (
-    CONDITIONS, DEFAULT_HORIZONS, DEFAULT_SYMBOLS, FEATURES, SCHEMA,
+    CONDITIONS, DEFAULT_BOOTSTRAP_DRAWS, DEFAULT_HORIZONS, DEFAULT_SYMBOLS, FEATURES, SCHEMA,
     evaluate_matrix, evaluate_shadow_captures, forward_outcomes, join_regime_features, walk_forward, prepare_shadow_proposals,
 )
 from engine.trial_ledger import TrialLedger
@@ -31,7 +31,7 @@ FAMILY = "macro_surprise_confirmation_v1"
 
 def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
               symbols=DEFAULT_SYMBOLS, horizons=DEFAULT_HORIZONS,
-              round_trip_cost_bps: float = 0, draws: int = 800,
+              round_trip_cost_bps: float = 0, draws: int = DEFAULT_BOOTSTRAP_DRAWS,
               min_cell_n: int = 30, min_train: int = 60,
               regime_names=(), consensus_source_id: str | None = None) -> dict:
     instant(asof)
@@ -88,6 +88,10 @@ def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
     for cell in matrix["cells"]:
         cell["p_family_conservative"] = min(1.0, cell["p_holm"] * family_trials) if cell["p_holm"] is not None else None
     matrix["configuration_trials_seen"] = family_trials
+    cross_floor = min(1.0, matrix["declared_hypotheses"] * family_trials / (draws + 1))
+    matrix["monte_carlo_resolution"]["cross_run_best_possible_first_p"] = cross_floor
+    matrix["monte_carlo_resolution"]["cross_run_supports_005_first_rejection"] = cross_floor < 0.05
+    matrix["monte_carlo_resolution"]["cross_run_minimum_draws_below_005"] = 20 * matrix["declared_hypotheses"] * family_trials
     matrix["cross_run_policy"] = "within_run_Holm_times_incumbent_family_trial_count; not a sequential_look_guarantee"
     challenger = walk_forward(outcomes["rows"], min_train=min_train, features=config["features"])
     proposed = prepare_shadow_proposals(outcomes["rows"], pairs, dataset["session_closes"],
@@ -128,6 +132,8 @@ def main(argv=None) -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--cost-bps", type=float, default=0)
     parser.add_argument("--capture-shadow", action="store_true", help="Explicitly capture eligible current proposals through original MRI forward-ledger owner")
+    parser.add_argument("--bootstrap-draws", type=int, default=DEFAULT_BOOTSTRAP_DRAWS,
+                        help="50-10000; low-resolution diagnostic runs cannot establish absence of an effect")
     parser.add_argument("--consensus-source-id")
     parser.add_argument("--regime", action="append", default=[], help="Predeclared existing-owner regime feature name")
     args = parser.parse_args(argv)
@@ -141,7 +147,7 @@ def main(argv=None) -> int:
             raise EvidenceError("dataset_oversized")
         dataset = json.loads(raw)
         result = run_study(args.root, dataset, asof=args.asof, trial_ledger=args.trial_ledger,
-                           round_trip_cost_bps=args.cost_bps, regime_names=args.regime,
+                           round_trip_cost_bps=args.cost_bps, regime_names=args.regime, draws=args.bootstrap_draws,
                            consensus_source_id=args.consensus_source_id)
         if args.capture_shadow:
             if dataset["evidence_class"] == "synthetic":

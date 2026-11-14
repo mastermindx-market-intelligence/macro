@@ -1,0 +1,144 @@
+{
+  "schema": "macro_surprise_bootstrap_resolution_proof.v1",
+  "evidence_class": "synthetic_numerical_control",
+  "prospective_validation": false,
+  "real_market_alpha_claim": false,
+  "source_binding": "candidate_worktree_sha256_not_predecessor_commit",
+  "predecessor_commit": "e72289023cb4c5030c14a851b1836d58ef904b4c",
+  "source_sha256": {
+    "engine/release_surprise_study.py": "5d9021357f59db54fbb2a5b44f7883b6c16e328018bed55e6c557c98193ae089",
+    "scripts/research_release_surprise.py": "f71dcc5183bde89ac40e5b51db0beab45a80f4dbf935f89936dee9ef93519ba3",
+    "tests/test_release_surprise_study.py": "3153bcd5f7b17c8bbf502bf9f85b284fbdfdab2c7af8b9bead856734cb200825",
+    "tests/test_release_surprise_pipeline.py": "d05ac5d9340360e4871e812dfa875a5854a8c24f3b3ed95d5748dba308e8b656"
+  },
+  "fixture": {
+    "generator": "tests.test_release_surprise_study._strong_injected_effect_rows",
+    "seed": 47,
+    "synthetic_months": 240,
+    "real_price_or_release_data_used": false
+  },
+  "declared_hypotheses": 168,
+  "original_budget": {
+    "draws": 800,
+    "resolution": {
+      "best_possible_first_holm_p": 0.20973782771535582,
+      "minimum_draws_for_first_holm_p_below_005": 3360,
+      "supports_005_first_rejection": false,
+      "status": "resolution_limited",
+      "caveat": "Not statistical power, evidence of no effect, source qualification or trading permission."
+    },
+    "selected_control_cell": {
+      "hypothesis_id": "cpi_headline_ppi_headline:SPY:20:agreement_vs_disagreement",
+      "pair_id": "cpi_headline_ppi_headline",
+      "symbol": "SPY",
+      "horizon": 20,
+      "condition": "agreement_vs_disagreement",
+      "conditional": {
+        "n": 120,
+        "mean_pct": 4.032836509088056,
+        "median_pct": 4.046068405784423,
+        "win_rate": 1.0,
+        "win_rate_interval_descriptive": [
+          0.969,
+          1.0
+        ],
+        "win_rate_interval_basis": "Wilson_not_adjusted_for_time_dependence",
+        "expected_shortfall_10_pct": 3.2192694681537994,
+        "worst_pct": 2.5899894759259205,
+        "mean_close_max_drawdown_pct": -2.0
+      },
+      "baseline": {
+        "n": 120,
+        "mean_pct": -2.0350892143234276,
+        "median_pct": -2.016647959833543,
+        "win_rate": 0.0,
+        "win_rate_interval_descriptive": [
+          0.0,
+          0.031
+        ],
+        "win_rate_interval_basis": "Wilson_not_adjusted_for_time_dependence",
+        "expected_shortfall_10_pct": -2.930032169389424,
+        "worst_pct": -3.3715968486648147,
+        "mean_close_max_drawdown_pct": -2.0
+      },
+      "baseline_kind": "disagreement_same_event_sample",
+      "distinct_macro_periods": 240,
+      "gap_pct": 6.067925723411483,
+      "gap_ci95": [
+        5.935063664238989,
+        6.2046877221702585
+      ],
+      "p_bootstrap_approx": 0.0012484394506866417,
+      "valid_bootstrap_draws": 800,
+      "raw_p_resolution_floor": 0.0012484394506866417,
+      "status": "exploratory_estimate",
+      "p_holm": 0.20973782771535582,
+      "first_holm_step_resolution_floor": 0.20973782771535582
+    }
+  },
+  "corrected_default": {
+    "draws": 9999,
+    "resolution": {
+      "best_possible_first_holm_p": 0.0168,
+      "minimum_draws_for_first_holm_p_below_005": 3360,
+      "supports_005_first_rejection": true,
+      "status": "adequate_resolution_only",
+      "caveat": "Not statistical power, evidence of no effect, source qualification or trading permission."
+    },
+    "selected_control_cell": {
+      "hypothesis_id": "cpi_headline_ppi_headline:SPY:20:agreement_vs_disagreement",
+      "pair_id": "cpi_headline_ppi_headline",
+      "symbol": "SPY",
+      "horizon": 20,
+      "condition": "agreement_vs_disagreement",
+      "conditional": {
+        "n": 120,
+        "mean_pct": 4.032836509088056,
+        "median_pct": 4.046068405784423,
+        "win_rate": 1.0,
+        "win_rate_interval_descriptive": [
+          0.969,
+          1.0
+        ],
+        "win_rate_interval_basis": "Wilson_not_adjusted_for_time_dependence",
+        "expected_shortfall_10_pct": 3.2192694681537994,
+        "worst_pct": 2.5899894759259205,
+        "mean_close_max_drawdown_pct": -2.0
+      },
+      "baseline": {
+        "n": 120,
+        "mean_pct": -2.0350892143234276,
+        "median_pct": -2.016647959833543,
+        "win_rate": 0.0,
+        "win_rate_interval_descriptive": [
+          0.0,
+          0.031
+        ],
+        "win_rate_interval_basis": "Wilson_not_adjusted_for_time_dependence",
+        "expected_shortfall_10_pct": -2.930032169389424,
+        "worst_pct": -3.3715968486648147,
+        "mean_close_max_drawdown_pct": -2.0
+      },
+      "baseline_kind": "disagreement_same_event_sample",
+      "distinct_macro_periods": 240,
+      "gap_pct": 6.067925723411483,
+      "gap_ci95": [
+        5.93818984430443,
+        6.203319185004447
+      ],
+      "p_bootstrap_approx": 0.0001,
+      "valid_bootstrap_draws": 9999,
+      "raw_p_resolution_floor": 0.0001,
+      "status": "exploratory_estimate",
+      "p_holm": 0.016800000000000002,
+      "first_holm_step_resolution_floor": 0.016800000000000002
+    }
+  },
+  "authority": {
+    "can_score": false,
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_trade": false
+  }
+}

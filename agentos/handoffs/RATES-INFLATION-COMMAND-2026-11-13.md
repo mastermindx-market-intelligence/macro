@@ -217,3 +217,47 @@ Source engineering and later permitted merge do not clear this actual deployment
 gate. The separate TLS/held Caddy lanes and their current writers/holds remain
 untouched. No service, credential, active config, producer ledger or data source
 was changed on production. The source lane remains active on this original branch.
+
+
+## Statistical-default falsification and final source proof
+
+A bounded scientific self-check exposed a real finite-resampling limitation before
+release: 2 pairs x 3 ETFs x 4 horizons x 7 conditions =168 hypotheses. The former
+800-draw plus-one p-value cannot yield a first-step Holm result below168/801
+(0.20974), regardless of an injected effect. This was a computation-resolution
+limit, not evidence that the underlying relationship has no edge.
+
+The fixed, predeclared default is now9999 shared draws; the family, correction and
+nominal0.05 diagnostic threshold are unchanged. The first-step resolution floor
+is0.0168. A bounded-chunk masked implementation is numerically equivalent to the
+prior literal resampled mean-gap estimand; missing months remain absent. Reports
+expose valid-draw floors and within-/cross-run resolution limitations. More logged
+configurations may require more than the retained10000-draw bound; those cases
+explicitly cannot justify a no-effect conclusion. This does not promote a signal.
+
+The deterministic synthetic positive control, low-budget negative control, missing
+calendar masks, exact chunk equivalence, cross-run floor and no-data controls all
+passed. Source-hashed receipt:
+`research/release_forecast/msc_evidence_20261113/bootstrap-resolution-proof.json`.
+The control uses no real market data and claims no predictive or prospective alpha.
+It records the uncommitted candidate by source SHA256, not falsely by its predecessor.
+
+Final affected MRI/Prophet/Sector/Radar regression: **706 passed,7 skipped,
+5 existing warnings in76.70s**. The separate updater/API restart suite remains
+**509 passed,5 existing warnings**; these overlapping counts are not additive.
+The actual PR merge-base remains3534; the new main1db19999c87f80b5ac750251b8ab49bb6526be94
+has **zero overlapping owned paths**. A first broad diagnostic mistakenly counted
+already-merged upstream data as owned; the corrected comparison uses the actual
+PR merge-base and42owned paths. No upstream generated data was changed.
+
+Both native/P4 visual source bindings remain valid because their input bytes did
+not change. The25d829a CI observer ended after that candidate was superseded; its
+cancelled contract/semantic result is not a source failure or current-head proof.
+The e722890 predecessor CI43539531798 was running with no concluded failing job at
+last read. Necessary scientific source movement supersedes it too. Publish the
+completed candidate once, bind to its own natural CI, then qualify the original
+release controller only when its required checks actually conclude clean.
+
+Production and historical-data gates from #11226 comment6869127968 remain unchanged.
+No TLS/controller bypass, actual-ledger append, provider purchase, service restart,
+new worker/watcher, trade decision or claimed live acceptance occurred.

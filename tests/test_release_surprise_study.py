@@ -203,3 +203,78 @@ def test_resampling_preserves_calendar_gaps_and_counts_distinct_events():
     populated = [r for r in result["cells"] if r["pair_id"] == "cpi_headline_ppi_headline"]
     assert all(r["distinct_macro_periods"] == 64 for r in populated)
     assert all("independent_macro_periods" not in r for r in populated)
+
+
+def _strong_injected_effect_rows():
+    """Deterministic synthetic effect, not historical market observations."""
+    from engine.release_surprise_study import QUADRANTS
+    rng = np.random.default_rng(47)
+    rows = []
+    for i in range(240):
+        year, month = 2000 + i // 12, i % 12 + 1
+        agreement = i % 4 < 2
+        rows.append({"pair_id": "cpi_headline_ppi_headline", "symbol": "SPY", "horizon": 20,
+                     "period": f"{year:04d}-{month:02d}",
+                     "signal_known_at": f"{year:04d}-{month:02d}-13T13:31:00Z",
+                     "quadrant": QUADRANTS[i % 4], "agreement": agreement,
+                     "net_return_pct": (4.0 if agreement else -2.0) + float(rng.normal(0, 0.5)),
+                     "max_drawdown_pct": -2.0})
+    return rows
+
+
+def test_default_bootstrap_can_resolve_the_complete_declared_family():
+    from engine.release_surprise_study import DEFAULT_BOOTSTRAP_DRAWS
+    result = evaluate_matrix(_strong_injected_effect_rows())
+    assert result["declared_hypotheses"] == 168  # unavailable assets/variants retain slots
+    assert result["bootstrap_draws"] == DEFAULT_BOOTSTRAP_DRAWS == 9999
+    resolution = result["monte_carlo_resolution"]
+    assert resolution["best_possible_first_holm_p"] == pytest.approx(0.0168)
+    assert resolution["minimum_draws_for_first_holm_p_below_005"] == 3360
+    assert resolution["supports_005_first_rejection"] is True
+    gap = next(row for row in result["cells"] if row["pair_id"] == "cpi_headline_ppi_headline"
+               and row["symbol"] == "SPY" and row["horizon"] == 20
+               and row["condition"] == "agreement_vs_disagreement")
+    assert gap["gap_pct"] > 5.0
+    assert gap["p_holm"] < 0.05
+    assert gap["raw_p_resolution_floor"] == pytest.approx(1 / (gap["valid_bootstrap_draws"] + 1))
+    assert result["authority"] == authority()
+    assert result["inference"] == "exploratory_time_block_bootstrap_not_prospective_validation"
+
+
+def test_low_draw_budget_is_explicitly_resolution_limited_not_no_edge():
+    result = evaluate_matrix(_strong_injected_effect_rows(), draws=800)
+    resolution = result["monte_carlo_resolution"]
+    assert resolution["status"] == "resolution_limited"
+    assert resolution["supports_005_first_rejection"] is False
+    assert resolution["best_possible_first_holm_p"] == pytest.approx(168 / 801)
+    assert all(row["p_holm"] is None or row["p_holm"] >= 168 / 801 - 1e-12
+               for row in result["cells"])
+    assert result["authority"] == authority()
+
+
+def test_chunked_shared_bootstrap_equals_literal_masked_estimand():
+    from engine.release_surprise_study import _bootstrap_mean_gaps
+    rng = np.random.default_rng(8)
+    values = np.array([1.2, np.nan, -0.7, 3.1, 0.2, np.nan, -1.0])
+    selected = np.array([True, False, False, True, False, False, False])
+    reference = np.isfinite(values)
+    indices = rng.integers(0, len(values), size=(530, len(values)))
+    indices[0] = 1  # no observed rows, not a zero-return month
+    indices[260] = 6  # reference exists but selected group is absent
+    literal = []
+    for sample in indices:
+        sm, rm = selected[sample], reference[sample]
+        if sm.any() and rm.any():
+            literal.append(float(np.mean(values[sample][sm]) - np.mean(values[sample][rm])))
+    actual = _bootstrap_mean_gaps(values, selected, reference, indices)
+    assert len(actual) < len(indices)
+    np.testing.assert_allclose(actual, literal, rtol=1e-13, atol=1e-13)
+    assert np.isfinite(actual).all()
+
+
+def test_adequate_draw_resolution_does_not_make_missing_data_available():
+    result = evaluate_matrix([])
+    assert result["monte_carlo_resolution"]["status"] == "adequate_resolution_only"
+    assert all(row["status"] == "insufficient_evidence" for row in result["cells"])
+    assert all(row["p_bootstrap_approx"] is None for row in result["cells"])
+    assert result["authority"] == authority()

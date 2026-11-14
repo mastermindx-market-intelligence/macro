@@ -50,7 +50,7 @@ Surprises are continuous in percentage points or the official target unit. Stand
 
 Matrix baselines use all paired event months on the same entry convention, not zero return. Outputs include conditional and baseline means, gap, median, win rate, worst observation, lower-decile mean and closing-price drawdown. Wilson win-rate intervals are explicitly descriptive and not adjusted for temporal dependence. The bootstrap intervals describe uncertainty in a **mean gap**, not the return distribution of the next trade.
 
-The implementation uses the incumbent stationary bootstrap with one complete reference-month calendar shared across assets/variants; missing months remain missing. Defaults are 800 draws, mean block length three months, seed seven and at least 30 observations in both relevant groups. Centered-null bootstrap p-values are approximate exploratory diagnostics. Holm adjustment covers the declared within-run family, including missing cells. The existing TrialLedger records the declared configuration before return evaluation; its observed configuration count also appears as a conservative cross-run multiplier. **Neither adjustment is a guarantee against unlogged research, data-universe selection, repeated sequential looks, nonstationarity, or unqualified source data.** Block-length/regime sensitivity must be tested and logged before promotion.
+The implementation uses the incumbent stationary bootstrap with one complete reference-month calendar shared across assets/variants; missing months remain missing. Defaults are 9,999 draws, mean block length three months, seed seven and at least 30 observations in both relevant groups. Centered-null bootstrap p-values are approximate exploratory diagnostics. Holm adjustment covers the declared within-run family, including missing cells. The existing TrialLedger records the declared configuration before return evaluation; its observed configuration count also appears as a conservative cross-run multiplier. **Neither adjustment is a guarantee against unlogged research, data-universe selection, repeated sequential looks, nonstationarity, or unqualified source data.** Block-length/regime sensitivity must be tested and logged before promotion.
 
 The challenger uses a fixed ridge model with alpha 10, a minimum 60 mature training observations and a 24-hour calendar embargo after labels become known. It compares against same-training-set unconditional and shrunk-quadrant baselines. Scaling is fitted on training data only. Current target outcomes are not inputs to prediction. Optional regime features must come from existing owners with observed/known clocks and source references; unavailable or conflicting features cause abstention, not zero imputation.
 
@@ -180,3 +180,23 @@ source paths are registered in the existing API-restart predicate. Data artifact
 are read fresh and do not trigger API restart; research/ingestion modules and
 lookalike filenames remain outside this serving closure. This registration does
 not itself restart the service or bypass the updater's independent deployment gates.
+
+
+## Monte Carlo resolution is not evidence of no edge
+
+The complete default family has 168 hypotheses. With the plus-one bootstrap
+p-value, 800 draws cannot produce a raw p below 1/801; the smallest first-step
+Holm-adjusted value is therefore at least 168/801 = 0.20974. That was a computation
+resolution limit, not a finding about markets. The fixed default is now 9,999
+shared draws, giving a best-case first-step floor of 0.0168 without reducing the
+family or changing the nominal 0.05 diagnostic threshold. The equivalent masked
+estimand is evaluated in bounded chunks; missing months stay absent, not zero.
+
+Every report exposes its requested and valid-draw p resolution. Explicitly smaller
+`--bootstrap-draws` runs remain available for diagnostics but carry a resolution
+flag. The incumbent cross-run trial multiplier also has a separately reported
+floor and minimum required draws. That requirement may exceed the current bounded
+10,000-draw ceiling; such a run is not a basis for claiming no effect. Adequate
+resolution alone says nothing about statistical power, economic value, source
+rights, prospective validation or trade authority. No family member is removed
+and no correction or threshold is relaxed to manufacture significance.

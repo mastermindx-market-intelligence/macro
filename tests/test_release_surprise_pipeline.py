@@ -238,3 +238,21 @@ def test_private_archive_permissions_and_publication_boundary(tmp_path, monkeypa
     assert len(records) == 1
     assert records[0]["storage"] == "gitignored-local"
     assert records[0]["producer"] == "scripts/ingest_release_consensus.py"
+
+
+def test_cross_run_trial_multiplier_exposes_monte_carlo_resolution(tmp_path):
+    ledger = tmp_path / "trials.jsonl"
+    data = dataset_fixture()
+    first = run_study(tmp_path, data, asof=ASOF, trial_ledger=ledger,
+                      symbols=["SPY"], horizons=[1], draws=100, min_train=8, min_cell_n=10)
+    second = run_study(tmp_path, data, asof=ASOF, trial_ledger=ledger,
+                       symbols=["SPY"], horizons=[1], draws=100, min_train=8, min_cell_n=10,
+                       round_trip_cost_bps=1)
+    assert second["matrix"]["configuration_trials_seen"] >= first["matrix"]["configuration_trials_seen"]
+    matrix = second["matrix"]
+    resolution = matrix["monte_carlo_resolution"]
+    assert resolution["cross_run_best_possible_first_p"] == pytest.approx(
+        min(1, matrix["declared_hypotheses"] * matrix["configuration_trials_seen"] / 101))
+    assert resolution["cross_run_supports_005_first_rejection"] is False
+    assert resolution["cross_run_minimum_draws_below_005"] == 20 * matrix["declared_hypotheses"] * matrix["configuration_trials_seen"]
+    assert second["prospective_validation_claim"] is False
