@@ -24,10 +24,12 @@ Usage: python -m scripts.build_reports
 """
 from __future__ import annotations
 
+import json
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -285,6 +287,24 @@ def _stats(reports: list[dict], all_tags: list[dict]) -> dict:
     }
 
 
+def write_archive_manifest(site: Path, reports: list[dict]) -> None:
+    """Publish the same public article metadata as the index, after the articles exist."""
+    fields = ("slug", "date", "read_min", "title_en", "title_zh", "dek_en", "dek_zh", "tags")
+    manifest = {"version": 1, "reports": [{key: report[key] for key in fields} for report in reports]}
+    target = site / "research" / "editorial-reports.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile(mode="w", encoding="utf-8", dir=target.parent, delete=False) as output:
+        temp = Path(output.name)
+        try:
+            json.dump(manifest, output, ensure_ascii=False, indent=2, allow_nan=False)
+            output.write("\n")
+            output.close()
+            temp.chmod(0o644)
+            temp.replace(target)
+        finally:
+            temp.unlink(missing_ok=True)
+
+
 def main() -> int:
     site = config.ROOT / "site"
     site.mkdir(exist_ok=True)
@@ -316,8 +336,10 @@ def main() -> int:
         write_page(site / f"{r['slug']}.html", html)
         log.info("wrote %s/%s.html (%d KB)", site, r["slug"], len(html) // 1024)
 
+    write_archive_manifest(site, reports)
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
+

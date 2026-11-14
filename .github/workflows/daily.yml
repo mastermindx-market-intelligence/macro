@@ -62,6 +62,16 @@ concurrency:
   group: ${{ github.event_name == 'schedule' && format('pipeline-daily-3-cron-{0}', github.event.schedule) || 'pipeline-daily-3' }}
   cancel-in-progress: false
 
+# Capacity Fabric router auth — workflow-level so EVERY nightly job inherits it:
+# the engine.master_brain brief (MACRO_BRIEF_FABRIC), the E-vertical desks
+# (ai_desk, thematic_desk, narrative_brain, altdata_brain, research_intelligence)
+# and the R-packet collectors. Present + per-writer kill-switch ON -> the fabric
+# lane serves; absent/empty or FabricUnavailable -> byte-identical legacy ladder.
+# Secret provisioned from the M2 unified_router router.env (2026-11-12 estate
+# migration). Non-LLM jobs (et_gate) inherit it unused — harmless.
+env:
+  FABRIC_ROUTER_TOKEN: ${{ secrets.FABRIC_ROUTER_TOKEN }}
+
 jobs:
   # ── ET regime gate ────────────────────────────────────────────────────────
   # Root disambiguator for the DST cron pair above (see the schedule comment).
@@ -2238,6 +2248,18 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: live weekly sector breadth — single-vintage rebuild (non-fatal)
+        # Sector Intelligence, ruling 27 section 5 (#11124). One full-window yfinance
+        # download per night (~2m, 503 S&P 500 members), held in RUNNER_TEMP. Never the
+        # collector's _closes_cache.parquet, which mixes dividend vintages. Every
+        # week is recomputed from that one download; an unchanged result writes
+        # nothing. Writes data/breadth/history/group_breadth_weekly_current_live.*,
+        # covered by `git add data/` in "commit tail data" below. Off the render path.
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          python scripts/extend_group_breadth_weekly.py --scratch "${RUNNER_TEMP}/breadth_live" \
+            || echo "::warning::live weekly breadth rebuild failed (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data

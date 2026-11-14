@@ -140,7 +140,10 @@ def _measured_record(cid: str, band: dict) -> dict | None:
             from engine.hazard_score import score as _hz_score
             direction = _hazard_direction_for_phase(now.get("phase"))
             if direction:
-                hz = _hz_score(hf, direction, family="flagship")
+                # A plausible curve is not publication evidence. Reuse the
+                # shared parity/epoch/cohort/direction/basis/horizon gate.
+                hz = sc._qualify_hazard(
+                    rec, _hz_score(hf, direction, family="flagship"), "flagship")
                 hz = _attach_hazard_agreement(hz, direction, rec.get("proj"))
             else:
                 hz = _attach_hazard_agreement({}, "", rec.get("proj"))
@@ -297,6 +300,10 @@ def _attach_hazard_agreement(hz: dict | None, direction: str, proj: dict | None)
     """
     if hz is None:
         return hz
+    if hz.get("unavailable"):
+        # Qualification may deliberately omit a turn direction. Preserve its
+        # disclosures instead of reconstructing a claim from the phase label.
+        return {**hz, "direction_agrees": None}
     if direction not in ("up", "down"):
         out: dict = {
             "unavailable": True,

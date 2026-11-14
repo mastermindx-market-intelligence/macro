@@ -14,10 +14,14 @@ still passing.
 
 The three ``phase: browser_setup`` + ``acquisition: native_parallel`` steps
 (bea-gvc-current-descriptive-consumer, ontology-explorer, unrun-brain-gateway)
-are deliberately EXCLUDED: their ``run`` string is a validated contract token
-consumed by scripts/ci_browser_native_setup.py (the pack runner never executes
-it as a shell command), and scripts/run_ci_pack.py rejects any other text with
-"browser setup must be the exact standalone installer".
+are deliberately EXCLUDED from this shell-level pattern: their ``run`` string
+is a validated contract token consumed by scripts/ci_browser_native_setup.py
+(the pack runner never executes it as a shell command), and
+scripts/run_ci_pack.py rejects any other text with "browser setup must be the
+exact standalone installer". The native adapter performs the equivalent
+bounded fallback in Python: after a SETTLED apt failure that provably applied
+no packages, it attempts the same browser-only chromium install under the
+remaining original deadline; unsettled native children stay fail-closed.
 """
 
 import os
