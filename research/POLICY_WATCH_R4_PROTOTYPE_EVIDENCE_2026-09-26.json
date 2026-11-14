@@ -1,0 +1,50 @@
+{
+  "operation": "policy-watch-redesign-20260926-sol-001",
+  "artifact": "Policy Watch R4 interactive design-review prototype",
+  "source_snapshot_date": "2026-09-26",
+  "delivery_state": "NOT_APPLIED_TO_PAPER / NOT_DEPLOYED",
+  "repository_publication_scope": "This JSON and the cumulative checkpoint record evidence; the prototype source itself is delivered in the conversation ZIP, not committed to production paths.",
+  "review_package": {
+    "conversation_path": "/mnt/data/policy_watch_r4_review.zip",
+    "bytes": 2326278,
+    "sha256": "cda7c46ac9e6b4e5e1313e4cfada33d93f49da8b8525d7ca6d457aa50628ce9a",
+    "members": 37,
+    "contains": ["self-contained HTML", "editable HTML/CSS/JavaScript", "offline browser tests", "screenshots", "red/green evidence", "README", "production-readiness contract", "digest manifest"]
+  },
+  "standalone_html": {
+    "conversation_path": "/mnt/data/policy_watch_r4_review/policy-watch-review.html",
+    "bytes": 74691,
+    "sha256": "ca5c89f6d910d1e08dd48a557992a3be4337f2041ecee4dca00e44109231615b"
+  },
+  "verification_report": {
+    "path_in_package": "policy_watch_r4_review/evidence/verification-offline.json",
+    "bytes": 6152,
+    "sha256": "cc9e866ab48b0f39196107bf633b86be212163308af96644f1bcf4a1957dd8e4",
+    "result": "PASS",
+    "assertions": 126,
+    "layout_assertions": 80,
+    "layout_matrix": {"views": ["briefing", "policies", "calendar", "research"], "themes": ["dark", "light"], "languages": ["en", "zh"], "widths_css_px": [320, 390, 768, 1024, 1440]},
+    "other_checks": ["primary mobile action above 844-pixel first-screen fold", "meeting dates stay together", "same-document navigation and Back", "source comparison", "dialog Escape/focus restoration and keyboard tabs", "filtering and empty/reset", "quiet versus delayed versus unavailable interpretation", "confirmed note versus failed draft", "repeat confirmation disabled", "date edit marks draft unsaved", "zero JavaScript errors", "zero automatic network requests"],
+    "storage_scope": "Successful writes and initialization restoration use an explicit test-only in-memory Storage double. Actual opaque-origin storage-unavailable behavior is separately tested without the double. Real-origin localStorage and real browser-reload persistence are unverified.",
+    "renderer_scope": "Chromium rendered authored inline bytes through Playwright set_content in its initial in-memory document. No URL navigation or HTTP request. The administrator URLBlocklist was not changed or bypassed.",
+    "failed_route_probe": "Original local-HTTP test stopped at net::ERR_BLOCKED_BY_ADMINISTRATOR. Its error is retained in evidence/test-run-01.txt. It was not retried through another origin or proxy.",
+    "not_proven": ["Paper rendering", "production routes", "live source ingestion", "account persistence", "automated alerts", "WCAG conformance", "screen-reader behavior", "human comprehension targets", "deployed acceptance"]
+  },
+  "readiness_contract": {"path_in_package": "policy_watch_r4_review/PRODUCTION_READINESS.md", "bytes": 9205, "sha256": "a8cd770b85c3d6be5c8edadd66bd27fef386d3279439350fbfcdb667524eb8f9"},
+  "file_manifest": {"path_in_package": "policy_watch_r4_review/evidence/manifest.json", "bytes": 6144, "sha256": "7c6f1d4d1bef6154a21c48f629083fbfed5762b0df064e2532d2e0e6839f4633"},
+  "sources": [
+    "https://www.sec.gov/newsroom/press-releases/2025-43-sec-extends-compliance-dates-provides-temporary-exemption-rule-related-clearing-us-treasury",
+    "https://www.sec.gov/featured-topics/treasury-clearing-implementation",
+    "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "https://playwright.dev/python/docs/api/class-page#page-set-content"
+  ],
+  "paper_partial_effects": {
+    "carrier": "M1 Studio through Remote Desktop Commander",
+    "file": "01M2WGNCX9475G79JRKJTCM08P", "page": "p-J-1",
+    "applied": ["policy-watch-r4-brief-copy", "policy-watch-r4-brief-style", "policy-watch-r4-nav-dark", "policy-watch-r4-summary-dark"],
+    "new_frames": {"dark_navigation": "1NK7-1", "dark_summary": "1NKJ-1"},
+    "blocked_pre_dispatch": ["dark nav positioning before 1EJB-1", "light nav insertion", "light summary insertion", "R4 dark screenshot capture"],
+    "visible_state": "Dark nav remains appended at the bottom; its intended placement is not applied. Light nav and summary are absent. Neither R4 variant has final native screenshot proof.",
+    "prior_refusal_fences": "All R2/R3 held Paper mutations and indicator obligations remain in force. No refused effect was replayed or sent to another host/carrier."
+  }
+}
