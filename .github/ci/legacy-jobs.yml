@@ -700,6 +700,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -2894,6 +2895,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -3990,6 +3992,7 @@ jobs:
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/industrial_sources.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -6161,6 +6164,7 @@ jobs:
     paths:
       - "engine/__init__.py"
       - "engine/local_projections.py"
+      - "engine/panel_did.py"
       - "engine/seasonality/__init__.py"
       - "engine/seasonality/contracts.py"
       - "engine/seasonality/event_study.py"
@@ -6173,6 +6177,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_local_projections.py"
+      - "tests/test_panel_did.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -6181,9 +6186,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
-      - name: local projections IRF estimator (MO-DELTA-015 acceptance)
-        run: python -m pytest tests/test_local_projections.py -q
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+      - name: local projections and common-adoption panel DiD (MO-DELTA-015 acceptance)
+        run: python -m pytest tests/test_local_projections.py tests/test_panel_did.py -q
 
   breakdown-control-seed-determinism:
     if: ${{ false }}
@@ -8662,6 +8667,7 @@ jobs:
       - "engine/company_intelligence/current_context_runtime.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -13088,6 +13094,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -17797,6 +17804,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
@@ -19553,6 +19561,14 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
+      # SI curation tier guard (#11150): build_state_of_themes now reads the W-C2b
+      # tier rule from ontology.py, whose closure reaches probation.py and its
+      # contract schemas. Widening only.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
       # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
@@ -24853,6 +24869,7 @@ jobs:
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/current_context_runtime.py"
       - "engine/company_intelligence/current_company_context.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -25888,6 +25905,10 @@ jobs:
       - "tests/test_basket_membership_pit.py"
       - "tests/test_theme_graph_contracts.py"
       - "tests/test_theme_graph_local_plane.py"
+      - "tests/test_theme_graph_tier_guard_consumers.py"
+      - "tests/test_theme_tree_ticker_lookup.py"
+      - "tests/test_build_theme_tree_page.py"
+      - "templates/theme_tree.html.j2"
       - "tests/test_theme_graph_micro_membership_research.py"
       - "tests/test_theme_graph_micro_member_addendum.py"
       - "tests/test_theme_graph_micro_curator_readiness.py"
@@ -25978,6 +25999,11 @@ jobs:
       # Activity-history receipt binding at the I/O layer (one helper, both loaders).
       - "tests/test_gmi_activity_history_binding.py"
       - "tests/fixtures/gmi_activity_binding/**"
+      # SEC annual-report segment route into the activity lane (RULING 37).
+      - "tests/test_gmi_activity_segment_route.py"
+      - "tests/test_company_pinned_relationship_candidates.py"
+      - "engine/company_intelligence/pinned_relationship_candidates.py"
+      - "engine/company_intelligence/relationship_candidates.py"
       - "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
@@ -26008,13 +26034,20 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+        # requests: tests/test_gmi_activity_segment_route.py imports
+        # tests.test_company_pinned_relationship_candidates → collectors.sec_document_spine
+        # → requests at collection time (COO ruling 99, run 43500986774 ci-pack-4).
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 requests
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py tests/test_gmi_activity_segment_route.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
+      - name: theme graph — tier guard on state-of-themes research priority and capability (activity members never change either)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard_consumers.py -q
+      - name: theme graph — tier guard on the theme-tree ticker lookup (sub/micro members never change a ticker's state)
+        run: TZ=UTC python -m pytest tests/test_theme_tree_ticker_lookup.py -q -k hierarchy_tier
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py tests/test_theme_state_divergence_gap.py tests/test_theme_state_bundle_encoding.py tests/test_theme_state_bundle_codec.py tests/test_build_thematic_state_activity_mode.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
@@ -32187,6 +32220,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_segment_adoption.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -33671,8 +33705,10 @@ jobs:
       # subject, and pytest reports EVERY file inside ONE step, so nothing here
       # masks anything else. Stdlib + pytest only (it monkeypatches the fetchers
       # and never touches the network), so the install line above is unchanged.
+      # test_member_perf_archive.py (2026-11-11, member perf capture) rides here
+      # for the same reason: same module, same subject, same stdlib+pytest shape.
       - name: polygon universe/intraday + dead-name prices + finviz archival/tree-refresh + thetadata sessions
-        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_thetadata_tape_sessions.py -q
+        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_member_perf_archive.py tests/test_thetadata_tape_sessions.py -q
       # Enumerated in NO workflow before this (calendar-asof audit follow-up
       # 2026-08-05): the finviz collector's asof feeds these ledgers, but a PR
       # touching the track record or its heal fired no run that could see a
@@ -35744,7 +35780,7 @@ jobs:
       # pyyaml/requests — all on the install line above — plus PIL transitively, which
       # blocking leaves 10-passed, so it is optional and stays off the line.
       - name: scripts/build_site.py panels and view-models — the dashboard organs the nightly render ships
-        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py tests/test_group_breadth_history.py tests/test_member_breadth_ledger.py -q
+        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py tests/test_group_breadth_history.py tests/test_coverage_companion.py tests/test_member_breadth_ledger.py tests/test_extend_group_breadth_weekly.py tests/test_sp1500_sic_fill.py tests/test_build_tree_breadth_and_index.py -q
       # Unrun backfill 2026-08-03: the Prophet Live P1 user-facing dashboard
       # surfaces join the lane that owns the dashboard organs. (Distinct from
       # the #4331 prophet-board suites, whose staging follows that PR's merge.)
@@ -42408,6 +42444,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -46367,6 +46404,7 @@ jobs:
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "scripts/publish_company_disclosure.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
@@ -47578,6 +47616,7 @@ jobs:
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -49946,6 +49985,7 @@ jobs:
       - engine/company_intelligence/current_company_context.py
       - engine/company_intelligence/current_context_runtime.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_segment_adoption.py
       - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -50085,7 +50125,7 @@ jobs:
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
         run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_sampler_startup.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
       - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement, producer, section 11 registration)
-        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py -q
+        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py tests/test_news_impact_section11_report.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
         run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
       - name: news impact F2 negative-control repairs (amount formatting, text safety)
@@ -52606,6 +52646,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"

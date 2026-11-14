@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 325,
+    "opportunity_queue_depth": 329,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 325,
-      "scored": 463,
+      "open": 329,
+      "scored": 467,
       "newest": [
         {
           "id": "radar-earnings-ACM-2026-11-13",
           "problem_or_desire": "$ACM: earnings 2026-11-16 after hours",
           "expected_value": 0.5,
-          "score": 0.348943,
+          "score": 0.308089,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACN-2026-11-13",
           "problem_or_desire": "$ACN: stage 2A_strong_breakout, SATA 9, 3w in stage",
           "expected_value": 0.4,
-          "score": 0.379965,
+          "score": 0.373266,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-ACU-2026-11-13",
           "problem_or_desire": "$ACU: stage 2D_extended_run, SATA 9, 31w in stage",
           "expected_value": 0.4,
-          "score": 0.379965,
+          "score": 0.373266,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 37,
-    "signal_posts": 1,
-    "charts": 183,
+    "total_posts": 31,
+    "signal_posts": 2,
+    "charts": 178,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-11-13"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-13T12:27:17Z",
-  "inputs_hash": "sha256:85d31394e89aafcd7d85aad639666f78c12945d363442334abbd916d304dd521",
+  "produced_at": "2026-11-13T16:45:57Z",
+  "inputs_hash": "sha256:85564e5268592478f5f5137c40eb49fc5c8fe34ba32241b69f6ad2200bd9945e",
   "tier": "display"
 }
