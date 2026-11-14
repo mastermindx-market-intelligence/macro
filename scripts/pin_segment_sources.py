@@ -136,6 +136,17 @@ def _load_targets(targets_path: Path) -> list[dict]:
     return targets
 
 
+def choose_filing(eligible: list[dict]) -> dict:
+    """Latest original annual report; an amendment only when no original is eligible.
+
+    A later Part III-only 10-K/A must not displace the 10-K that carries the
+    segment note, so originals (forms without "/A") win whenever one exists.
+    """
+    originals = [m for m in eligible if not m["filing"]["form"].endswith("/A")]
+    pool = originals or eligible
+    return max(pool, key=lambda m: (m["clocks"]["filed_on"], m["filing"]["accession"]))
+
+
 def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
     ticker = target["ticker"]
     cik = target["cik"]
@@ -149,7 +160,7 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
         eligible = [m for m in manifests if m["filing"]["form"] in forms]
         if not eligible:
             return {"ticker": ticker, "cik": cik, "accession": None, "refusal": "NO_ELIGIBLE_FILING"}
-        manifest = max(eligible, key=lambda m: (m["clocks"]["filed_on"], m["filing"]["accession"]))
+        manifest = choose_filing(eligible)
         accession = manifest["filing"]["accession"]
         index_document = archive_index_document(manifest)
         index_receipt = archive.fetch_document(index_document, retrieved_at=now)
@@ -439,6 +450,15 @@ def run_packet(request_path, snapshot_id, out, *, local_store=None, identity_rea
 # propose
 # ---------------------------------------------------------------------------
 
+def profit_driver_flag(value) -> str:
+    """Map a manifest's profit_driver to the CLI flag; only a JSON boolean is accepted."""
+    if value is True:
+        return "--profit-driver"
+    if value is False:
+        return "--no-profit-driver"
+    raise ValueError("PROFIT_DRIVER_NOT_BOOLEAN")
+
+
 def run_propose(manifest_path, out, *, python=None) -> dict:
     manifest = _load_json(Path(manifest_path))
     rows = manifest.get("rows") if isinstance(manifest, dict) else manifest
@@ -456,7 +476,7 @@ def run_propose(manifest_path, out, *, python=None) -> dict:
             "--knowledge-cutoff", row["knowledge_cutoff"], "--created", row["created"],
             "--segment-packet", row["spec_path"], row["policy_path"], "config/theme_sources.yml",
             "--ledger", str(ledger), "--exposure-role", row["exposure_role"],
-            "--profit-driver" if row["profit_driver"] else "--no-profit-driver",
+            profit_driver_flag(row["profit_driver"]),
         ]
         proc = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
         stdout_lines = [line for line in proc.stdout.splitlines() if line.strip()]

@@ -380,6 +380,36 @@ def test_packet_outputs_carry_no_filing_text_beyond_schema_fields(tmp_path):
 
 
 # ---------------------------------------------------------------------------
+# Filing choice and propose flags
+# ---------------------------------------------------------------------------
+
+def _manifest(form, filed_on, accession):
+    return {"filing": {"form": form, "accession": accession}, "clocks": {"filed_on": filed_on}}
+
+
+def test_choose_filing_prefers_original_over_later_amendment():
+    original = _manifest("10-K", "2026-08-01", "0000000001-26-000001")
+    amendment = _manifest("10-K/A", "2026-10-01", "0000000001-26-000002")
+    assert m.choose_filing([original, amendment]) is original
+
+
+def test_choose_filing_takes_latest_original_and_falls_back_to_amendment():
+    old = _manifest("20-F", "2025-04-01", "0000000002-25-000001")
+    new = _manifest("20-F", "2026-04-01", "0000000002-26-000001")
+    assert m.choose_filing([old, new]) is new
+    only_amendment = _manifest("10-K/A", "2026-10-01", "0000000003-26-000001")
+    assert m.choose_filing([only_amendment]) is only_amendment
+
+
+def test_profit_driver_flag_accepts_only_json_booleans():
+    assert m.profit_driver_flag(True) == "--profit-driver"
+    assert m.profit_driver_flag(False) == "--no-profit-driver"
+    for bad in ("false", "true", 0, 1, None):
+        with pytest.raises(ValueError, match="PROFIT_DRIVER_NOT_BOOLEAN"):
+            m.profit_driver_flag(bad)
+
+
+# ---------------------------------------------------------------------------
 # Script hygiene
 # ---------------------------------------------------------------------------
 
