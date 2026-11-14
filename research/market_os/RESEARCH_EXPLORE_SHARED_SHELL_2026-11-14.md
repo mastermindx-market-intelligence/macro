@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C8 below. Earlier C4–C7 sections and continuation boundaries are historical; C8 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C9 below. Earlier C4–C8 sections and continuation boundaries are historical; C9 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -324,3 +324,37 @@ A bounded read-only visual review found three actionable issues: a 20-day empty 
 Start **D1-HUB Models/cohorts, evaluation and source disagreement**. A bounded read-only architecture review is complete. Root source reads confirm legacy calendar-day horizons versus unified trading-day horizons, dropped public cohort/rank fields, immature rows inside the grader's eligible prefilter, and accruing-like exception payloads. The new views must bind evaluator, horizon basis, exact cohort/version, denominator and original source clocks. Preserve named owner outputs/ranks; add no fused score, second ledger or evaluator. Policy remains contextual; a fallback ordering invariance concern needs a focused implementation test before claiming ordering independence.
 
 M1 is the sole qualified Paper carrier; M2 remains fenced. No modifying effect is pending or unknown. No product implementation, runtime collector, external message, watch enrollment, trade, merge or deployment occurred. Continue the next safe design phase in this attended turn; this milestone is not parent acceptance or an automatic stop.
+
+## Milestone C9 — Research Hub R6
+
+Disposition: **MORE_WORK_EXISTS**. Eight new editable Paper pages extend the native set from 68 to 76: 60 product/responsive/theme/locale views, twelve Build boards and four state sheets. Thirteen mobile views and three intermediate-width views are present. Original design closure and production acceptance remain open.
+
+### Delivered design delta
+
+In existing file 01M2VWK62FA5S4VVF6G7SBPE5J: Models/cohorts (p-V-1/BGD-1); Evaluation (p-W-1/BNQ-1); Source readings (p-X-1/BV0-1); mobile readings (p-Y-1/C1L-1); 1024px method selector (p-Z-1/C3Y-1); recovery/evidence states (p-10-1/C6Y-1); Build contract (p-11-1/C9J-1); small-cohort mobile (p-12-1/CMM-1). Existing Alternative Data, Hub and foreign/held content remains untouched.
+
+Recorded membership retains owner rank and gate reason. The selected Early company can be excluded from Emerging without being missing. Evaluations bind cohort, version, evaluator and calendar/trading horizon. Graded coverage is separate from accuracy; rows, daily samples and velocity history counts remain distinct. A Top 5 population cannot supply ten usable pairs per date, so the sparse mobile view correctly has no daily correlation despite 120 graded rows.
+
+The source comparison preserves four separate desk readings, exact source clocks and Policy context outside their tally. It does not establish independent confirmations or another combined score. Mobile preserves Policy through a compact disclosure.
+
+### Source findings and review
+
+Root reads verified the named Hub owner outputs, original membership stamps, stripped track_rows, dropped adapter cohort/source/rank, calendar-day legacy evaluation, trading-day unified evaluation, age-prefilter denominator, minimum daily cross-section, horizon-aware HAC and accruing-like error responses. The filtered cohort/version daily-statistics and immutable intraday-snapshot projections are build work, not existing capabilities. A Policy fallback/tie-break static concern is preserved for implementation testing.
+
+A bounded read-only reasoning review checked fixture arithmetic, gate/stage consistency and scope identity. A bounded visual review found ambiguous score units, neutral-versus-absent wording and missing mobile Policy access. All were corrected. Root simplified redundant evaluation details, fixed shell heights, inspected the final evaluation/states/Build/sparse mobile, and inspected the final mobile after its context disclosure was added. The reviewer inspected final Members, source readings and method selector. All eight roots received observed guarded finish receipts; no modifying effect remains pending or unknown.
+
+### Durable C9 evidence
+
+- Hub R6 contract: commit 5e8d10e0d4d04bd4e0d965e5eac177174279a3c0; blob c04a8d3f424de48ca08bb4ffae694939d452f42c; byte readback matched.
+- 76-frame inventory: commit 5b58cb2fc59c9d76a19b75f628fa625e489d7ec9; blob 671ec74810830374b9fedaec962bab10aeba7786.
+- Index: commit 40bf28f1176f0f028f137f1bfc81e9a9b0f4c8c3; blob 2a83fb284fc2c336f337e3427928aa9ccdc6a940.
+- Blueprint: commit 267611bdb898f93eaebf2d5c348ea87925bc367e; blob 9d0de84034d2ae2d9f5bd031f2a443ee77d3aab7.
+- Same owned branch and Draft PR #11271; pre-C9 head reconciled at 643eb4c3f62a89b0cfc6dd34c13380500075a115. This plan and the other C9 docs must be read back at the resulting head.
+
+### Next active design unit
+
+Continue **D1-SPECIAL** in existing file 01M3NSZGE8JWN2EZCSF0DT05RM, using new owned pages and preserving all accepted/held Options and Terminal roots. A bounded read-only source review selected activist amendment, international source chronology and cash-plus-stock consideration as useful next workflows.
+
+The review found that SC 13D/A is currently classified as escalation without proving objective change; filer normalization is not durable identity; filing counts are not campaign counts; the historical activist return is descriptive absolute 60-trading-row return, not alpha. International lane discovery is UK/Canada scoped, can be aggregated news, drops clocks/provenance and conflates coverage states. Current arb arithmetic does not support exchange ratios/collars/elections; date precision and currency/quote units need explicit refusal. Transaction identity can conflate CIK/category or ticker/category; production failure is not claimed reproduced. Root has begun reading the incumbent files at the same product pin.
+
+No product source change, collector, account action, message, trade, watch, merge or deployment was performed. M1 remains the canvas carrier; M2 remains fenced. Continue the safe design frontier; C9 is a recoverable milestone, not parent completion.
