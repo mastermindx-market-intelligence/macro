@@ -1,0 +1,27 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 47%]
+........................................................................ [ 59%]
+........................................................................ [ 70%]
+.............................s................................sssssss... [ 82%]
+.........................ss.....sss.............................s.ss.... [ 94%]
+..................................                                       [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_hk_board_rank.py:855: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1090: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1113: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1129: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1151: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1175: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1214: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1247: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1481: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1509: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1609: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1642: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:1686: sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+SKIPPED [1] tests/test_hk_board_rank.py:2164: data/hk_search/closes_deep.parquet not present
+SKIPPED [1] tests/test_hk_board_rank.py:2252: data/hk_search/closes_deep.parquet not present
+SKIPPED [1] tests/test_hk_board_rank.py:2277: data/hk_search/closes_deep.parquet not present
+594 passed, 16 skipped in 118.25s (0:01:58)

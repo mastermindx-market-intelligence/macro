@@ -1,0 +1,156 @@
+{
+  "schema": "cn_signal_input_receipt.evidence.v1",
+  "mission_complete": false,
+  "implemented": true,
+  "branch": "claude/cn-signal-input-receipt-20260923",
+  "base": "88a3f1cfd18f391d2802e9086dc00f6fe5545607",
+  "procedure_pin": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "source_blob": "54ba827daad700486cef72f21ad0ae9f432996be",
+  "source_sha256": "5471a018140f9ed4bda2c53196dbeacf4ad105f3cfb8a93fbbec6667fcc57af8",
+  "finding": "Both existing serializers drop explicitly supplied input_asof; analytical asof must not substitute for daily receipt.",
+  "red_tests": {
+    "failed": 12,
+    "passed": 7,
+    "log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+    "raw_log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+    "normalization": "trailing whitespace only"
+  },
+  "later_added_type_safety_tests": "PASS",
+  "source_write": "SUCCEEDED_ON_ORIGINAL_CARRIER_AFTER_RECOVERY",
+  "source_unchanged_on_readback": false,
+  "regression_patch_sha256": "08d8919bebac8e43549ec0860bfb394910c666180e3c0a37bbbc6962a4d8086b",
+  "new_pr": 7860,
+  "publication_scope": "Native serializer repair plus existing Chinese consumer tests; no deployment or trading-policy change.",
+  "historical_diagnostic": {
+    "implemented": false,
+    "source_write": "PLATFORM_REFUSED_BEFORE_EFFECT",
+    "source_unchanged_on_readback": true,
+    "red_tests": {
+      "failed": 12,
+      "passed": 7,
+      "log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+      "raw_log_sha256": "4bc0707b964344fb2062d6187ab62744c19936dd80c8278c1e065b537f496457",
+      "normalization": "trailing whitespace only"
+    },
+    "later_added_type_safety_tests": "NOT_YET_EXECUTED",
+    "publication_scope": "Diagnostic and prospective test patch only; runtime engine unchanged; no PR or deployment.",
+    "runtime_or_trading_policy_changed": false
+  },
+  "state": "BUILT_NOT_PROVEN",
+  "current_source_sha256": {
+    "engine/signal_gate.py": "f833f2ae12f5bb8ae505d892b1eb445ea037717257114241399fb7781f9e5b8a",
+    "tests/test_signal_gate.py": "83f15ec7e766945217c2d03b48077b8e2becde5184c5a1eddb586a887b0573b0",
+    "tests/test_china_board_rank.py": "6e4b178fc63db0cbd86705acbda41d3a3baf3c5f7bdbcf9c718da7fe7724b217"
+  },
+  "qualified_tests": {
+    "passed": 200,
+    "failed": 0,
+    "log": "qualified-tests.txt",
+    "sha256": "a184c0ec5c8638e839cbe2789b2cd41b274971cf30db73a8ec0fc70fa76699f1"
+  },
+  "current_main": "f84d9c882b7fabf87835e6c630ad9b4ab1f69fca",
+  "compatibility": "Resolved the actual signal_gate.py end-of-file conflict on the original branch with main f84d9c8. Upstream validity_block AST is identical; 21 new validity tests pass alongside 200 receipt/China tests.",
+  "metadata_write_reconciliation": "Earlier timeout: unchanged file and no matching process proved no completed/active metadata mutation; same-carrier update only.",
+  "runtime_source_changed": true,
+  "trading_policy_changed": false,
+  "initial_green": {
+    "passed": 70,
+    "warnings": "six unrelated pytest temporary-directory cleanup warnings; subsequent run uses task-local basetemp",
+    "log_sha256": "61f90de70273d7a2530af01ce588876848aae1f18ebdcaf4387d6da4e42237bf"
+  },
+  "integrated_tests": {
+    "passed": 221,
+    "failed": 0,
+    "log": "integrated-tests.txt",
+    "sha256": "9406de36960b3453751623b391deb3ae462f024533614fa4431f4675e016f429"
+  },
+  "crossmarket_fixture_preflight": {
+    "result": "15 failed, 551 passed, 16 skipped, 28 errors",
+    "cause": "missing sparse site/factordata, site/basketdata, site/chart.js and collectors; qualification after opt-in remains owed",
+    "log_sha256": "285b71bdb791a774fb3e0d34475efeb6de073e216b700da4397f410adce7ea55"
+  },
+  "crossmarket_qualification": {
+    "passed": 594,
+    "skipped": 16,
+    "failed": 0,
+    "log": "crossmarket-final.txt",
+    "sha256": "7264bc857d3357885127ee62880404cc52d427f1d4edc826703675f37c0dbe47",
+    "skips": "HK full-data and deep-price cases; not claimed executed",
+    "source_hashes_verified_on_recovery": true
+  },
+  "recovery_procedure_pin": "1a7d400294b0d37c460b963b8865b40a23173b58",
+  "prior_review_reconciliation": {
+    "operation": "cn-input-receipt-review-722910e0-20260923",
+    "session_id": "ca9da29e-7c92-445a-b965-4ea7b704b424",
+    "stop_result": "error_max_turns",
+    "stop_output_sha256": "3abd702a60500fc16be79f7ba5ab20ce95b93d8295f805e9b05c7a21b4129b26",
+    "parent_assignment_terminal": true,
+    "terminal_acknowledgement": false,
+    "source_writer_or_watcher_assigned": false,
+    "usable_review": false
+  },
+  "exact_semantic_ci": {
+    "head": "722910e0028a982956769cc779673b12e7936e59",
+    "ci": 35941146078,
+    "ci_conclusion": "success",
+    "fences": 35941145859,
+    "fences_conclusion": "success",
+    "production_proven": false
+  },
+  "compact_review_attempt": {
+    "operation": "cn-input-receipt-compact-audit-20260924",
+    "packet": "compact-review-request.md",
+    "packet_sha256": "d380adb77e97e11173415cc6e20180ebd836730852e690d683ad670d84739283",
+    "native_process": 45029,
+    "process_exit": 1,
+    "process_completed": true,
+    "output_status": "EXACT_OUTPUT_READ_PLATFORM_REFUSED",
+    "native_session_id": null,
+    "usable_report": false,
+    "independent_approval": false,
+    "source_writer_assigned": false,
+    "watcher_assigned": false,
+    "parent_assignment": "CLOSED_NO_FURTHER_WORK_AUTHORIZED",
+    "terminal_stop_delivery": "NOT_SENT_SESSION_ID_NOT_RECOVERABLE_THROUGH_REFUSED_READ",
+    "published_packet_sha256": "9ea280d38849c09ab1b919513fe72029e160baafe2ce4f1ed4bf123b6c84e48a",
+    "packet_normalization": "Trailing whitespace only for repository diff guard; actual delivered packet SHA256 retained separately."
+  },
+  "native_input_qualification_observation": {
+    "script": "native-roundtrip-proof.py",
+    "scope": "frozen native China close -> actual signal_gate -> buy_signal -> JSON -> existing China receipt consumer; not full library bake, live event latch, ranking or production proof",
+    "source_commit": "722910e0028a982956769cc779673b12e7936e59",
+    "members_executed": 22,
+    "missing_members": 0,
+    "qualified_process": 58557,
+    "qualified_exit": 0,
+    "engine_error_assertion": true,
+    "all_explicit_daily_receipts_preserved": true,
+    "snapshot_session": "2026-09-23",
+    "preflight": "First run rejected as signal proof: sparse CN calendar anchor was absent. Preflight JSON/text retained separately; existing tracked calendar anchor restored and explicit no-engine-error assertion added before successful run.",
+    "final_output_aggregation_and_digest": "READ_REFUSED_NOT_CLAIMED_VERIFIED",
+    "publication": "Only this observed execution summary is included; script/results remain local pending permitted verification."
+  },
+  "native_roundtrip_verified": {
+    "session": "2026-09-23",
+    "tested_members": 22,
+    "receipt_preserved": 22,
+    "eligible_count": 2,
+    "artifacts": {
+      "native-roundtrip-proof.py": "c97c9148493a3e9394cb30bd2146e064f1d966c024489be3699407b0654ea747",
+      "native-roundtrip-proof.json": "1dac675193c41c977a23486e187d7ffe25ad84c0d2da514138876d23219ada4a",
+      "native-roundtrip-proof.txt": "17013b76fb10c81c45655899b1c6444547ce92e997f4b9583abef6e1e8f4675c"
+    },
+    "scope": "Pinned real cached CN semiconductor prices through native gate, serializers, JSON and existing China consumer; no live event latch/full-library/production/performance claim. Two eligible source verdicts remain pending confirmation; no auto promotion.",
+    "initial_anchor_missing_preflight": "REJECTED; preserved separately, not successful gate execution"
+  },
+  "compact_review_reconciled": {
+    "operation": "cn-input-receipt-compact-audit-20260924",
+    "session": "a1ba9510-f36f-48f8-b314-517c63f99155",
+    "result_sha256": "458b2aa1efdece4c360cf6daaafe9b21d0ba148ff964451899d6463b76aaa1bf",
+    "result": "error_max_turns",
+    "permission_denial": "Glob under disabled-tools contract",
+    "usable_review": false,
+    "assignment": "PARENT_CLOSED",
+    "provider_stop": "NOT_DELIVERED; transcript read and closure-preflight refused this generation; no ACK claimed"
+  }
+}
