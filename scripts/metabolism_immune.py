@@ -1191,10 +1191,12 @@ def run_lane_health_checks(
     *,
     root: Path,
     dry_run: bool = False,
+    errors: list[str] | None = None,
 ) -> list[dict]:
     """Run all lane-health sensors; emit insights + Telegram for new findings.
 
-    Returns list of fired-insight dicts.  NEVER raises.
+    Returns acknowledged insight dicts (or previews in dry-run mode). Append
+    failures are also added to errors when supplied. NEVER raises.
     """
     from engine.metabolism.immune import (  # noqa: PLC0415
         check_dead_cron, check_queue_stuck,
@@ -1252,7 +1254,14 @@ def run_lane_health_checks(
                 evidence_ref=str(root / "data" / "metabolism" / "ci_status.json"),
             )
             if not dry_run:
-                append_row(row, root=root)
+                if append_row(row, root=root) is not True:
+                    error = f"insight append unacknowledged: {journal_key}"
+                    log.warning("IMMUNE: %s; cooldown unchanged", error)
+                    if errors is not None:
+                        errors.append(error)
+                    # The append may have partial effects. Do not replay it here
+                    # or suppress the observation with a false daily marker.
+                    continue
                 mark_fired_today(journal_key, root=root)
                 _notify(f"[Metabolism/Immune] {summary}")
             fired.append(row)
@@ -1425,7 +1434,14 @@ def run_immune_lane(
                             evidence_ref=check.get("url"),
                         )
                         if not dry_run:
-                            append_row(row, root=r)
+                            if append_row(row, root=r) is not True:
+                                error = f"insight append unacknowledged: {journal_key}"
+                                log.warning("IMMUNE: %s; cooldown unchanged", error)
+                                summary["errors"].append(error)
+                                # Preserve the observed red without claiming its
+                                # insight was delivered or replaying the append.
+                                summary["unknown_reds"].append(check_name)
+                                continue
                             mark_fired_today(journal_key, root=r)
                             _notify(
                                 f"[Metabolism/Immune] Unknown CI red on main: {check_name!r} "
@@ -1475,7 +1491,9 @@ def run_immune_lane(
                     })
 
         # Step 4: lane-health sensors (R-V8-4)
-        lh_rows = run_lane_health_checks(immune_cfg, root=r, dry_run=dry_run)
+        lh_rows = run_lane_health_checks(
+            immune_cfg, root=r, dry_run=dry_run, errors=summary["errors"],
+        )
         summary["lane_health"] = [r2.get("summary") for r2 in lh_rows]
 
     except Exception as exc:  # noqa: BLE001

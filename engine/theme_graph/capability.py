@@ -216,9 +216,17 @@ def derive_rows(nodes: list[dict], edges: list[dict], *, substrate: Substrate,
     Re-derived, never carried forward: this function reads the CURRENT edges and the
     CURRENT substrate and has no idea what last night decided. That is the anti-ratchet.
     """
+    # W-C2b tier guard: hierarchy nodes (macro_category, sub_theme, micro_theme) are
+    # display-only, whatever ``kinds`` asks for. Their company members arrive through
+    # the curated activity route and must never make a hierarchy node a
+    # measurement_candidate. Function-scope import: ontology pulls in the store.
+    from engine.theme_graph.ontology import is_hierarchy_tier_node
+
     rows: list[dict] = []
     for node in nodes:
         if str(node.get("kind")) not in kinds:
+            continue
+        if is_hierarchy_tier_node(node):
             continue
         node_id = str(node.get("node_id"))
         market = str(node.get("market_scope") or "")

@@ -794,3 +794,120 @@ LIVE_HAZARD_PARITY: dict = {
         ]
     },
 }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Real-tape repetition (input kind 2) — lane 8, 2026-11-09
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# The base packet could not run input kind 2: no tracked SPDR history existed.
+# Current main tracks data/yahoo/{SPY,XL*}.parquet (close_price = split-adjusted
+# price, close = total-return adjusted).  These helpers run the SAME
+# parity_report on a real instrument tape.  They never refit, never write data
+# and never change LIVE_HAZARD_PARITY: a real-tape run is additional evidence for
+# the recorded verdict, read by research/sector_completion_20261021/B12_HAZARD_PARITY.md.
+
+REAL_TAPE_KIND = "real_yahoo_daily_monthly_asofs"
+
+
+def real_tape(ticker: str, tape_dir, *, bench: str = "SPY",
+              start: str | None = None) -> dict:
+    """Tape dict (same shape as ``synthetic_tape``) from ``<tape_dir>/<T>.parquet``.
+
+    ``price`` = close_price (structure basis), ``tr`` = close (feature/RS basis),
+    benchmark likewise.  Rows are the ticker's own sessions with both bases
+    finite and positive; the benchmark is reindexed onto them with NO fill — a
+    missing benchmark session drops the row rather than inventing a price.
+    """
+    d = Path(tape_dir)
+    inst = pd.read_parquet(d / f"{ticker}.parquet")
+    bm = pd.read_parquet(d / f"{bench}.parquet")
+    for frame in (inst, bm):
+        frame.index = pd.DatetimeIndex(frame.index).tz_localize(None).normalize()
+    inst = inst[~inst.index.duplicated(keep="last")].sort_index()
+    bm = bm[~bm.index.duplicated(keep="last")].sort_index()
+    df = pd.DataFrame({
+        "price": inst["close_price"], "tr": inst["close"],
+        "bench_px": bm["close_price"].reindex(inst.index),
+        "bench_tr": bm["close"].reindex(inst.index),
+    }).replace([np.inf, -np.inf], np.nan).dropna()
+    df = df[(df > 0).all(axis=1)]
+    if start is not None:
+        df = df[df.index >= pd.Timestamp(start)]
+    idx = pd.DatetimeIndex(df.index)
+    return {"seed": None, "ticker": ticker, "bench": bench, "index": idx,
+            "price": df["price"], "tr": df["tr"],
+            "bench_px": df["bench_px"], "bench_tr": df["bench_tr"]}
+
+
+def real_tape_report(ticker: str, tape_dir, *, bench: str = "SPY",
+                     start: str | None = None, measured_on: str | None = None,
+                     warmup_months: int = SYNTH_WARMUP_MONTHS) -> dict:
+    """``parity_report`` on one real tape, with the input block relabelled."""
+    tape = real_tape(ticker, tape_dir, bench=bench, start=start)
+    rep = parity_report(tape, warmup_months=warmup_months, iid=ticker)
+    rep["measured_on"] = measured_on or "unrecorded"
+    inp = dict(rep.get("input") or {})
+    inp.update({"kind": REAL_TAPE_KIND, "seed": None, "iid": ticker,
+                "benchmark": bench, "start_filter": start,
+                "source": f"data/yahoo/{ticker}.parquet + data/yahoo/{bench}.parquet"})
+    rep["input"] = inp
+    return rep
+
+
+def summarize_reports(reports: list[dict]) -> dict:
+    """Pool per-tape reports into one finite read (no new verdict constant)."""
+    failing_any = sorted({f for r in reports for f in (r.get("failing") or [])})
+    agree = sum(int((r.get("direction") or {}).get("agree") or 0) for r in reports)
+    n_dir = sum(int((r.get("direction") or {}).get("n") or 0) for r in reports)
+    return {
+        "n_tapes": len(reports),
+        "verdicts": {r["input"]["iid"]: r.get("verdict") for r in reports},
+        "n_tapes_parity_holds": sum(1 for r in reports
+                                    if r.get("verdict") == "PARITY_HOLDS"),
+        "failing_union": failing_any,
+        "failing_every_tape": sorted(
+            f for f in failing_any
+            if all(f in (r.get("failing") or []) for r in reports)),
+        "direction_agree": agree, "direction_n": n_dir,
+        "direction_agree_frac": (round(agree / n_dir, 4) if n_dir else None),
+        "n_asofs_both_sides": sum(int((r.get("input") or {}).get("n_both_sides") or 0)
+                                  for r in reports),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    """CLI: ``python3 -m engine.hazard_parity --real XLK,XLE --tape-dir data/yahoo``.
+
+    Without ``--real`` the seeded synthetic report is printed.  Output is JSON on
+    stdout (or ``--out``); nothing under data/ is written.
+    """
+    import argparse
+    import json as _json
+
+    ap = argparse.ArgumentParser(prog="engine.hazard_parity")
+    ap.add_argument("--real", default=None,
+                    help="comma-separated tickers for the real-tape repetition")
+    ap.add_argument("--tape-dir", default=str(_REPO / "data" / "yahoo"))
+    ap.add_argument("--bench", default="SPY")
+    ap.add_argument("--start", default=None)
+    ap.add_argument("--measured-on", default=None)
+    ap.add_argument("--out", default=None)
+    a = ap.parse_args(argv)
+    if a.real:
+        reports = [real_tape_report(t.strip(), a.tape_dir, bench=a.bench,
+                                    start=a.start, measured_on=a.measured_on)
+                   for t in a.real.split(",") if t.strip()]
+        payload = {"summary": summarize_reports(reports), "reports": reports}
+    else:
+        payload = parity_report()
+    text = _json.dumps(payload, indent=1, default=str)
+    if a.out:
+        Path(a.out).write_text(text, encoding="utf-8")
+    else:
+        print(text)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
