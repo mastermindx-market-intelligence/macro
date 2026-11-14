@@ -1537,10 +1537,43 @@ def test_organ_us_basket_fidelity_vs_ledger():
     _assert_fidelity(res, _OB_US, _OB_US_MM_SHA)
 
 
+def _organ_forward_log_through() -> str:
+    """The organ build's own last phase_v2 session, read from its sidecar (never typed here)."""
+    import datetime as _dt
+    assert _ORGAN_META.exists(), (
+        "organ_histories_house.meta.json is absent; the forward_log comparison has no as_of")
+    meta = json.loads(_ORGAN_META.read_text())
+    through = ((meta.get("organs") or {}).get("phase_v2") or {}).get("last_session")
+    try:
+        ok = isinstance(through, str) and _dt.date.fromisoformat(through).isoformat() == through
+    except ValueError:
+        ok = False
+    assert ok, (
+        "organ_histories_house.meta.json carries no YYYY-MM-DD organs.phase_v2.last_session; "
+        "the forward_log comparison has no as_of to scope to")
+    fl = pd.read_parquet(_FORWARD)
+    fl = fl[fl["id"].isin([t.lower() for t in oh.SPDRS])]
+    dates = fl["date"].astype(str).str[:10]
+    assert (dates <= through).any(), (
+        f"forward_log holds no sector row at or before the organ as_of {through}; "
+        "refusing an empty comparison")
+    print(f"forward_log rows after the organ as_of {through}: {int((dates > through).sum())} "
+          "(counted, not compared)")
+    return through
+
+
 @_organ_sector_store_needs
 def test_organ_phase_v2_fidelity_vs_stores():
+    """phase_v2 replay vs backfill and forward_log, at pinned counts and mismatch hashes.
+
+    The forward_log comparison is scoped to sessions up to the organ build's own as_of
+    (organs.phase_v2.last_session in its meta.json). The store is appended every night,
+    so unscoped, each new night's rows fall outside the replay and break the pin daily.
+    Rows after the as_of are counted and printed, not compared; a change to any row at or
+    before it still flips the counts or the hash (ruling 104).
+    """
     df = pd.read_parquet(_ORGAN_PQ)
-    res = oh.fidelity_phase_v2(df)
+    res = oh.fidelity_phase_v2(df, forward_log_through=_organ_forward_log_through())
     # current engine (primary series) vs both stores
     _assert_fidelity(res["current"]["backfill"], _OB_PH_BF, _OB_PH_BF_MM_SHA)
     _assert_fidelity(res["current"]["forward_log"], _OB_PH_FL, _OB_PH_FL_MM_SHA)

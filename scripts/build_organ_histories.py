@@ -851,7 +851,13 @@ def _d1_table(rmap: dict, fl_rows: list, sessions: list[str]) -> dict:
                            "stored == replay(id,D-1). Replay not shifted; no row re-keyed.")}
 
 
-def fidelity_phase_v2(df: pd.DataFrame) -> dict:
+def fidelity_phase_v2(df: pd.DataFrame, forward_log_through: str | None = None) -> dict:
+    """phase_v2 replay vs the two sector-cycle stores.
+
+    ``forward_log_through`` (YYYY-MM-DD, inclusive) limits the forward_log rows to the
+    sessions the replay covers. The forward log is appended every night, so a later read
+    of the store holds rows the replay was never built on. None keeps every row (the build).
+    """
     root = config.data_dir()
     bf = pd.read_parquet(root / "sector_cycles" / "backfill.parquet")
     bf = bf[bf["id"].isin([t.lower() for t in SPDRS])]
@@ -860,7 +866,8 @@ def fidelity_phase_v2(df: pd.DataFrame) -> dict:
     fl = pd.read_parquet(root / "sector_cycles" / "forward_log.parquet")
     fl = fl[fl["id"].isin([t.lower() for t in SPDRS])]
     fl_rows = [(str(r.id), str(r.date), r.phase_v2) for r in fl.itertuples()
-               if str(r.date) >= "2026-07-02"]
+               if str(r.date) >= "2026-07-02"
+               and (forward_log_through is None or str(r.date)[:10] <= forward_log_through)]
     out: dict = {}
     for sha, label in ((ENGINE_CODE_SHA, "current"), (LEGACY_ENGINE_CODE_SHA, "legacy")):
         sub = df[(df["organ"] == "phase_v2") & (df["engine_code_sha"] == sha)]
