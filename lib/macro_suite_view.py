@@ -982,10 +982,16 @@ def _diagnostics(snapshot: Mapping[str, Any], context: Mapping[str, Any],
     out: list[dict[str, Any]] = []
 
     if context.get("contradiction"):
+        body = context["contradiction"].get("text")
+        # A bare generic fallback is not a usable explanation for a conflict.
+        # Preserve real source notes; otherwise give the reviewed, factual
+        # disagreement note instead of printing placeholder prose to readers.
+        if not body or body == L.PLAIN_FALLBACK:
+            body = L.FOOT["disagree"]
         out.append({
             "tone": "bad",
             "title": _pair("Contradictory signals", "信号相互矛盾"),
-            "body": context["contradiction"]["text"],
+            "body": body,
         })
 
     required_rows = context.get("required") or []

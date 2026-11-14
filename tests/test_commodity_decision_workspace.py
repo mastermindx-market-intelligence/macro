@@ -483,3 +483,19 @@ class CurrentGoldComposition(unittest.TestCase):
             self.assertEqual(w['gold_physical']['state'], 'unavailable')
             self.assertIsNone(w['gold_physical']['premium_pct'])
             self.assertEqual(w['gold_physical']['source_receipt']['source_timestamp'], current['source_asof'])
+
+
+def test_company_intelligence_continuation_follows_each_transmission_chain() -> None:
+    """The real link must be repeated inside each selected commodity chain."""
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    source = (root / "templates/_commodity_decision_workspace.html.j2").read_text()
+    loop = source.index("{% for chain in ws.chains %}")
+    destination = "https://app.mastermind-x.com/analysis?page=intelligence"
+    anchor = source.index('data-cw-company-href="' + destination + '"')
+    end = source.index("{% endfor %}", anchor)
+    assert loop < anchor < end
+    assert 'target="_blank" rel="noopener"' in source[loop:end]
+    assert "Continue in Company Intelligence" in source[loop:end]
+    assert "前往公司情报继续研究" in source[loop:end]

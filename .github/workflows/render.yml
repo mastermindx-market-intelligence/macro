@@ -32,6 +32,12 @@ name: render
 # ~1 min via pages.yml on any push to site/** — you only need THIS workflow for
 # template (.html.j2) fixes that must be re-rendered through a builder.
 on:
+  # The daily can publish at its always() checkpoint and then fail or lose its
+  # runner. Completion checks accepted main even for failed/cancelled runs.
+  workflow_run:
+    workflows: [daily]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       scope:
@@ -46,10 +52,10 @@ on:
         options: [render-heavy, render-linux, macstudio]
   push:
     branches: [main]
-    # A HUMAN pushing a template or builder change auto-renders + deploys. The
-    # nightly bot only ever touches data/ + site/ + reports/, so its commits never
-    # match these paths — no loop, no double-fire. (The site/ commit this workflow
-    # makes triggers pages.yml's committed-tree deploy once more; idempotent.)
+    # Source/template pushes auto-render. Generated pages do not match these
+    # paths; the exact AI Brief lens inputs are generated-data exceptions.
+    # Nightly bot publication reaches this owner through workflow_run above.
+    # Rendering reads the brief without regenerating it, so there is no loop.
     #
     # The POST-RENDER SWEEPS are listed too. They rewrite every page in site/ (shim
     # injection, inline-CSS externalization, ?v= stamping, CSS preload hints), so a
@@ -60,6 +66,8 @@ on:
     # engine/** , so the two lanes never double-fire on one commit. These files
     # change rarely, so this adds no meaningful render load.
     paths:
+      # Human/source pushes may update the brief too. Nightly GITHUB_TOKEN
+      # commits are handled by the completion event below, not push recursion.
       - "templates/**"
       # Public/marketing surfaces have a dedicated GitHub-hosted fast lane. These
       # exclusions are ordered after templates/** so they do not occupy the scarce
@@ -79,6 +87,11 @@ on:
       - "!templates/seo_base.html.j2"
       - "!templates/support.html.j2"
       - "!templates/unsubscribe.html.j2"
+      # Brief JSON inputs are independent of the ordered template exclusions.
+      # Keep templates/** first for the real ship-loop path scanner.
+      - "site/master_brief.json"
+      - "site/china_brief.json"
+      - "site/btc_brief.json"
       # Explicit builder ownership. This lane executes these entrypoints directly
       # or imports them transitively; every other top-level build_*.py belongs to a
       # different lane and must not occupy pipeline-render. The ownership contract
@@ -239,23 +252,73 @@ on:
 permissions:
   contents: write   # commit the rendered site/ to main; the VPS (Caddy) serves from main
 
-concurrency:
-  # Its OWN lane, isolated from `pipeline-daily` so a render can never starve (or be
-  # starved by) the nightly.
-  # cancel-in-progress: FALSE — do NOT cancel a render that's already running. With many
-  # sessions merging every few minutes, `true` cancelled 27 of 30 renders (each new push
-  # killed the in-flight one) so the site almost never re-rendered. With `false`, a running
-  # render always FINISHES and ships; GitHub still supersedes redundant *pending* runs
-  # (only the latest queued one runs next), so the site stays current without starving.
-  # The COVERAGE half of that supersede behavior lives in the `pick` step (scope-union):
-  # the surviving run diffs against per-region "(scope=X, from=SHA)" render-commit
-  # watermarks, so superseded runs' pages — and merges landing mid-render — are still
-  # rendered by whichever run eventually executes (2026-07-17 starvation postmortem).
-  group: pipeline-render
-  cancel-in-progress: false
 
 jobs:
+  brief_render_gate:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      needed: ${{ steps.brief.outputs.needed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 900
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: .github/workflows/render.yml
+      - name: compare accepted AI Brief lenses with existing render watermarks
+        id: brief
+        run: |
+          set -euo pipefail
+
+          watermarks=$(git log -n 900 --format=%s | sed -n -E \
+            's/^render: site re-render [0-9-]+ \(scope=([a-z+]+), from=([0-9a-f]{7,40})\)$/\1 \2/p')
+          for region in macro china hk; do
+            covered_from=""
+            while read -r scope from; do
+              case "+$scope+" in
+                *"+all+"*|*"+$region+"*) covered_from="$from"; break;;
+              esac
+            done <<< "$watermarks"
+            # The macro page consumes all three lenses, while China/HK modals
+            # consume the accepted China lens only. Never mark an uncovered lens
+            # as adopted merely because a different regional render completed.
+            if [ "$region" = macro ]; then
+              inputs=(site/master_brief.json site/china_brief.json site/btc_brief.json)
+            else
+              inputs=(site/china_brief.json)
+            fi
+            # Missing/expired coverage must render once to establish a real watermark.
+            if [ -z "$covered_from" ] || ! git diff --quiet "$covered_from..HEAD" -- "${inputs[@]}"; then
+              echo "needed=true" >> "$GITHUB_OUTPUT"
+              echo "::notice::Accepted AI Brief lens needs $region render coverage"
+              exit 0
+            fi
+          done
+          echo "needed=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Macro, China and HK already cover the accepted AI Brief lenses"
   render:
+    needs: brief_render_gate
+    if: ${{ always() && (github.event_name != 'workflow_run' || needs.brief_render_gate.outputs.needed == 'true') }}
+    # No-op completion gates must not supersede a queued source render.
+    concurrency:
+      # Its OWN lane, isolated from `pipeline-daily` so a render can never starve (or be
+      # starved by) the nightly.
+      # cancel-in-progress: FALSE — do NOT cancel a render that's already running. With many
+      # sessions merging every few minutes, `true` cancelled 27 of 30 renders (each new push
+      # killed the in-flight one) so the site almost never re-rendered. With `false`, a running
+      # render always FINISHES and ships; GitHub still supersedes redundant *pending* runs
+      # (only the latest queued one runs next), so the site stays current without starving.
+      # The COVERAGE half of that supersede behavior lives in the `pick` step (scope-union):
+      # the surviving run diffs against per-region "(scope=X, from=SHA)" render-commit
+      # watermarks, so superseded runs' pages — and merges landing mid-render — are still
+      # rendered by whichever run eventually executes (2026-07-17 starvation postmortem).
+      group: pipeline-render
+      cancel-in-progress: false
     # Routine render runs on the physically separate PC render-linux fleet. The
     # dispatch input retains render-heavy as the reserved M2 rollback and macstudio
     # as an explicit shared-Mac fallback; bootstrap remains portable.
@@ -540,6 +603,8 @@ jobs:
           fi
           region_of() {
             case "$1" in
+              site/master_brief.json|site/btc_brief.json) echo macro;;
+              site/china_brief.json) echo macro+china+hk;;
               templates/china.html.j2|templates/china_news.html.j2|templates/china_policy_watch.html.j2|scripts/build_china.py|scripts/build_china_policy_watch.py) echo china;;
               templates/china_special_situations.html.j2|templates/_china_special_situations_*.html.j2|scripts/build_china_special_situations.py) echo china;;
               templates/intl.html.j2|scripts/build_intl.py) echo intl;;
@@ -576,13 +641,13 @@ jobs:
           for R in macro intl china hk canada markets gex baskets sits; do
             FR=$(covering_from "$R")
             if [ -z "$FR" ]; then NEED_ALL="no from=-tagged render covers '$R' in the log window"; break; fi
-            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib 2>/dev/null)
+            CH=$(git diff --name-only "$FR..HEAD" -- templates scripts config.yml lib site/master_brief.json site/china_brief.json site/btc_brief.json 2>/dev/null)
             if [ $? -ne 0 ]; then NEED_ALL="git diff $FR..HEAD failed for '$R' (rewritten/expired watermark)"; break; fi
             while IFS= read -r f; do
               [ -z "$f" ] && continue
-              case "$(region_of "$f")" in
-                "$R") DIRTY="$DIRTY $R"; break;;
-                all)  NEED_ALL="'$f' (shared/unmapped) changed since '$R' watermark $FR"; break;;
+              case "+$(region_of "$f")+" in
+                *"+$R+"*) DIRTY="$DIRTY $R"; break;;
+                *"+all+"*) NEED_ALL="'$f' (shared/unmapped) changed since '$R' watermark $FR"; break;;
               esac
             done <<< "$CH"
             [ -n "$NEED_ALL" ] && break
@@ -590,6 +655,10 @@ jobs:
           DIRTY=$(echo $DIRTY | tr ' ' '\n' | awk 'NF && !s[$0]++' | paste -sd+ -)
           N=$(echo "$DIRTY" | tr '+' '\n' | grep -c .)
           if [ -n "$NEED_ALL" ]; then S=all; echo "::notice::scope=all ($NEED_ALL)"
+          elif [ "$N" -eq 0 ] && [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::All pending render work was covered while this job queued"
+            exit 0
           elif [ "$N" -eq 0 ]; then S=all; echo "::notice::scope=all (push fired but no region resolved dirty — defensive full render)"
           elif [ "$N" -ge 4 ]; then S=all; echo "::notice::scope=all ($N regions dirty [$DIRTY] — full render is comparable cost)"
           else S="$DIRTY"; echo "::notice::dirty since last covering renders -> scope=$S"
@@ -780,6 +849,7 @@ jobs:
       # rebuilt in the same pass as the shell it pairs with.
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
+        if: steps.pick.outputs.skip != 'true'
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
         # engine.run, the LLM brains + their scorers/ledgers, the EDGAR special-sits
         # sweep, notify and archive_signals. Each builder is individually resilient
@@ -1242,8 +1312,9 @@ jobs:
         # this lane owns the rebuilt US objects, not the full multi-market manifest.
         # Unlike the nightly's best-effort sync, missing credentials or exhausted
         # retries are a hard red signal: a green express render must mean its browser
-        # data plane advanced too.
-        if: ${{ success() }}
+        # data plane advanced too. An empty completion-triggered scope skips the
+        # builders, so it must never publish checkout-time stockdata to R2.
+        if: ${{ success() && steps.render_pages.outputs.complete == 'true' }}
         env:
           R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -1308,6 +1379,7 @@ jobs:
         run: |
           python3 scripts/check_site_asset_refs.py site
           python -m scripts.check_government_revenue_projection
+          python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}"
           python scripts/inject_shared_shell.py --check --site-dir site || exit 1
       # Protected-main freeze (2026-08-15): OrganizationAdmin is the only working
       # bypass. GITHUB_TOKEN cannot push site/ to main (GH013, run 31876500631).
@@ -1479,6 +1551,10 @@ jobs:
                 git update-ref -d "$PUBLISH_REF"
                 exit 1
               fi
+              if ! python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref "$PUBLISH_COMMIT"; then
+                git update-ref -d "$PUBLISH_REF"
+                exit 1
+              fi
               python -m scripts.check_government_revenue_projection
               python scripts/inject_shared_shell.py --check --site-dir site || exit 1
               if push_do origin "$PUBLISH_REF:refs/heads/main"; then
@@ -1595,6 +1671,7 @@ jobs:
               python -m scripts.check_government_revenue_projection
               # Worktree healing cannot certify an older committed candidate.
               python -m scripts.check_commodity_publication --accepted-ref "$COMMODITY_ACCEPTED" --candidate-ref HEAD || exit 1
+              python -m scripts.check_aibrief_publication --scope "${{ steps.pick.outputs.scope }}" --candidate-ref HEAD || exit 1
               # A skipped or failed optional heal commit must not leave the checker
               # proving working-tree pages while an older HEAD is pushed.
               if ! git diff --quiet HEAD -- site/ templates/; then

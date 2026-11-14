@@ -4879,6 +4879,26 @@ def test_no_unlisted_identical_png_pairs() -> None:
     assert not illegal, illegal
 
 
+def test_contradiction_diagnostic_never_leaks_plain_fallback() -> None:
+    """A real disagreement needs a source-safe explanation, not filler text."""
+    from lib import macro_suite_view as view, macro_suite_labels as labels
+
+    context = {"contradiction": {"text": dict(labels.PLAIN_FALLBACK)}}
+    rows = view._diagnostics({}, context, {"comparable": True}, {})
+    assert rows and rows[0]["title"]["en"] == "Contradictory signals"
+    assert rows[0]["body"] == labels.FOOT["disagree"]
+    assert rows[0]["body"] != labels.PLAIN_FALLBACK
+
+
+def test_business_cycle_contraction_has_reviewed_chinese_pair() -> None:
+    """The recorded business-cycle categorical value must not be English-only."""
+    from lib.macro_suite_zh_parity import apply_zh_parity
+
+    assert apply_zh_parity({"en": "Contraction", "zh": "Contraction"}) == {
+        "en": "Contraction", "zh": "收缩",
+    }
+
+
 @pytest.mark.parametrize("token,en,zh", [
     ("expansion", "Expansion", "扩张"),
     ("slowdown", "Slowdown", "放缓"),

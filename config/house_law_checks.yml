@@ -150,6 +150,44 @@ checks:
       tests/test_check_site_asset_refs.py ratchets the empty state so a re-pin has
       to be argued in review rather than riding in with a fresh 404.
 
+  - law_id: ui.aibrief_publication_integrity
+    summary: >
+      The accepted US/China/BTC AI Brief JSON must be rendered into matching
+      semantic components on the standalone page, and the China-lens narrative
+      must match both China and HK modals before a render commit may publish.
+      Reject stale, missing, duplicated or wrong-lens components at the
+      finalized worktree, metadata-replay candidate and post-rebase candidate.
+    source_ref:
+      - scripts/check_aibrief_publication.py
+      - scripts/ci/aibrief_checkpoint_manifest.py
+      - tests/test_aibrief_page.py
+      - research/aibrief_recovery_20261104/PLAN.md
+      - "PR #10725"
+    severity: hard
+    check_script: scripts/check_aibrief_publication.py
+    ci_wiring:
+      - workflow: .github/workflows/render.yml
+        job: render
+        lane: render
+    selftest: false
+    selftest_exempt_reason: >
+      The existing tests/test_aibrief_page.py exercises changed and missing
+      narratives, bilingual component parity, duplicate and wrong-lens
+      modals, stale US/China/BTC standalone content and exact committed
+      candidate rejection. The checker has no --selftest entry point.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Source-only semantic comparison does not establish generation freshness,
+        model availability, accepted writer credentials, or browser behavior.
+      - The render gate does not certify that the daily producer ran, that
+        publication reached the served website, or that cached clients updated.
+    owner_program: ai-brief-recovery-20261104-c4
+    notes: >
+      This original-operation plan is PLAN_NOT_ORG_LINKED. The validator is
+      wired only to the existing render job's prepublication, metadata replay
+      and post-rebase gates; no daily or engine-render invocation is claimed.
+
   - law_id: ui.commodity_publication_integrity
     summary: >
       Commodities publishers must retain a supported display-only workspace and

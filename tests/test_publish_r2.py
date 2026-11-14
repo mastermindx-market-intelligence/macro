@@ -194,7 +194,9 @@ def test_express_render_lanes_publish_rebuilt_stockdata_to_r2():
     step_name = "publish rebuilt US stockdata to R2 (browser data plane)"
     for workflow in ("render.yml", "engine-render.yml"):
         block = _workflow_step(workflow, step_name)
-        assert "if: ${{ success() }}" in block
+        gate = ("success() && steps.render_pages.outputs.complete == 'true'"
+                if workflow == "render.yml" else "success()")
+        assert f"if: ${{{{ {gate} }}}}" in block
         assert "site/stockdata/index.json" in block
         assert "python -m scripts.publish_r2 --dirs stockdata --no-manifest" in block
         assert "for ATTEMPT in 1 2 3" in block
