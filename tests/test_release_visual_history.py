@@ -45,6 +45,7 @@ def _manifest(root, *, collected="2026-11-13T14:00:00Z", content=b"fake-parquet"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)
     manifest={"schema":"release_target_vintage_collection.v1", "source_output_type":2,
+              "integrity_profile":"release_target_artifact_sha256_bytes.v1",
               "status":"ok", "completed_at":collected,
               "series":{"PPIFIS":{"path":"data/fred_vintage/release_targets/PPIFIS_all_vintages.parquet",
                                 "status":"written", "artifact_bytes":len(content),
