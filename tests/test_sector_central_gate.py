@@ -27,6 +27,7 @@ suite, it would make it SKIP everywhere, which is how a gate test goes dark.
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 import re
 import sys
@@ -429,3 +430,34 @@ def test_overview_hero_discloses_exact_source_generation():
     assert 'data-si-as-of="2026-09-14"' in html
     assert f'data-si-baskets-sha256="{"a" * 64}"' in html
     assert f'data-si-action-board-sha256="{"b" * 64}"' in html
+
+
+def test_act_now_more_controls_target_inline_folds_and_ship_fresh_bundle():
+    """All four inline Act-Now lanes must expand and load the updated JS.
+
+    The ordinary list overlay requires .lst-wrap/.lst-collapse, but these
+    four lanes use .actcol/.actbody. Stand Aside keeps its modal path.
+    An old ?v= fingerprint would leave cached broken JS on the live page.
+    """
+    board = BOARD_TPL.read_text()
+    assert board.count('class="lst-more act-more"') == 4
+    assert 'class="actbody act-fold is-collapsed" id="ab-buy-fold"' in board
+    assert 'class="actbody ab-trim-fold is-collapsed" id="ab-trim-fold"' in board
+
+    for script in (TEMPLATES / "theme.js", ROOT / "site" / "theme.js"):
+        js = script.read_text()
+        start = js.index("function initListCollapse()")
+        stop = js.index("function initListOverlay()", start)
+        handler = js[start:stop]
+        assert "btn.classList.contains('act-more')" in handler
+        assert "'.actcol'" in handler
+        assert "'.lst-wrap'" in handler
+        assert "'.actbody.act-fold, .actbody.ab-trim-fold'" in handler
+        assert "'.lst-collapse'" in handler
+        assert "classList.toggle('is-collapsed')" in handler
+        assert "setAttribute('aria-expanded'" in handler
+
+    version = hashlib.sha256((ROOT / "site" / "theme.js").read_bytes()).hexdigest()[:8]
+    for page in ("sector_central.html", "us_stocks.html"):
+        html = (ROOT / "site" / page).read_text()
+        assert f'<script src="theme.js?v={version}" defer></script>' in html

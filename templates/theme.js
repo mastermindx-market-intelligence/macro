@@ -4935,8 +4935,12 @@
     document.addEventListener('click', function (e) {
       var btn = e.target && e.target.closest ? e.target.closest('.lst-more') : null;
       if (!btn) return;
-      var wrap = btn.closest('.lst-wrap');
-      var list = wrap && wrap.querySelector('.lst-collapse');
+      // First four US Act-Now columns fold in place; Stand Aside and the
+      // other .lst-wrap lists retain their existing modal-overlay behavior.
+      var isActionLane = btn.classList.contains('act-more');
+      var wrap = btn.closest(isActionLane ? '.actcol' : '.lst-wrap');
+      var list = wrap && wrap.querySelector(
+        isActionLane ? '.actbody.act-fold, .actbody.ab-trim-fold' : '.lst-collapse');
       if (!list) return;
       var nowCollapsed = list.classList.toggle('is-collapsed');
       btn.setAttribute('aria-expanded', nowCollapsed ? 'false' : 'true');
