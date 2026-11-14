@@ -2659,6 +2659,17 @@ class Orchestrator:
 
     def snapshot(self) -> None:
         """Five-minute, network-heavy full snapshot followed by both basket pulses."""
+        # The existing lane is the only scheduler. Source-specific due checks
+        # live in the builder; this private artifact is never published to /live.
+        calendar_stage = self.state_dir / "market_calendar.stage.json"
+        calendar_live = self.state_dir / "market_calendar.json"
+        self.module(
+            "market_calendar", "scripts.build_market_calendar",
+            ["--out", str(calendar_stage), "--previous", str(calendar_live)],
+            outputs=((calendar_stage, calendar_live),), timeout=45,
+        )
+        if self.now.weekday() >= 5:
+            return  # Calendar continues on weekends; existing market work does not.
         snapshot_stage = self.stage_dir / "quotes_full.json"
         snapshot_live = self.state_dir / "quotes_full.json"
         quote_result = self.module(
