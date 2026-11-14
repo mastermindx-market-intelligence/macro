@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 import sys
@@ -391,3 +392,235 @@ def test_curve_comparison_dates_belong_to_the_exact_values_and_skip_nulls():
     for tenor in ("2y", "30y"):
         for window in ("prior_close", "prior_month"):
             assert rows[tenor][window] is None and rows[tenor][f"{window}_as_of"] is None
+
+
+# Payroll: source cohort -> canonical same-vintage truth -> publication -> view.
+_PAYROLL_ROWS = [
+    ("2024-11-01", "2024-12-06", "9999-12-31", 158800.0),
+    ("2024-12-01", "2025-01-10", "2025-02-06", 158900.0),
+    ("2024-12-01", "2025-02-07", "2025-03-06", 159000.0),
+    ("2025-01-01", "2025-02-07", "2025-03-06", 159057.0),
+    ("2024-12-01", "2025-03-07", "9999-12-31", 159010.0),
+    ("2025-01-01", "2025-03-07", "9999-12-31", 159040.0),
+    ("2025-02-01", "2025-03-07", "9999-12-31", 159151.0),
+]
+
+
+def _write_payroll_cohort(tmp_path, rows=None, *, frame=None):
+    folder = tmp_path / "release_targets"
+    folder.mkdir(parents=True, exist_ok=True)
+    if frame is None:
+        frame = pd.DataFrame(_PAYROLL_ROWS if rows is None else rows,
+                             columns=["period", "realtime_start", "realtime_end", "value"])
+        frame["series"], frame["source_output_type"] = "PAYEMS", 2
+    path = folder / "PAYEMS_all_vintages.parquet"
+    frame.to_parquet(path, index=False)
+    data = path.read_bytes()
+    manifest = {
+        "schema": "release_target_vintage_collection.v1", "integrity_profile": "release_target_artifact_sha256_bytes.v1",
+        "status": "ok", "source_output_type": 2,
+        "collected_at": "2025-04-01T09:00:00+00:00", "completed_at": "2025-04-01T09:00:01+00:00",
+        "series": {"PAYEMS": {"status": "written", "path": "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet",
+                              "artifact_sha256": hashlib.sha256(data).hexdigest(), "artifact_bytes": len(data),
+                              "rows": len(frame), "periods": int(frame["period"].nunique()),
+                              "release_dates": int(frame["realtime_start"].nunique()),
+                              "period_min": frame["period"].min(), "period_max": frame["period"].max()}},
+    }
+    (folder / "manifest.json").write_text(json.dumps(manifest))
+    return folder
+
+
+def _read_payroll(folder, cutoff="2025-03-15"):
+    from engine.market_os.macro_workspaces.payroll_revision_sources import load_payroll_revisions
+    return load_payroll_revisions(folder, built_at="2025-04-15T12:00:00Z", as_of=cutoff)
+
+
+def test_payroll_same_vintage_changes_and_net_revision_preserve_cutoff(tmp_path):
+    folder = _write_payroll_cohort(tmp_path)
+    result = _read_payroll(folder)
+    january = next(row for row in result["rows"] if row["period"] == "2025-01-01")
+    assert january == {"period": "2025-01-01", "earliest_change": 57.0, "selected_change": 30.0,
+                       "net_revision": -27.0, "earliest_vintage": "2025-02-07", "selected_vintage": "2025-03-07"}
+    assert result["collected_at"] == "2025-04-01T09:00:00+00:00"
+    before = _read_payroll(folder, "2025-02-06")
+    assert all(row["period"] < "2025-01-01" for row in before["rows"])
+    on = _read_payroll(folder, "2025-02-07")
+    january = next(row for row in on["rows"] if row["period"] == "2025-01-01")
+    assert january["selected_change"] == 57.0 and january["net_revision"] == 0
+    assert "realtime_end" not in json.dumps(result)
+
+
+def test_future_vintage_addition_changes_no_cutoff_economic_projection(tmp_path):
+    original = _read_payroll(_write_payroll_cohort(tmp_path / "before"))
+    rows = [(p, start, "2025-04-03" if start == "2025-03-07" else end, value)
+            for p, start, end, value in _PAYROLL_ROWS]
+    rows += [("2025-01-01", "2025-04-04", "9999-12-31", 180000.0),
+             ("2024-12-01", "2025-04-04", "9999-12-31", 170000.0),
+             ("2025-03-01", "2025-04-04", "9999-12-31", 190000.0)]
+    later = _read_payroll(_write_payroll_cohort(tmp_path / "after", rows))
+    assert later["rows"] == original["rows"]
+    assert later["source_digest"] != original["source_digest"]  # audit cohort may change
+    assert "2025-04-03" not in json.dumps(later["rows"])
+
+
+def test_payroll_missing_prior_keeps_missing_arithmetic_and_bulk_vintage_label(tmp_path):
+    rows = [row for row in _PAYROLL_ROWS if row[:2] != ("2024-12-01", "2025-02-07")]
+    january = next(row for row in _read_payroll(_write_payroll_cohort(tmp_path, rows))["rows"] if row["period"] == "2025-01-01")
+    assert january["earliest_change"] is None and january["net_revision"] is None
+    assert january["selected_change"] == 30
+    old = _read_payroll(_write_payroll_cohort(tmp_path / "bulk", [
+        ("1939-01-01", "1997-01-01", "9999-12-31", 100),
+        ("1939-02-01", "1997-01-01", "9999-12-31", 120),
+    ]), "1997-01-01")
+    assert old["rows"][-1]["earliest_vintage"] == "1997-01-01"
+    assert old["rows"][-1]["earliest_change"] == 20
+    assert "official" not in old["rows"][-1]
+    missing = _read_payroll(tmp_path / "bulk" / "release_targets", "1996-12-31")
+    assert missing["rows"] == [] and missing["unavailable_reason"] == "INSUFFICIENT_HISTORY"
+
+
+def test_repeated_unchanged_vintage_is_not_a_revision_event(tmp_path):
+    rows = [(p, start, "2025-03-31" if start == "2025-03-07" else end, value)
+            for p, start, end, value in _PAYROLL_ROWS]
+    rows += [(p, "2025-04-01", "9999-12-31", value) for p, start, end, value in _PAYROLL_ROWS if start == "2025-03-07"]
+    from engine.market_os.macro_workspaces import labor, payroll_revisions as payroll
+    projection = _read_payroll(_write_payroll_cohort(tmp_path, rows), "2025-04-01")
+    body = payroll.attach_payroll_revisions(labor.compose({}, built_at=HISTORY_BUILT_AT), projection)
+    metrics = [row for row in body["metrics"]["items"] if row["metric_id"].startswith(payroll.PREFIX)]
+    assert all(row["revised_at"] is None and row["available_at"] is None and row["released_at"] is None for row in metrics)
+    assert next(row for row in projection["rows"] if row["period"] == "2025-01-01")["net_revision"] == -27
+
+
+def test_exact_byte_reader_decodes_verified_memory_after_path_replacement(tmp_path, monkeypatch):
+    import pyarrow.parquet as parquet
+    from engine.release_target_cohort import read_release_target_cohort
+    folder = _write_payroll_cohort(tmp_path)
+    path = folder / "PAYEMS_all_vintages.parquet"
+    original_bytes = path.read_bytes()
+    factory = parquet.ParquetFile
+    def replace_path_then_decode(data):
+        path.write_bytes(b"not the verified parquet")
+        return factory(data)
+    monkeypatch.setattr(parquet, "ParquetFile", replace_path_then_decode)
+    frames, _, _, receipts = read_release_target_cohort(folder / "manifest.json", {"PAYEMS": path})
+    assert 159057 in frames["PAYEMS"]["value"].tolist()
+    assert receipts["PAYEMS"]["artifact_sha256"] == hashlib.sha256(original_bytes).hexdigest()
+
+
+def test_cohort_manifest_change_during_decode_refuses_the_result(tmp_path, monkeypatch):
+    import pyarrow.parquet as parquet
+    from engine.release_target_cohort import ReleaseTargetCohortError
+    folder = _write_payroll_cohort(tmp_path)
+    factory = parquet.ParquetFile
+    def change_manifest(data):
+        manifest = folder / "manifest.json"
+        manifest.write_bytes(manifest.read_bytes() + b"\n")
+        return factory(data)
+    monkeypatch.setattr(parquet, "ParquetFile", change_manifest)
+    with pytest.raises(ReleaseTargetCohortError, match="changed while reading"):
+        _read_payroll(folder)
+
+
+@pytest.mark.parametrize("defect", ["wrong_series", "wrong_type", "invalid_date", "infinity", "duplicate", "inverted_interval"])
+def test_bound_payroll_cohort_rejects_invalid_observations(tmp_path, defect):
+    from engine.release_target_cohort import ReleaseTargetCohortError
+    frame = pd.DataFrame(_PAYROLL_ROWS, columns=["period", "realtime_start", "realtime_end", "value"])
+    frame["series"], frame["source_output_type"] = "PAYEMS", 2
+    if defect == "wrong_series": frame.loc[0, "series"] = "CPIAUCSL"
+    if defect == "wrong_type": frame.loc[0, "source_output_type"] = 4
+    if defect == "invalid_date": frame.loc[1, "realtime_start"] = "2025-02-30"
+    if defect == "infinity": frame.loc[1, "value"] = float("inf")
+    if defect == "duplicate": frame = pd.concat([frame, frame.iloc[[0]]], ignore_index=True)
+    if defect == "inverted_interval": frame.loc[0, "realtime_end"] = "1939-01-01"
+    with pytest.raises(ReleaseTargetCohortError):
+        _read_payroll(_write_payroll_cohort(tmp_path, frame=frame))
+
+
+def test_missing_partial_or_corrupt_cohort_are_distinct_and_never_fall_back(tmp_path):
+    from engine.release_target_cohort import ReleaseTargetCohortError
+    assert _read_payroll(tmp_path / "absent")["unavailable_reason"] == "NOT_COVERED"
+    folder = _write_payroll_cohort(tmp_path)
+    manifest_path = folder / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["status"] = "partial"
+    manifest_path.write_text(json.dumps(manifest))
+    assert _read_payroll(folder)["rows"] == []
+    manifest["status"] = "ok"
+    manifest["series"]["PAYEMS"]["artifact_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ReleaseTargetCohortError, match="SHA-256"):
+        _read_payroll(folder)
+
+
+def test_payroll_publication_view_and_original_obligation_remain_distinct(tmp_path):
+    from engine.market_os.macro_workspaces import payroll_revisions as payroll
+    folder = _write_payroll_cohort(tmp_path)
+    regime = tmp_path / "regime.json"
+    regime.write_text("{}")
+    out = tmp_path / "published"
+    build.build_all(regime_latest_path=regime, fred_dir=tmp_path / "fred", treasury_dir=tmp_path / "treasury",
+                    release_target_dir=folder, out_root=out, built_at="2025-04-15T12:00:00Z")
+    page = next(page for page in SUITE_PAGES if page.workspace_id == "labor_markets")
+    body, artifact = read_workspace(out, page)
+    view = build_view(body, page_built_at="2025-04-15T12:00:00Z", artifact=artifact)
+    revision = view["payroll_revisions"]
+    assert revision["rows"][-2]["net_revision"] == -27
+    assert revision["unit"] == "thousands" and revision["status"] == "partial"
+    assert "合计修订" in revision["limitation"]["zh"]
+    original = next(row for row in body["metrics"]["items"] if row["metric_id"] == "payrolls_nfp_change_and_revision")
+    assert original["value"] is None and original["null_reason"] == "NOT_COVERED"
+    from engine.market_os.macro_workspaces import labor
+    baseline = labor.compose({}, built_at="2025-04-15T12:00:00Z")
+    for field in ("authority", "axes", "headline", "availability", "changes"):
+        assert body[field] == baseline[field]
+    for row in view["metrics"]:
+        if row["metric_id"].startswith(payroll.PREFIX) and row["value_raw"] is not None:
+            assert row["freshness"]["en"] == "Retrospective vintage history"
+    assert not any("as known then" in row["freshness"]["en"] for row in view["evidence"]["sources"] if row["source_id"].startswith("revision:"))
+
+
+@pytest.mark.parametrize("defect", ["missing_role", "duplicate_role", "digest", "cutoff", "released_clock", "revision_value", "missing_source", "duplicate_source", "source_digest", "future_collection"])
+def test_payroll_view_refuses_inconsistent_scalar_groups(tmp_path, defect):
+    from engine.market_os.macro_workspaces import labor, payroll_revisions as payroll
+    body = payroll.attach_payroll_revisions(labor.compose({}, built_at=HISTORY_BUILT_AT), _read_payroll(_write_payroll_cohort(tmp_path)))
+    rows = body["metrics"]["items"]
+    chosen = next(row for row in rows if row["metric_id"] == "payroll_revision:2025-01-01:net_revision")
+    if defect == "missing_role": rows.remove(chosen)
+    if defect == "duplicate_role": rows.append(copy.deepcopy(chosen))
+    if defect == "digest": chosen["source_digest"] = "1" * 64
+    if defect == "cutoff": chosen["calculation_as_of"] = "2025-02-01"
+    if defect == "released_clock": chosen["released_at"] = "2025-02-07T00:00:00Z"
+    if defect == "revision_value": chosen["value"] = -26
+    if defect == "missing_source": body["sources"]["items"] = []
+    if defect == "duplicate_source": body["sources"]["items"].append(copy.deepcopy(body["sources"]["items"][-1]))
+    if defect == "source_digest": body["sources"]["items"][-2]["artifact_ref"] = payroll.ARTIFACT + "#sha256=" + "9" * 64
+    if defect == "future_collection":
+        for row in rows:
+            if row["metric_id"].startswith(payroll.PREFIX): row["collected_at"] = "2030-01-01T00:00:00Z"
+        for source in body["sources"]["items"]:
+            if source["source_id"].startswith("revision:"): source["collected_at"] = "2030-01-01T00:00:00Z"
+    with pytest.raises(ValueError):
+        payroll.read_payroll_revision_metrics(body)
+
+
+def test_payroll_collection_completion_and_decode_budgets_are_real_bounds(tmp_path, monkeypatch):
+    from engine import release_target_cohort as cohort
+    from engine.market_os.macro_workspaces.payroll_revision_sources import load_payroll_revisions
+    folder = _write_payroll_cohort(tmp_path)
+    with pytest.raises(cohort.ReleaseTargetCohortError, match="completed after"):
+        load_payroll_revisions(folder, built_at="2025-04-01T09:00:00Z")
+    monkeypatch.setattr(cohort, "MAX_DECODED_BYTES", 1)
+    with pytest.raises(cohort.ReleaseTargetCohortError, match="decoded-byte bound"):
+        _read_payroll(folder)
+
+
+def test_vintage_dates_without_any_change_are_not_a_ready_revision_panel(tmp_path):
+    from engine.market_os.macro_workspaces import labor, payroll_revisions as payroll
+    projection = _read_payroll(_write_payroll_cohort(tmp_path, [
+        ("2025-01-01", "2025-02-07", "9999-12-31", 159057),
+    ]))
+    body = contract.finalize(payroll.attach_payroll_revisions(labor.compose({}, built_at=HISTORY_BUILT_AT), projection))
+    view = build_view(body, page_built_at=HISTORY_BUILT_AT, artifact={})
+    assert view["payroll_revisions"]["status"] == "unavailable"
+    assert view["payroll_revisions"]["absence"] is not None
+    assert view["payroll_revisions"]["rows"][0]["earliest_change"] is None

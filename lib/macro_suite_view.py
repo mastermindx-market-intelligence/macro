@@ -27,6 +27,7 @@ from typing import Any, Mapping, Sequence
 
 from lib import macro_suite_disclosure as D
 from lib import macro_suite_labels as L
+from engine.market_os.macro_workspaces import payroll_revisions as PR
 
 # Reading orders the shell can compose. The grammar order is merged architecture
 # section 6.3 and remains the default for every workspace; the decision-first
@@ -762,8 +763,8 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
         fx_translation = _fx_translation_view(metric)
         rows.append({
             "metric_id": metric.get("metric_id"),
-            "label": L.label("metric", metric.get("metric_id")),
-            "value": L.value_pair(value),
+            "label": _payroll_metric_label(metric.get("metric_id")) or L.label("metric", metric.get("metric_id")),
+            "value": _payroll_vintage_value(metric) or L.value_pair(value),
             "value_raw": value,
             "value_type": value_type,
             "unit_token": unit,
@@ -771,23 +772,31 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "freshness_token": metric.get("freshness"),
             "presence_token": metric.get("status"),
             "absence": None if value is not None else _absence(metric.get("null_reason")),
-            "unit": _strip_currency_unit(value_type, unit, normalized),
-            "basis": _translation_basis_pair(basis, metric),
+            "unit": (_pair("thousand jobs", "千个就业岗位")
+                     if basis == PR.BASIS and unit == "thousands" else _strip_currency_unit(value_type, unit, normalized)),
+            "basis": (_pair("ALFRED recorded vintage days; retrospective reconstruction", "按ALFRED记录的版本日期回溯重建")
+                      if basis == PR.BASIS else _translation_basis_pair(basis, metric)),
             "direction": L.label("direction", metric.get("direction_semantics")),
-            "freshness": L.label("freshness", metric.get("freshness")),
+            "freshness": (_pair("Retrospective vintage history", "回溯版本历史")
+                          if basis == PR.BASIS and value is not None else L.label("freshness", metric.get("freshness"))),
             "freshness_tone": L.tone("freshness", metric.get("freshness")),
             "presence": L.label("presence", metric.get("status")),
             "rights": L.label("rights_state", metric.get("rights_state")),
             "reference_id": metric.get("reference_id"),
             "definition_id": metric.get("definition_id"),
             "definition_version": metric.get("definition_version"),
-            "definition_label": D.definition_version_pair(
+            "definition_label": (_pair("Calculation version 1", "计算方法第1版") if basis == PR.BASIS else D.definition_version_pair(
                 metric.get("definition_version"),
-                metric.get("reference_period") or published),
+                metric.get("reference_period") or published)),
             "owner_ref": metric.get("owner_ref"),
-            "owner_name": D.owner_display_pair(metric.get("owner_ref")),
+            "owner_name": (_pair("Bureau of Labor Statistics via the St. Louis Fed vintage archive", "美国劳工统计局数据·圣路易斯联储历史版本库")
+                           if basis == PR.BASIS else D.owner_display_pair(metric.get("owner_ref"))),
             "model_version": metric.get("model_version"),
             "transformation": metric.get("transformation"),
+            "transformation_label": (_pair(
+                "Monthly job change is this month’s employment level minus the previous month’s level in the same vintage. Net revision is the selected change minus the earliest retained change.",
+                "月度就业变化为同一版本中本月与上月就业人数之差。净修订为所选版本的月度变化减去最早保留的月度变化。")
+                if basis == PR.BASIS else None),
             "sample_note": (
                 _catch_rate_sample_note(metric)
                 or _tga_reserves_note(metric)
@@ -799,12 +808,64 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "clocks": _clock_rows(metric),
             "reference_period": L.date_or_none(metric.get("reference_period")),
             "source_refs": list(metric.get("source_refs") or []),
+            "source_digest": metric.get("source_digest"),
+            "calculation_as_of": metric.get("calculation_as_of"),
+            "collected_at": metric.get("collected_at"),
             # S6 view-row fields (snapshot schema is closed; these live only
             # on the view row, never on the composed metric).
             "normalized": normalized,
             "fx_translation": fx_translation,
         })
     return rows
+
+
+def _payroll_metric_label(metric_id: Any) -> dict[str, str] | None:
+    if metric_id == PR.PREFIX + "availability":
+        return _pair("Payroll revision history", "非农就业修订历史")
+    identity = PR.metric_identity(metric_id)
+    if identity is None:
+        return None
+    period, role = identity
+    labels = {
+        "earliest_change": ("Monthly jobs change · earliest retained reading", "月度就业变化·最早保留读数"),
+        "selected_change": ("Monthly jobs change · selected vintage", "月度就业变化·所选版本"),
+        "net_revision": ("Net revision since earliest retained reading", "相对最早保留读数的净修订"),
+        "earliest_vintage": ("Earliest retained vintage day", "最早保留版本日期"),
+        "selected_vintage": ("Selected vintage day", "所选版本日期"),
+    }
+    en, zh = labels[role]
+    return _pair(f"{en} · {period[:7]}", f"{zh}·{period[:7]}")
+
+
+def _payroll_vintage_value(metric: Mapping[str, Any]) -> dict[str, str] | None:
+    identity = PR.metric_identity(metric.get("metric_id"))
+    if identity is None or not identity[1].endswith("_vintage") or metric.get("value") is None:
+        return None
+    stamp = date.fromisoformat(metric["value"])
+    return _pair(f"{stamp.day} {_MONTHS_EN[stamp.month - 1]} {stamp.year}",
+                 f"{stamp.year}年{stamp.month}月{stamp.day}日")
+
+
+def _payroll_revision_view(snapshot: Mapping[str, Any]) -> dict | None:
+    result = PR.read_payroll_revision_metrics(snapshot)
+    if result is None:
+        return None
+    usable = sum(row["earliest_change"] is not None and row["selected_change"] is not None for row in result["rows"])
+    any_values = any(row["earliest_change"] is not None or row["selected_change"] is not None for row in result["rows"])
+    status = "ready" if result["rows"] and usable == len(result["rows"]) else "partial" if any_values else "unavailable"
+    return {
+        **result, "schema": "mastermind.payroll_revision_view.v1", "method": PR.METHOD,
+        "basis": PR.BASIS, "unit": "thousands", "status": status,
+        "title": _pair("How job estimates changed", "就业估计如何变化"),
+        "description": _pair(
+            "Compare monthly job gains or losses in the earliest retained reading with the selected vintage.",
+            "比较最早保留读数与所选版本中的月度就业增减。"),
+        "limitation": _pair(
+            "Retrospective reconstruction from ALFRED vintage days. Earliest retained is not a verified first release. "
+            "These dates do not show when Mastermind held the data, and the net revision is not the official combined revision to the prior two months.",
+            "按ALFRED版本日期回溯重建。最早保留读数不是经核验的首次发布。版本日期不代表Mastermind当时已持有数据；净修订也不是官方对前两个月的合计修订。"),
+        "absence": _absence(result["unavailable_reason"] or "INSUFFICIENT_HISTORY") if status == "unavailable" else None,
+    }
 
 
 def _prior_claims_note(snapshot: Mapping[str, Any],
@@ -1148,6 +1209,10 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "owner_ref": source.get("owner_ref"),
             "artifact_ref": source.get("artifact_ref"),
             "transform": source.get("transform"),
+            "transform_label": (_pair(
+                "Retrospective reconstruction from ALFRED vintage days. These are archive records, not Mastermind collection times or verified release timestamps.",
+                "按ALFRED版本日期回溯重建。这些日期属于历史库记录，并非Mastermind采集时间或经核验的发布时间。")
+                if source.get("definition_id") == PR.METHOD else None),
             "definition_id": source.get("definition_id"),
             "definition_version": source.get("definition_version"),
             "rights": (_pair("Available with source attribution", "使用时保留来源归属")
@@ -1155,12 +1220,14 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
                        else L.label("rights_state", source.get("rights_state"))),
             "freshness": (_history_reference_age_label(source.get("freshness"))
                           if str(source.get("source_id", "")).startswith("history:")
+                          else _pair("Retrospective vintage history", "回溯版本历史")
+                          if source.get("definition_id") == PR.METHOD
                           else L.label("freshness", source.get("freshness"))),
             "freshness_tone": L.tone("freshness", source.get("freshness")),
             "correction": L.label("correction_state", source.get("correction_state")),
             "clocks": _clock_rows({
                 **source,
-                "observed_at": source.get("reference_period"),
+                "observed_at": None if source.get("definition_id") == PR.METHOD else source.get("reference_period"),
                 "available_at": source.get("first_known_at"),
                 "calculation_as_of": None,
             }),
@@ -2050,6 +2117,10 @@ def build_view(snapshot: Mapping[str, Any], *, page_built_at: str,
     # Curve-shape hero is rates_curves-only. Other workspaces must not grow the key.
     if view["workspace"]["id"] == "rates_curves":
         view["curve_hero"] = _curve_hero(snapshot)
+    if view["workspace"]["id"] == "labor_markets":
+        revisions = _payroll_revision_view(snapshot)
+        if revisions is not None:
+            view["payroll_revisions"] = revisions
     return L.sanitize_view_pairs(view)
 
 

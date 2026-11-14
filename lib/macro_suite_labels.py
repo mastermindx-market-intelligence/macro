@@ -1767,7 +1767,7 @@ _LOCALE_SUFFIX_RE = re.compile(r"_(en|zh)\b")
 
 # Customer-facing brand / market words that match the state-token shape.
 _STATE_TOKEN_ALLOW: frozenset[str] = frozenset({
-    "MASTERMINDX", "HICP", "FRED", "SOFR", "TIPS", "OECD", "NBER",
+    "MASTERMINDX", "HICP", "FRED", "ALFRED", "SOFR", "TIPS", "OECD", "NBER",
     "FOMC", "VIX", "CPI",
 })
 
