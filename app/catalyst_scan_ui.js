@@ -172,9 +172,10 @@
         throw new Error("Invalid source");
       }
       render(data); // Show the entire supported scan before revealing email.
-      // Stage B's existing verifier accepts v1, never assume v2 tokens.
-      scanReceipt = data.schema === "catalyst.scan/v1" &&
-        typeof data.scan_receipt === "string" ? data.scan_receipt : "";
+      // The receipt authority signs the contract v1 scan and the live Stage A
+      // v2 scan alike; the schema pair was validated above, so take the token
+      // whenever the server minted one.
+      scanReceipt = typeof data.scan_receipt === "string" ? data.scan_receipt : "";
       invite();
       const share = new URL(window.location.pathname, window.location.origin);
       share.searchParams.set("tickers", tickers.join(","));

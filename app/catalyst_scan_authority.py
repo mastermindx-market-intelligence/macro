@@ -23,6 +23,10 @@ _TTL = timedelta(minutes=20)
 _EVENT = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:\-]{0,95}\Z")
 _TICKER = re.compile(r"[A-Z]{1,6}(?:[.\-][A-Z]{1,2})?\Z")
 _TOKEN = re.compile(r"[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\Z")
+# The sanitized public scan is either the contract v1 shape or the live Stage A
+# v2 shape (attested checked_window). Both carry the same event/generation/
+# SUPPORTED-row identity the receipt binds; a mismatched pair is never signed.
+_SCHEMAS = frozenset({("catalyst.scan/v1", 1), ("catalyst.scan/v2", 2)})
 
 
 @dataclass(frozen=True)
@@ -68,7 +72,8 @@ def _secret(value: str | None) -> str:
 
 
 def _supported(scan: dict) -> tuple[str, ...]:
-    if (not isinstance(scan, dict) or scan.get("schema") != "catalyst.scan/v1"
+    if (not isinstance(scan, dict)
+            or (scan.get("schema"), scan.get("schema_version")) not in _SCHEMAS
             or scan.get("publication_state") not in ("PUBLIC_QUALIFIED", "PARTIAL")
             or not isinstance(scan.get("event_id"), str)
             or not _EVENT.fullmatch(scan["event_id"])

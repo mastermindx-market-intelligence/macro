@@ -41,6 +41,11 @@ def configure(service: FunnelService | None) -> None:
     _service = service
 
 
+def configured() -> bool:
+    """True only after the integration owner injected a funnel service."""
+    return _service is not None
+
+
 def _active() -> FunnelService:
     if _service is None:
         raise HTTPException(status_code=503, detail="CATALYST_INTEGRATION_NOT_READY")
