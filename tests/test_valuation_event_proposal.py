@@ -584,3 +584,21 @@ def test_numeric_phrase_tail_requires_context_qualification():
     )
     assert p["abstain_reason"] == vep.R_GUIDANCE_METRIC_UNQUALIFIED
     assert p["proposed_value"] is None
+
+
+@pytest.mark.parametrize(("event_ts", "cutoff", "observable"), [
+    ("2026-08-06T17:00:00+02:00", "2026-08-06T14:59:59.999999Z", False),
+    ("2026-08-07T01:00:00+09:00", "2026-08-06T16:00:00Z", True),
+    ("2026-08-07T01:00:00+09:00", "2026-08-06", True),
+    ("2026-08-06T16:00:00", "2026-08-06T16:00:00Z", False),
+    ("2026-08-06T16:00:00Z", "invalid-cutoff", False),
+])
+def test_chronicle_proposal_respects_build_instant(event_ts, cutoff, observable):
+    event = {"id": "synthetic", "tickers": ["AAPL"], "kind": "Tender Offers",
+             "ts": event_ts, "links": {"source": "https://www.sec.gov/Archives/synthetic.htm"}}
+    candidate = vep.propose_from_chronicle_event(event, controls(), as_of=cutoff)
+    if observable:
+        assert candidate["status"] == vep.STATUS_PROPOSED
+    else:
+        assert candidate["status"] == vep.STATUS_INSUFFICIENT
+        assert vep.R_EVENT_NOT_YET_OBSERVABLE in candidate["abstain_reasons"]

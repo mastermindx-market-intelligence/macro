@@ -656,7 +656,7 @@ def _bridge_for_issuer(event_class: object):
     return _veb.bridge_for_issuer(event_class)
 
 
-def latest_issuer_spine_event_class(ticker: object) -> str | None:
+def latest_issuer_spine_event_class(ticker: object, *, as_of=None) -> str | None:
     """Read the latest non-null issuer class from the local event spines.
 
     Chronicle JSONL and the capital-structure parquet ledger are read through
@@ -666,16 +666,17 @@ def latest_issuer_spine_event_class(ticker: object) -> str | None:
         return None
     wanted = ticker.strip().upper()
     try:
-        return _select_latest_classified_event_class(wanted)
+        return _select_latest_classified_event_class(wanted, as_of)
     except Exception as exc:
         log.warning("valuation: issuer event lookup failed: %s", exc)
         return None
 
 
-def _select_latest_classified_event_class(wanted: str) -> str | None:
+def _select_latest_classified_event_class(wanted: str, as_of=None) -> str | None:
     from engine.chronicle import spine as chronicle_spine
     from engine.capital_structure.event_versions_io import iter_classified_spine_events
     from engine.capital_structure.spine_paths import chronicle_events_path
+    from engine.valuation_event_proposal import issuer_event_at_cutoff
 
     events = list(chronicle_spine.load_events_jsonl(chronicle_events_path()))
     for event in iter_classified_spine_events(wanted):
@@ -699,9 +700,10 @@ def _select_latest_classified_event_class(wanted: str) -> str | None:
         if not event_class or _bridge_for_issuer(event_class) is None:
             continue
         available = event.get("ts") or event.get("date")
-        if not available:
+        clock = str(available) if as_of is None else issuer_event_at_cutoff(available, as_of)
+        if not available or clock is None:
             continue
-        key = (str(available), str(event.get("id") or ""))
+        key = (clock, str(event.get("id") or ""))
         if latest_key is None or key > latest_key:
             latest_key = key
             latest_event = event
@@ -710,11 +712,11 @@ def _select_latest_classified_event_class(wanted: str) -> str | None:
     return str(latest_event["kind"]).strip()
 
 
-def _issuer_event_class(v1_blob: dict) -> str | None:
-    return latest_issuer_spine_event_class(v1_blob.get("ticker"))
+def _issuer_event_class(v1_blob: dict, as_of=None) -> str | None:
+    return latest_issuer_spine_event_class(v1_blob.get("ticker"), as_of=as_of)
 
 
-def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
+def latest_issuer_event_record(ticker: object, *, as_of=None) -> tuple[dict | None, bool]:
     """(latest event record, reader_ok).
 
     ``reader_ok`` is False only when the readers themselves failed. A healthy
@@ -755,6 +757,17 @@ def latest_issuer_event_record(ticker: object) -> tuple[dict | None, bool]:
     dated = [e for e in events if (e.get("ts") or e.get("date"))]
     if not dated:
         return None, True
+    if as_of is not None:
+        from engine.valuation_event_proposal import issuer_event_at_cutoff
+
+        # Keep the future-only record for the existing typed abstention.
+        visible = []
+        for event in dated:
+            instant = issuer_event_at_cutoff(event.get("ts") or event.get("date"), as_of)
+            if instant is not None:
+                visible.append((instant, event))
+        if visible:
+            return max(visible, key=lambda item: item[0])[1], True
     return max(dated, key=lambda e: str(e.get("ts") or e.get("date"))), True
 
 
@@ -784,7 +797,7 @@ def _attach_event_proposal(blob: dict, as_of: object = None) -> dict:
         from engine import valuation_event_proposal as _vep
 
         ticker = blob.get("ticker")
-        record, reader_ok = latest_issuer_event_record(ticker)
+        record, reader_ok = latest_issuer_event_record(ticker, as_of=as_of)
         if not reader_ok:
             proposal = _vep.proposal_reader_unavailable(blob)
         else:
@@ -909,7 +922,7 @@ def controls_blob(v1_blob, as_of=None):
     if fy is None or not period_end:
         return None
 
-    latest_event_class = _issuer_event_class(v1_blob)
+    latest_event_class = _issuer_event_class(v1_blob, as_of=as_of)
     if abs(net_margin_base) < _MARGIN_BASE_FLOOR:
         return _attach_event_proposal(as_of=as_of, blob={
             "schema": "valuation_scenario_controls.v1",

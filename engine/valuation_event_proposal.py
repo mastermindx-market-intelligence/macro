@@ -25,6 +25,7 @@ any baseline. Authority is research_display_only / shadow.
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 import re as _re
 
 from engine import valuation_event_bridge as _veb
@@ -396,6 +397,23 @@ def _point_in_time_reasons(
     return reasons
 
 
+def issuer_event_at_cutoff(source_clock: object, as_of: object) -> datetime | None:
+    """Observable source instant at a supplied build cutoff.
+
+    A day-only cutoff includes its UTC calendar day. A timestamp is inclusive.
+    """
+    from engine.guidance_source_evidence import _instant
+
+    try:
+        event = _instant(source_clock)
+        cutoff = _instant(as_of)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if len(as_of) == 10:
+        return event if event.date() <= cutoff.date() else None
+    return event if event <= cutoff else None
+
+
 def propose_from_chronicle_event(
     event: object, controls_blob: object, as_of: object = None
 ) -> dict | None:
@@ -420,8 +438,11 @@ def propose_from_chronicle_event(
         )
 
     kind = str(event.get("kind") or "").strip()
-    observed_at = _as_date(event.get("ts") or event.get("date"))
-    reasons = _point_in_time_reasons(observed_at, base_period_end, as_of)
+    source_clock = event.get("ts") or event.get("date")
+    observed_at = _as_date(source_clock)
+    reasons = _point_in_time_reasons(observed_at, base_period_end)
+    if observed_at and as_of is not None and issuer_event_at_cutoff(source_clock, as_of) is None:
+        reasons.add(R_EVENT_NOT_YET_OBSERVABLE)
 
     if not _issuer_matches(ticker, event.get("tickers")):
         reasons.add(R_ISSUER_MISMATCH)

@@ -129,7 +129,8 @@ def test_qualified_source_drives_existing_shadow_only(archived, monkeypatch):
     # Existing native SEC FY2025 reported fields; no forecast numbers enter it.
     rows = [{'fy': 2025, 'period_end': '2025-12-31', 'ni': 66353000,
              'revenue': 517145000, 'shares': 79359005}]
-    monkeypatch.setattr(assumptions, 'latest_issuer_event_record', lambda ticker: (None, True))
+    monkeypatch.setattr(assumptions, 'latest_issuer_spine_event_class', lambda ticker, **kw: None)
+    monkeypatch.setattr(assumptions, 'latest_issuer_event_record', lambda ticker, **kw: (None, True))
     monkeypatch.setattr(assumptions, 'issuer_guidance_hits', lambda ticker, **kwargs: [qualified])
     controls = assumptions.controls_blob(compute(rows, ticker='VCYT'), as_of=CUTOFF)
     proposal = controls['event_assumption_proposal']
@@ -151,7 +152,8 @@ def test_real_source_excerpt_and_its_clock_render_as_dated_evidence(archived, mo
     from pathlib import Path
     hit, root = archived
     qualified = with_source_context(hit, as_of=CUTOFF, root=root)
-    monkeypatch.setattr(assumptions, 'latest_issuer_event_record', lambda ticker: (None, True))
+    monkeypatch.setattr(assumptions, 'latest_issuer_spine_event_class', lambda ticker, **kw: None)
+    monkeypatch.setattr(assumptions, 'latest_issuer_event_record', lambda ticker, **kw: (None, True))
     monkeypatch.setattr(assumptions, 'issuer_guidance_hits', lambda ticker, **kwargs: [qualified])
     controls = assumptions.controls_blob(compute([{'fy': 2025, 'period_end': '2025-12-31',
         'ni': 66353000, 'revenue': 517145000, 'shares': 79359005}], ticker='VCYT'), as_of=CUTOFF)
