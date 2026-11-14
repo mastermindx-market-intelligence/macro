@@ -1,0 +1,275 @@
+{
+  "schema": "d04.us_heatmap_return.validation.v1",
+  "recorded_utc": "2026-11-04T19:29:12.789866+00:00",
+  "source_base": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+  "source_parent": "a538aa35e3cb5268fe834ff4da1098b68cbe9fa9",
+  "source_sha256": {
+    "templates/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "site/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_return_browser.py": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e"
+  },
+  "generated_js_matches_template": true,
+  "matches_browser_run_sha256": true,
+  "checks": [
+    {
+      "name": "shared-heatmap-node",
+      "command": [
+        "node",
+        "--test",
+        "tests/test_china_heatmap_observations_ui.cjs",
+        "tests/test_china_heatmap_refresh.cjs",
+        "tests/test_china_heatmap_observation_refresh.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.43,
+      "stdout": "✔ same-minute quote correction updates return, interval disclosure and coverage together (27.341208ms)\n✔ old source cannot downgrade an accepted observation-truth contract (8.19975ms)\n✔ incoherent observation snapshot (missing tile metadata) never partially replaces current (8.156875ms)\n✔ incoherent observation snapshot (wrong observation session) never partially replaces current (4.600167ms)\n✔ incoherent observation snapshot (non-null return with missing status) never partially replaces current (5.213125ms)\n✔ incoherent observation snapshot (numeric return with null status) never partially replaces current (7.001334ms)\n✔ incoherent observation snapshot (valid current quote cannot claim a missing current endpoint) never partially replaces current (2.859166ms)\n✔ incoherent observation snapshot (missing coverage) never partially replaces current (2.821959ms)\n✔ incoherent observation snapshot (invented coverage count) never partially replaces current (7.477375ms)\n✔ incoherent observation snapshot (wrong denominator) never partially replaces current (6.66625ms)\n✔ incoherent observation snapshot (wrong schema) never partially replaces current (5.344167ms)\n✔ incoherent observation snapshot (reference session after observation) never partially replaces current (5.241917ms)\n✔ incoherent observation snapshot (unequal reference session) never partially replaces current (3.309875ms)\n✔ incoherent observation snapshot (last observation after asof) never partially replaces current (3.986958ms)\n✔ legacy payload can upgrade to complete observation metadata (4.173417ms)\n✔ missing current quote discloses last observation, never suspended (3.722292ms)\n✔ missing reference labels reference rather than assuming missing today (0.987583ms)\n✔ valid zero remains a valid interval (1.546209ms)\n✔ never observed uses explicit wording (7.521458ms)\n✔ invalid prices have unusable quote disclosure (2.022541ms)\n✔ unknown schema refuses precision (0.795458ms)\n✔ legacy payloads remain untouched (0.680333ms)\n✔ other markets remain untouched (0.633416ms)\n✔ hostile date content cannot inject HTML (1.133917ms)\n✔ malformed valid state with null return cannot claim valid interval (1.204542ms)\n✔ selected timeframe uses its own reference (0.70375ms)\n✔ coverage exposes member denominator and missing names (0.613667ms)\n✔ bad coverage accounting is not displayed as success (0.571375ms)\n✔ coverage is not automatically inherited by other markets (1.778ms)\n✔ future last observation cannot be presented as historical evidence (4.089ms)\n✔ reference cannot be after the current endpoint (1.623084ms)\n✔ tile session must agree with payload session (1.322625ms)\n✔ old session cannot overwrite a newer session even with newer generation stamp (24.825666ms)\n✔ same-session correction with equal minute timestamp is rendered (2.18525ms)\n✔ older same-session generation cannot overwrite newer accepted content (4.5815ms)\n✔ removing optional board breadth really removes it (5.631458ms)\n✔ removing optional non-contract metadata does not leave stale data (8.871916ms)\n✔ all observers retain root identity and see complete matching snapshot (4.191583ms)\n✔ generation-only update does not redraw identical content (3.286208ms)\n✔ object property order does not manufacture a semantic revision (2.803375ms)\n✔ zero is a real correction and never becomes missing (3.249833ms)\n✔ missing observation correction stays null not zero (4.097417ms)\n✔ invalid refresh (wrong market) keeps accepted data and emits no repaint (2.90125ms)\n✔ invalid refresh (wrong source) keeps accepted data and emits no repaint (6.218125ms)\n✔ invalid refresh (wrong map) keeps accepted data and emits no repaint (2.238833ms)\n✔ invalid refresh (impossible day) keeps accepted data and emits no repaint (7.857083ms)\n✔ invalid refresh (missing generation) keeps accepted data and emits no repaint (3.333875ms)\n✔ invalid refresh (invalid generation) keeps accepted data and emits no repaint (5.038208ms)\n✔ invalid refresh (generation predates observation) keeps accepted data and emits no repaint (2.589333ms)\n✔ invalid refresh (duplicate ticker) keeps accepted data and emits no repaint (1.73925ms)\n✔ invalid refresh (empty ticker) keeps accepted data and emits no repaint (3.012708ms)\n✔ invalid refresh (missing count) keeps accepted data and emits no repaint (1.98425ms)\n✔ invalid refresh (wrong count) keeps accepted data and emits no repaint (3.866375ms)\n✔ invalid refresh (numeric text return) keeps accepted data and emits no repaint (1.978084ms)\n✔ invalid refresh (boolean return) keeps accepted data and emits no repaint (4.28625ms)\n✔ invalid refresh (negative tile size) keeps accepted data and emits no repaint (3.352459ms)\n✔ invalid refresh (missing performance object) keeps accepted data and emits no repaint (1.956958ms)\n✔ invalid refresh (injected client timeframe) keeps accepted data and emits no repaint (3.860708ms)\n✔ invalid refresh (injected URL) keeps accepted data and emits no repaint (1.741459ms)\n✔ invalid refresh (invalid optional board) keeps accepted data and emits no repaint (3.134375ms)\n✔ invalid refresh (prototype key) keeps accepted data and emits no repaint (2.819209ms)\n✔ empty replacement retains last-known content without relabelling it (2.145708ms)\n✔ a failed initial load does not permanently poison cached promise (2.166042ms)\n✔ invalid first snapshot is not accepted as China data (1.132917ms)\n✔ transient refresh failure is followed by successful later refresh (6.313791ms)\n✔ two timer ticks cannot open overlapping China requests (3.476667ms)\n✔ hung refresh is aborted, keeps last data, and later tick can recover (4.178583ms)\n✔ late response after timeout cannot mutate accepted snapshot (4.296708ms)\n✔ one refresher remains owned per URL (1.169708ms)\n✔ hidden tabs do not fetch (6.100417ms)\n✔ query-string China URL is still identity-validated (0.971625ms)\n✔ us legacy refresh remains timestamp-driven and does not use China validation (1.189459ms)\n✔ hk legacy refresh remains timestamp-driven and does not use China validation (1.3605ms)\n✔ canada legacy refresh remains timestamp-driven and does not use China validation (0.947667ms)\n✔ render-critical shape (timeframes is object) is rejected before committing (2.51ms)\n✔ render-critical shape (timeframe has no identity) is rejected before committing (1.80375ms)\n✔ render-critical shape (timeframe availability is string) is rejected before committing (2.380167ms)\n✔ render-critical shape (duplicate timeframe) is rejected before committing (2.137292ms)\n✔ render-critical shape (sectors is object) is rejected before committing (2.804083ms)\n✔ render-critical shape (sector has no identity) is rejected before committing (3.664584ms)\n✔ render-critical shape (duplicate sector) is rejected before committing (1.892125ms)\n✔ render-critical shape (default timeframe missing from catalog) is rejected before committing (3.356041ms)\n✔ overflow JSON numeric values cannot enter a snapshot (4.518542ms)\n✔ JSON body read timeout is bounded as well as response headers (2.928583ms)\n✔ first-load timeout is evicted and can retry without new timers (6.610084ms)\n✔ non-OK status response preserves old data (1.757375ms)\n✔ syntax error parsing JSON preserves old data (4.339375ms)\n✔ overlapping mounts share one initial request and same state object (2.389375ms)\n✔ new payload private arbitrary state is not reflected to client (3.796292ms)\nℹ tests 89\nℹ suites 0\nℹ pass 89\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 350.420292\n",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "python-regression-and-import-hygiene",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_heatmap_label_ink.py",
+        "tests/test_china_heatmap_gate.py",
+        "tests/test_terminal_overlay_contract.py",
+        "tests/test_check_script_import_pinning.py",
+        "tests/test_no_module_level_logging_disable.py"
+      ],
+      "exit_code": 0,
+      "seconds": 167.21,
+      "stdout": "........................................................................ [ 85%]\n............                                                             [100%]\n84 passed in 150.17s (0:02:30)\n",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "design-system",
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 5.17,
+      "stdout": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25317 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25317)\n",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "runtime-style",
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.73,
+      "stdout": "runtime style injection guard OK (275 .js files scanned, 44 injecting, 88 total hits — all within frozen allowances)\n",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "javascript-syntax",
+      "command": [
+        "node",
+        "--check",
+        "templates/heatmap.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06,
+      "stdout": "",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.12,
+      "stdout": "",
+      "stderr": "",
+      "original_receipt_utc": "2026-11-04T12:15:05.678810+00:00",
+      "reuse_basis": "Product hashes unchanged. Final harness is separately covered by the fresh 45-case run and 15 import/logging tests."
+    },
+    {
+      "name": "ui-visual-evidence",
+      "command": "python3 scripts/check_ui_visual_evidence.py --diff-file - (actual acquired-base diff)",
+      "exit_code": 0,
+      "seconds": 0.83,
+      "stdout": "",
+      "stderr": "",
+      "observation": "Actual resumed-session acquired-base diff gate; see retained original failure in superseded_receipt."
+    },
+    {
+      "recorded_utc": "2026-11-04T19:28:09.740765+00:00",
+      "name": "final-harness-import-and-logging-hygiene",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_check_script_import_pinning.py",
+        "tests/test_no_module_level_logging_disable.py"
+      ],
+      "exit_code": 0,
+      "seconds": 91.61,
+      "stdout": "...............                                                          [100%]\n15 passed in 80.24s (0:01:20)\n",
+      "stderr": "",
+      "harness_sha256": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e"
+    }
+  ],
+  "browser": {
+    "passed": 45,
+    "screenshots": 29,
+    "page_errors": [],
+    "report": "../../../ux-evidence/d04-us-heatmap-return-20261104/browser-report.json",
+    "canonical_states": {
+      "pages": 1,
+      "states_attempted": 24,
+      "states_captured": 24
+    },
+    "observed_at_utc": "2026-11-04T19:21:37.395891+00:00"
+  },
+  "committed_feed": {
+    "sp500": {
+      "source_tiles": 503,
+      "source": "daily-close",
+      "asof": "2026-11-02",
+      "all_supplied_ids_present": true
+    },
+    "themes": {
+      "source_tiles": 268,
+      "source": "finviz-themes",
+      "asof": "2026-11-03",
+      "all_supplied_ids_present": true,
+      "member_contexts": 2339,
+      "unique_member_contexts": 2339,
+      "maximum_members_per_subsector": 16,
+      "all_supplied_member_contexts_present": true
+    }
+  },
+  "contrast": {
+    "minimum_ratio": 5.219,
+    "scope": "New US Theme disclosure directional, zero and missing-value labels only; not a page accessibility certification",
+    "report": "../../../ux-evidence/d04-us-heatmap-return-20261104/contrast-report.json"
+  },
+  "visual_self_check": {
+    "reviewer": "attended D04 root, source author; self-QA, no non-author approval claim",
+    "canonical_images": [
+      "evidence/0614f0fdd204f017.png",
+      "evidence/4432cc154a783c25.png",
+      "evidence/7cc57c7e7383f0ad.png",
+      "evidence/f4c0b5b1ca1769ef.png",
+      "evidence/eaf70740469f7d84.png",
+      "evidence/c5d34396834dbb8a.png",
+      "evidence/d8130ca8380475ed.png",
+      "evidence/5b3b0f65394a63d0.png"
+    ],
+    "functional_images": [
+      "accessible-touch-1440-en-dark.png",
+      "accessible-touch-1440-en-light.png",
+      "accessible-touch-1440-zh-dark.png",
+      "accessible-touch-1440-zh-light.png",
+      "accessible-touch-390-en-dark.png",
+      "accessible-touch-390-en-light.png",
+      "accessible-touch-390-zh-dark.png",
+      "accessible-touch-390-zh-light.png",
+      "accessible-touch-320-zh-light.png",
+      "committed-list-sp500.png",
+      "committed-list-themes.png"
+    ],
+    "result": "PASS for scoped added controls, readable missing values, wrapped identities, hierarchy, neutral surfaces and no horizontal clipping",
+    "limitations": [
+      "Existing wider page styling is not a complete redesign or accessibility certification",
+      "Touch proof is Chromium emulation, not physical hardware",
+      "Canonical timing fields are lab capture observations, not performance acceptance"
+    ],
+    "interaction_images": [
+      "evidence/2c842f44481ad180--list-focus.png",
+      "evidence/fc9b3b7326f03380--list-hover.png",
+      "evidence/6010e359b1df6fa7--list-focus.png",
+      "evidence/c42c2a98a46999f6--list-hover.png"
+    ],
+    "scope": "All eight final rest images plus representative desktop/phone focus and hover states; existing functional and committed-data visual proof retained on identical product hashes."
+  },
+  "removed_superseded_owned_captures": [
+    "evidence/0065d79d5cc86e05.png",
+    "evidence/0e9ffb1725d0993c.png",
+    "evidence/12284739e92d7fd5.png",
+    "evidence/175d71d610fbf911.png",
+    "evidence/3fa2033c1e13ef7c.png",
+    "evidence/485e7d11fddb7d66.png",
+    "evidence/4cdb95258822c97d.png",
+    "evidence/50f40a75028f7782.png",
+    "evidence/58cbaa095eb8b46c.png",
+    "evidence/675e5f88e9e1eb43.png",
+    "evidence/6d6674c003d65f18.png",
+    "evidence/79548aaeac004567.png",
+    "evidence/7a2d377511691202.png",
+    "evidence/958d0e7104728b38.png",
+    "evidence/a45566c1b21afb5e.png",
+    "evidence/b6ef92dde77355f0.png",
+    "evidence/c53e3184d6b9cfe8.png",
+    "evidence/c8458cea84b5aa2d.png",
+    "evidence/cedc47eb7891e21f.png",
+    "evidence/d867e59c258e8a6c.png",
+    "evidence/ee55202f02a99cb6.png",
+    "evidence/f6d2834855780623.png",
+    "evidence/f9203b3744f9900b.png",
+    "evidence/fa5b17ff0dba0c8b.png"
+  ],
+  "all_checks_passed": true,
+  "protected_law_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "matches_committed_feed_and_contrast_probe_product_sha256": true,
+  "probe_binding": {
+    "scope": "Four product files match exactly; the earlier probe harness hash is retained honestly. Final browser and fresh import/logging checks bind the final harness.",
+    "recorded_probe_harness_sha256": "9dab50fa37e46cb7c980e1924956fa880c4dad655bb64fb2f109cc074ebfcc3f",
+    "final_harness_sha256": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e"
+  },
+  "superseded_receipt": {
+    "recorded_utc": "2026-11-04T12:15:05.678810+00:00",
+    "harness_sha256": "9dab50fa37e46cb7c980e1924956fa880c4dad655bb64fb2f109cc074ebfcc3f",
+    "ui_visual_evidence": {
+      "name": "ui-visual-evidence",
+      "command": "python3 scripts/check_ui_visual_evidence.py --diff-file - (actual acquired-base diff)",
+      "exit_code": 0,
+      "seconds": 0.83,
+      "stdout": "",
+      "stderr": "",
+      "observation": "Actual resumed-session acquired-base diff gate; see retained original failure in superseded_receipt."
+    },
+    "reason": "Receipt preceded the accepted focus/hover matrix and final harness. Original output retained; current gate was actually rerun against the acquired-base diff and returned zero."
+  },
+  "canonical_integrity": {
+    "manifest_sha256": "3f8177de6cc911309a5a2da81a16e6965ee48631d06cde2eed1e71c62c13a720",
+    "manifest_generated_at": "2026-11-04T12:19:00.381319+00:00",
+    "files_verified": 24,
+    "hashes_bytes_and_png_dimensions_match": true,
+    "capture_module_sha256": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42",
+    "capture_module_matches": true,
+    "fresh_functional_run_did_not_recapture_canonical_states": true,
+    "console_errors": [
+      {
+        "text": "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+        "source_url": "http://127.0.0.1:3100/terminal?sym=FIX10&from=macro&ret=http%3A%2F%2F127.0.0.1%3A52763%2Fsector_heatmap.html"
+      }
+    ],
+    "console_error_scope": "One unavailable local Terminal endpoint in the screenshot scene; no real Terminal destination acceptance is claimed."
+  }
+}

@@ -1,0 +1,654 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.v1",
+  "mode": "instrumented-timing",
+  "observed_at_utc": "2026-11-05T03:04:17.471509+00:00",
+  "source_head": "3acd4fb0efe00793fc9987f1a6e45a512b26e5dd",
+  "source_sha256": {
+    "templates/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "site/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "789e0c091c9c63224fde60308c3299b722ed97a6d27479b233bfbe1771cf7d65",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "d846a1e959b7cfb62cb32fa376b81355081b8c6ec0286ac6d86f68bbf8605f4b"
+  },
+  "environment": {
+    "os": "26.5",
+    "machine": "arm64",
+    "cpu": "Apple M2 Ultra",
+    "cpu_throttle_rate": 4,
+    "overlay_round_trips": false,
+    "network": "loopback, no network throttling; external requests blocked",
+    "terminal_fixture": "Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access.",
+    "browser": "151.0.7922.34"
+  },
+  "method": "Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners, intervals and list innerHTML assignment duration. Per-action CDP script/layout/style/task deltas include driver input preparation and must not be summed with overlapping event/assignment measurements.",
+  "limitations": [
+    "Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
+    "CPU throttling is a controlled stress condition, not an equivalence to named hardware.",
+    "Bounded-cycle counters cannot prove absence of every memory leak."
+  ],
+  "data": {
+    "sp500": {
+      "tiles": 503,
+      "member_contexts": 0,
+      "asof": "2026-11-02",
+      "source": "daily-close"
+    },
+    "themes": {
+      "tiles": 268,
+      "member_contexts": 2339,
+      "asof": "2026-11-03",
+      "source": "finviz-themes"
+    }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "initial_heatmap_frame_ms": 1258.8999999761581,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 84.29999995231628,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 8.299999952316284,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 16.41799999999999,
+            "LayoutDuration": 29.642000000000056,
+            "RecalcStyleDuration": 16.659000000000006,
+            "TaskDuration": 128.78199999999995
+          }
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 26.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 3.100000023841858,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 6.365000000000009,
+            "LayoutDuration": 3.005999999999953,
+            "RecalcStyleDuration": 2.6440000000000072,
+            "TaskDuration": 44.87599999999992
+          }
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 11.899999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 0.7000000476837158,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 2.76499999999999,
+            "LayoutDuration": 2.4180000000000312,
+            "RecalcStyleDuration": 0.7940000000000169,
+            "TaskDuration": 21.112999999999936
+          }
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 114.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 6.299999952316284,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 13.759000000000022,
+            "LayoutDuration": 45.16900000000001,
+            "RecalcStyleDuration": 23.395,
+            "TaskDuration": 133.42799999999988
+          }
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 21.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 4.399999976158142,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 8.26099999999999,
+            "LayoutDuration": 2.64999999999993,
+            "RecalcStyleDuration": 1.9939999999999958,
+            "TaskDuration": 37.43499999999989
+          }
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 14.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 0.8999999761581421,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 3.9609999999999923,
+            "LayoutDuration": 1.3740000000000974,
+            "RecalcStyleDuration": 0.4649999999999932,
+            "TaskDuration": 23.37800000000012
+          }
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 112.79999995231628,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 7.100000023841858,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.76800000000003,
+            "LayoutDuration": 46.6669999999999,
+            "RecalcStyleDuration": 21.980999999999973,
+            "TaskDuration": 132.73500000000027
+          }
+        },
+        {
+          "label": "sp500:show-map",
+          "event": "click",
+          "next_frame_ms": 114.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 12.5,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 29.795000000000016,
+            "LayoutDuration": 26.835000000000054,
+            "RecalcStyleDuration": 32.37400000000002,
+            "TaskDuration": 161.48000000000008
+          }
+        },
+        {
+          "label": "sp500:show-list",
+          "event": "click",
+          "next_frame_ms": 119.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 9.699999928474426,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 20.045000000000034,
+            "LayoutDuration": 46.47100000000004,
+            "RecalcStyleDuration": 39.187000000000026,
+            "TaskDuration": 260.6489999999999
+          }
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 216.60000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 60.90000009536743,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 84.46199999999997,
+            "LayoutDuration": 58.935999999999986,
+            "RecalcStyleDuration": 37.69700000000004,
+            "TaskDuration": 266.6240000000002
+          }
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 78.30000007152557,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 20.800000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 31.72600000000003,
+            "LayoutDuration": 19.960999999999895,
+            "RecalcStyleDuration": 10.621999999999964,
+            "TaskDuration": 135.4890000000002
+          }
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 47.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 4.299999952316284,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 11.008000000000017,
+            "LayoutDuration": 11.063000000000045,
+            "RecalcStyleDuration": 6.624000000000018,
+            "TaskDuration": 57.341000000000086
+          }
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 344.60000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 59.700000047683716,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 107.28899999999997,
+            "LayoutDuration": 119.73900000000003,
+            "RecalcStyleDuration": 55.59199999999998,
+            "TaskDuration": 375.5139999999999
+          }
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 28.59999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 14.800000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 19.41500000000007,
+            "LayoutDuration": 2.3120000000000918,
+            "RecalcStyleDuration": 1.747000000000054,
+            "TaskDuration": 65.67299999999943
+          }
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 11,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 0.10000002384185791,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 5.049999999999999,
+            "LayoutDuration": 2.2059999999999302,
+            "RecalcStyleDuration": 0.09499999999995623,
+            "TaskDuration": 23.012999999999728
+          }
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 318.2000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 65.70000004768372,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 91.9089999999999,
+            "LayoutDuration": 101.97600000000007,
+            "RecalcStyleDuration": 63.08500000000006,
+            "TaskDuration": 333.52000000000004
+          }
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 512.3999999761581,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 87.5,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 113.19200000000006,
+            "LayoutDuration": 171.18100000000004,
+            "RecalcStyleDuration": 137.36099999999996,
+            "TaskDuration": 541.0089999999999
+          }
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 678.2000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 109.80000007152557,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 152.771,
+            "LayoutDuration": 244.88699999999986,
+            "RecalcStyleDuration": 147.90900000000008,
+            "TaskDuration": 726.229
+          }
+        },
+        {
+          "label": "themes:show-map",
+          "event": "click",
+          "next_frame_ms": 176.80000007152557,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 25.800000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 40.802999999999926,
+            "LayoutDuration": 58.13700000000011,
+            "RecalcStyleDuration": 41.273,
+            "TaskDuration": 269.1979999999994
+          }
+        },
+        {
+          "label": "themes:show-list",
+          "event": "click",
+          "next_frame_ms": 213.70000004768372,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 68.80000007152557,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 99.60300000000011,
+            "LayoutDuration": 48.78999999999989,
+            "RecalcStyleDuration": 31.631999999999884,
+            "TaskDuration": 274.7159999999997
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 258.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 68.89999997615814,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 10.115000000000096,
+            "LayoutDuration": 59.59200000000009,
+            "RecalcStyleDuration": 42.22000000000015,
+            "TaskDuration": 302.0480000000001
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 134.20000004768372,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 5.199999928474426,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.255999999999824,
+            "LayoutDuration": 44.460000000000164,
+            "RecalcStyleDuration": 30.200000000000003,
+            "TaskDuration": 186.12299999999937
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 237.39999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 60.60000002384186,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 9.966999999999837,
+            "LayoutDuration": 56.75600000000003,
+            "RecalcStyleDuration": 40.73599999999988,
+            "TaskDuration": 282.26700000000096
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 155.29999995231628,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 6.899999976158142,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 13.713000000000086,
+            "LayoutDuration": 51.746999999999765,
+            "RecalcStyleDuration": 37.7289999999999,
+            "TaskDuration": 222.55999999999966
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 212,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 59.299999952316284,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 8.977000000000013,
+            "LayoutDuration": 49.138999999999825,
+            "RecalcStyleDuration": 30.239000000000125,
+            "TaskDuration": 234.05200000000013
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 135.90000009536743,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 6.899999976158142,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.554000000000178,
+            "LayoutDuration": 44.76400000000025,
+            "RecalcStyleDuration": 32.2150000000001,
+            "TaskDuration": 183.48100000000045
+          }
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 28,
+          "box_reads": 4,
+          "documents": 9,
+          "nodes": 46963,
+          "jsEventListeners": 251,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 4862108,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 32,
+          "box_reads": 8,
+          "documents": 9,
+          "nodes": 79605,
+          "jsEventListeners": 279,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 4991384,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 9,
+          "hm_removes": 8,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 40,
+          "box_reads": 16,
+          "documents": 9,
+          "nodes": 144889,
+          "jsEventListeners": 335,
+          "retired_tm_collected": false,
+          "label": "cycle-3",
+          "js_heap_used_bytes": 5281512,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "console_events": [],
+      "longtasks": [
+        {
+          "start_ms": 547.5999999046326,
+          "duration_ms": 117
+        },
+        {
+          "start_ms": 786.3999999761581,
+          "duration_ms": 174
+        },
+        {
+          "start_ms": 962.6999999284744,
+          "duration_ms": 192
+        },
+        {
+          "start_ms": 1506.5,
+          "duration_ms": 111
+        },
+        {
+          "start_ms": 1724.8999999761581,
+          "duration_ms": 69
+        },
+        {
+          "start_ms": 1937.7999999523163,
+          "duration_ms": 85
+        },
+        {
+          "start_ms": 2163.0999999046326,
+          "duration_ms": 85
+        },
+        {
+          "start_ms": 2403.7999999523163,
+          "duration_ms": 100
+        },
+        {
+          "start_ms": 2651.5999999046326,
+          "duration_ms": 109
+        },
+        {
+          "start_ms": 2956.5999999046326,
+          "duration_ms": 100
+        },
+        {
+          "start_ms": 3139.2999999523163,
+          "duration_ms": 221
+        },
+        {
+          "start_ms": 3495.6999999284744,
+          "duration_ms": 176
+        },
+        {
+          "start_ms": 3783.0999999046326,
+          "duration_ms": 64
+        },
+        {
+          "start_ms": 3947.1999999284744,
+          "duration_ms": 348
+        },
+        {
+          "start_ms": 4440.199999928474,
+          "duration_ms": 260
+        },
+        {
+          "start_ms": 4700.599999904633,
+          "duration_ms": 60
+        },
+        {
+          "start_ms": 5297.899999976158,
+          "duration_ms": 420
+        },
+        {
+          "start_ms": 5718.5,
+          "duration_ms": 85
+        },
+        {
+          "start_ms": 5853.299999952316,
+          "duration_ms": 528
+        },
+        {
+          "start_ms": 6382.099999904633,
+          "duration_ms": 142
+        },
+        {
+          "start_ms": 6707.399999976158,
+          "duration_ms": 153
+        },
+        {
+          "start_ms": 6996.5,
+          "duration_ms": 197
+        },
+        {
+          "start_ms": 7288.199999928474,
+          "duration_ms": 119
+        },
+        {
+          "start_ms": 7944.599999904633,
+          "duration_ms": 232
+        },
+        {
+          "start_ms": 8547.699999928474,
+          "duration_ms": 119
+        },
+        {
+          "start_ms": 9083.699999928474,
+          "duration_ms": 211
+        },
+        {
+          "start_ms": 9689.199999928474,
+          "duration_ms": 140
+        },
+        {
+          "start_ms": 10036.799999952316,
+          "duration_ms": 189
+        },
+        {
+          "start_ms": 10608.599999904633,
+          "duration_ms": 119
+        }
+      ],
+      "timing_summary": {
+        "samples": 26,
+        "median_next_frame_ms": 126.65000003576279,
+        "maximum_next_frame_ms": 678.2000000476837
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 97926,
+        "jsEventListeners": 84,
+        "js_heap_used_bytes": 419404
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "retention_qualification": "UNQUALIFIED: locator/expect actions retain targets under DevTools console in the measured driver. Use --retention-only for clean by-value collection proof; raw counters are retained here."
+    }
+  ],
+  "all_invariants_passed": true
+}

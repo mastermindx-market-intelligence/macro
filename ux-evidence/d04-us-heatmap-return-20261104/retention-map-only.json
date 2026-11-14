@@ -1,0 +1,531 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.v1",
+  "observed_at_utc": "2026-11-04T19:44:48.594100+00:00",
+  "source_head": "61844ffd1b6e53d8e63122141b1125b3d6219bd3",
+  "source_sha256": {
+    "templates/heatmap.js": "1cf6f377e7384c729d665df49618a0220e66887ef372d6c1fbd938bd30612d93",
+    "site/heatmap.js": "1cf6f377e7384c729d665df49618a0220e66887ef372d6c1fbd938bd30612d93",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "6858f6948778ba0dae51e4cffec27319591ed1998f0d2213c7dedde4ded32d58"
+  },
+  "environment": {
+    "os": "26.5",
+    "machine": "arm64",
+    "cpu": "Apple M2 Ultra",
+    "cpu_throttle_rate": 4,
+    "overlay_round_trips": false,
+    "network": "loopback, no network throttling; external requests blocked",
+    "terminal_fixture": "Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access.",
+    "browser": "151.0.7922.34"
+  },
+  "method": "Input/click capture to second animation frame; real generated assets and committed snapshots. CDP forced-GC counters at identical warmed S&P List state. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners and intervals.",
+  "limitations": [
+    "Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
+    "CPU throttling is a controlled stress condition, not an equivalence to named hardware.",
+    "Bounded-cycle counters cannot prove absence of every memory leak."
+  ],
+  "data": {
+    "sp500": {
+      "tiles": 503,
+      "member_contexts": 0,
+      "asof": "2026-11-02",
+      "source": "daily-close"
+    },
+    "themes": {
+      "tiles": 268,
+      "member_contexts": 2339,
+      "asof": "2026-11-03",
+      "source": "finviz-themes"
+    }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "initial_heatmap_frame_ms": 2493.7999999523163,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 166.69999992847443,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 35,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 24.899999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 191.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 29.59999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 21.299999952316284,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 213.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:show-map",
+          "event": "click",
+          "next_frame_ms": 150.39999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:show-list",
+          "event": "click",
+          "next_frame_ms": 213.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 379.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 94.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 85.69999992847443,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 652.6000000238419,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 42.699999928474426,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 13.200000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 576.7999999523163,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 968,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 1035.8000000715256,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:show-map",
+          "event": "click",
+          "next_frame_ms": 267.89999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:show-list",
+          "event": "click",
+          "next_frame_ms": 402.1999999284744,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 428.2999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 233.30000007152557,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 426.3000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 242.70000004768372,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 453.39999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 281.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 484.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 274.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 28,
+          "box_reads": 4,
+          "documents": 9,
+          "nodes": 46963,
+          "jsEventListeners": 251,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 4835760,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 32,
+          "box_reads": 8,
+          "documents": 9,
+          "nodes": 79605,
+          "jsEventListeners": 279,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 4965000,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 7,
+          "hm_removes": 6,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 36,
+          "box_reads": 12,
+          "documents": 9,
+          "nodes": 112247,
+          "jsEventListeners": 307,
+          "retired_tm_collected": false,
+          "label": "cycle-2",
+          "js_heap_used_bytes": 5118760,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 11,
+          "hm_removes": 10,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 44,
+          "box_reads": 20,
+          "documents": 9,
+          "nodes": 177531,
+          "jsEventListeners": 363,
+          "retired_tm_collected": false,
+          "label": "cycle-4",
+          "js_heap_used_bytes": 5407916,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "longtasks": [
+        {
+          "start_ms": 918.7000000476837,
+          "duration_ms": 74
+        },
+        {
+          "start_ms": 1154.7000000476837,
+          "duration_ms": 238
+        },
+        {
+          "start_ms": 1595.8999999761581,
+          "duration_ms": 323
+        },
+        {
+          "start_ms": 1923.2999999523163,
+          "duration_ms": 404
+        },
+        {
+          "start_ms": 2491.7000000476837,
+          "duration_ms": 229
+        },
+        {
+          "start_ms": 3088.2000000476837,
+          "duration_ms": 260
+        },
+        {
+          "start_ms": 3348.7000000476837,
+          "duration_ms": 75
+        },
+        {
+          "start_ms": 3539.7999999523163,
+          "duration_ms": 178
+        },
+        {
+          "start_ms": 3862,
+          "duration_ms": 496
+        },
+        {
+          "start_ms": 4381,
+          "duration_ms": 151
+        },
+        {
+          "start_ms": 4735.600000023842,
+          "duration_ms": 161
+        },
+        {
+          "start_ms": 4896.799999952316,
+          "duration_ms": 56
+        },
+        {
+          "start_ms": 5167.100000023842,
+          "duration_ms": 155
+        },
+        {
+          "start_ms": 5535.200000047684,
+          "duration_ms": 188
+        },
+        {
+          "start_ms": 6030,
+          "duration_ms": 210
+        },
+        {
+          "start_ms": 6426.100000023842,
+          "duration_ms": 503
+        },
+        {
+          "start_ms": 7147.5,
+          "duration_ms": 323
+        },
+        {
+          "start_ms": 7472.600000023842,
+          "duration_ms": 50
+        },
+        {
+          "start_ms": 7603.100000023842,
+          "duration_ms": 92
+        },
+        {
+          "start_ms": 7733.399999976158,
+          "duration_ms": 54
+        },
+        {
+          "start_ms": 7848.899999976158,
+          "duration_ms": 529
+        },
+        {
+          "start_ms": 8378.299999952316,
+          "duration_ms": 128
+        },
+        {
+          "start_ms": 8741.399999976158,
+          "duration_ms": 580
+        },
+        {
+          "start_ms": 10361.200000047684,
+          "duration_ms": 957
+        },
+        {
+          "start_ms": 11428.100000023842,
+          "duration_ms": 815
+        },
+        {
+          "start_ms": 12243.899999976158,
+          "duration_ms": 210
+        },
+        {
+          "start_ms": 12713,
+          "duration_ms": 284
+        },
+        {
+          "start_ms": 13162.299999952316,
+          "duration_ms": 369
+        },
+        {
+          "start_ms": 13531.799999952316,
+          "duration_ms": 50
+        },
+        {
+          "start_ms": 13740.399999976158,
+          "duration_ms": 916
+        },
+        {
+          "start_ms": 15506.200000047684,
+          "duration_ms": 379
+        },
+        {
+          "start_ms": 15885.799999952316,
+          "duration_ms": 53
+        },
+        {
+          "start_ms": 16518.399999976158,
+          "duration_ms": 209
+        },
+        {
+          "start_ms": 17440.700000047684,
+          "duration_ms": 382
+        },
+        {
+          "start_ms": 18396.600000023842,
+          "duration_ms": 233
+        },
+        {
+          "start_ms": 19370.299999952316,
+          "duration_ms": 398
+        },
+        {
+          "start_ms": 19768.299999952316,
+          "duration_ms": 54
+        },
+        {
+          "start_ms": 20404.100000023842,
+          "duration_ms": 252
+        },
+        {
+          "start_ms": 21040.5,
+          "duration_ms": 425
+        },
+        {
+          "start_ms": 21466,
+          "duration_ms": 61
+        },
+        {
+          "start_ms": 22004.600000023842,
+          "duration_ms": 233
+        },
+        {
+          "start_ms": 22238.399999976158,
+          "duration_ms": 50
+        }
+      ],
+      "timing_summary": {
+        "samples": 28,
+        "median_next_frame_ms": 238.00000005960464,
+        "maximum_next_frame_ms": 1035.8000000715256
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 130568,
+        "jsEventListeners": 112,
+        "js_heap_used_bytes": 572156
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    }
+  ],
+  "all_invariants_passed": true
+}

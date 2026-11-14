@@ -1,0 +1,42 @@
+{
+  "schema": "d04.retention_diagnostic.v1",
+  "at": "2026-11-04T19:45:58.500426+00:00",
+  "instrumentation": "No event, history, interval or geometry wrappers; no overlay. Weak reference and a marker property on one retired tm only. CDP garbage collection/counters and one heap snapshot.",
+  "product_sha256": "1cf6f377e7384c729d665df49618a0220e66887ef372d6c1fbd938bd30612d93",
+  "snapshots": [
+    {
+      "documents": 9,
+      "nodes": 8820,
+      "jsEventListeners": 221,
+      "live": 5266,
+      "collected": null,
+      "label": "warmed"
+    },
+    {
+      "documents": 9,
+      "nodes": 40652,
+      "jsEventListeners": 221,
+      "live": 5266,
+      "collected": false,
+      "label": "cycle-1"
+    },
+    {
+      "documents": 9,
+      "nodes": 72484,
+      "jsEventListeners": 221,
+      "live": 5266,
+      "collected": false,
+      "label": "cycle-2"
+    },
+    {
+      "documents": 9,
+      "nodes": 104316,
+      "jsEventListeners": 221,
+      "live": 5266,
+      "collected": false,
+      "label": "cycle-3"
+    }
+  ],
+  "heap_snapshot_path": "/tmp/d04-heatmap-retention-wtjizdvb.heapsnapshot",
+  "heap_snapshot_bytes": 37184257
+}
