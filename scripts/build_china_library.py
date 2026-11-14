@@ -1476,11 +1476,17 @@ _CN_SUPERSEDED_ERA_STAMPS: tuple[str, ...] = (
 )
 
 
+def _cn_more_actionable_stamp(board_definition: str) -> str:
+    """The separate definition persisted for visible more-actionable membership."""
+    return f"{board_definition}_more_actionable"
+
+
 def _cn_known_cohort_stamps() -> frozenset[str]:
     """Every board_definition this build holds an adjudication for.
 
     READ FROM THE PRODUCERS at call time, never copied: the live stamp from
-    engine.china_board_rank, the parallel watch/measurement cohorts from
+    engine.china_board_rank, its separately persisted visible-membership stamp,
+    and parallel watch/measurement cohorts from
     engine.china_standout_track.WATCH_DEFINITIONS. This set used to be a hand-listed
     frozenset holding one of the three WATCH_DEFINITIONS entries, and #4509 shipped an
     incomplete cutover precisely because consumers kept private copies of a live stamp.
@@ -1495,7 +1501,10 @@ def _cn_known_cohort_stamps() -> frozenset[str]:
     `extra_records` block (never pooled), it still fires the nightly ::warning, and it
     still fails the era-partition test. That is how this registry gets its next entry.
     """
-    return (frozenset({china_board_rank.BOARD_DEFINITION})
+    return (frozenset({
+                china_board_rank.BOARD_DEFINITION,
+                _cn_more_actionable_stamp(china_board_rank.BOARD_DEFINITION),
+            })
             | frozenset(_CN_SUPERSEDED_ERA_STAMPS)
             | frozenset(china_standout_track.WATCH_DEFINITIONS))
 
@@ -4384,7 +4393,7 @@ def main(alpha: dict | None = None) -> dict | None:
             # non-watch rows for a date, which would hijack
             # china_standout_track._latest_definition_frame's headline pick.
             if _more_actionable_append_is_safe(wide):
-                _more_board_definition = f"{wide['board_definition']}_more_actionable"
+                _more_board_definition = _cn_more_actionable_stamp(wide["board_definition"])
                 _more_rows_for_board = [
                     {**r, "board_definition": _more_board_definition, "lane": "more_actionable"}
                     for r in wide["more_actionable"] if isinstance(r, dict)
