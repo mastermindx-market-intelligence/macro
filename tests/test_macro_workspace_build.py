@@ -394,6 +394,109 @@ def test_curve_comparison_dates_belong_to_the_exact_values_and_skip_nulls():
             assert rows[tenor][window] is None and rows[tenor][f"{window}_as_of"] is None
 
 
+def _curve_source_publication():
+    from engine.market_os.macro_workspaces import rates_curves
+
+    last = dt.date(2026, 9, 3)
+    frames = {
+        sid: [(last - dt.timedelta(days=44 - day), 3 + index * .05 + day * .001)
+              for day in range(45)]
+        for index, (_, sid, _, _) in enumerate(rates_curves._NOMINAL_NODES)
+    }
+    return rates_curves.compose(frames, built_at=BUILT_AT)
+
+
+def test_curve_sources_retain_the_actual_composer_series_and_unique_disclosure():
+    from lib.macro_suite_view import _curve_hero
+
+    body = contract.finalize(_curve_source_publication())
+    view = build_view(body, page_built_at=BUILT_AT, artifact={})
+    rows = {row["tenor"]: row for row in view["curve_hero"]["tenors"]}
+    assert all(row["source_binding"] is not None for row in rows.values())
+    row = rows["10y"]
+    assert row["source_binding"] == {
+        "series_id": "us10y", "source_ref": "FRED:DGS10", "source_id": "dgs10",
+    }
+    assert (row["today"], row["as_of_tenor"]) == (3.394, "2026-09-03")
+    assert (row["prior_close"], row["prior_close_as_of"], row["delta_close"]) == (3.393, "2026-09-02", .001)
+    assert (row["prior_month"], row["prior_month_as_of"], row["delta_month"]) == (3.364, "2026-08-04", .03)
+    body["sources"]["items"] = []
+    unbound = {row["tenor"]: row for row in _curve_hero(body)["tenors"]}
+    for tenor, expected in rows.items():
+        assert unbound[tenor]["source_binding"] is None
+        assert {k: v for k, v in unbound[tenor].items() if k != "source_binding"} == {
+            k: v for k, v in expected.items() if k != "source_binding"
+        }
+
+
+@pytest.mark.parametrize("defect", [
+    "owner", "method", "unit", "basis", "reference", "artifact", "missing_source",
+    "duplicate_artifact", "duplicate_source_id", "duplicate_series", "second_alias",
+    "duplicate_date", "invalid_date", "timestamp_date", "boolean", "infinity",
+    "extra_precision", "unsafe_precision_range", "overflowing_scale", "source_period", "source_identity",
+])
+def test_curve_source_binding_refuses_ambiguous_or_contradictory_raw_provenance(defect):
+    from lib.macro_suite_view import _curve_hero
+
+    body = _curve_source_publication()
+    series = next(row for row in body["series"]["items"] if row["series_id"] == "us10y")
+    source = next(row for row in body["sources"]["items"] if row["source_id"] == "dgs10")
+    if defect == "owner": body["workspace"]["id"] = "monetary_policy"
+    if defect == "method": body["headline"]["method_version"] = "rates_curves.compose.v2"
+    if defect == "unit": series["unit"] = "basis_points"
+    if defect == "basis": series["basis"] = "different_basis"
+    if defect == "reference": series["source_ref"] = "FRED:DGS2"
+    if defect == "artifact": source["artifact_ref"] = "data/fred/DGS2.parquet"
+    if defect == "missing_source": body["sources"]["items"].remove(source)
+    if defect == "duplicate_artifact": body["sources"]["items"].append({**source, "source_id": "other"})
+    if defect == "duplicate_source_id": body["sources"]["items"].append({**source, "artifact_ref": "other.parquet"})
+    if defect == "duplicate_series": body["series"]["items"].append(copy.deepcopy(series))
+    if defect == "second_alias": body["series"]["items"].append({**copy.deepcopy(series), "series_id": "DGS10"})
+    if defect == "duplicate_date": series["points"].append(copy.deepcopy(series["points"][0]))
+    if defect == "invalid_date": series["points"][0]["t"] = "2026-02-30"
+    if defect == "timestamp_date": series["points"][0]["t"] += "T00:00:00Z"
+    if defect == "boolean": series["points"][0]["v"] = True
+    if defect == "infinity": series["points"][0]["v"] = float("inf")
+    if defect == "extra_precision": series["points"][0]["v"] = 3.35001
+    if defect == "unsafe_precision_range": series["points"][0]["v"] = 1e15
+    if defect == "overflowing_scale": series["points"][0]["v"] = 1e308
+    if defect == "source_identity": source["source_id"] = "all"
+    if defect == "source_period": source["reference_period"] = "2026-09-02"
+    row = next(row for row in _curve_hero(body)["tenors"] if row["tenor"] == "10y")
+    assert row["source_binding"] is None
+    assert row["today"] == 3.394
+
+
+def test_curve_binding_preserves_null_gaps_negative_values_and_source_wording_independence():
+    from lib.macro_suite_view import _curve_hero
+
+    body = _curve_source_publication()
+    series = next(row for row in body["series"]["items"] if row["series_id"] == "us10y")
+    series["points"][-2]["v"] = None
+    series["points"][-1]["v"] = -.0001
+    source = next(row for row in body["sources"]["items"] if row["source_id"] == "dgs10")
+    source.update(provider="Changed wording", owner_ref="Different display owner")
+    row = next(row for row in _curve_hero(body)["tenors"] if row["tenor"] == "10y")
+    assert row["source_binding"]["source_id"] == "dgs10"
+    assert (row["prior_close"], row["prior_close_as_of"]) == (3.392, "2026-09-01")
+    assert row["delta_close"] == -3.3921
+
+
+@pytest.mark.parametrize("field,value", [
+    ("today", 3.3939), ("as_of_tenor", "2026-09-02"),
+    ("prior_close", 3.392), ("prior_close_as_of", "2026-09-01"),
+    ("prior_month", 3.363), ("prior_month_as_of", "2026-08-03"),
+    ("delta_close", .0011), ("delta_month", .0301),
+])
+def test_curve_binding_requires_every_attributed_coordinate(field, value):
+    from lib.macro_suite_view import _curve_hero, _curve_source_binding, _rows_for_tenor, _series_points_index
+
+    body = _curve_source_publication()
+    row = next(row for row in _curve_hero(body)["tenors"] if row["tenor"] == "10y")
+    row[field] = value
+    assert _curve_source_binding(body, "10y", row, _rows_for_tenor(_series_points_index(body), "10y")) is None
+
+
 # Payroll: source cohort -> canonical same-vintage truth -> publication -> view.
 _PAYROLL_ROWS = [
     ("2024-11-01", "2024-12-06", "9999-12-31", 158800.0),
@@ -759,3 +862,4 @@ def test_driver_fred_join_uses_exact_unique_artifact_not_provider_or_owner_prefi
     source["artifact_ref"] = "data/fred/BOPGSTB.parquet"
     body["sources"]["items"].append({**source, "source_id": "second-disclosure"})
     assert driver_binding(body, driver)["reason"] == "source_disclosure_ambiguous"
+

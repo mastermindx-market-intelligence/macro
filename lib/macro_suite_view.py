@@ -1745,6 +1745,92 @@ def _rows_for_tenor(index: Mapping[str, list[tuple[date, float]]], tenor: str) -
     return []
 
 
+def _curve_source_binding(snapshot: Mapping[str, Any], tenor: str,
+                          plotted: Mapping[str, Any],
+                          selected_rows: Sequence[tuple[date, float]]) -> dict[str, str] | None:
+    """Retain the exact CMT input without changing the existing curve projection.
+
+    The display helpers deliberately tolerate missing/duplicate input. That
+    lossy normalization cannot prove provenance: qualify the raw series and
+    disclosure first, then require every plotted value/date to agree. A null
+    result withholds attribution, never an otherwise usable observation.
+    """
+    if ((snapshot.get("workspace") or {}).get("id") != "rates_curves"
+            or (snapshot.get("headline") or {}).get("method_version") != "rates_curves.compose.v1"):
+        return None
+    aliases = _CURVE_SERIES_ALIASES[tenor]
+    candidates = [entry for entry in (snapshot.get("series") or {}).get("items", [])
+                  if isinstance(entry, Mapping) and entry.get("series_id") in aliases]
+    if len(candidates) != 1:
+        return None
+    series = candidates[0]
+    # The existing alias contract's final identity is the nominal FRED series.
+    source_ref = f"FRED:{aliases[-1]}"
+    if (series.get("source_ref") != source_ref or series.get("unit") != "percent"
+            or series.get("basis") != "constant_maturity_investment_basis"):
+        return None
+    points = series.get("points")
+    if not isinstance(points, list) or not points:
+        return None
+    seen: set[str] = set()
+    rows: list[tuple[date, float]] = []
+    for point in points:
+        if not isinstance(point, Mapping):
+            return None
+        stamp, value = point.get("t"), point.get("v")
+        if not isinstance(stamp, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", stamp) or stamp in seen:
+            return None
+        try:
+            when = date.fromisoformat(stamp)
+        except ValueError:
+            return None
+        seen.add(stamp)
+        if value is None:
+            continue
+        # This composer publishes CMT coordinates to four decimals. Do not
+        # attribute a rounded-away difference or an invalid raw observation.
+        if (not _finite(value) or abs(value) > 9007199254740991 / 10000
+                or _r4(value) != value or abs(round(value * 10000)) > 9007199254740991):
+            return None
+        rows.append((when, float(value)))
+    rows.sort()
+    if not rows or rows != list(selected_rows):
+        return None
+    latest = rows[-1]
+    prior = rows[-2] if len(rows) > 1 else None
+    monthly = [row for row in rows if row[0] <= latest[0] - timedelta(days=_CURVE_PRIOR_MONTH_DAYS)]
+    month = monthly[-1] if monthly else None
+    expected = {
+        "today": latest[1], "as_of_tenor": latest[0].isoformat(),
+        "prior_close": prior[1] if prior else None,
+        "prior_close_as_of": prior[0].isoformat() if prior else None,
+        "prior_month": month[1] if month else None,
+        "prior_month_as_of": month[0].isoformat() if month else None,
+        "delta_close": _delta(latest[1], prior[1] if prior else None),
+        "delta_month": _delta(latest[1], month[1] if month else None),
+    }
+    if any(plotted.get(key) != value for key, value in expected.items()):
+        return None
+    if any(value is not None and (not _finite(value) or abs(value) > 9007199254740991 / 10000
+                                 or abs(round(value * 10000)) > 9007199254740991)
+           for key, value in expected.items() if key in ("delta_close", "delta_month")):
+        return None
+    sources = (snapshot.get("sources") or {}).get("items") or []
+    disclosures = [source for source in sources if isinstance(source, Mapping)
+                   and source.get("artifact_ref") == f"data/fred/{aliases[-1]}.parquet"]
+    if len(disclosures) != 1:
+        return None
+    source = disclosures[0]
+    source_id = source.get("source_id")
+    # compose.v1 owns these IDs (sid.lower()). This also keeps a source from
+    # colliding with the evidence reader's all / metric: / driver: controls.
+    if (source_id != aliases[-1].lower()
+            or sum(1 for item in sources if isinstance(item, Mapping) and item.get("source_id") == source_id) != 1
+            or source.get("reference_period") != latest[0].isoformat()):
+        return None
+    return {"series_id": series["series_id"], "source_ref": source_ref, "source_id": source_id}
+
+
 def _null_tenor_copy(tenor: str) -> dict[str, str]:
     label = _CURVE_TENOR_LABELS[tenor]
     return _pair(
@@ -2000,6 +2086,7 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "delta_close": _delta(today, prior_close),
             "delta_month": _delta(today, prior_month),
         })
+        tenors[-1]["source_binding"] = _curve_source_binding(snapshot, tenor, tenors[-1], rows)
 
     usable = sum(1 for row in tenors if row["today"] is not None)
     ok = usable >= _CURVE_MIN_USABLE
@@ -2803,4 +2890,5 @@ def _glt_view_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
         L.record_unknown(f"glt_view_note:{token}")
         return None
     return dict(pair)
+
 

@@ -179,3 +179,88 @@ Hosted CI at source head `ae9f993f2b4e1f9c71a655c44173cdd988469a19`, run43598352
 The original failure was reproduced before editing. After the repair, the canonical closure, API/Admin separation and shell-syntax tests pass (3 tests); all201 canonical positive regex vectors and58 negative vectors retain their expected classification. The sparse local checkout cannot prove the full test module's repository-file-existence assertions:198 selected positive-vector cases lack their unrelated fixture files locally. No test is weakened and no blanket restart widening is used. Current-head hosted CI must establish the complete checkout result.
 
 The native integration is independently durable at Terminal DraftPR1524, exact `f52a3f6ecf47edbedeaf7946b25e35d2bf2b9664`; sourcePR1517 exact `b663cc22445157d032776f9ef8d3225056fcd09d` has an observed GitHub merge-queue entry, not a proven merge or deployment. The selected-reader child MacroPR11265 is saved at `2d35b0e297af2ec246f6214a68e08735fdebc099`; its trusted authority check rejects its current feature-branch base (`unsupported_base_ref`), so its release waits for parent11246 and normal source reconciliation. The route-registry child is being qualified separately against protected Macro baseline `e62c54307664f9347a8a10cfa897e32e506ec264` and immutable Terminal integration T; held parent11253 and every release/visual/production acceptance gate remain in force. Parent DONE_WHEN remains open.
+
+
+## Successor continuation: exact Treasury evidence — 2026-11-14
+
+The Chairman reassigned the exhausted “Design Macro Dashboard Pages” session to
+the current session. Its recovered Native Macro / Economy records and Paper file
+identify the continuing Macro #6819 / WS:MARKET-OS mission. Terminal's continuation
+and final Paper map are recorded in
+[Draft #1524's PLAN](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/sol/native-macro-integration-20261114-c3/terminal/docs/native-macro-integration-20261114/PLAN.md).
+The original Economy source #1517 is now merged as protected
+`62315b351dbadd85db29ff77809af823d7251b1c`; it is not an active competing writer.
+The held registry/reader/daily-Macro lanes and original parent acceptance remain
+separate from this source contribution.
+
+### Contract and preservation
+
+The pure curve view now emits optional `source_binding` for each tenor, linking
+the actual selected canonical series to its existing published source. An
+assertion is emitted only for `rates_curves.compose.v1`, one exact nominal CMT
+series, percent/constant-maturity investment basis, unique valid date coordinates,
+unchanged current/prior/30-day comparison values and deltas, the unique exact
+FRED artifact, and that owner's canonical lowercase source ID. This rejects
+duplicate or contradictory provenance and collisions with the evidence reader's
+all/metric/driver controls. Four-decimal values must fit the consumer's safe
+integer arithmetic, including finite values whose scaled product would overflow.
+
+A failed provenance qualification yields null while preserving every prior
+numerical projection. The native consumer independently validates asserted
+bindings. Older omitted/null bindings remain readable and explicitly unlinked.
+The existing source registry, composer, model authority and evidence selection
+namespace are unchanged.
+
+### Evidence obtained
+
+The complete existing `tests/test_macro_workspace_build.py` suite passes:
+**95 tests**. The tests include all-tenor binding through the real Rates composer
+and finalizer/view, unchanged values when attribution is absent, ambiguous
+aliases/sources/dates, owner/method/unit/basis mismatches, exact comparisons,
+null gaps, negative values, precision and extreme finite magnitudes. These
+are synthetic source/publication tests, not live-data availability claims.
+
+Companion native qualification passes **179 affected tests** and strict
+TypeScript for the Economy component/decoder graph and new browser specimen.
+The fixture changes only ten binding objects; all other economic content is
+equal. Actual Route → Reader → Workspace → Curve → Evidence browser cases are
+authored and discovered for 18 desktop/tablet/mobile combinations, but local
+Chromium execution was kernel-denied. Hosted browser execution and deployed
+authenticated proof remain outstanding.
+
+The seven new editable Paper screens are complete in file
+`01M6Y1NJ2SKGG89DZ13E4NVAE2`, pages p-8-0 through p-E-0, alongside the preserved
+p-7-0 overview. They cover Growth, payroll revisions, contextual evidence and
+Treasury across desktop/mobile, English/Chinese and dark/light examples.
+Their figures are illustrative; visual design does not certify live source
+freshness, official combined revisions or historical system custody.
+
+### Source custody and next action
+
+This update uses the existing #11258 branch, based on
+`a33a59e76a415c012c1072ba5bee2d7c9c3ac35c`. Live native readback confirmed it
+open, Ready, unarmed and unqueued before publication; GitHub remains the sole
+mutation carrier. Use exact-parent commit/tree CAS and changed-blob/head
+readback. Do not reuse preceding-head CI as evidence for the new source.
+
+Consume new-head binding checks and the incumbent protected-release decision.
+Do not inherit a generic release prohibition from another lane, or bypass any
+actual recorded hold, conflict, required review or controller decision. Terminal
+#1524 stays Draft while its imported owner and registry gates remain unresolved.
+Then continue actual canonical publication, admitted native consumer proof and
+the original scenario/alert/Analyst/revision/PIT obligations. **MORE_WORK_EXISTS**.
+
+
+### Same-head hosted scanner repair
+
+Before publishing this continuation, the existing source head's ci-pack-1 log
+(run43604531586/job132477267383) exposed a separate owned failure:
+`test_every_engine_contradiction_kind_has_a_reviewed_label` interpreted
+`input_kind="component"` and `input_kind="metric"` as contradiction kinds.
+The original failure was reproduced locally. The scanner now requires a whole
+`kind` identifier; dictionary `"kind":` literals and genuine new constructor
+kinds remain detectable. No source label, assertion, workflow or release gate
+is removed. The original label-coverage check and three discriminating scanner
+regressions pass (4 tests). Complete hosted pack qualification remains owed
+for this new source head.
+
