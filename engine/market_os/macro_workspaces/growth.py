@@ -69,6 +69,8 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.source_bindings import GROWTH_SOURCE_COMPONENT_MAP as _SOURCE_COMPONENT_MAP
+
 from engine.market_os.macro_workspaces.publication_prior import (
     apply_headline_publication_fields,
     attach_prior_publication,
@@ -1149,13 +1151,6 @@ def _sources(asof, bc_asof, artifact_stale: bool) -> list[dict]:
 
 # Which x/y components' owner-native raw values back which named source (used
 # for the corrections/supersession scan below).
-_SOURCE_COMPONENT_MAP: dict[str, tuple[str, ...]] = {
-    "gdpnow": ("gdpnow_growth",),
-    "wei": ("wei_growth",),
-    "business_cycle_leading": ("leading_tier_momentum", "leading_diffusion"),
-    "business_cycle_coincident": ("coincident_tier_momentum", "coincident_diffusion", "coincident_index_level"),
-    "growth_axis": ("growth_axis_score",),
-}
 
 
 def _prior_component_value(prior_snapshot, metric_id):
@@ -1212,3 +1207,4 @@ def _corrections(x_components, y_components, asof, prior_snapshot) -> dict:
         "correction_state": "none",
         "note": "Same reference period as the predecessor print; no source component changed value (no-change republication).",
     }
+

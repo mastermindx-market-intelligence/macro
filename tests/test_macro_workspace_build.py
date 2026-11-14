@@ -624,3 +624,138 @@ def test_vintage_dates_without_any_change_are_not_a_ready_revision_panel(tmp_pat
     assert view["payroll_revisions"]["status"] == "unavailable"
     assert view["payroll_revisions"]["absence"] is not None
     assert view["payroll_revisions"]["rows"][0]["earliest_change"] is None
+
+
+@pytest.fixture(scope="module")
+def driver_publications(tmp_path_factory):
+    """Exercise the real fourteen producers and verified publication reader."""
+    root = tmp_path_factory.mktemp("driver_sources")
+    regime = _write_regime(root)
+    out = root / "published"
+    build.build_all(regime_latest_path=regime, fred_dir=root / "fred", treasury_dir=root / "treasury",
+                    out_root=out, built_at=BUILT_AT)
+    result = {}
+    for page in SUITE_PAGES:
+        body, artifact = read_workspace(out, page)
+        result[page.workspace_id] = (body, build_view(body, page_built_at=BUILT_AT, artifact=artifact))
+    return result
+
+
+def _driver(body, identifier):
+    return next(row for group in ("rate_side", "balance_sheet")
+                for row in body["drivers"][group] if row["driver_id"] == identifier)
+
+
+def test_driver_sources_join_real_published_inputs_without_upgrading_absence(driver_publications):
+    unlinked = set()
+    bound = 0
+    for workspace, (body, view) in driver_publications.items():
+        source_ids = {row["source_id"] for row in body["sources"]["items"]}
+        for group in view["drivers"]:
+            for row in group["rows"]:
+                original = _driver(body, row["driver_id"])
+                binding = row["source_binding"]
+                assert binding["method_version"] == body["headline"]["method_version"]
+                if original["value"] is None:
+                    assert row["value"] is None and row["absence"] is not None
+                if binding["state"] == "bound":
+                    bound += 1
+                    assert binding["source_refs"] and set(binding["source_refs"]) <= source_ids
+                else:
+                    unlinked.add((workspace, row["driver_id"]))
+                    assert binding["source_refs"] == []
+                if row["calculation"]:
+                    assert binding["input_kind"] == "component"
+                    assert row["calculation"]["axis_id"] in {axis["axis_id"] for axis in view["axes"]}
+    assert bound == 85
+    assert unlinked == {
+        ("liquidity_regime", "rates_scare_score"),
+        ("inflation_system", "current_month_core_nowcast_annualized"),
+        ("financial_conditions", "ig_oas_credit_leg"),
+        ("financial_conditions", "dollar_index_leg"),
+    }
+
+
+@pytest.mark.parametrize("defect", ["owner", "value", "boolean", "unit", "duplicate", "method"])
+def test_driver_component_identity_is_required_before_sources_or_calculation(driver_publications, defect):
+    from engine.market_os.macro_workspaces.source_bindings import driver_binding
+    body = copy.deepcopy(driver_publications["liquidity_regime"][0])
+    driver = _driver(body, "nfci_pctile")
+    axis = next(axis for axis in body["axes"]["items"] if any(c["component_id"] == "nfci_pctile" for c in axis["components"]))
+    component = next(c for c in axis["components"] if c["component_id"] == "nfci_pctile")
+    if defect == "owner": driver["owner_field"] = "different.input"
+    if defect == "value": driver["value"] = 999
+    if defect == "boolean": component["raw_value"], driver["value"] = 1, True
+    if defect == "unit": driver["unit"] = "USD_bn"
+    if defect == "duplicate": axis["components"].append(copy.deepcopy(component))
+    if defect == "method": body["headline"]["method_version"] = "liquidity_regime.compose.v2"
+    binding = driver_binding(body, driver)
+    assert binding["state"] == "unlinked" and binding["input_kind"] is None
+    if defect == "method":
+        with pytest.raises(KeyError, match="method_version"):
+            build_view(body, page_built_at=BUILT_AT, artifact={})
+        return
+    view = build_view(body, page_built_at=BUILT_AT, artifact={})
+    shown = next(row for group in view["drivers"] for row in group["rows"] if row["driver_id"] == "nfci_pctile")
+    assert shown["calculation"] is None
+
+
+def test_driver_multi_source_join_is_complete_and_unambiguous(driver_publications):
+    from engine.market_os.macro_workspaces.source_bindings import driver_binding
+    body = copy.deepcopy(driver_publications["monetary_policy"][0])
+    driver = _driver(body, "dots_vs_market_gap_bp")
+    assert driver_binding(body, driver)["source_refs"] == ["fed_funds_futures", "fomc_sep_dots"]
+    source = next(row for row in body["sources"]["items"] if row["source_id"] == "fomc_sep_dots")
+    body["sources"]["items"].remove(source)
+    missing = driver_binding(body, driver)
+    assert missing["source_refs"] == [] and missing["reason"] == "source_disclosure_missing"
+    body["sources"]["items"].extend([source, copy.deepcopy(source)])
+    duplicate = driver_binding(body, driver)
+    assert duplicate["source_refs"] == [] and duplicate["reason"] == "source_disclosure_ambiguous"
+
+
+def test_driver_metric_identity_units_and_explicit_credit_alias(driver_publications):
+    from engine.market_os.macro_workspaces.source_bindings import driver_binding
+    body = copy.deepcopy(driver_publications["financial_conditions"][0])
+    driver = _driver(body, "hy_oas_z_credit_leg")
+    metric = next(row for row in body["metrics"]["items"] if row["metric_id"] == "hy_oas_z")
+    assert driver_binding(body, driver)["input_id"] == "hy_oas_z"
+    assert driver_binding(body, driver)["source_refs"] == ["hy_oas"]
+    metric["definition_id"] = "different.input"
+    assert driver_binding(body, driver)["reason"] == "input_identity_mismatch"
+    body = copy.deepcopy(driver_publications["trade_flows"][0])
+    driver = _driver(body, "export_import_coverage_ratio")
+    metric = next(row for row in body["metrics"]["items"] if row["metric_id"] == driver["driver_id"])
+    assert metric["unit"] is None and driver_binding(body, driver)["state"] == "bound"
+    metric["value_type"] = "number"
+    assert driver_binding(body, driver)["state"] == "unlinked"
+    metric["value_type"], metric["unit"] = "ratio", "percent"
+    assert driver_binding(body, driver)["state"] == "unlinked"
+    metric["unit"] = None
+    body["metrics"]["items"].append(copy.deepcopy(metric))
+    assert driver_binding(body, driver)["state"] == "unlinked"
+
+
+@pytest.mark.parametrize("defect", ["owner", "model"])
+def test_driver_ordinary_metric_rejects_contradictory_definition_or_model(driver_publications, defect):
+    from engine.market_os.macro_workspaces.source_bindings import driver_binding
+    body = copy.deepcopy(driver_publications["financial_conditions"][0])
+    driver = _driver(body, "real_10y_pctile")
+    metric = next(row for row in body["metrics"]["items"] if row["metric_id"] == "real_10y_pctile")
+    assert driver_binding(body, driver)["state"] == "bound"
+    if defect == "owner": driver["owner_field"] = "different.owner.field"
+    if defect == "model": metric["model_version"] = "different.compose.v1"
+    assert driver_binding(body, driver)["reason"] == "input_identity_mismatch"
+
+
+def test_driver_fred_join_uses_exact_unique_artifact_not_provider_or_owner_prefix(driver_publications):
+    from engine.market_os.macro_workspaces.source_bindings import driver_binding
+    body = copy.deepcopy(driver_publications["trade_flows"][0])
+    driver = _driver(body, "trade_balance_level")
+    assert driver_binding(body, driver)["source_refs"] == ["bopgstb"]
+    source = next(row for row in body["sources"]["items"] if row["source_id"] == "bopgstb")
+    source["artifact_ref"] = "data/fred/BOPGSTB_OTHER.parquet"
+    assert driver_binding(body, driver)["reason"] == "source_disclosure_missing"
+    source["artifact_ref"] = "data/fred/BOPGSTB.parquet"
+    body["sources"]["items"].append({**source, "source_id": "second-disclosure"})
+    assert driver_binding(body, driver)["reason"] == "source_disclosure_ambiguous"

@@ -28,6 +28,7 @@ from typing import Any, Mapping, Sequence
 from lib import macro_suite_disclosure as D
 from lib import macro_suite_labels as L
 from engine.market_os.macro_workspaces import payroll_revisions as PR
+from engine.market_os.macro_workspaces.source_bindings import driver_binding
 
 # Reading orders the shell can compose. The grammar order is merged architecture
 # section 6.3 and remains the default for every workspace; the decision-first
@@ -1011,6 +1012,27 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
     ):
         rows = []
         for driver in block.get(key) or []:
+            binding = driver_binding(snapshot, driver)
+            matched_components = [(axis, component) for axis in axes
+                                  for component in axis.get("components") or []
+                                  if component.get("component_id") == driver.get("driver_id")
+                                  and component.get("owner_field") == driver.get("owner_field")]
+            calculation = None
+            if binding["input_kind"] == "component" and len(matched_components) == 1:
+                owner_axis, component = matched_components[0]
+                calculation = {
+                    "axis_id": owner_axis.get("axis_id"),
+                    "axis_label": owner_axis.get("label"),
+                    "owner_name": component.get("owner_name"),
+                    "raw": component.get("raw"),
+                    "standardized": component.get("standardized"),
+                    "weight": component.get("weight"),
+                    "contribution": component.get("contribution"),
+                    "transformation": owner_axis.get("transformation"),
+                    "weights_law": owner_axis.get("weights_law"),
+                    "freshness": component.get("freshness"),
+                    "coverage": component.get("coverage"),
+                }
             magnitude = driver.get("impact_magnitude")
             sign = driver.get("impact_sign")
             signed = None
@@ -1037,6 +1059,8 @@ def _drivers(snapshot: Mapping[str, Any], axes: Sequence[Mapping[str, Any]]) -> 
                                 if signed is not None and isinstance(sign, int) else None),
                 "impact_absence": None if signed is not None else _absence(None),
                 "note": driver.get("note"),
+                "source_binding": binding,
+                "calculation": calculation,
                 "coverage": L.label("presence", driver.get("coverage_state")),
                 "coverage_tone": L.tone("presence", driver.get("coverage_state")),
             })
