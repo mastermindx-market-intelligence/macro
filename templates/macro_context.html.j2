@@ -1481,5 +1481,6 @@ html[data-theme="light"] {
 </footer>
 
 <script src="theme.js"></script>
+{% if native_weather is defined %}<script type="application/json" id="macro-weather-publication">{{ native_weather | tojson }}</script>{% endif %}
 </body>
 </html>
