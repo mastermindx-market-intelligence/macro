@@ -342,6 +342,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -2530,6 +2532,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -3624,6 +3628,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -7780,6 +7786,8 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - engine/market_os/macro_workspaces/payroll_revisions.py
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8308,6 +8316,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -9460,6 +9470,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -12631,6 +12643,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -17333,6 +17347,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -19375,6 +19391,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "engine/release_target_cohort.py"
+      - "engine/release_target_truth.py"
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -19836,6 +19854,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24786,6 +24806,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -27258,6 +27280,8 @@ jobs:
     # (T25 AUDIT-N3 finding A1, 2026-11-04): a template-only PR must still run
     # the s10 render guards. No ceiling moves.
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "config/global_liquidity_transmission_v1.yml"
       - "engine/global_liquidity.py"
       - "engine/global_liquidity_transmission.py"
@@ -28514,6 +28538,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
@@ -29378,6 +29404,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31210,6 +31238,12 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - engine/market_os/macro_workspaces/payroll_revisions.py
+      - engine/market_os/macro_workspaces/__init__.py
+      - engine/market_os/macro_workspaces/registry.py
+      - engine/market_os/macro_workspaces/contract.py
+      - contracts/market_os/macro_workspace_snapshot.v1.schema.json
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "collectors/__init__.py"
@@ -31821,6 +31855,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -33731,6 +33767,8 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - engine/market_os/macro_workspaces/payroll_revisions.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -34606,6 +34644,8 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -36526,6 +36566,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -38052,6 +38094,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -40883,6 +40927,12 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - engine/market_os/macro_workspaces/__init__.py
+      - engine/market_os/macro_workspaces/registry.py
+      - engine/market_os/macro_workspaces/contract.py
+      - contracts/market_os/macro_workspace_snapshot.v1.schema.json
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -41219,6 +41269,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41778,6 +41830,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -45225,6 +45279,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -46520,6 +46576,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -47867,6 +47925,8 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "engine/release_target_cohort.py"
+      - "engine/release_target_truth.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47924,7 +47984,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2 pandas pyarrow
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest
@@ -47970,6 +48030,8 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - "engine/release_target_cohort.py"
+      - "engine/release_target_truth.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -48145,6 +48207,8 @@ jobs:
     # an uncovered import by file.
     scope: exclusive
     paths:
+      - "engine/release_target_cohort.py"
+      - "engine/release_target_truth.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -51978,6 +52042,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/market_os/macro_workspaces/source_bindings.py
+      - "engine/market_os/macro_workspaces/payroll_revisions.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

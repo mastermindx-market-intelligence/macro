@@ -4,6 +4,8 @@ Exercises source intake, displayed dates, cache recovery and turn cleanup throug
 the actual widget. No model, live price, ChartBus or production claim is made.
 """
 from datetime import date, timedelta
+
+import pytest
 from playwright.sync_api import expect
 from tests.test_brain_history_widget import page  # noqa: F401
 from tests.test_brain_visuals_widget import stream
@@ -77,7 +79,19 @@ def test_ranges_use_dates_not_pixels_and_controls_make_no_requests(page):
     expect(page.locator(".mmb-cx-body > svg > path")).to_have_count(2)
 
 
-def test_invalid_ohlc_is_rejected_and_missing_volume_is_not_zero(page):
+def hover_candle(page, svg, index, expected_date):
+    """Move the real pointer to a candle center in browser viewport coordinates."""
+    candle = svg.locator(".mmb-cx-prices > g > rect").nth(index)
+    candle.scroll_into_view_if_needed()
+    bounds = candle.bounding_box()
+    assert bounds is not None
+    page.mouse.move(bounds["x"] + bounds["width"] / 2, bounds["y"] + bounds["height"] / 2)
+    expect(svg.locator(".mmb-cx-xh text").last).to_have_text(expected_date)
+
+
+@pytest.mark.parametrize("width", [1440, 390])
+def test_invalid_ohlc_is_rejected_and_missing_volume_is_not_zero(page, width):
+    page.set_viewport_size({"width": width, "height": 844})
     rows = bars(date(2026, 8, 1))
     rows[-1][5] = None
     for index, bad in enumerate([None, "", "  ", True, False, "NaN", "Infinity"]):
@@ -90,10 +104,11 @@ def test_invalid_ohlc_is_rejected_and_missing_volume_is_not_zero(page):
     svg = page.locator(".mmb-cx-body > svg")
     expect(svg).to_have_attribute("data-end", "2026-10-21")
     expect(svg).to_have_attribute("data-bars", str(len(bars(date(2026, 8, 1)))))
-    bounds = svg.bounding_box()
-    assert bounds
-    svg.hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
-    expect(page.locator(".mmb-cx-vol")).to_have_text("V —")
+    volume = page.locator(".mmb-cx-vol")
+    hover_candle(page, svg, -2, "10-20")
+    expect(volume).to_have_text("V 1K")
+    hover_candle(page, svg, -1, "10-21")
+    expect(volume).to_have_text("V —")
     assert "NaN" not in svg.inner_html()
     assert "Infinity" not in svg.inner_html()
 
@@ -107,8 +122,7 @@ def test_weekly_and_monthly_contract_aggregate_real_daily_bars(page):
     expect(first.locator(".mmb-cx-tf")).to_have_text("weekly")
     expect(first.locator("svg")).to_have_attribute("data-bars", "8")
     expect(first.locator(".mmb-cx-src")).to_contain_text("Aggregated from daily data")
-    bounds = first.locator("svg").bounding_box()
-    first.locator("svg").hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
+    hover_candle(page, first.locator("svg"), -1, "10-21")
     # Oct 19-21: first open 103.4, max high 105.6, min low 102.4, last close 104.6.
     expect(first.locator(".mmb-cx-read")).to_contain_text("O 103.4")
     expect(first.locator(".mmb-cx-read")).to_contain_text("H 105.6")
@@ -140,8 +154,7 @@ def test_unchanged_width_resize_notification_keeps_hovered_aggregation(page):
     chart(page, "WEEKLY")
     svg = page.locator(".mmb-cx-body > svg")
     expect(svg).to_have_attribute("data-bars", "8")
-    bounds = svg.bounding_box()
-    svg.hover(position={"x": bounds["width"] - 65, "y": bounds["height"] / 3})
+    hover_candle(page, svg, -1, "10-21")
     read = page.locator(".mmb-cx-read")
     expect(read).to_contain_text("O 103.4")
     page.evaluate("window.__hoveredChart = document.querySelector('.mmb-cx-body > svg')")

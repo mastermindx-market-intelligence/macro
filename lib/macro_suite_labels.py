@@ -329,6 +329,11 @@ DIRECTION: dict[str, dict[str, str]] = {
 
 # --- units -------------------------------------------------------------------
 UNIT: dict[str, dict[str, str]] = {
+    "percent_saar": _pair("% annualized, seasonally adjusted", "%（年化、季调）"),
+    "cpi_index": _pair("index · 1982–84 = 100, seasonally adjusted", "指数·1982–84 = 100（季调）"),
+    "pce_index": _pair("index · 2017 = 100, seasonally adjusted", "指数·2017 = 100（季调）"),
+    "USD_mn": _pair("USD million", "百万美元"),
+    "thousands": _pair("thousand people", "千人"),
     "score": _pair("score (0-100)", "评分（0–100）"),
     "USD_bn": _pair("USD bn", "十亿美元"),
     "pct": _pair("%", "%"),
@@ -355,6 +360,8 @@ UNIT: dict[str, dict[str, str]] = {
 
 # --- basis -------------------------------------------------------------------
 BASIS: dict[str, dict[str, str]] = {
+    "latest_revised_observation_history": _pair(
+        "Latest revised observations · reference dates", "最新修订的观察值·参考日期"),
     "level": _pair("Level", "水平值"),
     "composite_prior_only": _pair("Composite, prior-only inputs", "复合指标（仅使用先验输入）"),
     "roc_over_owner_window": _pair("Rate of change over the owner window", "所有者窗口内的变化率"),
@@ -1760,7 +1767,7 @@ _LOCALE_SUFFIX_RE = re.compile(r"_(en|zh)\b")
 
 # Customer-facing brand / market words that match the state-token shape.
 _STATE_TOKEN_ALLOW: frozenset[str] = frozenset({
-    "MASTERMINDX", "HICP", "FRED", "SOFR", "TIPS", "OECD", "NBER",
+    "MASTERMINDX", "HICP", "FRED", "ALFRED", "SOFR", "TIPS", "OECD", "NBER",
     "FOMC", "VIX", "CPI",
 })
 
@@ -2597,3 +2604,4 @@ def glt_view_replay_note(asof: Mapping[str, str],
         f"As known on {asof['en']}. Corrected on {corrected['en']} after a "
         "source revision.",
         f"截至 {asof['zh']} 的已知值。数据源修订后于 {corrected['zh']} 更正。")
+

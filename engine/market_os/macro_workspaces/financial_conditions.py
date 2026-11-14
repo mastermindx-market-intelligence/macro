@@ -70,6 +70,8 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.source_bindings import FINANCIAL_SOURCE_METRIC_MAP as _SOURCE_METRIC_MAP
+
 from engine.market_os.macro_workspaces.publication_prior import (
     apply_headline_publication_fields,
     attach_prior_publication,
@@ -1139,13 +1141,6 @@ def _alert_contract() -> dict:
     }
 
 
-_SOURCE_METRIC_MAP: dict[str, tuple[str, ...]] = {
-    "nfci": ("nfci", "nfci_pctile", "nfci_change_13w", "nfci_credit_subindex"),
-    "ofr_fsi": ("ofr_fsi", "ofr_fsi_pctile", "ofr_fsi_change_13w", "ofr_funding_functional"),
-    "hy_oas": ("hy_oas_pct", "hy_oas_z"),
-    "us10y": ("real_10y", "real_10y_pctile", "real_10y_chg_63d_bp"),
-    "vol_regime": ("vix", "vol_regime_risk_score", "move_pctile"),
-}
 
 
 def _prior_metric_raw(prior_snapshot, metric_id):
@@ -1249,3 +1244,4 @@ def _sources(asof, vintages, stale_inputs, vol_regime, rates) -> list[dict]:
         _src("vol_regime", "Equity/bond volatility regime (VIX, MOVE)", "股票/债券波动率体制（VIX，MOVE）",
              "engine.vol_regime", "CBOE / ICE", vol_regime.get("asof"), None),
     ]
+
