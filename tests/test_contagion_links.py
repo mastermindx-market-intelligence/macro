@@ -980,3 +980,25 @@ def test_full_dynamic_pressure_and_history_are_unit_invariant(seed, unit_mode, t
     assert actual.attrs["dynamic_unavailable_refits"] == 0
     assert expected.attrs["dynamic_unavailable_refits"] == 0
     assert not list(tmp_path.rglob("*")), "qualification must not write ledgers"
+
+
+def test_exact_recurrence_innovations_use_existing_structural_fallback(tmp_path, monkeypatch):
+    """#10962: shared VAR refusal reaches both CGL consumers without writes."""
+    monkeypatch.setattr(cgl, "date", _PinnedClock)
+    n = 680
+    idx = pd.bdate_range(end=_FRIDAY, periods=n)
+    vol = {m: pd.Series(.1 * (i + 1) * 1.001 ** np.arange(n), index=idx)
+           for i, m in enumerate(MARKETS)}
+    rng = np.random.default_rng(4)
+    prices = 100 * np.exp(np.cumsum(rng.normal(.0002, .012, (n, len(MARKETS))), axis=0))
+    bench = {m: pd.Series(prices[:, i], index=idx) for i, m in enumerate(MARKETS)}
+    by_key = {cgl._BENCH[m]: bench[m] for m in MARKETS}
+    with patch.object(cgl, "_proxy_vol_series", side_effect=lambda m: vol[m]), \
+            patch.object(cgl, "_load_close", side_effect=lambda group, ticker: by_key[(group, ticker)]):
+        result = cgl.compute(root=tmp_path)
+    history = cgl._build_p_raw_history(vol, bench)
+    assert history.attrs["dynamic_unavailable_refits"] > 0
+    assert any("Current dynamic matrix unavailable" in s for s in result["gaps"])
+    assert any("Historical dynamic matrix unavailable" in s for s in result["gaps"])
+    json.dumps(result, allow_nan=False)
+    assert not list(tmp_path.rglob("*")), "compute must remain read-only"

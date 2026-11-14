@@ -186,6 +186,28 @@ def _fit_var(Y: np.ndarray, p: int) -> tuple[np.ndarray, np.ndarray]:
         raise ValueError("DY: VAR fit unavailable") from exc
 
     resid = y - X @ A
+    # A nonconstant, exactly predictable series also has no innovations.
+    # Qualify residuals BEFORE restoring units: a positive variance consisting
+    # only of solve/evaluation roundoff must not be normalized into DY shares.
+    # Use a dimension-aware normwise backward-error scale, per response:
+    #   ||r_j||_2 > gamma * (||y_j||_2 + ||X||_F ||A_j||_2),
+    #   gamma = q*eps/(1-q*eps), q = 8*max(rows, predictors).
+    # The factor 8 is a conservative numerical-resolution budget for the SVD
+    # solve and residual evaluation, not a statistical/economic threshold or
+    # a certified error bound for every LAPACK implementation. Frobenius norm
+    # bounds the design's spectral norm. Rank deficiency alone is not refused:
+    # genuine common innovations can have singular positive-semidefinite Sigma.
+    qeps = 8 * max(X.shape) * np.finfo(float).eps
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        residual_norm = np.linalg.norm(resid, axis=0)
+        resolution = qeps / (1 - qeps) * (
+            np.linalg.norm(y, axis=0)
+            + np.linalg.norm(X, ord="fro") * np.linalg.norm(A, axis=0)
+        )
+    if (qeps >= 1 or not np.isfinite(residual_norm).all()
+            or not np.isfinite(resolution).all()
+            or np.any(residual_norm <= resolution)):
+        raise ValueError("DY: innovation variance unresolved at fitting precision")
     with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
         Amat = (A.T * magnitude[:, None]) / np.tile(magnitude, p)[None, :]
         Sigma = (resid.T @ resid) / max(rows - K * p - 1, 1)
