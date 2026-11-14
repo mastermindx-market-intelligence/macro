@@ -24,14 +24,16 @@ Scorability: a theme is gradable only when its basket carries a SCALAR `etf_prox
 underperforms the market benchmark by ≥ threshold over the horizon; avoid/underweight ⇒
 the mirror. No proxy (or a blend) → the lean is logged `soft` and never scored (honest).
 
-LLM = DeepSeek via engine.master_brain._call_model (the same gated client the macro desk
-uses); when the key/feature is off the desk degrades to no theses and the page shows only
-the deterministic handoff contract.
+LLM = the Capacity Fabric unified_router when it is configured (Chairman order 2026-11-12),
+falling back to DeepSeek via engine.master_brain._call_model (the same gated client the
+macro desk uses); when the key/feature is off the desk degrades to no theses and the page
+shows only the deterministic handoff contract.
 """
 from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -40,7 +42,7 @@ import pandas as pd
 from engine import ai_desk as _ad           # reuse _check_by / _extract_json / _cfg
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends
 from engine import master_brain as _mb      # the LLM client (_call_model)
-from lib import config, store
+from lib import config, fabric_client, store
 
 log = logging.getLogger(__name__)
 
@@ -73,6 +75,116 @@ def enabled() -> bool:
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the LLM writer only (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+# Every desk call goes through the unified_router when it is configured. Mirrors
+# engine.master_brain._fabric_brief_call, with one difference the router earns:
+# THE ROUTER OWNS FALLBACK, so this module makes exactly one request per logical
+# call — never a local retry, never a second provider. A served failure degrades
+# the desk exactly as a legacy ladder failure would.
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_KILL_SWITCH = "MACRO_THEMATIC_DESK_FABRIC"
+# The four panel analysts produce structured stances over trust-graded detector
+# state; the desk head reconciles them into the published leans. Analysts are the
+# cheap, high-volume leg (4 of 5 calls) → fast; the adjudicator carries the
+# judgment → balanced.
+_FABRIC_LANES = {"analyst": "fast", "adjudicator": "balanced"}
+
+
+def _fabric_enabled() -> bool:
+    """True when this desk should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_THEMATIC_DESK_FABRIC=0
+    is the operator kill-switch. When this returns False the legacy ladder runs
+    unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_SWITCH, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp, stage: str) -> None:
+    """Book one ai_costs row for a router-served call: provider "fabric" and the
+    model the router actually ran. Never raises — a ledger miss must not cost a
+    call that was already served."""
+    try:
+        from lib import ai_costs  # noqa: PLC0415 — degrade path must stay import-light
+        u = comp.usage if isinstance(comp.usage, dict) else {}
+        ai_costs.record_usage(
+            lane="thematic-desk", provider="fabric", model=comp.model_served,
+            input_tokens=int(u.get("input_tokens", 0) or 0),
+            output_tokens=int(u.get("output_tokens", 0) or 0),
+            cache_read_tokens=int(u.get("cache_read_input_tokens", 0) or 0),
+            cache_creation_tokens=int(u.get("cache_creation_input_tokens", 0) or 0),
+            stage=stage,
+        )
+    except Exception as e:  # noqa: BLE001 — telemetry only
+        log.debug("thematic_desk: fabric usage booking failed (%s)", e)
+
+
+def _fabric_call(system: str, user: str, cfg: dict, stage: str,
+                 ) -> tuple[str | None, str | None]:
+    """ONE desk call through the router. Never retries, never fails over.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _desk_call catches it and runs the legacy
+    ladder — blanking a desk that a healthy legacy path could still produce would
+    be a regression, not a degradation.
+    """
+    lane = _FABRIC_LANES[stage]
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane=lane,
+            max_tokens=int(cfg.get("max_tokens", 8000)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=f"macro-thematic-desk-{stage}",
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("thematic_desk: fabric %s call failed (%s)", stage, e)
+        return None, "llm_error"
+    # A refusal is a refusal even when the router attached partial text: drop it
+    # here, before any fail-closed parser can grade a refused reply as a stance.
+    stop = getattr(comp.raw, "stop_reason", None)
+    if stop == "refusal":
+        return None, "refusal"
+    if not comp.text:
+        return None, "empty_reply"
+    _record_fabric_usage(comp, stage)
+    return comp.text, ("truncated" if stop == "max_tokens" else None)
+
+
+def _desk_call(system: str, user: str, cfg: dict, stage: str,
+               ) -> tuple[str | None, str | None]:
+    """The desk's default model call: fabric first when enabled, else the EXACT
+    legacy ladder (master_brain._call_model) unchanged."""
+    if _fabric_enabled():
+        try:
+            return _fabric_call(system, user, cfg, stage)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "thematic_desk: fabric router unavailable (%s); using the legacy ladder", e)
+    return _mb._call_model(system, user, cfg)
+
+
+def _analyst_call(system: str, user: str, cfg: dict,
+                  ) -> tuple[str | None, str | None]:
+    """Panel analyst / single-analyst fallback: fabric lane fast."""
+    return _desk_call(system, user, cfg, "analyst")
+
+
+def _adjudicator_call(system: str, user: str, cfg: dict,
+                      ) -> tuple[str | None, str | None]:
+    """Desk-head adjudicator: fabric lane balanced (it writes the published leans)."""
+    return _desk_call(system, user, cfg, "adjudicator")
 
 
 # --------------------------------------------------------------------------- #
@@ -402,7 +514,7 @@ def _slim_stance(s: dict) -> dict:
 
 def _run_panel(state: dict, cfg: dict, call=None) -> dict:
     """Run the four analysts over the same bundle in parallel. {role: stance|None}; never raises."""
-    fn = call or _mb._call_model
+    fn = call or _analyst_call
     user = _build_user(state)
 
     def _one(key):
@@ -442,7 +554,7 @@ def _run_panel(state: dict, cfg: dict, call=None) -> dict:
 
 def _adjudicate(state: dict, panel: dict, cfg: dict, call=None):
     """Desk-head synthesis over the panel + raw state → (reply_text, degraded_reason)."""
-    fn = call or _mb._call_model
+    fn = call or _adjudicator_call
     payload = {"detector_state": state, "analyst_panel": {k: v for k, v in panel.items() if v}}
     user = ("The detector state and the four analysts' stances (JSON). Adjudicate into the FINAL "
             "falsifiable per-theme leans per your instructions.\n<input>\n"
@@ -507,9 +619,9 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
                 "thematic_desk[%s]: panel sub-quorum (%d/%d present, need %d) — "
                 "missing=%s; falling back to single-analyst",
                 region, len(present), len(_PANEL_SYSTEMS), min_quorum, ",".join(missing))
-            reply, reason = (call or _mb._call_model)(_SYSTEM, _build_user(state), cfg)
+            reply, reason = (call or _analyst_call)(_SYSTEM, _build_user(state), cfg)
     else:
-        reply, reason = (call or _mb._call_model)(_SYSTEM, _build_user(state), cfg)
+        reply, reason = (call or _analyst_call)(_SYSTEM, _build_user(state), cfg)
     # degraded_reason precedence: (a) a reason from the model/adjudicator call itself
     # always wins — it is the more specific, real failure; (b) else, if any panel role
     # is missing, name it (visible even when the panel met quorum — invisibility was
