@@ -1,20 +1,24 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync(process.argv[2]||'site/odds.js','utf8');
 function harness(){
- const downloads=[],images=[],pending=[],timers=[];
+ const downloads=[],images=[],pending=[],timers=[],elements={};
  const ctx=new Proxy({measureText:s=>({width:String(s).length*5})},{get:(o,k)=>o[k]||(()=>{})});
- const doc={documentElement:{getAttribute:()=>null},querySelector:()=>null,querySelectorAll:()=>[],body:{appendChild:()=>{}},createElement(tag){return tag==='canvas'?{getContext:()=>ctx,toDataURL:()=> 'data:image/png;base64,x'}:{click(){downloads.push(this.download)},remove(){}}}};
+ const doc={documentElement:{getAttribute:()=>null},querySelector:s=>elements[s]||null,querySelectorAll:()=>[],body:{appendChild:()=>{}},createElement(tag){return tag==='canvas'?{getContext:()=>ctx,toDataURL:()=> 'data:image/png;base64,x'}:{click(){downloads.push(this.download)},remove(){}}}};
  const env={document:doc,window:{},URL,URLSearchParams,location:{search:''},Blob,console,getComputedStyle:()=>({getPropertyValue:()=>''}),fetch:()=>new Promise(resolve=>pending.push(resolve)),setTimeout:(f,ms)=>{timers.push({f,ms});return timers.length},clearTimeout(){},Image:function(){images.push(this)}};
  env.URL={createObjectURL:()=> 'blob:x',revokeObjectURL(){}};
- let instrumented=source.replace('  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);\n  else init();',`  renderSkeletons=function(){}; updateTopChrome=function(){}; renderRail=function(){}; recompute=function(){};
+ let instrumented=source.replace('  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);\n  else init();',`  updateTopChrome=function(){}; renderRail=function(){}; recompute=function(){};
  globalThis.test={S:S,loadTicker:loadTicker,downloadCSV:downloadCSV,buildShareCard:buildShareCard};`);
  assert.notEqual(instrumented,source);vm.runInNewContext(instrumented,env);
  const api=env.test;Object.assign(api.S,{ticker:'AAA',horizon:'1d',range:'max',matrix:{schema:'odds_matrix.v1',dates:[19000,19001],close:[100,101],cols:{fwd1_bp:[100,null]},asof:'2022-01-09'},matches:[0],stats:{n:10,rate:.7,med:100,mean:100},base:{rate:.5},cat:{universe:[{t:'AAA',name:'First'}]}});
  // Use the source's configured horizon/range keys.
  api.S.horizon='1d';api.S.range='max';
- return {...api,downloads,images,pending,timers};
+ return {...api,downloads,images,pending,timers,elements};
 }
 const cases={
+ 'pending switch clears path':async()=>{let h=harness();h.elements['#od-path-chart']={innerHTML:'OLD AAA EVIDENCE'};h.loadTicker('BBB');assert.ok(!h.elements['#od-path-chart'].innerHTML.includes('OLD AAA EVIDENCE'))},
+ 'pending switch clears histogram':async()=>{let h=harness();h.elements['#od-hist-chart']={innerHTML:'OLD AAA EVIDENCE'};h.loadTicker('BBB');assert.ok(!h.elements['#od-hist-chart'].innerHTML.includes('OLD AAA EVIDENCE'))},
+ 'pending switch clears strip':async()=>{let h=harness();h.elements['#od-strip-chart']={innerHTML:'OLD AAA EVIDENCE'};h.loadTicker('BBB');assert.ok(!h.elements['#od-strip-chart'].innerHTML.includes('OLD AAA EVIDENCE'))},
+ 'pending switch clears path note':async()=>{let h=harness();h.elements['#od-path-note']={innerHTML:'OLD AAA EVIDENCE'};h.loadTicker('BBB');assert.ok(!h.elements['#od-path-note'].innerHTML.includes('OLD AAA EVIDENCE'))},
  'pending ticker clears prior evidence':async()=>{let h=harness();h.loadTicker('BBB');assert.equal(h.S.matrix,null);assert.equal(h.S.stats,null);assert.equal(h.S.base,null);assert.equal(h.S.matches.length,0);h.downloadCSV();assert.equal(h.downloads.length,0)},
  'latest response wins':async()=>{let h=harness(),m=h.S.matrix;h.loadTicker('BBB');h.loadTicker('CCC');h.pending[1]({ok:true,json:async()=>({...m,close:[300,301]})});await new Promise(setImmediate);h.pending[0]({ok:true,json:async()=>m});await new Promise(setImmediate);assert.equal(h.S.ticker,'CCC');assert.equal(h.S.matrix.close[0],300)},
  'failed response stays unavailable':async()=>{let h=harness();h.loadTicker('BBB');h.pending[0]({ok:false});await new Promise(setImmediate);assert.equal(h.S.matrix,null);h.downloadCSV();assert.equal(h.downloads.length,0)},
