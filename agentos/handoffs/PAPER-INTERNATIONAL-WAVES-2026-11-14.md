@@ -3,6 +3,7 @@ workstream: WS:PAPER-INTERNATIONAL-WAVES
 session: sol/web-intl-paper-shared-shell-20261114-c4
 model: sol
 ended_because: ci_handoff
+prs: [11273]
 mission: >-
   Carry the Chairman's design-first International menu transition into the existing
   Terminal shared shell, top-to-bottom, preserving canonical engines and research
@@ -27,13 +28,13 @@ verified:
     result: "60 pages total: 25 original plus 35 new; five new dividers; original relative order preserved."
   - claim: "The complete design plan is durably committed on its original source branch."
     command: "GitHub fetch_file at 4292d944bec7acf15e0360b24c2e37c5e20c4475 and exact compare against 43093737b9d3b682bb19859c3a6fc4cd6cae6b77"
-    result: "Readback equals authored 47,423-character plan; one owned documentation path; Ready Terminal PR1531."
+    result: "Readback equals authored 47,423-character plan; one owned documentation path; Terminal PR1531 merged as 53fe1d32f519aedea9aaa0db0686609304c659c5 with identical plan blob."
   - claim: "The relevant native admission seams remain unchanged at checked current Terminal master."
     command: "Exact-ref reads of readingProxy, generated route catalogue, sharedShellRoutes and SharedShellRuntime at 43093737b9d3b682bb19859c3a6fc4cd6cae6b77 and 48da28456ccbd3527a255684018a123660770125"
     result: "All ten International paths remain legacy/public_shell_premium_payload; no International readingProxy resource is admitted."
-  - claim: "Terminal PR1531 entered the protected native merge queue."
-    command: "Native PR review/check read; additive merge-on-green label; gh pr merge 1531 --repo mastermindx-market-intelligence/mastermind-terminal --auto --squash --match-head-commit 4292d944bec7acf15e0360b24c2e37c5e20c4475; GraphQL readback"
-    result: "Three required PR-head contexts succeeded; queue entry MQE_lQDOTOzwKM8AAAABPK3MPc4ABTs-zgP-i4A observed QUEUED at position1. Merge was not yet observed at this capture."
+  - claim: "Terminal PR1531 merged through the protected native queue and its plan blob was verified."
+    command: "Native exact-head checks and queue enrollment, GitHub PR1531 merge readback, then fetch_file at merge 53fe1d32f519aedea9aaa0db0686609304c659c5"
+    result: "Merged head 4292d944bec7acf15e0360b24c2e37c5e20c4475 as 53fe1d32f519aedea9aaa0db0686609304c659c5; merged blob 79e7b1eda9569737bdaba62723f06b10eb2892bd equals authored plan. No application deployment owed for this documentation."
 unverified:
   - claim: "The full International design programme is complete."
     what_would_verify: "Complete native dispositions for retained deep World views, full responsive/theme/locale coverage and any remaining interaction details. This wave is a substantial foundation, not that claim."
@@ -44,11 +45,11 @@ unverified:
   - claim: "International is implemented and deployed natively in Terminal."
     what_would_verify: "Canonical authenticated source-to-native-consumer proof, route export, protected release and real deployed browser acceptance."
 unresolved:
-  - "Terminal PR1531 merge and merged-blob readback were pending at capture; consume the original PR, never duplicate it."
+  - "Macro PR11273 carries this continuation; its own CI and controller merge remain separate from the completed Terminal plan delivery."
   - "World pathname migration must account for all13 view values, not only Overview and Compare."
   - "Regional lens semantic mismatches and basket weighting/basis discrepancy require owner-local repairs before stronger labels."
 next_actions:
-  - "Read Terminal PR1531 and the exact source plan linked below; reconcile its current queue/merge effect and read back the merged plan when available."
+  - "Consume Macro PR11273 on its original branch, complete required CI/controller release and read back the merged handoff. Reuse the already verified Terminal PR1531 merge."
   - "Use delivered native Paper frames; bind each retained World workspace to a native or explicitly retained disposition before admitting /intl.html."
   - "After design completion, qualify World canonical data through the existing authenticated reader and build the Overview/Compare/evidence/Japan-return vertical slice."
   - "Continue Stocks, shared Global/Country cycle adapter, Baskets and five regional lenses in the Chairman's order; qualify each source independently."
@@ -71,11 +72,11 @@ danger_areas:
 
 The Chairman's November design wave produced 31 editable product frames and four builder boards in the existing [International Paper file](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG). All ten requested destinations have desktop/mobile designs. Additional states cover comparison, currency evidence, source gaps, filtered stocks, price history, basket methodology, research navigation, Chinese at 320px, release revisions and tablet.
 
-The complete source-linked contract is in [Terminal PR1531](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1531) and the [exact committed plan](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/4292d944bec7acf15e0360b24c2e37c5e20c4475/docs/plans/INTERNATIONAL_SHARED_SHELL_2026-11-14.md). The PR was queued through the native protected route at this capture. This record does not claim a background worker, automatic wake, formal GitHub approval, implementation, deployment or production acceptance.
+The complete source-linked contract is in [Terminal PR1531](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1531) and the [exact committed plan](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/4292d944bec7acf15e0360b24c2e37c5e20c4475/docs/plans/INTERNATIONAL_SHARED_SHELL_2026-11-14.md). Terminal PR1531 merged through the protected native queue as 53fe1d32f519aedea9aaa0db0686609304c659c5; the merged plan blob is identical to the authored content. Macro PR11273 carries this continuation and remains a separate source-release operation. This record does not claim a background worker, automatic wake, formal GitHub approval, implementation, deployment or production acceptance.
 
 ## §1 What is LEFT — in order
 
-1. Consume the original Terminal PR's exact current merge/check state; verify the actual merged file blob rather than assuming a queue entry is a merge.
+1. Complete Macro PR11273's own required CI and incumbent controller release, then read back this handoff at its merge. Terminal PR1531's plan merge and exact blob equality are already verified.
 2. Complete the detailed native disposition for all thirteen World views and remaining design parity. Preserve the eighteen research families and four genuinely unbound destinations.
 3. Qualify the existing authenticated source reader before a native World build. The bearer reading proxy and static Macro cookie path have different semantics.
 4. Implement the one-shell vertical journey only after design completion, then advance the remaining nine destinations. Existing source gaps block their affected lens only.
