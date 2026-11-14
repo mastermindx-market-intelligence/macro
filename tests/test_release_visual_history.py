@@ -196,3 +196,124 @@ def test_visual_javascript_syntax_in_node_when_available():
     script=ROOT/"templates/release_visual_history.js"
     result=subprocess.run(["node","--check",str(script)],capture_output=True,text=True,timeout=10)
     assert result.returncode==0, result.stderr
+
+
+def test_bls_annual_headline_is_unadjusted_but_monthly_is_adjusted(tmp_path, monkeypatch):
+    """BLS PPI/CPI YoY must never silently use the SA index after NSA exists."""
+    _manifest(tmp_path)
+    nsa = tmp_path/"data/fred_vintage/release_targets/PPIFID_all_vintages.parquet"
+    nsa.write_bytes(b"nsa-fixture")
+    manifest = tmp_path/"data/fred_vintage/release_targets/manifest.json"
+    payload=json.loads(manifest.read_text())
+    payload["series"]["PPIFID"]={"path":"data/fred_vintage/release_targets/PPIFID_all_vintages.parquet",
+        "status":"written","artifact_bytes":len(b"nsa-fixture"),
+        "artifact_sha256":sha256(b"nsa-fixture").hexdigest()}
+    manifest.write_text(json.dumps(payload))
+    seen=[]
+    def loader(path, *, series_id):
+        seen.append(series_id)
+        frame=_frame()
+        if series_id=="PPIFID":
+            frame=frame.copy()
+            frame.loc[frame["value"]<200,"value"]=frame.loc[frame["value"]<200,"value"]*1.1
+            # Annual raw growth remains valid, but at 2026-07 first-year
+            # growth differs from the seasonally adjusted mock series.
+            frame.loc[frame["period"]>=pd.Timestamp("2026-01-01"),"value"] += 6
+        return frame
+    monkeypatch.setattr(visual,"load_full_vintage_parquets",loader)
+    result=visual.build_release_visual_history(tmp_path,asof=NOW)
+    ppi=next(x for x in result["series"] if x["release"]=="ppi_finaldemand")
+    assert ppi["basis_metadata"]["yoy"] == {
+        "series_id":"PPIFID","seasonal_adjustment":"NSA",
+        "official_reported_basis_comparable":True,"first_print":False,
+        "basis_note":"NSA_index_derived_yoy_not_official_first_print",
+    }
+    assert ppi["basis_metadata"]["mom"]["series_id"]=="PPIFIS"
+    assert ppi["basis_metadata"]["mom"]["seasonal_adjustment"]=="SA"
+    assert ppi["yoy"] != visual._frame_points(_frame(),date(2026,10,16))["yoy"]
+    assert ppi["mom"] == visual._frame_points(_frame(),date(2026,10,16))["mom"]
+    assert set(seen)=={"PPIFIS","PPIFID"}
+
+
+def test_missing_optional_nsa_is_explicitly_sa_proxy(tmp_path,monkeypatch):
+    _manifest(tmp_path)
+    monkeypatch.setattr(visual,"load_full_vintage_parquets",lambda *a,**k:_frame())
+    result=visual.build_release_visual_history(tmp_path,asof=NOW)
+    ppi=next(x for x in result["series"] if x["release"]=="ppi_finaldemand")
+    assert ppi["status"]=="available"
+    assert ppi["basis_metadata"]["yoy"]["seasonal_adjustment"]=="SA"
+    assert not ppi["basis_metadata"]["yoy"]["official_reported_basis_comparable"]
+    assert "ppi_finaldemand:nsa:official_nsa_series_not_collected" in result["reason_codes"]
+    assert ppi["basis_metadata"]["mom"]["official_reported_basis_comparable"] is True
+
+
+def test_bls_october_2026_cpi_yoy_gap_not_filled():
+    levels={f"2025-{i:02d}":100.0 for i in range(1,13) if i!=10}
+    levels.update({"2026-09":105.2,"2026-10":106.1})
+    yearly=visual._change(levels,12)
+    assert "2026-10" not in [p["period"] for p in yearly]
+    assert "2026-09" in [p["period"] for p in yearly]
+
+
+def test_visual_only_nsa_series_not_admitted_to_forecast_scoring():
+    from engine.release_target_truth import (CHART_ONLY_INDEX_SERIES,
+        SUPPORTED_SERIES, VINTAGE_STORE_SERIES, ReleaseTargetTruthError,
+        reconstruct_release_target)
+    for sid in ("PPIFID","CPIAUCNS","CPILFENS"):
+        assert sid in CHART_ONLY_INDEX_SERIES
+        assert sid in VINTAGE_STORE_SERIES
+        assert sid not in SUPPORTED_SERIES
+        with pytest.raises(ReleaseTargetTruthError,match="chart_only_index_must_not_be_reconstructed"):
+            reconstruct_release_target(pd.DataFrame(),series_id=sid,period="2026-10")
+
+
+def test_missing_optional_nsa_cannot_veto_core_vintage_publication(tmp_path):
+    from scripts.collect_release_target_vintages import collect_release_target_vintages
+    def provider(**kwargs):
+        if kwargs["series_id"]=="PPIFID":
+            raise RuntimeError("synthetic unavailable optional NSA source")
+        return pd.DataFrame([
+            {"period":"2026-07-01", "realtime_start":"2026-08-12",
+             "realtime_end":"9999-12-31","value":100.0},
+            {"period":"2026-08-01", "realtime_start":"2026-09-11",
+             "realtime_end":"9999-12-31","value":100.3},
+        ])
+    result=collect_release_target_vintages(
+        repo_root=tmp_path,series_ids=["CPIAUCSL","PPIFID"],
+        api_key="test",fetcher=provider)
+    assert result["status"]=="ok"
+    assert result["optional_series_status"]=="partial"
+    assert result["optional_series_failures"]==["PPIFID"]
+    manifest=json.loads((tmp_path/"data/fred_vintage/release_targets/manifest.json").read_text())
+    assert manifest["status"]=="ok"
+    assert manifest["series"]["CPIAUCSL"]["status"]=="written"
+    assert manifest["series"]["PPIFID"]["status"]=="failed"
+    assert (tmp_path/"data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet").is_file()
+    assert not (tmp_path/"data/fred_vintage/release_targets/PPIFID_all_vintages.parquet").exists()
+
+
+def test_missing_core_vintage_still_aborts_optional_publication(tmp_path):
+    from scripts.collect_release_target_vintages import collect_release_target_vintages
+    def provider(**kwargs):
+        if kwargs["series_id"]=="CPIAUCSL":
+            raise RuntimeError("synthetic failed core source")
+        return pd.DataFrame([
+            {"period":"2026-08-01","realtime_start":"2026-09-11",
+             "realtime_end":"9999-12-31","value":100.3},
+        ])
+    result=collect_release_target_vintages(
+        repo_root=tmp_path,series_ids=["CPIAUCSL","PPIFID"],
+        api_key="test",fetcher=provider)
+    assert result["status"]=="partial"
+    assert result["publication_status"]=="aborted_before_source_mutation"
+    assert not (tmp_path/"data/fred_vintage/release_targets/manifest.json").exists()
+    assert not (tmp_path/"data/fred_vintage/release_targets/PPIFID_all_vintages.parquet").exists()
+
+
+def test_ui_always_discloses_sa_proxy_and_official_nsa_basis():
+    script=(ROOT/"templates/release_visual_history.js").read_text()
+    partial=(ROOT/"templates/_release_visual_history.html.j2").read_text()
+    for expected in ("SA-index YoY proxy","BLS official NSA","sourceBasis.series_id",
+                     "official_reported_basis_comparable"):
+        assert expected in script
+    assert "BLS CPI/PPI" in partial and "October 2025 CPI" in partial
