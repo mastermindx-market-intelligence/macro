@@ -72,6 +72,7 @@ waves:
       Then prove START, return, review, acceptance, two phases and interruption.
 discoveries:
   - DSC:CODEX-STOP-ADAPTER-DRIFT-SUPPRESSES-ATTENTION
+  - DSC:GRAPH-ORCHESTRATION-SKILLS-LOADED-M2
 do_not_redo:
   - "Reuse Agent OS and Mastermind runtime owners; no second task registry, priority queue or memory store (agentos/README.md)."
   - "Use ops.fabric_launch.agentos.read_context for exact owner expansion; ContextResolver selects references (Mastermind d010b161)."

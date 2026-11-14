@@ -1,0 +1,107 @@
+{
+  "source": "Paper get_screenshot read responses",
+  "date": "2026-11-08",
+  "scope": "Actual canvas captures; not browser or runtime proof",
+  "screenshots": [
+    {
+      "path": "proof/gmi-en-dark.jpg",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "node_id": "6DR-0",
+      "mime_type": "image/jpeg",
+      "bytes": 82102,
+      "sha256": "33be47d575772cd34ff84a3c000f08a2eb1c6a9e83bf1da0c02b4aa2e4615fba",
+      "width": 390,
+      "height": 1307
+    },
+    {
+      "path": "proof/gmi-en-light.jpg",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "node_id": "6FY-0",
+      "mime_type": "image/jpeg",
+      "bytes": 85460,
+      "sha256": "ab1b9aedac29978aa34202513e44c539164083e51ec553997704c83ea6c8a926",
+      "width": 390,
+      "height": 1322
+    },
+    {
+      "path": "proof/gmi-zh-dark.jpg",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "node_id": "6PA-0",
+      "mime_type": "image/jpeg",
+      "bytes": 66460,
+      "sha256": "386ce716168dffd05daadee7884812a2137abd9dcdffb4e4ad8d7ab9b8beec2e",
+      "width": 390,
+      "height": 1231
+    },
+    {
+      "path": "proof/gmi-zh-light.jpg",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "node_id": "6R7-0",
+      "mime_type": "image/jpeg",
+      "bytes": 70257,
+      "sha256": "ce1782963145d35aaca76c5a7259a7bfa30333b955573ed814fe075a322a14a2",
+      "width": 390,
+      "height": 1246
+    },
+    {
+      "path": "proof/gmi-motion-storyboard.jpg",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "node_id": "71U-0",
+      "mime_type": "image/jpeg",
+      "bytes": 215345,
+      "sha256": "f76c1219b9048f67ef19791e80884d347e3e9022eff244348f57251aa37e5870",
+      "width": 1376,
+      "height": 908
+    },
+    {
+      "path": "proof/os-today-desktop.jpg",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "node_id": "LNV-0",
+      "mime_type": "image/jpeg",
+      "bytes": 90609,
+      "sha256": "bc0d29d8b4ab7a024bc66c3b6afc2e08c183001969eff3cf6b96fa2aa036d546",
+      "width": 1600,
+      "height": 1040
+    },
+    {
+      "path": "proof/os-build-acceptance.jpg",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "node_id": "XGI-0",
+      "mime_type": "image/jpeg",
+      "bytes": 385191,
+      "sha256": "5171b53d57f9f392a3248f7adfe012689aa971e5a9a1ba7568ab2490e266b2c8",
+      "width": 1600,
+      "height": 1299
+    },
+    {
+      "path": "proof/ai-answer-mobile.jpg",
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "node_id": "1VE-0",
+      "mime_type": "image/jpeg",
+      "bytes": 52911,
+      "sha256": "d93e350a4103197663f1e881e143132c05e74608403cef3f46815a2c0cf5ec83",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "path": "proof/international-directory.jpg",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "node_id": "41M-0",
+      "mime_type": "image/jpeg",
+      "bytes": 142226,
+      "sha256": "f35cfa0b7c909e00a99e7a509a9974a8f88a0fdd503dd8abea2601704449de94",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "path": "proof/terminal-admission-bridge.jpg",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "node_id": "1Y9G-0",
+      "mime_type": "image/jpeg",
+      "bytes": 146114,
+      "sha256": "c39f39bd05b8573ea8ccdebe28d2e0d4362f8a9b29b21caf646dfa70017f70a1",
+      "width": 1360,
+      "height": 524
+    }
+  ]
+}
