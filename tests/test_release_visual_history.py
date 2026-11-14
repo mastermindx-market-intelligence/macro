@@ -200,7 +200,7 @@ def test_visual_javascript_syntax_in_node_when_available():
 
 def test_bls_annual_headline_is_unadjusted_but_monthly_is_adjusted(tmp_path, monkeypatch):
     """BLS PPI/CPI YoY must never silently use the SA index after NSA exists."""
-    _manifest(tmp_path)
+    _manifest(tmp_path,collected="2026-10-16T18:00:00Z")
     nsa = tmp_path/"data/fred_vintage/release_targets/PPIFID_all_vintages.parquet"
     nsa.write_bytes(b"nsa-fixture")
     manifest = tmp_path/"data/fred_vintage/release_targets/manifest.json"
@@ -236,7 +236,7 @@ def test_bls_annual_headline_is_unadjusted_but_monthly_is_adjusted(tmp_path, mon
 
 
 def test_missing_optional_nsa_is_explicitly_sa_proxy(tmp_path,monkeypatch):
-    _manifest(tmp_path)
+    _manifest(tmp_path,collected="2026-10-16T18:00:00Z")
     monkeypatch.setattr(visual,"load_full_vintage_parquets",lambda *a,**k:_frame())
     result=visual.build_release_visual_history(tmp_path,asof=NOW)
     ppi=next(x for x in result["series"] if x["release"]=="ppi_finaldemand")
