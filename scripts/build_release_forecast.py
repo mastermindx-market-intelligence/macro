@@ -4461,6 +4461,10 @@ def build(root: Path, dry_run: bool = False) -> dict:
         else "shadow_candidate_withheld_no_valid_current_projection"
     )
 
+    # Additive, source-verified historical charting projection. No forecast/score effects.
+    from engine.release_visual_history import build_release_visual_history
+    release_visual_history = build_release_visual_history(root, asof=asof_utc)
+
     # 10. Assemble latest.json artifact (schema release_forecast.v2)
     accuracy_claim = "withheld_until_clean_aligned_forward_evidence"
     latest = {
@@ -4492,6 +4496,7 @@ def build(root: Path, dry_run: bool = False) -> dict:
             ),
         },
         "last_scored_all_forward": last_scored_all_forward,
+        "release_visual_history": release_visual_history,
         "enrichments": [
             "surprise_distribution", "market_implied", "reaction_sensitivity",
             "quirk_flags", "expectation_read", "coverage_flags", "input_snapshot_ref",
@@ -4499,7 +4504,7 @@ def build(root: Path, dry_run: bool = False) -> dict:
             # W11-G additions
             "print_integrity", "revision_context",
             # MRI-R40: combined_v1 combination layer
-            "combined",
+            "combined", "release_visual_history",
         ],
         "upcoming": upcoming_block,
         "last_scored": last_scored,

@@ -36,6 +36,8 @@ from collectors.fred import fetch_all_vintages
 from engine.release_target_truth import (
     SOURCE_OUTPUT_TYPE,
     SUPPORTED_SERIES,
+    CHART_ONLY_INDEX_SERIES,
+    VINTAGE_STORE_SERIES,
     default_vintage_path,
     load_full_vintage_parquets,
     normalize_full_vintage_frame,
@@ -50,7 +52,7 @@ _INTEGRITY_PROFILE = "release_target_artifact_sha256_bytes.v1"
 def collect_release_target_vintages(
     *,
     repo_root: str | Path = _REPO,
-    series_ids: Sequence[str] = SUPPORTED_SERIES,
+    series_ids: Sequence[str] = VINTAGE_STORE_SERIES,
     realtime_start: str = _REALTIME_START,
     api_key: str | None = None,
     dry_run: bool = False,
@@ -187,7 +189,20 @@ def collect_release_target_vintages(
                     series_id,
                 )
 
-        if failed:
+        # Core targets retain the all-or-nothing publication fence; the
+        # optional NSA visualization additions cannot veto canonical refresh.
+        failed_core = any(
+            series in SUPPORTED_SERIES
+            and receipt["series"][series]["status"] in {"failed", "skipped"}
+            for series in requested
+        )
+        optional_failures = [
+            series for series in requested
+            if series in CHART_ONLY_INDEX_SERIES
+            and receipt["series"][series]["status"] in {"failed", "skipped"}
+        ]
+        receipt["optional_series_failures"] = optional_failures
+        if failed_core or successful == 0:
             receipt["status"] = "partial" if successful else "failed"
             receipt["publication_status"] = "aborted_before_source_mutation"
             for series_id in staged:
@@ -213,6 +228,10 @@ def collect_release_target_vintages(
         published: set[str] = set()
         try:
             for series_id in requested:
+                if series_id not in staged:
+                    # Not a core scoring series; leave its missing value
+                    # unavailable in the shared manifest, never fabricate it.
+                    continue
                 staged_path, output_path, artifact = staged[series_id]
                 publish_staged(staged_path, output_path)
                 _fsync_file(output_path)
@@ -240,6 +259,7 @@ def collect_release_target_vintages(
 
         receipt["status"] = "ok"
         receipt["publication_status"] = "complete"
+        receipt["optional_series_status"] = "partial" if optional_failures else "complete"
         receipt["completed_at"] = _utc_now()
         _atomic_write_json(receipt, manifest)
         return receipt
@@ -326,10 +346,10 @@ def _normalize_series_ids(series_ids: Sequence[str]) -> tuple[str, ...]:
             series = part.upper().strip()
             if not series:
                 continue
-            if series not in SUPPORTED_SERIES:
+            if series not in VINTAGE_STORE_SERIES:
                 raise ValueError(
-                    f"unsupported release-target series {series!r}; "
-                    f"supported={list(SUPPORTED_SERIES)}"
+                    f"unsupported release-target vintage series {series!r}; "
+                    f"supported={list(VINTAGE_STORE_SERIES)}"
                 )
             if series not in requested:
                 requested.append(series)
@@ -438,8 +458,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--series",
         nargs="+",
-        default=list(SUPPORTED_SERIES),
-        help="Supported FRED series IDs (space- or comma-separated)",
+        default=None,
+        help="Supported FRED series IDs; default core plus optional visual NSA indices for collect, core targets for --seal-existing",
     )
     parser.add_argument(
         "--realtime-start",
@@ -465,10 +485,12 @@ if __name__ == "__main__":
     if args.seal_existing:
         if args.dry_run:
             raise SystemExit("--seal-existing and --dry-run are mutually exclusive")
-        result = seal_existing_release_target_vintages(series_ids=args.series)
+        result = seal_existing_release_target_vintages(
+            series_ids=args.series if args.series is not None else SUPPORTED_SERIES
+        )
     else:
         result = collect_release_target_vintages(
-            series_ids=args.series,
+            series_ids=args.series if args.series is not None else VINTAGE_STORE_SERIES,
             realtime_start=args.realtime_start,
             dry_run=args.dry_run,
         )
