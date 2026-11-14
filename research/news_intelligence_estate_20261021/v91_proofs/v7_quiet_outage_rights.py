@@ -614,53 +614,93 @@ def p6_honest_degraded_api(fx: Fixtures) -> tuple[str, str]:
 
 
 def p7_honest_degraded_ai(fx: Fixtures) -> tuple[str, str]:
-    """Honest degraded AI output: no AI-facing surface carries the degraded state."""
+    """Delivery state reaches real prompt input; generated output is not proved."""
+    from unittest.mock import patch
     from engine.qbus_news_context import news_evidence_bundle
+    from engine.press import qbus_news as consumer
+    from engine.press.writer import build_prompt
 
     receipt_path = fx.dir / "SYNTH-ev-rights.json"
+    health_path = fx.dir / "SYNTH-ai-health.json"
     research_receipt = fx.receipt(
-        audiences=("internal_research",), receipt_id="SYNTH-R-EVID", derivative=True
+        audiences=("internal_research", "blog_draft"),
+        receipt_id="SYNTH-R-EVID", derivative=True,
     )
     receipt_path.write_text(json.dumps(research_receipt), encoding="utf-8")
-    populated = news_evidence_bundle(
-        database=str(fx.story_db),
-        security_id=SECURITY_ID,
-        receipt_paths=[str(receipt_path)],
-        audience="internal_research",
-        now=FIXED_NOW,
+    args = dict(
+        database=str(fx.story_db), security_id=SECURITY_ID,
+        receipt_paths=[str(receipt_path)], audience="internal_research",
+        now=FIXED_NOW, health_receipt_path=health_path,
     )
-    quiet = news_evidence_bundle(
-        database=str(fx.empty_db),
-        security_id=SECURITY_ID,
-        receipt_paths=[str(receipt_path)],
-        audience="internal_research",
-        now=FIXED_NOW,
+    health_path.write_text(json.dumps(fx.health_payload()), encoding="utf-8")
+    populated = news_evidence_bundle(**args)
+    quiet = news_evidence_bundle(**dict(args, database=str(fx.empty_db)))
+    health_path.write_text(json.dumps(fx.health_payload(
+        observed="2026-10-30T23:56:00Z", catchup="2026-10-30T23:56:00Z",
+    )), encoding="utf-8")
+    stale = news_evidence_bundle(**args)
+    health_path.write_text(json.dumps(fx.health_payload(
+        catchup="2026-10-30T23:56:00Z",
+    )), encoding="utf-8")
+    degraded = news_evidence_bundle(**args)
+    health_path.unlink()
+    missing = news_evidence_bundle(**args)
+    ladder = (
+        populated.get("delivery_state") == "live"
+        and quiet.get("delivery_state") == "quiet"
+        and stale.get("delivery_state") == "unavailable"
+        and degraded.get("delivery_state") == "degraded"
+        and missing.get("delivery_state") == "unavailable"
+        and "does not establish that no news exists" in quiet.get("coverage_note", "")
+        and "do not establish current or complete coverage" in degraded.get("coverage_note", "")
     )
-    keys = sorted(populated)
-    degraded_member = [key for key in keys if "health" in key or "degraded" in key]
-    carries_state = (
-        bool(degraded_member)
-        or populated["state"] not in {"available", "restricted"}
-        or quiet["state"] != "available"
+    stable_basis = all(
+        value["evidence_sha256"] == populated["evidence_sha256"]
+        and value["stories"] == populated["stories"]
+        for value in (stale, degraded, missing)
     )
-    source = (ROOT / "engine" / "qbus_news_context.py").read_text(encoding="utf-8")
-    m13_hits = sum(
-        source.count(word) for word in ("coalesc", "spend", "budget", "timeout", "dedup")
+
+    # Exercise the incumbent model-facing consumer, not a fabricated prompt.
+    slot = {"id": "SYNTH-AI-01", "desk": "research_note",
+            "as_of": FIXED_NOW.date().isoformat(),
+            "story": {"kind": "company_update", "tickers": [SYNTH_TICKER]}}
+    call_args = dict(universe_path=fx.universe_path, receipt_paths=[receipt_path])
+    with patch.dict(os.environ, {"MM_TICKER_NEWS_HEALTH": str(health_path)}):
+        with patch.object(consumer, "_utcnow", return_value=FIXED_NOW):
+            health_path.write_text(json.dumps(fx.health_payload()), encoding="utf-8")
+            prepared = consumer.prepare_slot(slot, database=fx.story_db, **call_args)
+            _, live_prompt = build_prompt(prepared, {})
+            consumer.verify_slot(prepared, **call_args)
+            health_path.write_text(json.dumps(fx.health_payload(gap=True)), encoding="utf-8")
+            refusal = None
+            try:
+                consumer.verify_slot(prepared, **call_args)
+            except consumer.PrivateNewsUnavailable as exc:
+                refusal = str(exc)
+            warned = consumer.prepare_slot(slot, database=fx.story_db, **call_args)
+            _, degraded_prompt = build_prompt(warned, {})
+            consumer.verify_slot(warned, **call_args)
+
+    prompt_boundary = (
+        "News delivery is live" in live_prompt
+        and "individual report dates still apply" in live_prompt
+        and "News delivery is degraded" in degraded_prompt
+        and "retained reports do not establish current or complete coverage" in degraded_prompt
+        and refusal == "qbus_draft_delivery_changed"
+        and warned["qbus_news_evidence"]["evidence_sha256"] == prepared["qbus_news_evidence"]["evidence_sha256"]
     )
-    if carries_state:
-        return "PARTIAL", (
-            f"bundle carries degraded state {degraded_member}; "
-            f"engine/qbus_news_context.py:35; no test asserts a degraded/health member"
-        )
-    return "ABSENT", (
-        f"AI evidence bundle keys={keys} carry no degraded/health "
-        f"member; state=available even for "
-        f"zero-story quiet store (vocab restricted|available); pre-call "
-        f"coalescing/spend keyword hits in engine/qbus_news_context.py only={m13_hits} "
-        f"(M13); nearest engine/qbus_news_context.py:35 (its state is tested at "
-        f"tests/test_shared_news_intelligence.py:426); model-facing reader "
-        f"engine/press/qbus_news.py:219; neither reads the health receipt; no test "
-        f"asserts a degraded/health member"
+    no_publication = all(
+        value["publication_authorized"] is False
+        for value in (populated, quiet, stale, degraded, missing, prepared, warned)
+    )
+    held = ladder and stable_basis and prompt_boundary and no_publication
+    return ("PARTIAL" if held else "ABSENT"), (
+        f"health ladder={ladder} stable report basis={stable_basis}; "
+        f"real Press prompt warning and pre-call changed-delivery refusal={prompt_boundary}; "
+        f"publication remains unauthorized={no_publication}; "
+        "engine/qbus_news_context.py:22 engine/press/qbus_news.py:270 "
+        "tests/test_qbus_news_receipts.py:475; generated answer, public AI consumers "
+        "and deployed behavior are not exercised (no model call)"
     )
 
 

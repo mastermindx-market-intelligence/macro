@@ -304,3 +304,227 @@ def test_invalid_additional_health_diagnostics_do_not_become_coverage(publishers
     assert projected["state"] == "available"
     assert "configured_publishers" not in projected
     assert "accepted_reports_since_start" not in projected
+
+# V7-P7: delivery observation must reach the real evidence and prompt consumers
+# without becoming a new source revision or a grant to use restricted text.
+@pytest.fixture
+def news_evidence_health_fixture(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from engine.qbus_news_contract import normalize_news
+    from engine.qbus_news_store import NewsStore, RoutedRevision
+
+    database = tmp_path / "evidence.sqlite3"
+    rights_path = tmp_path / "rights.json"
+    health_path = tmp_path / "health.json"
+    universe_path = tmp_path / "universe.json"
+    rights = _rights(audiences=["site_full", "internal_research", "blog_draft"])
+    rights["capabilities"]["derivative_processing"] = True
+    rights_path.write_text(json.dumps(rights), encoding="utf-8")
+    health_path.write_text(json.dumps(_health()), encoding="utf-8")
+    monkeypatch.setenv("MM_TICKER_NEWS_HEALTH", str(health_path))
+    universe_path.write_text(json.dumps({
+        "owner": "fixture.security_reference", "revision": "fixture-universe-r1",
+        "complete": True, "truncated": False,
+        "effective_at": (NOW - timedelta(days=1)).isoformat(),
+        "known_at": (NOW - timedelta(hours=1)).isoformat(),
+        "fresh_until": (NOW + timedelta(days=1)).isoformat(),
+        "securities": [{
+            "security_id": "sec-NVDA", "ticker": "NVDA", "aliases": ["NVDA"],
+            "valid_from": (NOW - timedelta(days=100)).isoformat(), "valid_to": None,
+            "known_at": (NOW - timedelta(days=2)).isoformat(),
+        }],
+    }), encoding="utf-8")
+
+    def commit(title="Nvidia launches new AI accelerator", minute=0, cursor=None):
+        clock = NOW - timedelta(minutes=20) + timedelta(minutes=minute)
+        revision = normalize_news({
+            "id": "health-case", "title": title,
+            "url": "https://benzinga.com/news/health-case",
+            "teaser": "Unlicensed teaser must remain absent.",
+            "created": (NOW - timedelta(hours=1)).isoformat(),
+            "updated": clock.isoformat(), "stocks": ["NVDA"],
+        }, transport="benzinga_rest", received_at=clock + timedelta(seconds=1))
+        with NewsStore(database, source_key="fixture-writer") as store:
+            store.commit([RoutedRevision(revision, ("sec-NVDA",), "fixture-universe-r1")],
+                         expected_cursor=cursor, next_cursor=str(minute))
+        return revision
+
+    with NewsStore(database, source_key="fixture-writer"):
+        pass
+    return SimpleNamespace(
+        database=database, rights_path=rights_path, health_path=health_path,
+        universe_path=universe_path, rights=rights, commit=commit,
+        args=dict(database=database, security_id="sec-NVDA",
+                  receipt_paths=(rights_path,), audience="internal_research", now=NOW),
+        slot={"id": "fixture-original", "desk": "research_note",
+              "as_of": NOW.date().isoformat(),
+              "story": {"kind": "company_update", "tickers": ["NVDA"]}},
+    )
+
+
+@pytest.mark.parametrize("populated", [False, True])
+@pytest.mark.parametrize("mutation,expected,reason", [
+    ({}, "live", "fresh"),
+    ({"observed_at": (NOW - timedelta(minutes=3)).isoformat(),
+      "last_successful_catchup": (NOW - timedelta(minutes=3)).isoformat()},
+     "unavailable", "receipt_stale"),
+    ({"last_successful_catchup": (NOW - timedelta(minutes=3)).isoformat()},
+     "degraded", "catchup_stale"),
+    ({"gap_unresolved": True}, "degraded", "gap_unresolved"),
+    ({"last_successful_catchup": None}, "catching_up", "catchup_pending"),
+    ({"state": "unavailable"}, "unavailable", "source_unavailable"),
+    ({"observed_at": (NOW + timedelta(seconds=1)).isoformat()},
+     "unavailable", "receipt_invalid"),
+])
+def test_news_evidence_exposes_actual_delivery_health(
+    news_evidence_health_fixture, populated, mutation, expected, reason,
+):
+    from engine.qbus_news_context import news_evidence_bundle
+
+    fixture = news_evidence_health_fixture
+    if populated:
+        fixture.commit()
+    fixture.health_path.write_text(json.dumps(_health(**mutation)), encoding="utf-8")
+    bundle = news_evidence_bundle(**fixture.args)
+
+    # Readable retained evidence and current delivery are different claims.
+    assert bundle["state"] == "available"
+    assert bundle["delivery_state"] == ("quiet" if expected == "live" and not populated else expected)
+    assert bundle["health"]["reason"] == reason
+    assert bool(bundle["stories"]) is populated
+    assert bundle["publication_authorized"] is False
+    if populated:
+        assert bundle["stories"][0]["reports"][0]["teaser"] == ""
+
+
+def test_missing_or_bad_health_does_not_claim_quiet_or_rewrite_evidence(
+    news_evidence_health_fixture, monkeypatch,
+):
+    from engine.qbus_news_context import news_evidence_bundle
+
+    fixture = news_evidence_health_fixture
+    fixture.commit()
+    before = news_evidence_bundle(**fixture.args)
+    for value in ("not-json", json.dumps({"schema": "future.v99"})):
+        fixture.health_path.write_text(value, encoding="utf-8")
+        changed = news_evidence_bundle(**fixture.args)
+        assert changed["delivery_state"] == "unavailable"
+        assert changed["evidence_sha256"] == before["evidence_sha256"]
+        assert changed["stories"] == before["stories"]
+    fixture.health_path.unlink()
+    assert news_evidence_bundle(**fixture.args)["health"]["reason"] == "receipt_missing"
+    monkeypatch.delenv("MM_TICKER_NEWS_HEALTH")
+    missing = news_evidence_bundle(**fixture.args)
+    assert missing["delivery_state"] == "unavailable"
+    assert missing["health"]["reason"] == "receipt_path_unset"
+    assert missing["evidence_sha256"] == before["evidence_sha256"]
+
+
+def test_delivery_health_cannot_grant_derivative_or_field_rights(news_evidence_health_fixture):
+    from engine.qbus_news_context import news_evidence_bundle
+
+    fixture = news_evidence_health_fixture
+    fixture.commit()
+    fixture.rights["capabilities"]["derivative_processing"] = False
+    fixture.rights_path.write_text(json.dumps(fixture.rights), encoding="utf-8")
+    restricted = news_evidence_bundle(**fixture.args)
+    assert restricted["state"] == restricted["delivery_state"] == "restricted"
+    assert restricted["health"] is None
+    assert restricted["stories"] == []
+    assert restricted["evidence_sha256"] is None
+
+
+def test_health_projection_keeps_only_permitted_publisher_scope():
+    from engine.qbus_news_receipts import parse_health_receipt, scope_news_health
+    from engine.qbus_news_store import NewsReadRights
+
+    raw = parse_health_receipt(_health(additional_sources=[{
+        "provider": "massive", "state": "available",
+        "last_successful_poll": NOW.isoformat(),
+        "publishers": ["reuters.com", "excluded.example"], "accepted_reports": 99,
+    }], observed_at=NOW.isoformat()), now=NOW)
+    scoped = scope_news_health(raw, NewsReadRights(frozenset({"massive:reuters.com"})))
+    assert scoped["state"] == "unavailable"  # primary Benzinga is not entitled
+    assert scoped["reason"] == "no_curated_primary_source"
+    assert scoped["additional_sources"][0]["configured_publishers"] == ["reuters.com"]
+    assert "accepted_reports_since_start" not in scoped["additional_sources"][0]
+    assert "excluded.example" not in json.dumps(scoped)
+
+
+def test_heartbeat_keeps_saved_basis_but_source_correction_changes_it(news_evidence_health_fixture):
+    from engine.qbus_news_context import news_evidence_bundle
+
+    fixture = news_evidence_health_fixture
+    first = fixture.commit()
+    before = news_evidence_bundle(**fixture.args)
+    saved_bytes = json.dumps(before, sort_keys=True)
+    fixture.health_path.write_text(json.dumps(_health(
+        observed_at=NOW.isoformat(), last_successful_catchup=NOW.isoformat(),
+    )), encoding="utf-8")
+    heartbeat = news_evidence_bundle(**fixture.args)
+    assert heartbeat["health"] != before["health"]
+    assert heartbeat["evidence_sha256"] == before["evidence_sha256"]
+    corrected = fixture.commit("Nvidia delays new AI accelerator", minute=1, cursor="0")
+    after = news_evidence_bundle(**fixture.args)
+    assert after["evidence_sha256"] != before["evidence_sha256"]
+    assert after["stories"][0]["reports"][0]["revision_id"] == corrected.revision_id
+    assert before["stories"][0]["reports"][0]["revision_id"] == first.revision_id
+    assert json.dumps(before, sort_keys=True) == saved_bytes
+
+
+def test_actual_press_prompt_carries_delivery_limit_and_rechecks_before_call(
+    news_evidence_health_fixture, monkeypatch,
+):
+    from engine.press import qbus_news as consumer
+    from engine.press.writer import build_prompt
+
+    fixture = news_evidence_health_fixture
+    fixture.commit()
+    monkeypatch.setattr(consumer, "_utcnow", lambda: NOW)
+    args = dict(database=fixture.database, universe_path=fixture.universe_path,
+                receipt_paths=(fixture.rights_path,))
+    prepared = consumer.prepare_slot(fixture.slot, **args)
+    _, prompt = build_prompt(prepared, {})
+    assert "News delivery is live" in prompt
+    assert "individual report dates still apply" in prompt
+    assert prepared["publication_authorized"] is False
+    assert prepared["qbus_news_evidence"]["publication_authorized"] is False
+    consumer.verify_slot(prepared, universe_path=fixture.universe_path,
+                         receipt_paths=(fixture.rights_path,))
+
+    # A fresh heartbeat does not strand the prepared evidence.
+    fixture.health_path.write_text(json.dumps(_health(
+        observed_at=NOW.isoformat(), last_successful_catchup=NOW.isoformat(),
+    )), encoding="utf-8")
+    consumer.verify_slot(prepared, universe_path=fixture.universe_path,
+                         receipt_paths=(fixture.rights_path,))
+
+    fixture.health_path.write_text(json.dumps(_health(gap_unresolved=True)), encoding="utf-8")
+    with pytest.raises(consumer.PrivateNewsUnavailable, match="qbus_draft_delivery_changed"):
+        consumer.verify_slot(prepared, universe_path=fixture.universe_path,
+                             receipt_paths=(fixture.rights_path,))
+    degraded = consumer.prepare_slot(fixture.slot, **args)
+    _, prompt = build_prompt(degraded, {})
+    assert "News delivery is degraded" in prompt
+    assert "retained reports do not establish current or complete coverage" in prompt
+    assert degraded["qbus_news_evidence"]["evidence_sha256"] == prepared["qbus_news_evidence"]["evidence_sha256"]
+    consumer.verify_slot(degraded, universe_path=fixture.universe_path,
+                         receipt_paths=(fixture.rights_path,))
+
+
+def test_press_pre_call_observation_ages_even_without_receipt_write(
+    news_evidence_health_fixture, monkeypatch,
+):
+    from engine.press import qbus_news as consumer
+
+    fixture = news_evidence_health_fixture
+    fixture.commit()
+    monkeypatch.setattr(consumer, "_utcnow", lambda: NOW)
+    prepared = consumer.prepare_slot(
+        fixture.slot, database=fixture.database, universe_path=fixture.universe_path,
+        receipt_paths=(fixture.rights_path,),
+    )
+    monkeypatch.setattr(consumer, "_utcnow", lambda: NOW + timedelta(minutes=3))
+    with pytest.raises(consumer.PrivateNewsUnavailable, match="qbus_draft_delivery_changed"):
+        consumer.verify_slot(prepared, universe_path=fixture.universe_path,
+                             receipt_paths=(fixture.rights_path,))

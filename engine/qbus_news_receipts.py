@@ -389,7 +389,7 @@ def parse_health_receipt(
 
 
 def load_health_receipt(
-    path: Path | str,
+    path: Path | str | None,
     *,
     now: datetime,
     max_observation_age_seconds: float = 120.0,
@@ -397,6 +397,8 @@ def load_health_receipt(
 ) -> dict[str, object]:
     """Load runtime health. Missing/malformed evidence is explicitly unavailable."""
 
+    if path is None:
+        return _health_base("receipt_path_unset")
     receipt_path = Path(path)
     try:
         raw = json.loads(receipt_path.read_text(encoding="utf-8"))
@@ -413,6 +415,52 @@ def load_health_receipt(
         )
     except NewsReceiptError:
         return _health_base("receipt_invalid")
+
+
+def scope_news_health(health: Mapping[str, object], rights: NewsReadRights) -> dict[str, object]:
+    """Scope delivery evidence to publishers this reader can actually see."""
+    from engine.qbus_news_quality import curated_source
+
+    eligible = frozenset(
+        source for source in rights.allowed_sources
+        if rights.allows(source, "title") and curated_source(source)
+    )
+    result = dict(health)
+    if "benzinga" not in eligible:
+        result.update(state="unavailable", last_successful_catchup=None,
+                      last_stream_event_at=None, reason="no_curated_primary_source")
+    if "additional_sources" in health:
+        extras = []
+        for item in health.get("additional_sources") or []:
+            if not isinstance(item, Mapping) or item.get("provider") != "massive":
+                continue
+            publishers = [publisher for publisher in item.get("configured_publishers", [])
+                          if isinstance(publisher, str) and "massive:" + publisher in eligible]
+            if not publishers:
+                continue
+            entry = dict(item, configured_publishers=publishers)
+            # The writer count includes rejected articles and cannot describe
+            # this curated population. Keep its untouched receipt at the writer.
+            entry.pop("accepted_reports_since_start", None)
+            extras.append(entry)
+        result["additional_sources"] = extras
+    return result
+
+
+def news_delivery_state(health: Mapping[str, object], *, row_count: int) -> str:
+    raw = str(health.get("state") or "").strip().lower()
+    extras = health.get("additional_sources") or []
+    if raw == "unavailable" and any(item.get("state") == "available" for item in extras):
+        return "degraded" if row_count else "quiet"
+    if raw == "live" and any(item.get("state") != "available" for item in extras):
+        return "degraded"
+    if raw == "live" and row_count == 0:
+        return "quiet"
+    if raw in {"live", "catching_up", "degraded", "restricted", "unavailable"}:
+        return raw
+    if raw == "quiet":
+        return "quiet"
+    return "degraded"
 
 
 def write_health_receipt(path: Path | str, payload: object) -> None:

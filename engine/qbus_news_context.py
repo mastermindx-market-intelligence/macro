@@ -8,16 +8,38 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 
-from engine.qbus_news_receipts import combine_news_rights, load_rights_set
+from engine.qbus_news_receipts import (
+    combine_news_rights, load_rights_set, load_health_receipt,
+    scope_news_health, news_delivery_state,
+)
 from engine.qbus_news_store import NewsStore
 
 AUDIENCES = frozenset({"site_full", "internal_research", "blog_draft", "marketing_draft"})
 
 
+def news_evidence_health(*, rights, now: datetime, row_count: int, health_receipt_path=None) -> dict:
+    """Observe delivery separately from the immutable report/rights evidence basis."""
+    path = health_receipt_path
+    if path is None:
+        path = os.environ.get("MM_TICKER_NEWS_HEALTH", "").strip() or None
+    health = scope_news_health(load_health_receipt(path, now=now), rights)
+    state = news_delivery_state(health, row_count=row_count)
+    if state == "live":
+        note = "News delivery is live for the permitted source view; individual report dates still apply."
+    elif state == "quiet":
+        note = "No permitted reports in this snapshot; this does not establish that no news exists."
+    else:
+        note = (
+            f"News delivery is {state}; retained reports do not establish current or complete coverage."
+        )
+    return {"health": health, "delivery_state": state, "coverage_note": note}
+
+
 def news_evidence_bundle(
     *, database, security_id: str, receipt_paths, audience: str,
-    now: datetime | None = None, limit: int = 20,
+    now: datetime | None = None, limit: int = 20, health_receipt_path=None,
 ) -> dict:
     if audience not in AUDIENCES:
         raise ValueError("unsupported_news_evidence_audience")
@@ -35,12 +57,19 @@ def news_evidence_bundle(
         "state": "restricted", "stories": [], "has_more": False,
         "receipt_refs": [], "evidence_sha256": None,
         "publication_authorized": False,
+        "health": None, "delivery_state": "restricted",
+        "coverage_note": "No derivative news evidence is permitted for this audience.",
     }
     if not rights.allowed_sources:
         return result
     with NewsStore.open_readonly(database, source_key="news-evidence-read") as store:
         evidence = store.evidence_for_security(security_id, limit=limit, rights=rights)
     result.update(state="available", stories=evidence["stories"], has_more=evidence["has_more"])
+    # state=available means readable retained evidence, never a live-feed claim.
+    result.update(news_evidence_health(
+        rights=rights, now=current, row_count=len(result["stories"]),
+        health_receipt_path=health_receipt_path,
+    ))
     sources = {report["source"] for story in result["stories"] for report in story["reports"]}
     result["receipt_refs"] = [
         {"receipt_id": receipt.receipt_id, "source": receipt.source,
@@ -48,6 +77,7 @@ def news_evidence_bundle(
          "expires_at": receipt.expires_at.isoformat()}
         for receipt in receipts if receipt.source in sources
     ]
+    # A heartbeat/coverage change must not rewrite a saved research evidence basis.
     identity = {key: result[key] for key in ("schema", "audience", "security_id", "stories", "receipt_refs")}
     result["evidence_sha256"] = hashlib.sha256(
         json.dumps(identity, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()

@@ -181,7 +181,7 @@ def _binding(slot: dict, universe_path, now: datetime) -> dict:
     }
 
 
-def _fresh_rights(bundle: dict, receipt_paths, now: datetime) -> None:
+def _fresh_rights(bundle: dict, receipt_paths, now: datetime):
     """Do not carry a permission changed during the database read to the writer."""
     from engine.qbus_news_receipts import combine_news_rights, load_rights_set
 
@@ -206,6 +206,8 @@ def _fresh_rights(bundle: dict, receipt_paths, now: datetime) -> None:
                 for field in ("title", "url", "teaser")
             ):
                 raise PrivateNewsUnavailable("qbus_draft_rights_changed")
+
+    return rights
 
 
 def prepare_slot(slot: dict, *, database, universe_path, receipt_paths) -> dict:
@@ -243,6 +245,7 @@ def prepare_slot(slot: dict, *, database, universe_path, receipt_paths) -> dict:
             safe_url = _safe_source_url(report["url"])
             publisher = publisher_identity(report["source"], safe_url or "")
             limits = [
+                bundle["coverage_note"],
                 "Third-party publisher reporting; retain attribution and differing accounts.",
                 "Current-state context, not a historical replay or an independent confirmation.",
             ]
@@ -273,6 +276,16 @@ def verify_slot(slot: dict, *, universe_path, receipt_paths) -> None:
     }:
         raise PrivateNewsUnavailable("qbus_draft_identity_changed")
     try:
-        _fresh_rights(slot["qbus_news_evidence"], receipt_paths, checked_at)
+        rights = _fresh_rights(slot["qbus_news_evidence"], receipt_paths, checked_at)
     except (OSError, ValueError):
         raise PrivateNewsUnavailable("qbus_draft_rights_changed") from None
+
+    # Health is observed again at the existing last pre-call boundary. A new
+    # heartbeat is not a new evidence revision; a changed prompt limitation is.
+    from engine.qbus_news_context import news_evidence_health
+    bundle = slot["qbus_news_evidence"]
+    current = news_evidence_health(
+        rights=rights, now=checked_at, row_count=len(bundle["stories"]),
+    )
+    if any(bundle.get(key) != current[key] for key in ("delivery_state", "coverage_note")):
+        raise PrivateNewsUnavailable("qbus_draft_delivery_changed")
