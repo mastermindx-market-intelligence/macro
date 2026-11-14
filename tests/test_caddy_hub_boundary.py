@@ -76,7 +76,9 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
     BL-1…BL-7) adds seventeen more lines before those blocks: those move to
     386, 395, 428, 466 and 896. The @x_ref double-dot guard
     (`not path *..*`) adds one more: 387, 396, 429, 467 and 897. Public-www
-    TLS certificate comments then move only that final proxy to 901. The two
+    TLS certificate comments then move only that final proxy to 901. The data-only
+    not-found continuation adds fifteen lines after the first six proxies,
+    moving only the final fixed rewrite to 916. The two
     peer-stamped lines (121, 146), proxy COUNT (7), every classification and topology guard
     are unchanged. If you find yourself changing a count or classification
     here, you almost certainly widened the static-access boundary — read
@@ -90,7 +92,7 @@ def test_shipped_caddyfile_line_numbers_match_known_blocks() -> None:
         396: SAFE_FIXED_REWRITE,
         429: SAFE_FIXED_REWRITE,
         467: SAFE_FIXED_REWRITE,
-        901: SAFE_FIXED_REWRITE,
+        916: SAFE_FIXED_REWRITE,
     }
 
 

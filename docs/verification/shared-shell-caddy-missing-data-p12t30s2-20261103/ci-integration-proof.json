@@ -1,0 +1,12 @@
+{
+  "scope": "test placement integration only; root-reviewed runtime blob unchanged",
+  "original": "0ab32c77d405aaacc090960d0b10cc62263056e4",
+  "runtime_blob": "6b2cb0cd7b9081b148fc74549188ec8e6d01c2c5",
+  "old_test": "tests/test_terminal_data_caddy.py",
+  "ci_test": "tests/test_control_room_caddy.py",
+  "five_test_bodies_ast_identical_after_private_helper_name_normalization": true,
+  "existing_control_room_test_bodies_unchanged": true,
+  "ci_suite_named_by_incumbent_run": true,
+  "ci_binary_input": "CADDY_BIN, existing lane checksum-pinned Caddy2.11.4",
+  "no_workflow_job_or_ci_authority_edit": true
+}

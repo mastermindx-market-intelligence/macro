@@ -1,0 +1,69 @@
+{
+  "task": "P12.T30.S2",
+  "base": "2e17ae66adca54dcecb9cbe9c669f32d8593ff41",
+  "source": {
+    "path": "app/deploy/Caddyfile",
+    "baseline_sha256": "125a8aa0d82aa1b7a28a6f5b9f44082b3a9832f4de03696c322ace365b178c52",
+    "candidate_sha256": "63275fd4ce2761ce167b4d7f3a7046c21070a9477c83dbcd04e84cf04fc533d7",
+    "candidate_blob": "6b2cb0cd7b9081b148fc74549188ec8e6d01c2c5"
+  },
+  "installed_adapter": "v2.11.4 h1:XKxkMTgNSizEvKG6QHue6cAsFOteU2qA61w2tKkCWi0=",
+  "binary_sha256": "07765bfa5cc2b60d3b481c787c2e9d003d5e05e688dffc23ababe5330db18c1b",
+  "adapter_contracts": {
+    "data_subroutes": 2,
+    "source_outside_snippet_identical": true,
+    "adapted_graph_outside_data_continuation_identical_after_group_alpha_renaming": true,
+    "unchanged_group_equivalence_classes": 7,
+    "baseline_red": {
+      "failed": 4,
+      "passed": 1
+    },
+    "candidate_green": 5,
+    "adjacent_green": 45
+  },
+  "effects": "caddy adapt and local pytest only; no validate/provision/load/server/listener/request/host/config/reload/provider/browser/PR/push/CI",
+  "scope": "Source and installed-local-adapter graph proof, not executed HTTP/FileServer or installed/served repair acceptance",
+  "references": [
+    "https://caddyserver.com/docs/caddyfile/directives/file_server",
+    "https://raw.githubusercontent.com/caddyserver/caddy/v2.11.4/modules/caddyhttp/fileserver/staticfiles.go"
+  ],
+  "rca": "/Volumes/Mastermind/evidence/shared-shell-auth03-t30-20261103/missing-data-source-rca.json",
+  "artifacts": {
+    "baseline.Caddyfile": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/baseline.Caddyfile",
+      "sha256": "125a8aa0d82aa1b7a28a6f5b9f44082b3a9832f4de03696c322ace365b178c52"
+    },
+    "baseline-adapt.json": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/baseline-adapt.json",
+      "sha256": "60855fe6d84c6e7236ed483c84d6bfc6473546a5ae27a45e3997fc25bca3ecfd"
+    },
+    "candidate-adapt.json": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/candidate-adapt.json",
+      "sha256": "58a2c2f91d82fac664fbf9cee9588fcf1e068d2079e18f82efa01ed702db8fc5"
+    },
+    "candidate-stdin-adapt.json": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/candidate-stdin-adapt.json",
+      "sha256": "eedae0ce931ac5d063cc61fac1924d623d0085934b0bb7f6abe97cb5a9a6a804"
+    },
+    "candidate-adapt.stderr": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/candidate-adapt.stderr",
+      "sha256": "a589a229c72c600e660f8c2f2e4e3fb2cc6c25224b8e4265cd8a7af96ce7f2a1"
+    },
+    "red-final.log": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/red-final.log",
+      "sha256": "36d02ef31a88b1ef99faec0f8e903123aeafeb3987216a0793dec8d324d6e0c5"
+    },
+    "green.log": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/green.log",
+      "sha256": "1c51e29b582b6e63ffa11c7663ff7afb173666f5fd96c35cfcede470b42c401a"
+    },
+    "adjacent.log": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/adjacent.log",
+      "sha256": "c27e5caa4cb01770e9980ad226fe20286efa0b7a7fb8aff9c2dc70c763ff24fb"
+    },
+    "candidate.patch": {
+      "path": "/Volumes/Mastermind/evidence/shared-shell-caddy-missing-data-p12t30s2-20261103/candidate.patch",
+      "sha256": "ca680fa5f809b9d328b49b795fa7b71cd68cb0da6a392d291240b3964e488b6d"
+    }
+  }
+}
