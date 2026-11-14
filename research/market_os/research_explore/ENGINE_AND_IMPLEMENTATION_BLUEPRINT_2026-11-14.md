@@ -3,7 +3,7 @@
 Status: DESIGN CANDIDATE / IMPLEMENTATION NOT STARTED
 Owner: Chairman's 14 November 2026 Research Explore assignment.
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md).
-Detailed Policy contract: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md).
+Detailed contracts: [Policy Watch R6](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md).
 
 ## 1. Objective and source binding
 
@@ -399,3 +399,42 @@ All paths below were used at the pinned repository generation unless explicitly 
 - [Cycle proxy registry](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/data/cycle_ontology/proxy_registry.json)
 - [Curated cycle history seeds](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/site/cycle_data.js)
 - [Intelligence Hub engine](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/engine/intel_hub.py)
+
+
+## 14. C7 advanced-workflow additions
+
+C7 adds seven BioCatalyst R11 pages and five Government Revenue R14 pages; the set now has 62 native pages. These extend the design candidate only. The [index](PAPER_DESIGN_INDEX_2026-11-14.md) and [inventory](PAPER_INVENTORY_2026-11-14.json) hold exact roots and reviewed screenshots. [BioCatalyst R11](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) supplies the detailed contract.
+
+### BioCatalyst: literal screening and prospective observation
+
+Trial screen uses eight literal AND filters, fixed completion-interval/NCT ordering and explicit peer selection. Its date rule is full source-interval containment: March 15–31 excludes a source value of March 2027. Unknown dates are excluded by an active bound. Phase facets are non-additive, ignore their own dimension and cannot be summed into the result count.
+
+First-seen uses the server's UTC observation window and current-record filters. “Primary completion” selects the exact change kind; there is no unimplemented completion-kind union. A matching event retains all its changes and total/displayed/omitted counts. The upper and lower observation bounds are visible; neither is promoted to effective time or clinical outcome.
+
+**Required engine/consumer upgrade:** per-NCT prospective coverage is internal only. The current public prospective endpoint returns aggregate coverage; trial detail does not expose the per-NCT object. Add a bounded projection from the same committed bundle, retaining exact NCT identity, accrual state and available observation/baseline clocks. Never infer coverage from event rows or substring-search fanout. Rows/facets also need a tested coherent-cut contract; matching response clocks alone are insufficient proof.
+
+The new states preserve filters and selected IDs through generation changes, separate baseline-only from valid emptiness, and distinguish unavailable projection from account access. The 768px date control uses the canonical 72px rail; 390px selected-event reading has explicit return and source actions. Real focus, navigation and source interaction proof remains owed.
+
+Source: [Bio API](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/app/biocatalyst.py), functions trial_screen, trial_screen_facets, trial_prospective_changes, _prospective_model_events and trial_detail; [screen engine](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/engine/biocatalyst/trial_screen.py), _matches/_row_order/_facet_for_dimension.
+
+### Government Revenue: programs, dates and exact relationships
+
+**Programs.** Use budget-programs, program/{program_key} and budget-line/{line_key}. Preserve content_id, receipt, native identifier, line_family_key, fiscal year, document_stage, units, provenance and all relevant source clocks. The specimen compares FY2026 request280 to FY2027 request312: +32 and +11.4%. Its separately shown enacted265 is not the comparison denominator. Implementation must retain source versions and compare only compatible line families/units/stages; no source snapshot may be guessed from a current API response.
+
+Source inspection must resolve the exact document/page/line and conversion (312,000 USD thousands →312m). Program links retain edge_id, edge_type, review_state, effective/known clocks and evidence. Null economic_weight displays allocation not established. A documented company link does not assign a program amount to a ticker. Unsupported or uncovered programs remain explicit, and a newer request does not replace older enactment evidence.
+
+**Calendar.** Current /recompetes returns deterministic period-of-performance end watches. It is not an official recompete or solicitation forecast. The design labels these **Expiry watch**, separately from **Response due** and **Performance ends**. Current and potential end dates remain separate, including unexercised-option meaning. No linked follow-on notice means none in the shown coverage, not that none exists. Preserve undated and withdrawn items for inspection outside dated sorting.
+
+Reuse the prebuilt events ledger and its critical-date ordering. Filters, selected event and date basis must survive source navigation. Construct a typed, coherent agenda from the committed cut, with source date kind and precision; retain versioned deadline corrections before presenting a before/after view. Bound cursors cannot mix cuts. Save view continues the existing device-local/check-on-open contract; it does not enroll a backend watcher.
+
+**Company and award connections.** Exact source-generated award/order and IDV parent IDs bind the source-native vehicle relationship, with direct/grandchild depth and selection provenance. This establishes no seat, utilization, vehicle-value allocation or issuer revenue. Award amounts stay on their original records. The /dossier/company route gives collection-scope metadata, not issuer attribution. Use the existing dated entity/issuer evidence owner for actual recipient mapping, with joint ventures and unresolved entities preserved.
+
+The relationship inspector keeps effective date unknown when the source does not supply it. Unavailable subaward coverage degrades that section while a valid award/vehicle path remains usable. Historical identity selection requires retained time-bound evidence before exposing a cutoff control.
+
+**Implementation proof.** Exercise compatible versus incompatible budget comparisons, null allocations, uncovered programs, ambiguous entities, missing/partial IDV publication, exact parent bridging, unavailable subawards, changed deadlines and undated items. Prove authenticated source → API → shared-shell consumer → exact original evidence → Back, including mobile and supported saved-state restoration. Account/entitlement, canonical company state and publication remain their current owners.
+
+Source: [Government API](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/app/government_revenue.py), _public_budget_line/_program/_edge, budget_programs/budget_program, dossier_company, award_idv_relationships, recompetes and events. The [Government masterplan](https://github.com/mastermindx-market-intelligence/macro/blob/e856ef0200a0c508c78ef9a6666116020e4835d1/research/GOVERNMENT_REVENUE_FORESIGHT_MASTERPLAN_FOR_FABLE.md) remains ambition, while the current implementation controls the supplied date/evidence meaning.
+
+### Preserved next work
+
+Next is Alternative Data relationship, provider and maturity-state design. Preliminary source review identifies approximate channel grouping instead of event identity, empty/error conflation and seed-derived control edges that cannot be promoted to verified ownership. These findings require a concrete source-grounded design and upgrade contract in D1-ALT. Remaining Special Situations, Policy, Hub, Capital and systematic cross-product states remain scoped; C7 does not close the design phase.
