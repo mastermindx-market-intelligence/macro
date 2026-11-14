@@ -414,7 +414,14 @@ def run_stage(root: Path, mode: str, index: int | None, deadline: float) -> dict
         raise AcquisitionRefused("TOTAL_DEADLINE_BEFORE_LAUNCH")
     if mode == "update":
         (root / "update-attempt").mkdir()
-        code, _ = observe_command(("/usr/bin/apt-get", "-o", "Acquire::AllowInsecureRepositories=false", "update"), deadline=deadline)
+        # Bounded network failure: apt must exit nonzero by itself (settled,
+        # no package applied) rather than burn the total setup deadline. An
+        # archive-name-resolution outage then reaches the owner's browser-only
+        # fallback instead of an unreaped-child unknown settlement.
+        code, _ = observe_command(("/usr/bin/apt-get", "-o", "Acquire::AllowInsecureRepositories=false",
+                                   "-o", "Acquire::Retries=1",
+                                   "-o", "Acquire::http::Timeout=30", "-o", "Acquire::https::Timeout=30",
+                                   "update"), deadline=deadline)
     elif mode == "resolve":
         (root / "resolve-attempt").mkdir()
         apt_directory(root / "planning-cache")

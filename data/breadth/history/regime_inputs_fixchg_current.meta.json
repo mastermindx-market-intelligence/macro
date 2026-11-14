@@ -1,0 +1,133 @@
+{
+ "basis": "reconstructed_current_membership",
+ "basis_note": "today's members applied to the past; not point-in-time; survivors only",
+ "no_outcomes": "series only: no outcome relation, no regime assignment, no trading call of any kind, on any period",
+ "purpose": "like-for-like universe change on the same members and prices as regime_inputs_daily_current.parquet; a separate file so the frozen current outputs stay byte-identical",
+ "scope": "series only: universe numbers; no member ticker, row or price; no regime assignment of any kind",
+ "start": {
+  "date": "2000-01-01",
+  "rule": "first January 1 from which every later calendar year has name-week above-200 flag disagreement against the Tiingo archive of 0.5% or less (S&P 500 members priced in both, weeks where both hold 200 sessions)",
+  "note": "200-session averages use the full download, so the first weeks after the start read flags from late in the prior year"
+ },
+ "floors": {
+  "share_and_statistic": 2,
+  "source": "scripts/build_tree_breadth_and_index.py (COO ruling 34 s2)"
+ },
+ "price_source": "yfinance yf.download(auto_adjust=True, period='max'), one single-vintage download, held off git; never the collector cache or data/yahoo",
+ "price_vintage": "2026-11-12T07:33:42.601690+00:00",
+ "price_retry": {
+  "vintage": "2026-11-12T07:36:21.718194+00:00",
+  "requested": 7,
+  "served": 6
+ },
+ "price_topup": {
+  "vintage": "2026-11-12T09:39:20Z",
+  "names": 4,
+  "call": "yf.download(<one ticker>, period='max', auto_adjust=True), one call per ticker",
+  "library": "yfinance 1.4.1",
+  "rule": "each name's full history is from a single download; no ticker has history from two downloads (COO 2026-11-12 09:39Z)",
+  "reason": "members of the relationship-hub families absent from the first download"
+ },
+ "inputs": [
+  {
+   "path": "/tmp/si_plan/quant/gmi/out/closes_with_topup.parquet",
+   "sha256": "092faad945c9abeaa2d8ad67b182aa7ebd13cd098471c1bfed311e1ae8e2fe72"
+  },
+  {
+   "path": "data/breadth/constituents.parquet",
+   "sha256": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f"
+  }
+ ],
+ "universe": {
+  "registry": "data/breadth/constituents.parquet",
+  "registry_sha256": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f",
+  "members": 503,
+  "basis": "today's S&P 500 members, same as regime_inputs_daily_current.parquet"
+ },
+ "data_end": "2026-11-11",
+ "series": {
+  "fix_chg_pct_above_200_21": {
+   "definition": "like-for-like change (points) of the percent-above-200 share over 21 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_200_63": {
+   "definition": "like-for-like change (points) of the percent-above-200 share over 63 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_50_21": {
+   "definition": "like-for-like change (points) of the percent-above-50 share over 21 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_50_63": {
+   "definition": "like-for-like change (points) of the percent-above-50 share over 63 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_fixed_200_21": {
+   "definition": "members counted at both ends of the 21-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k)",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_fixed_200_63": {
+   "definition": "members counted at both ends of the 63-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k)",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_fixed_50_21": {
+   "definition": "members counted at both ends of the 21-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k)",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  },
+  "n_fixed_50_63": {
+   "definition": "members counted at both ends of the 63-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k)",
+   "source": "engine.group_breadth_history.fixed_set_change",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out",
+   "basis": "today's members applied to the past; not point-in-time; survivors only",
+   "first_date": "2000-01-03",
+   "kind": "house"
+  }
+ },
+ "files": [
+  "regime_inputs_fixchg_current.parquet"
+ ],
+ "rows": {
+  "regime_inputs_fixchg_current.parquet": 54048
+ },
+ "bytes": {
+  "regime_inputs_fixchg_current.parquet": 281882
+ },
+ "columns": [
+  "date",
+  "series",
+  "group",
+  "value",
+  "n",
+  "kind"
+ ],
+ "missing_rule": "a session with no valid value carries no row; n is the members counted at both ends beside every value",
+ "engine": "engine.group_breadth_history.fixed_set_change/member_flags/assign_groups"
+}
