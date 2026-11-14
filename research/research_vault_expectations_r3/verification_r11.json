@@ -1,0 +1,152 @@
+{
+  "schema": "research.brain_discovery_path.r11",
+  "executed_at_utc": "2026-09-16T10:28:10.690937+00:00",
+  "python": "3.13.5",
+  "sqlite": "3.46.1",
+  "main_pin": "0d60e2b6a2eb049bcbf00050e689a547e459f3e9",
+  "pending_brain_pin": "8271ae320732997be4553957e3e2773d1b9e9f1b",
+  "brain_expected_upstream_blob": "376d1045e6187926bea2fd4c83385d140174b817",
+  "brain_scope": "Executable transcription of selected search branch/helpers; comments/docstrings omitted, diagnostic function signature; NO full-module byte parity",
+  "brain_slice_sha256": "e5955eccf4298ad5bae1413561a714fc7de806fb21af3163ec31d420f284771a",
+  "corpus_full_git_blob": "0b035b34489a4efd2ae7a3c59d153b3d1977701a",
+  "corpus_full_blob_verified": true,
+  "scope": "Synthetic locally written metadata and text; actual SQLite/FTS5 and complete pinned corpus; selected Brain search semantics only",
+  "checks": [
+    {
+      "id": "literal_title",
+      "kind": "control",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ]
+    },
+    {
+      "id": "body_only_evidence",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "brain_ids": [],
+      "corpus_ids": [
+        "one"
+      ],
+      "count_scanned": 1
+    },
+    {
+      "id": "association_not_discovery",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "brain_ids": [],
+      "catalog_association": [
+        "ACMEQ"
+      ]
+    },
+    {
+      "id": "fifth_summary_bullet",
+      "kind": "projection_limit",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ],
+      "returned_bullets": 4,
+      "matching_bullet_projected": false
+    },
+    {
+      "id": "summary_tail",
+      "kind": "projection_limit",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ],
+      "returned_point_chars": 220,
+      "matching_tail_projected": false
+    },
+    {
+      "id": "query_is_not_subject_filter",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ],
+      "missing_subject_token": "ACMEQ",
+      "matched_shared_word": "margin"
+    },
+    {
+      "id": "literal_chinese",
+      "kind": "control",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ]
+    },
+    {
+      "id": "cross_language_is_not_tokenization",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "brain_ids": [],
+      "query_language": "Chinese",
+      "source_metadata_language": "English"
+    },
+    {
+      "id": "explicit_english_terms",
+      "kind": "control",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ],
+      "translation_automated": false
+    },
+    {
+      "id": "single_atom_candidate_support",
+      "kind": "control",
+      "observation_confirmed": true,
+      "brain_ids": [
+        "one"
+      ],
+      "candidate_not_deployed": true
+    },
+    {
+      "id": "catalog_unavailable",
+      "kind": "control",
+      "observation_confirmed": true,
+      "note": "research vault unavailable"
+    },
+    {
+      "id": "healthy_metadata_no_match",
+      "kind": "control",
+      "observation_confirmed": true,
+      "brain_ids": [],
+      "note": "institutional research summaries — third-party views, not the desk's own signals",
+      "count_scanned": 1
+    },
+    {
+      "id": "fulltext_prefix_limit",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "corpus_ids": [],
+      "input_chars": 64014,
+      "stored_cap": 60000
+    },
+    {
+      "id": "count_scanned_scope",
+      "kind": "scope_limit",
+      "observation_confirmed": true,
+      "catalog_rows_scanned": 3,
+      "brain_ids": [],
+      "corpus_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "pdfs_scanned_by_brain_search": 0
+    }
+  ],
+  "count": 14,
+  "control_count": 6,
+  "scope_or_projection_limits": 8,
+  "product_failures_fixed": 0,
+  "full_gateway_executed": false,
+  "real_auth_or_entitlement_executed": false,
+  "production_browser_executed": false,
+  "source_pdf_admitted": false,
+  "model_benchmark_executed": false,
+  "interpretation": "Completed characterization, not newly passing product features or measured live recall. FTS relevance scores are not investor signals."
+}

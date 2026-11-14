@@ -1,0 +1,68 @@
+{
+  "schema": "research_vault.literal_metadata_incidence.r22",
+  "source_catalog_blob": "b6900293dc9281124d3018d2fc5eda52873dc04a",
+  "generated_at": "2026-09-18T10:37:44.200123+00:00",
+  "method": "case-insensitive bounded literal regex over title + summary_points only; not body search and not canonical entity resolution",
+  "warnings": [
+    "Counts are metadata literal incidence, NOT company-coverage counts.",
+    "Raw institution labels are NOT independent source counts.",
+    "Aliases were deliberately conservative; false negatives remain.",
+    "An earlier substring probe overcounted Intel because 'intelligence' contains 'intel'; it was rejected and is not evidence."
+  ],
+  "counts": {
+    "NVIDIA": {
+      "records": 100,
+      "raw_labels": 22
+    },
+    "AMD": {
+      "records": 23,
+      "raw_labels": 10
+    },
+    "Intel": {
+      "records": 15,
+      "raw_labels": 7
+    },
+    "Arm Holdings": {
+      "records": 4,
+      "raw_labels": 3
+    },
+    "Alphabet/Google": {
+      "records": 79,
+      "raw_labels": 17
+    },
+    "Meta Platforms": {
+      "records": 57,
+      "raw_labels": 16
+    },
+    "Microsoft": {
+      "records": 56,
+      "raw_labels": 18
+    },
+    "Amazon": {
+      "records": 71,
+      "raw_labels": 20
+    },
+    "Coinbase": {
+      "records": 1,
+      "raw_labels": 1
+    },
+    "Circle Internet": {
+      "records": 2,
+      "raw_labels": 1
+    },
+    "gold miners": {
+      "records": 2,
+      "raw_labels": 2
+    },
+    "silver miners": {
+      "records": 1,
+      "raw_labels": 1
+    }
+  },
+  "interpretation": [
+    "The already-paid archive contains ample visible research on several mega-cap/AI names before any additional account.",
+    "Some high-interest categories remain sparse in literal catalog metadata; body evidence may be higher and structured entity coverage is currently unavailable.",
+    "Zero populated ticker fields in the current measured catalog means a company/Prophet consumer still needs canonical entity association rather than raw alias search."
+  ],
+  "product_use": "Prioritize entity-linked RIO consumption for current archive before attributing all Prophet evidence gaps to acquisition."
+}

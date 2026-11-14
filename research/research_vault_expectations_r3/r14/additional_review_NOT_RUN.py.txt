@@ -1,0 +1,51 @@
+"""Additional reader integration checks; standalone, not an inherited test count."""
+import copy
+from unittest.mock import patch
+import test_full_reader as base
+brain,corpus,limiter,NOW=base.brain,base.corpus,base.limiter,base.NOW
+
+# Reuse setup only; do not inherit and rerun the earlier 24 cases.
+import unittest
+class AdversarialReaderTests(unittest.TestCase):
+    def setUp(self):self.case=base.FullReaderTests();self.case.setUp()
+    def tearDown(self):self.case.tearDown()
+    def test_reused_callback_reverifies_original(self):
+        c=self.case;guard=c.guard()
+        def read():return brain.search_research(c.root,query=c.query,mode='report',report_id=c.item['id'],user_ctx={'user_id':'synthetic-user'},now=NOW,_source_guard=guard)
+        self.assertTrue(read()['report']['body_text']);c.store.put_bytes('research_vault/synthetic-reader.pdf',b'%PDF- altered')
+        r=read();self.assertIn(r.get('error'),('source_unavailable','source_mismatch'));self.assertEqual(c.count(),1)
+    def test_unknown_scope_denied_before_read(self):
+        c=self.case;c.scope['decision']='unknown'
+        with patch.object(corpus,'get_evidence_document',side_effect=AssertionError('must not load')) as load:
+            r=c.read();self.assertEqual(r['error'],'source_unavailable');load.assert_not_called()
+    def test_noncallable_guard_refused(self):
+        c=self.case;r=brain.search_research(c.root,query=c.query,mode='report',report_id=c.item['id'],user_ctx={'user_id':'synthetic-user'},now=NOW,_source_guard={'allowed':True})
+        self.assertEqual(r['error'],'source_unavailable');self.assertEqual(c.count(),0)
+    def test_true_looking_guard_return_not_permission(self):
+        c=self.case;r=brain.search_research(c.root,query=c.query,mode='report',report_id=c.item['id'],user_ctx={'user_id':'synthetic-user'},now=NOW,_source_guard=lambda **kw:1)
+        self.assertEqual(r['error'],'source_unavailable');self.assertEqual(c.count(),0)
+    def test_oversize_source_refused_by_existing_store(self):
+        c=self.case
+        from source_guard import make_guard
+        guard=make_guard(selection=c.selection,scope_provider=lambda _:copy.deepcopy(c.scope),store=c.store,maximum_source_bytes=20)
+        r=brain.search_research(c.root,query=c.query,mode='report',report_id=c.item['id'],user_ctx={'user_id':'synthetic-user'},now=NOW,_source_guard=guard)
+        self.assertEqual(r['error'],'source_unavailable');self.assertEqual(c.count(),0)
+    def test_existing_fail_open_policy_not_silently_replaced(self):
+        c=self.case
+        with patch.object(limiter,'_write',return_value=None):r=c.read()
+        self.assertTrue(r['report']['body_text']);self.assertEqual(c.count(),0);self.assertEqual(len(c.calls),1)
+    def test_removal_during_debit_withholds(self):
+        c=self.case;original=limiter.allow.side_effect
+        def remove(*a,**kw):
+            result=original(*a,**kw);c.scope['items']={};return result
+        limiter.allow.side_effect=remove;r=c.read();self.assertEqual(r['error'],'access_changed_after_accounting');self.assertEqual(c.count(),1);c.assert_empty(r)
+    def test_current_source_owner_error_has_no_retry(self):
+        c=self.case
+        from source_guard import make_guard
+        calls=[]
+        def unavailable(_):calls.append(1);raise OSError('test')
+        g=make_guard(selection=c.selection,scope_provider=unavailable,store=c.store,maximum_source_bytes=30000000)
+        r=brain.search_research(c.root,query=c.query,mode='report',report_id=c.item['id'],user_ctx={'user_id':'synthetic-user'},now=NOW,_source_guard=g)
+        self.assertEqual(r['error'],'source_unavailable');self.assertEqual(calls,[1]);self.assertEqual(c.count(),0)
+
+if __name__=='__main__':unittest.main()

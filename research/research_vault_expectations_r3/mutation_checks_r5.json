@@ -1,0 +1,50 @@
+{
+  "scope": "Six targeted local mutation challenges; not external independent review or production tests",
+  "executed_at_utc": "2026-09-16T05:27:49.559513+00:00",
+  "base_sha256": "e61825506b555d6a35e80fff9526e75c5672a4edd51f34f602c798907d1ed90b",
+  "mutations": [
+    {
+      "mutation": "drop_relative_target_refusal",
+      "targeted_test": "test_analyst_contract.AnalystContract.test_06_rolling_horizon_is_not_fixed_target",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "c32a2e2c66ec92f216a45100480d060f31a843a178847af60a579990ab83ad56"
+    },
+    {
+      "mutation": "drop_repeat_classification",
+      "targeted_test": "test_analyst_contract.AnalystContract.test_02_repeat_is_not_another_cut",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "2de9d1dfa39745c01c1f3ad746fe2e1dc156773aa263d47f4d50d59509be0b7c"
+    },
+    {
+      "mutation": "accept_forward_as_forecast",
+      "targeted_test": "test_analyst_contract.AnalystContract.test_13_market_forward_is_not_publisher_forecast",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "beb0ac8f9aae166bf89bb871e4b12b8512826f070cbed128a285c53350c4f5da"
+    },
+    {
+      "mutation": "invent_original_pair_proof",
+      "targeted_test": "test_analyst_contract.AnalystContract.test_22_source_reported_change_without_fabricated_earlier_record",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "b1e1b4b8594537227e8884c3314743a6dc915c9d766eec10044615fd3a18ff02"
+    },
+    {
+      "mutation": "remove_legacy_target_conflict",
+      "targeted_test": "test_analyst_contract.AmbiguousTargetChallenge.test_56_legacy_period_and_typed_target_cannot_disagree_silently",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "d531236a1791156131f15845b0533a777e8d375ca83cd58d27cf1ef37fdbe91f"
+    },
+    {
+      "mutation": "promote_trade_authority",
+      "targeted_test": "test_analyst_contract.AnalystContract.test_36_no_authority_or_certified_hashes_in_result",
+      "exit_code": 1,
+      "rejected_by_assertion": true,
+      "mutated_sha256": "bc251994d620bb91fde367cca556432020b7cc4f02db540983d60e686cf856da"
+    }
+  ],
+  "all_rejected": true
+}

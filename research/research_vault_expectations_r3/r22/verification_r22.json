@@ -1,0 +1,201 @@
+{
+  "schema": "research_vault.rio_consolidation_capacity.r22",
+  "observed_at_utc": "2026-09-18T10:37:44.200123+00:00",
+  "state": "SPEC_ONLY_PARENT_DECISION",
+  "procedure_commit": "61a2ff79aba4e8a5685e779707ad5c4426cf5cc5",
+  "catalog": {
+    "repository_commit": "8d614027688c8f37e36800c42b545af213251e54",
+    "current_blob": "b6900293dc9281124d3018d2fc5eda52873dc04a",
+    "current_generated_at": "2026-09-18T10:37:44.200123+00:00",
+    "current_rows": 2354,
+    "baseline_blob": "54ed63983248afad543ff46ed327a076d67475b4",
+    "baseline_generated_at": "2026-09-16T06:09:42.758496+00:00",
+    "baseline_rows": 2208,
+    "added_ids": 146,
+    "removed_ids": 0,
+    "changed_same_id": 2196,
+    "added_published_after_baseline": 117,
+    "added_backfill_or_older": 29,
+    "elapsed_hours_approx": 52.47,
+    "net_growth_per_day_approx": 66.8,
+    "field_changes_same_id": {
+      "summary_points": 2196,
+      "institution": 19
+    },
+    "current_fields": {
+      "summary_points": 2339,
+      "tickers": 0,
+      "tags": 10,
+      "desk": 10,
+      "pages": 2249,
+      "language": 2249
+    },
+    "page_stats": {
+      "overall_mean": 12.49,
+      "median": 9,
+      "p90": 24,
+      "p95": 31,
+      "recent_mean": 12.94,
+      "recent_median": 9,
+      "recent_p90": 25,
+      "recent_p95": 34
+    },
+    "concentration": {
+      "raw_institution_labels": 95,
+      "Goldman_Sachs": 943,
+      "S&T": 245,
+      "J.P. Morgan": 211,
+      "top3_records": 1399,
+      "top3_pct": 59.43,
+      "top5_records": 1688,
+      "top5_pct": 71.71,
+      "S_and_T_titles_explicitly_GS": 219,
+      "S_and_T_explicit_GS_pct": 89.39,
+      "new_S_and_T": 24,
+      "new_S_and_T_explicit_GS": 23
+    }
+  },
+  "allocator": {
+    "source_path": "collectors/marketdesk_extractor/extractor/src/marketdesk_extractor/allocator.py",
+    "main_pin": "8d614027688c8f37e36800c42b545af213251e54",
+    "measured_weekday_posts_per_day_approx": 208,
+    "measured_weekend_posts_per_day_approx": 85,
+    "per_account_download_cap_planning": 70,
+    "nominal_weekday_capacity_pct": {
+      "one_account": 33.7,
+      "two_accounts": 67.3,
+      "three_accounts": 101,
+      "four_accounts": 134.6
+    }
+  },
+  "research_intelligence": {
+    "W1": {
+      "pr": 7101,
+      "merged": true,
+      "merge_commit": "0859610dd27e032eba3a34f515cf239110aa35f8",
+      "schema": "mastermind.research_intelligence.v1"
+    },
+    "W2": {
+      "pr": 7230,
+      "head": "fc4c12a1ca073c2ecf6f5e0cc75429259d84ade2",
+      "state": "BUILT_NOT_PROVEN"
+    },
+    "reader": {
+      "pr": 7079,
+      "head": "8271ae320732997be4553957e3e2773d1b9e9f1b",
+      "state": "BUILT_NOT_PROVEN"
+    },
+    "shared_reader_prerequisite": {
+      "pr": 7287,
+      "head": "db088894ba2b77a028981630f9b1165f23fa79ce"
+    },
+    "production_W1_caller_found": false,
+    "operator_store_cli_generates_W1": false,
+    "architectural_ruling": "RIO/W2/W3 are canonical; no parallel claim graph/store/search/permission/correction plane",
+    "frozen_wave_names": {
+      "W4": "ZeroHedge qualitative adapter",
+      "W5": "longitudinal belief memory",
+      "W6": "research synthesis clusters"
+    },
+    "operational_producer_name": "unnumbered W1->W2 producer seam; design only",
+    "do_not_call_operational_producer_W4": true
+  },
+  "illustrative_compute": {
+    "model_config": "claude-haiku-4-5 extraction tier",
+    "price_source": "Anthropic public list price observed 2026-09-18",
+    "standard_usd_per_million": {
+      "input": 1,
+      "output": 5
+    },
+    "batch_usd_per_million": {
+      "input": 0.5,
+      "output": 2.5
+    },
+    "assumptions": {
+      "reports_per_day": 200,
+      "days": 30,
+      "mean_pages": 12.94,
+      "input_tokens_per_page_range": [
+        500,
+        800
+      ],
+      "output_tokens_per_report": 2000
+    },
+    "monthly_input_tokens_millions_range": [
+      38.82,
+      62.112
+    ],
+    "monthly_output_tokens_millions": 12,
+    "standard_monthly_usd_range": [
+      98.82,
+      122.112
+    ],
+    "batch_monthly_usd_range": [
+      49.41,
+      61.056
+    ],
+    "measured_usage": false
+  },
+  "purchase_sequence": [
+    "use existing corpus through W1/W2/W3 + bounded producer first",
+    "second account monthly pilot after source-use permission and real answer proof",
+    "third total account if meaningful capacity gaps remain; structural near-full weekday target",
+    "fourth only for peak/backfill/resilience marginal value"
+  ],
+  "not_proven": [
+    "live R2 four-set equality",
+    "independent institution count",
+    "source-use or pooled-account permission",
+    "production W1 producer",
+    "production W3 Brain integration",
+    "actual extraction token usage/cost",
+    "incremental account customer value",
+    "fourth-account need"
+  ],
+  "durable_design": {
+    "producer_contract": "research/research_vault_expectations_r3/R22_W1_W2_OPERATIONAL_PRODUCER_CONTRACT.md",
+    "producer_contract_state": "DESIGN_ONLY_NOT_IMPLEMENTED",
+    "gold_corpus": "research/research_vault_expectations_r3/r22/gold_corpus_r22.json",
+    "gold_stage_matrix": "research/research_vault_expectations_r3/r22/gold_stage_matrix_r22.json",
+    "account_pilot_scorecard": "research/research_vault_expectations_r3/r22/account_pilot_scorecard_r22.json",
+    "literal_company_metadata": "research/research_vault_expectations_r3/r22/literal_company_metadata_r22.json",
+    "implementation_approval_required": true
+  },
+  "public_pricing": {
+    "observed_date": "2026-09-18",
+    "zerohedge_professional": {
+      "monthly_usd": 150,
+      "annual_billed_monthly_equivalent_usd": 125,
+      "annual_total_usd": 1500,
+      "source": "https://www.zerohedge.com/signup"
+    },
+    "haiku_4_5_api": {
+      "standard_input_per_million_usd": 1,
+      "standard_output_per_million_usd": 5,
+      "batch_input_per_million_usd": 0.5,
+      "batch_output_per_million_usd": 2.5,
+      "source": "Anthropic public list prices"
+    }
+  },
+  "rights": {
+    "zerohedge_public_terms_reviewed": "https://www.zerohedge.com/terms-of-service",
+    "automated_collection_pooling_model_processing_subscriber_output_redistribution": "NOT_ESTABLISHED",
+    "interpretation": "Professional catalog access is advertised; the public terms page reviewed does not establish the intended commercial automation/redistribution grant."
+  },
+  "company_metadata_probe": {
+    "method": "bounded literal regex over title + summary_points only; NOT entity resolution",
+    "NVIDIA": 100,
+    "AMD": 23,
+    "Intel": 15,
+    "Arm Holdings": 4,
+    "Alphabet/Google": 79,
+    "Meta Platforms": 57,
+    "Microsoft": 56,
+    "Amazon": 71,
+    "Coinbase": 1,
+    "Circle Internet": 2,
+    "gold miners": 2,
+    "silver miners": 1,
+    "warning": "metadata literal incidence only; body coverage and true entity relevance may differ"
+  }
+}
