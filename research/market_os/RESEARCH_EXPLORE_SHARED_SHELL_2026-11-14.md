@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C11 below. Earlier C4–C10 sections and continuation boundaries are historical; C11 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C12 below. Earlier C4–C11 sections and continuation boundaries are historical; C12 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -100,14 +100,14 @@ Preserve existing owner-issued discovery/cohort/ranking semantics without new fu
 ## Phases
 
 - P1 source and design inventory: source contracts and twelve destination routes recovered. Current dedicated design homes inspected; existing Terminal and Intelligence Hub files provide isolated new pages for destinations without a located dedicated home. This bounded inventory does not claim account-wide absence.
-- P2 Paper composition: ACTIVE. All twelve destinations now have primary shared-shell compositions. Fifty native pages include deeper Policy/Capital/Research flows, eight mobile family treatments, eight Build boards, two state sheets and selected theme/locale variants. Continue the scoped advanced-view and complete interaction/responsive gaps in the C6 design index.
+- P2 Paper composition: ACTIVE. All twelve destinations now have primary shared-shell compositions. Ninety-nine native pages include 77 product/responsive/theme/locale compositions, fifteen Build boards and seven state sheets. Seventeen mobile and five intermediate-width compositions are recorded. Continue the scoped family/interaction and parity gaps in the current design index; Global Cycles remains five distinct destinations.
 - P3 interaction/responsive/theme/locale and Build closure: follows each product; no static-frame-only completion.
 - P4 Terminal frontend and engine upgrade packets: after full Paper design completion, with fresh carrier/hold/running-writer reconciliation.
 - P5 implementation, protected release and real consumer acceptance: not started.
 
 ## Next action and truthful boundary
 
-Continue the source-qualified design sequence. Current next work: final visual readback of Government/Policy semantic refinements, inspect Alternative Data frames, then author Special Situations in isolated Terminal pages. Preserve all original/held nodes. Remaining family designs and production implementation are not complete.
+Continue the source-qualified design sequence. Current next work: China Sectors Chinese dark mobile investigation and source/basis return flow, using accepted R1 as a preserved reference. C7–C12 domain additions have final visual readback. Preserve all original/held nodes. Remaining family designs and production implementation are not complete.
 
 MISSION_COMPLETE: false. Paper work, implementation, production proof and acceptance are distinct. No source engine release, merge, deployment, trade, subscription purchase or background execution is implied by this design packet.
 
@@ -426,3 +426,40 @@ Continue **D1-CAPITAL** conflict, unavailable historical anchor, uncertain save 
 The review found that saved records retain assumptions/identities/digests but not result bodies; current/scenario restore can rebase to served as-of; immutable numbered versions, optimistic concurrency and operation-receipt reconciliation are not established. Share-basis conflict types exist but published share-count admission is absent at the inspected pin. Source/evidence binding and request races need precise contracts. Root source integration and design follow next; these are not claimed runtime incidents.
 
 M1 remains the sole qualified canvas carrier; M2 remains fenced. No modifying effect is pending or unknown. No product implementation, collector execution, message, account action, watch, trade, merge, deployment or daemon occurred. This checkpoint preserves progress; it does not end the authorized design mission.
+
+
+## Milestone C12 — Capital Structure R2
+
+Disposition: **MORE_WORK_EXISTS**. Seven new native pages bring the cumulative set to **99**: **77 product/responsive/theme/locale views, fifteen Build and seven state sheets**. Seventeen mobile and five intermediate compositions are present. C7–C12 added **49 reviewed pages in this resumed turn**. Original design-phase closure and production acceptance remain open.
+
+### Reviewed design delta
+
+Capital additions in Terminal Paper file 01M3NSZGE8JWN2EZCSF0DT05RM are source conflict (p-2Q-1/2OLI-1), unavailable historical restoration (p-2R-1/2OR4-1), unconfirmed save (p-2S-1/2PLN-1), new-request loading at 768px (p-2T-1/2P29-1), Chinese mobile historical restoration (p-2U-1/2P4N-1), states (p-2V-1/2P6K-1) and Build (p-2W-1/2P8Z-1). All are synthetic design fixtures. Original Capital and foreign/held Terminal pages remain intact.
+
+Conflicting 95m/98m share observations remain unselected; independent USD68m registered room does not settle share capacity. The historical view retains 31 October cutoff/clock and assumptions while withholding an unavailable original result. The loading view clears old issuer figures under a new requested identity. Save not confirmed separates persistence uncertainty from the calculation and offers original-target reconciliation.
+
+Final QA moved unresolved feasibility into the calculation panel, removed its detached duplicate footer, tightened source navigation and historical/mobile card gaps, and clarified Build copy. The owned save composition was replaced once and its new root 2PLN-1 plus modules were read back before registry update. Principal inspected final affected compositions; bounded reviewers accepted source meanings, layout and state distinctions. All seven final roots received observed guarded finish receipts; the revised Build was finished again after its final source correction.
+
+### Exact source findings
+
+The pinned share-basis producer currently admits no share-count records despite typed conflict support. SavedScenario retains assumptions, anchor, generations and digests, not the original full result body. Current/scenario restore can evaluate at served as-of, while then-known keeps its cutoff. Merge-duplicates upsert does not establish immutable numbered versions, CAS or operation receipts. Blueprint §8 now distinguishes the earlier R1 target from these actual capabilities.
+
+Save re-evaluates the posted anchor without automatic rebasing. A moved as-of can refuse it; valid same-anchor generation changes can alter the result. Persist identities from that one evaluation. Finding a saved copy proves existence, not which timed-out operation wrote it. A partial/filtered/paginated empty read cannot prove absence. Same-generation identity drift suppresses numbers; private/absent 404 and public-clock limitations remain explicit.
+
+Historical refusal is bound to an actual bundle as-of mismatch, not merely later serving time. The whole-second incumbent date normalization is 31 October 2026 23:59:59 New York = 1 November 2026 03:59:59 UTC, independently checked with zoneinfo. The static pagination-token and historical/scenario evidence-binding gaps remain build obligations, not claimed reproduced incidents. Current U0/W3/W4/#8673 release status was not requalified or lifted.
+
+### Durable C12 evidence
+
+- Capital R2 detailed contract: commit cf7de7d63bd909016c1a353b0e29d23954039f02; blob 59c5194c08d55ad0181eba73f1a184800222ac8c; exact byte readback matched.
+- 99-page inventory: commit b10b62442122849ab3927d6af2eeac9f79f918c6; blob a6d6abe8e902d832244ad3fbb740a7a0389c85b1.
+- Index: commit 673b6379e7b93506b6f7b27f3e4db37c60b8fef8; blob 3770b78014ef7fd3413de32dc0ffd0e36a397832.
+- Blueprint: commit f477a3aff06bd26550c2e84471c18571888afda1; blob 1968aff38e369fabbbd453dcc4eab1660df69894.
+- Inventory/index/blueprint read back byte-for-byte at f477a3aff06bd26550c2e84471c18571888afda1. The inventory has 99 unique file/root identities and final screenshot digests. Pre-C12 Draft PR #11271 head was reconciled at f75c7fbb2997c75aea2c57ff9ecd6970c3e9651a, OPEN/DRAFT; this parent update follows on that same owned branch.
+
+### Next active unit — Global Cycles parity and return flow
+
+A bounded read-only assessment of all twelve destinations found only six Global Cycles product specimens: five 1440px English-light primaries and one 390px Countries composition. Build/state boards do not count as responsive product proof. The current index now explicitly lists a Cycles follow-through unit so the five routes remain visible.
+
+Start **D1-CYCLES / China Sectors R2**: Chinese dark mobile investigation → source/basis detail → preserved selection/chart-window return. Preserve accepted p-26-1/2HUA-1. Bind measured-history identity, observation cutoff and typical timing separately; no extrapolated oscillator or unsupported probability. Exact incumbent source review is underway read-only. Follow with the remaining family-specific layout and return contracts; do not demand an arbitrary Cartesian set of duplicate pages. Capital's explicit eventual U0 mode/theme/locale/viewport evidence matrix remains binding.
+
+M1 remains the sole qualified Paper carrier; M2 remains fenced. All modifying effects are reconciled. Native children performed bounded reasoning/review only; no labor runner or background wake was created. No product implementation, collector execution, account mutation, message, watch enrollment, trade, merge, deployment or daemon occurred. Save/readback is complete for this phase; continue the next safe design unit in the same authorized session.
