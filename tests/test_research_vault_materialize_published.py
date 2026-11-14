@@ -221,7 +221,7 @@ def test_cli_rejects_conflicting_modes_before_building_store(monkeypatch, args):
 def test_workflow_mode_admission_and_same_lifecycle(publish, bootstrap, expected):
     workflow = yaml.safe_load((Path(__file__).resolve().parents[1] / ".github/workflows/research-ingest.yml").read_text())
     assert workflow["concurrency"] == {"group": "research-ingest", "cancel-in-progress": False}
-    assert workflow["jobs"]["ingest"]["timeout-minutes"] == 15
+    assert workflow["jobs"]["ingest"]["timeout-minutes"] == 45
     steps = workflow["jobs"]["ingest"]["steps"]
     gate = steps[0]
     result = subprocess.run(["bash", "-c", gate["run"]], capture_output=True,

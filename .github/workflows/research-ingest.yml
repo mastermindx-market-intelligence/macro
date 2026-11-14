@@ -75,7 +75,10 @@ concurrency:
 jobs:
   ingest:
     runs-on: [self-hosted, macstudio-light]   # light runner (needs poppler pdftotext)
-    timeout-minutes: 15
+    # A resumed inbox can hold weeks of reports. Keep the existing writer alive
+    # through its corpus/catalog/receipt commit instead of cancelling mid-batch.
+    # Routine hourly runs stay short; recovery remains bounded below one hour.
+    timeout-minutes: 45
     env:
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}

@@ -496,14 +496,17 @@ def test_workflow_invariants_unchanged_and_pinned_wiring_is_scoped():
     }
     assert doc[True]["schedule"] == [{"cron": "0 * * * *"}]
 
-    # Concurrency, permissions, runner, timeout unchanged.
+    # Concurrency, permissions and runner remain unchanged.
     concurrency = doc["concurrency"]
     assert concurrency["group"] == "research-ingest"
     assert concurrency["cancel-in-progress"] is False
     assert doc["permissions"] == {"contents": "write"}
     job = doc["jobs"]["ingest"]
     assert job["runs-on"] == ["self-hosted", "macstudio-light"]
-    assert job["timeout-minutes"] == 15
+    # The Nov 12 recovery exhausted 15 minutes after publishing only its first
+    # 100-report checkpoint. Recovery must finish within a bounded hourly lane.
+    assert job["timeout-minutes"] == 45
+    assert 15 < job["timeout-minutes"] < 60
     assert list(doc["jobs"].keys()) == ["ingest"]
 
     # Job secrets namespace unchanged; the selector is a vars mapping.
