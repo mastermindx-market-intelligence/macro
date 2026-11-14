@@ -3,8 +3,8 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-11-13",
- "generated_utc": "2026-11-13T10:41:45.669448+00:00",
+ "as_of": "2026-11-14",
+ "generated_utc": "2026-11-14T07:22:54.611780+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -19,19 +19,19 @@
    "2W": 346
   },
   "classes": {
-   "both": 21,
-   "fired_uniform_only": 136,
-   "fired_tailored_only": 30,
-   "neither": 1442
+   "both": 23,
+   "fired_uniform_only": 138,
+   "fired_tailored_only": 104,
+   "neither": 1364
   },
-  "disagreements": 166,
-  "agree_by_construction": 21
+  "disagreements": 242,
+  "agree_by_construction": 23
  },
  "ledger": {
-  "fire_rows": 9419,
-  "appended_today": 187,
-  "graded": 2078,
-  "grades_advanced_today": 576
+  "fire_rows": 9684,
+  "appended_today": 265,
+  "graded": 2114,
+  "grades_advanced_today": 36
  },
  "timing": {
   "uniform": {
@@ -43,11 +43,11 @@
    "median_fwd63": -6.73
   },
   "tailored": {
-   "n_graded": 1168,
-   "n_timing_labeled": 1168,
-   "confirmed_reset": 566,
+   "n_graded": 1204,
+   "n_timing_labeled": 1204,
+   "confirmed_reset": 575,
    "called_low": 85,
-   "early": 517,
+   "early": 544,
    "median_fwd63": -9.37
   }
  },
