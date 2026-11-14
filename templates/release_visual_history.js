@@ -122,12 +122,18 @@
         'stroke-linecap':'round','stroke-linejoin':'round'}));
     });
     source.forEach(function (p,i) {
+      // Every historical point is inspectable, not only the last observation.
+      var hit=svgNode('circle',{cx:x(p),cy:y(p.value),r:8,
+        fill:'transparent','pointer-events':'all'});
+      var tip=svgNode('title');
+      tip.textContent=p.period+' · '+fmt(p.value)+'%';
+      hit.appendChild(tip);
+      svg.appendChild(hit);
       if (i===source.length-1 || groups.some(function (g) { return g.length===1 && g[0]===p; })) {
         var dot=svgNode('circle',{cx:x(p),cy:y(p.value),r:i===source.length-1?4.8:3.2,
-          fill:'var(--text)',stroke:'var(--panel)','stroke-width':2});
-        var tip=svgNode('title');
-        tip.textContent=p.period+' \u00b7 '+fmt(p.value)+'%';
-        dot.appendChild(tip);svg.appendChild(dot);
+          fill:'var(--text)',stroke:'var(--panel)','stroke-width':2,
+          'pointer-events':'none'});
+        svg.appendChild(dot);
       }
     });
   }
