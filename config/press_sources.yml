@@ -762,6 +762,11 @@ wire:
   # Age bound on the rolling window. The item cap alone lets a quiet feed keep
   # serving days-old items as though they were the live wire.
   rail_max_age_h: 48
+  # Breaking X posts need an actual recent source clock. A poll can rediscover
+  # a 2024 official RSS item in 2026; ingestion time does not make it breaking.
+  # Seven days permits weekend releases while holding explicitly older posts.
+  # This does not substitute for fixing feeds with absent/unparseable pubDate.
+  max_source_age_hours: 168
   # Non-public wire_rank.v1 sidecar for the Mastermind brain: the same window,
   # ranked by ELEMENT ORDER only (the file carries no numbers). Deleting this key
   # disarms the write — the code default is false.
