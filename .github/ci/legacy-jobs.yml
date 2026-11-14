@@ -13550,6 +13550,7 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/conftest.py"
+      - "tests/test_debt_maturity_response_admission.py"
       - "tests/test_fif_a1_journey_ledger.py"
       - "tests/test_fif_excel_refresh_harness.py"
       - "tests/test_fif_gsrc_capture.py"
@@ -13810,6 +13811,7 @@ jobs:
       - name: FIF kernel suites (class A, hermetic)
         run: >
           python -m pytest
+          tests/test_debt_maturity_response_admission.py
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
