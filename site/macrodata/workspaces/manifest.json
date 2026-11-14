@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-11-14T07:46:31Z",
+  "generated_at": "2026-11-14T08:24:51Z",
   "min_client_contract": "mastermind.macro_workspace_snapshot.v1@1.0.0",
   "schema": "mastermind.macro_workspace_manifest.v1",
   "workspaces": {
     "business_activity/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 109794,
       "content_sha256": "01edbc47c6a29e7f9426a768bfc6a377c5b79bbab4e16dea39b083aed02f6948",
       "generation_id": "business_activity-US-01edbc47c6a29e7f",
@@ -18,7 +18,7 @@
     "capital_structure/US": {
       "availability_state": "STALE_SOURCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 111255,
       "content_sha256": "dcdce4582cd68811a345a483504948129d024c94eb5c4cb96f13f2c286f4d082",
       "generation_id": "capital_structure-US-dcdce4582cd68811",
@@ -30,7 +30,7 @@
     "consumer_payments/US": {
       "availability_state": "LATE_WITHIN_TOLERANCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 101584,
       "content_sha256": "f57ad8b717ef3aeed0144e056a7ecc3898e0c0239fa4f8791400efe5177d9ac9",
       "generation_id": "consumer_payments-US-f57ad8b717ef3aee",
@@ -42,7 +42,7 @@
     "financial_conditions/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 103466,
       "content_sha256": "60cb408d1377c0d3dec330c426a2c3d181b60c8059d2a2e4bda44a248333af99",
       "generation_id": "financial_conditions-US-60cb408d1377c0d3",
@@ -54,7 +54,7 @@
     "growth_real_economy/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 83491,
       "content_sha256": "6190851f32d00a53a5870080331cd25a0c2a6f4bea139499e6b70194f3d0c0de",
       "generation_id": "growth_real_economy-US-6190851f32d00a53",
@@ -66,7 +66,7 @@
     "housing_real_estate/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 94856,
       "content_sha256": "1a1f8c6aa799af75cbe267bc29bc9dc636189c1c3821790cb83b6d200fbc6d75",
       "generation_id": "housing_real_estate-US-1a1f8c6aa799af75",
@@ -78,7 +78,7 @@
     "inflation_system/US": {
       "availability_state": "LATE_WITHIN_TOLERANCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 62006,
       "content_sha256": "5966e4be8bc0d587130a601679ced36ed243af98753e7352c90c8254c042493f",
       "generation_id": "inflation_system-US-5966e4be8bc0d587",
@@ -90,7 +90,7 @@
     "labor_markets/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 73447,
       "content_sha256": "893bd77d9a0f8fe60609942445aed4c38fd25f4c5ac62317e38f55c89b761139",
       "generation_id": "labor_markets-US-893bd77d9a0f8fe6",
@@ -102,7 +102,7 @@
     "liquidity_central_banks/US": {
       "availability_state": "STALE_SOURCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 111942,
       "content_sha256": "66ca8c9b7bb172b040f3812e1b3a9c85a09e5e39f43d2826ee7f694aec8c6b94",
       "generation_id": "liquidity_central_banks-US-66ca8c9b7bb172b0",
@@ -114,7 +114,7 @@
     "liquidity_regime/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 49702,
       "content_sha256": "f3725e8399a39aeb4e35040f6af3549f72727d8ed82992dfa6ba4f090abc10f1",
       "generation_id": "liquidity_regime-US-f3725e8399a39aeb",
@@ -126,7 +126,7 @@
     "monetary_policy/US": {
       "availability_state": "STALE_SOURCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 83470,
       "content_sha256": "a2a64a195e2a7f9642939047a247128f444d8a6ee0c2a787408a5198767d4e63",
       "generation_id": "monetary_policy-US-a2a64a195e2a7f96",
@@ -138,7 +138,7 @@
     "national_debt_liabilities/US": {
       "availability_state": "STALE_SOURCE",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 143135,
       "content_sha256": "6ba0359970cf084b06da4b4cc318dcd102c81d06ed49599a908cb5c075df3373",
       "generation_id": "national_debt_liabilities-US-6ba0359970cf084b",
@@ -150,7 +150,7 @@
     "rates_curves/US": {
       "availability_state": "SOURCE_FAILED",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 171987,
       "content_sha256": "eefb1e9df2cfb3e420686da69469264109fd20c58354a0900d5a66a59f0de7bb",
       "generation_id": "rates_curves-US-eefb1e9df2cfb3e4",
@@ -162,7 +162,7 @@
     "trade_flows/US": {
       "availability_state": "CURRENT",
       "build_state": "BUILT",
-      "built_at": "2026-11-14T07:46:31Z",
+      "built_at": "2026-11-14T08:24:51Z",
       "bytes": 98571,
       "content_sha256": "5222f6f443b10726959dba6ca7418231891f169148255659158059ecbc680ced",
       "generation_id": "trade_flows-US-5222f6f443b10726",

@@ -126,6 +126,11 @@
     "min": -0.239481,
     "range": 0.33956
   },
+  "mags": {
+    "px": 68.86,
+    "asof": "2026-11-12",
+    "since_run": null
+  },
   "mags": null,
   "tech_legs": [
     {
