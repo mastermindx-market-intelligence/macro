@@ -2057,3 +2057,100 @@ def test_f6_mobile_pagehead_title_uses_the_22px_token():
     assert block, "the ≤900 breakpoint block must exist"
     assert ".intl-gs__pagehead__title{font-size:var(--fs-num-lg);}" in css, \
         "the mobile H1 must reuse the existing 22px token (no px literal, no new token)"
+
+
+# Prospective IM14 composition only: sentinel renders, no full-page/model/browser run.
+@pytest.mark.parametrize("live", [False, True])
+def test_im14_shared_prep_preserves_assets_state_and_existing_intl(tmp_path, monkeypatch, live):
+    from tests import intl_gs_fixture_site as site
+    root = tmp_path / "source"
+    assets = root / "templates"
+    (assets / "fonts").mkdir(parents=True)
+    (assets / "one.css").write_bytes(b"css")
+    (assets / "two.js").write_bytes(b"js")
+    (assets / "fonts/font.woff2").write_bytes(b"font")
+    if live:
+        (assets / "live_config.js").write_bytes(b"public-config")
+    monkeypatch.setattr(site, "ROOT", root)
+    monkeypatch.setattr(site, "render_states_page", lambda: "state-matrix")
+    def discarded(**kwargs):
+        raise AssertionError("shared preparation must not render intl.html")
+    monkeypatch.setattr(site, "render_intl_page", discarded)
+    out = tmp_path / "site"
+    out.mkdir()
+    (out / "intl.html").write_text("owned-page", encoding="utf-8")
+    assert site.prepare_shared_site(out) == (5 if live else 4)
+    assert (out / "intl.html").read_text() == "owned-page"
+    assert (out / "intl-gs-states.html").read_text() == "state-matrix"
+    assert (out / "one.css").read_bytes() == b"css"
+    assert (out / "two.js").read_bytes() == b"js"
+    assert (out / "fonts/font.woff2").read_bytes() == b"font"
+    expected = b"public-config" if live else b"/* fixture stub: no live configuration on the evidence site */\n"
+    assert (out / "live_config.js").read_bytes() == expected
+
+
+@pytest.mark.parametrize("stub", [False, True])
+@pytest.mark.parametrize("fail_render", [False, True])
+def test_im14_foundation_writer_preserves_render_first_and_failure(tmp_path, monkeypatch, stub, fail_render):
+    from tests import intl_gs_fixture_site as site
+    events = []
+    out = tmp_path / "site"
+    def render(*, stub_coverage=False):
+        events.append(("render", stub_coverage))
+        if fail_render:
+            raise RuntimeError("controlled render failure")
+        return "foundation-page"
+    def prep(path):
+        events.append(("prep",))
+        assert Path(path) == out
+        assert (out / "intl.html").read_text() == "foundation-page"
+        return 7
+    monkeypatch.setattr(site, "render_intl_page", render)
+    monkeypatch.setattr(site, "prepare_shared_site", prep)
+    if fail_render:
+        with pytest.raises(RuntimeError, match="controlled render failure"):
+            site.write_site(out, stub_coverage=stub)
+        assert events == [("render", stub)] and not list(out.iterdir())
+    else:
+        assert site.write_site(out, stub_coverage=stub) == 7
+        assert events == [("render", stub), ("prep",)]
+
+
+def test_im14_dossier_prepares_shared_files_without_discarded_foundation_render(tmp_path, monkeypatch):
+    from tests import intl_gs_fixture_site as foundation
+    from tests import intl_gs_dossier_fixture as dossier
+    root = tmp_path / "source"
+    (root / "templates").mkdir(parents=True)
+    monkeypatch.setattr(foundation, "ROOT", root)
+    events = []
+    def no_foundation(**kwargs):
+        raise AssertionError("discarded foundation intl.html render")
+    def states():
+        events.append("states")
+        return "state-matrix"
+    token = object()
+    def observations(path):
+        assert Path(path) == tmp_path / "never-materialized-data"
+        events.append("observations")
+        return token
+    def render(value):
+        assert value is token or value is None
+        name = "production" if value is token else "abstain"
+        events.append(name)
+        return name + "-page"
+    def specimen():
+        events.append("specimen")
+        return "specimen-page"
+    monkeypatch.setattr(foundation, "render_intl_page", no_foundation)
+    monkeypatch.setattr(foundation, "render_states_page", states)
+    monkeypatch.setattr(dossier, "production_observation_set", observations)
+    monkeypatch.setattr(dossier, "render_intl_page", render)
+    monkeypatch.setattr(dossier, "render_specimen_page", specimen)
+    out = tmp_path / "site"
+    assert dossier.write_site(out, tmp_path / "never-materialized-data") == 3
+    assert events == ["states", "observations", "production", "abstain", "specimen"]
+    assert (out / "intl.html").read_text() == "production-page"
+    assert (out / "intl-abstain.html").read_text() == "abstain-page"
+    assert (out / "intl-gs-dossier-specimen.html").read_text() == "specimen-page"
+    assert (out / "intl-gs-states.html").read_text() == "state-matrix"
+    assert not (tmp_path / "never-materialized-data").exists()

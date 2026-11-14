@@ -457,7 +457,12 @@
       top.appendChild(el("span", "st-break"));
       station.appendChild(top);
 
-      var body = el("div", "st-body");
+      var body = el("button", "st-body ox-step-select");
+      body.type = "button";
+      body.setAttribute("data-select-step", leg.node_id);
+      body.setAttribute("aria-controls", "ox-leg-" + leg.node_id);
+      body.setAttribute("aria-pressed", "false");
+      body.addEventListener("click", function () { focusLeg(leg.node_id); });
       body.appendChild(el("div", "st-idx", String(leg.index).padStart(2, "0")));
       var name = el("div", "st-name");
       name.appendChild(bi(pathLegTitle(snapshot, leg)));
@@ -465,6 +470,15 @@
       var verdict = el("div", "st-verdict");
       verdict.appendChild(legVerdict(leg));
       body.appendChild(verdict);
+      if (hop && hop.mechanism) {
+        var mechanism = el("span", "st-mechanism");
+        mechanism.appendChild(bi(hop.mechanism)); body.appendChild(mechanism);
+      }
+      if (hop && Array.isArray(hop.lag_d) && hop.lag_d.length === 2) {
+        var lag = el("span", "st-window");
+        lag.appendChild(say("Expected window: " + hop.lag_d.join("–") + " days",
+          "预期窗口：" + hop.lag_d.join("–") + " 天")); body.appendChild(lag);
+      }
       station.appendChild(body);
       rail.appendChild(station);
     });
@@ -713,6 +727,20 @@
   function focusLeg(nodeId) {
     var target = document.getElementById("ox-leg-" + nodeId);
     if (!target) return false;
+    if (selectedPathRef && selectedPathRef.node_id !== nodeId) {
+      selectedPathRef = null;
+      returnFocusRef = null;
+      returnScrollX = returnScrollY = null;
+      brainContextRevision += 1;
+    }
+    if (legDetail) {
+      legDetail.querySelectorAll("[data-inspector-step]").forEach(function (box) {
+        box.hidden = box.getAttribute("data-inspector-step") !== nodeId;
+      });
+      root.querySelectorAll("[data-select-step]").forEach(function (button) {
+        button.setAttribute("aria-pressed", String(button.getAttribute("data-select-step") === nodeId));
+      });
+    }
     replaceFocusHash(nodeId);
     var wasClosed = !!(legDetail && !legDetail.open);
     if (wasClosed) legDetail.open = true;
@@ -935,17 +963,25 @@
     var d = detail("Inspect each step: readings, timing and what we are watching",
       "查看各环节：读数、时间窗口与我们正在观察的条件");
     d.id = LEG_DETAIL_ID;
+    d.open = true;
+    var firstBlock = snapshot.first_blocking_leg?.node_id;
+    var initial = snapshot.path.legs.some(function (leg) { return leg.node_id === firstBlock; })
+      ? firstBlock : snapshot.path.legs[0]?.node_id;
     snapshot.path.legs.forEach(function (leg) {
       var box = el("div", "ox-leg");
       box.id = "ox-leg-" + leg.node_id;
+      box.setAttribute("data-inspector-step", leg.node_id);
+      box.hidden = leg.node_id !== initial;
+      var evidence = el("section", "ox-step-evidence panel");
+      var context = el("aside", "ox-step-context panel2");
       /* -1 keeps the step out of the tab order — it is a destination, not a
          control — while still allowing focus() to land on it. */
       box.tabIndex = -1;
       var h = el("h3");
       h.appendChild(bi(pathLegTitle(snapshot, leg)));
-      box.appendChild(h);
+      evidence.appendChild(h);
       var qualification = pathLegQualification(snapshot, leg);
-      if (qualification) { var note = el('p', 'ox-note'); note.appendChild(bi(qualification)); box.appendChild(note); }
+      if (qualification) { var note = el('p', 'ox-note'); note.appendChild(bi(qualification)); evidence.appendChild(note); }
       var kv = el("dl", "ox-kv");
       (leg.receipts || []).forEach(function (receipt) {
         /* Receipts are facts about a single reading. Their fields are ALL
@@ -973,7 +1009,35 @@
         kv.appendChild(dt2);
         kv.appendChild(dd2);
       }
-      box.appendChild(kv);
+      var metrics = el("div", "ox-step-metrics");
+      (leg.receipts || []).forEach(function (receipt) {
+        var metric = el("div", "mtile ox-step-metric");
+        var label = el("div", "ox-answer-label"); label.appendChild(receiptLabel(receipt)); metric.appendChild(label);
+        var value = el("strong", "ox-step-value");
+        if (typeof receipt.value === "number" && isFinite(receipt.value)) {
+          var units = { ret: "%", ret_pct: "%", ret_bp: " bp", rs: " pp", rs_pp: " pp" };
+          value.textContent = _num(receipt.value) + (units[receipt.metric] || "");
+        } else if (_present(receipt.value)) {
+          var namedValues = { up: "向上", strengthening: "走强", "EM equities": "新兴市场股票" };
+          var publishedValue = _num(receipt.value);
+          value.appendChild(say(publishedValue, namedValues[publishedValue] || publishedValue));
+        } else value.appendChild(say("Value unavailable", "数值不可用"));
+        metric.appendChild(value);
+        var rule = el("p", "ox-note"); rule.appendChild(receiptValue(receipt)); metric.appendChild(rule);
+        metrics.appendChild(metric);
+      });
+      evidence.appendChild(metrics);
+      var exact = detail("Exact readings and conditions", "精确读数与条件");
+      exact.open = true;
+      exact.classList.add("ox-step-exact"); exact.appendChild(kv); evidence.appendChild(exact);
+      var verdict = el("p", "ox-step-verdict"); verdict.appendChild(legVerdict(leg)); context.appendChild(verdict);
+      var contextTitle = el("h3"); contextTitle.appendChild(say("Ask about this step", "询问此环节")); context.appendChild(contextTitle);
+      var contextNote = el("p", "ox-note");
+      contextNote.appendChild(say("Continue in Mastermind with this path, step and reading selected. Evidence is matched only after the server confirms it.",
+        "在 Mastermind 中继续，保留此路径、环节与读数。证据仅在服务器确认后才视为匹配。")); context.appendChild(contextNote);
+      var identity = el("p", "ox-step-identity");
+      identity.appendChild(say("Reading " + snapshot.source.asof + " · revision " + snapshot.source.rev,
+        "读数 " + snapshot.source.asof + " · 版本 " + snapshot.source.rev)); context.appendChild(identity);
       var ask = el("button", "ox-action ox-brain-action");
       ask.type = "button";
       ask.appendChild(say("Ask Mastermind about this step",
@@ -986,7 +1050,8 @@
             "Mastermind 当前不可用"));
         }
       });
-      box.appendChild(ask);
+      context.appendChild(ask);
+      box.appendChild(evidence); box.appendChild(context);
       d.appendChild(box);
     });
 
@@ -1702,7 +1767,16 @@
     hero.appendChild(answerSummary);
     root.appendChild(hero);
 
+    var pathHeading = el("h2", "ox-path-heading"); pathHeading.appendChild(say("Follow the path", "沿路径查看")); root.appendChild(pathHeading);
     root.appendChild(renderRail(snapshot));
+    legDetail = renderLegDetail(snapshot);
+    root.appendChild(legDetail);
+    var firstBlock = snapshot.first_blocking_leg?.node_id;
+    var initial = snapshot.path.legs.some(function (leg) { return leg.node_id === firstBlock; })
+      ? firstBlock : snapshot.path.legs[0]?.node_id;
+    root.querySelectorAll("[data-select-step]").forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.getAttribute("data-select-step") === initial));
+    });
 
     var answers = el("section", "ox-answers");
     answers.appendChild(renderWhatChanged(snapshot));
@@ -1713,8 +1787,6 @@
 
     root.appendChild(renderTransmissionGap(snapshot));
 
-    legDetail = renderLegDetail(snapshot);
-    root.appendChild(legDetail);
     var exposure = renderExposure(snapshot);
     if (exposure) root.appendChild(exposure);
     root.appendChild(renderSourceDetail(snapshot));

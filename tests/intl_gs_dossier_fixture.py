@@ -232,13 +232,13 @@ def render_graph_boundary_page(market_id, edges):
 
 
 def write_site(out_dir, data_root):
-    """The W2B evidence site: the foundation pages (no stub), then the
+    """The W2B evidence site: the foundation state page/assets, then the
     production variant over intl.html, the abstain-all page and the specimen
     page. Returns the number of files written by this module."""
     import shutil
-    from tests.intl_gs_fixture_site import write_site as foundation_write_site
+    from tests.intl_gs_fixture_site import prepare_shared_site
     out = Path(out_dir)
-    foundation_write_site(out)  # intl.html + intl-gs-states.html + assets (no stub)
+    prepare_shared_site(out)  # state page/assets; this fixture owns intl.html
     observations = production_observation_set(data_root)
     (out / "intl.html").write_text(render_intl_page(observations), encoding="utf-8")
     (out / "intl-abstain.html").write_text(render_intl_page(None), encoding="utf-8")
