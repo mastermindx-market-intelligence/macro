@@ -46,7 +46,7 @@ class Config:
     seed: int = 20261114
 
     def __post_init__(self) -> None:
-        if self.horizon < 1 or self.entry_delay < 1:
+        if any(type(v) is not int or v < 1 for v in (self.horizon, self.entry_delay, self.calibration_months, self.min_fit_months)):
             raise ValueError("positive horizon and executable entry delay required")
         if not (0 < self.target < 1 and 0 < self.loss < 1):
             raise ValueError("target and loss must be fractions in (0,1)")
@@ -173,6 +173,8 @@ def make_events(returns: pd.DataFrame, market: pd.Series, features: pd.DataFrame
     dates = pd.Series(r.index, index=r.index).groupby(r.index.to_period("M")).last()
     # An incomplete final calendar month is not an eligible historical decision.
     dates = dates.loc[dates.dt.to_period("M") < r.index[-1].to_period("M")]
+    if features.duplicated(["decision_date", "industry"]).any():
+        raise ValueError("duplicate feature identities")
     lookup = features.set_index(["decision_date", "industry"])
     rows = []
     for dt in dates:
@@ -207,6 +209,8 @@ def make_events(returns: pd.DataFrame, market: pd.Series, features: pd.DataFrame
                        excess_net=float(path[-1] - market_return - config.cost),
                        adverse_excursion=float(min(0., path.min())), market_return=market_return)
             rows.append(row)
+    if not rows:
+        return pd.DataFrame(columns=list(features.columns) + ["entry_date", "label_end", "outcome", "bad_loss", "terminal_gross", "terminal_net", "excess_net", "adverse_excursion", "market_return"])
     return pd.DataFrame(rows).sort_values(["decision_date", "industry"]).reset_index(drop=True)
 
 
@@ -323,6 +327,47 @@ class ResearchModel:
         order = np.argsort(-np.abs(contributions), kind="stable")[:limit]
         return [{"feature": self.features[j], "log_odds_contribution": float(contributions[j]),
                  "interpretation": "model association, not a causal effect"} for j in order]
+
+    def to_artifact(self) -> dict:
+        """Portable numeric JSON, never executable pickle or provider credentials."""
+        if not self.fitted: raise ValueError("model not fitted")
+        out = {"schema": "prophet.industry_research_model.v1", "authority": "research_only",
+               "financial_influence": False, "metadata": self.metadata(),
+               "arrays": {name: getattr(self, name).tolist() for name in
+                          ("mean", "scale", "support_low", "support_high", "coef", "bad_coef", "return_coef")},
+               "bad_offset": self.bad_offset}
+        out["artifact_id"] = sha256(json.dumps(out, sort_keys=True, allow_nan=False).encode()).hexdigest()
+        return out
+
+    @classmethod
+    def from_artifact(cls, artifact: dict) -> "ResearchModel":
+        if artifact.get("schema") != "prophet.industry_research_model.v1" or artifact.get("financial_influence") is not False or artifact.get("authority") != "research_only":
+            raise ValueError("invalid research model artifact")
+        body = {k: v for k, v in artifact.items() if k != "artifact_id"}
+        if sha256(json.dumps(body, sort_keys=True, allow_nan=False).encode()).hexdigest() != artifact.get("artifact_id"):
+            raise ValueError("model artifact digest mismatch")
+        meta = artifact["metadata"]; names = tuple(meta["features"])
+        if not names or len(set(names)) != len(names): raise ValueError("invalid model features")
+        obj = cls(names, Config(**meta["label_contract"]))
+        n = len(names)
+        shapes = {"mean": (n,), "scale": (n,), "support_low": (n,), "support_high": (n,),
+                  "coef": (n + 1, 3), "bad_coef": (n + 1,), "return_coef": (n + 1,)}
+        for name, shape in shapes.items():
+            value = np.asarray(artifact["arrays"][name], dtype=float)
+            if value.shape != shape or not np.isfinite(value).all(): raise ValueError("invalid model array: " + name)
+            setattr(obj, name, value)
+        if (obj.scale <= 0).any() or (obj.support_high < obj.support_low).any():
+            raise ValueError("invalid model scaling/support")
+        obj.temperature = float(meta["temperature"]); obj.bad_offset = float(artifact["bad_offset"])
+        if not np.isfinite([obj.temperature, obj.bad_offset]).all() or obj.temperature <= 0:
+            raise ValueError("invalid calibration parameters")
+        obj.prediction_start = pd.Timestamp(meta["prediction_start"])
+        obj.fit_end, obj.calibration_end = pd.Timestamp(meta["fit_label_end"]), pd.Timestamp(meta["calibration_label_end"])
+        if pd.isna(obj.prediction_start) or pd.isna(obj.fit_end) or pd.isna(obj.calibration_end) or not obj.fit_end < obj.calibration_end < obj.prediction_start:
+            raise ValueError("invalid model time boundary")
+        obj.fit_months, obj.calibration_months = int(meta["fit_months"]), int(meta["calibration_months"])
+        obj.fitted = True
+        return obj
 
     def metadata(self) -> dict:
         return {"features": list(self.features), "temperature": self.temperature, "label_contract": asdict(self.config),

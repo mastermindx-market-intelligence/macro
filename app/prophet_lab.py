@@ -230,6 +230,20 @@ def _resolve_roots() -> LabRoots:
     )
 
 
+_INDUSTRY_RESEARCH_SNAPSHOT_PATH = _REPO_ROOT / "data" / "industry_transition" / "latest.json"
+
+
+@router.get("/api/prophet/industry-research/v1")
+def industry_research_v1(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
+    """Read the research artifact; never train, rank, or enable a live signal."""
+    if _kill_switch_active():
+        return _response({"error": "prophet_lab_disabled", "financial_influence": False}, status_code=503)
+    from engine.prophet_lab.industry_transition_context import read_industry_context
+
+    payload = read_industry_context(_INDUSTRY_RESEARCH_SNAPSHOT_PATH)
+    return _response(payload, status_code=503 if payload["state"] == "UNAVAILABLE" else 200)
+
+
 @router.get("/api/prophet/lab/v1")
 def lab_v1(_user: dict = Depends(require_site_full_user)) -> JSONResponse:
     if _kill_switch_active():

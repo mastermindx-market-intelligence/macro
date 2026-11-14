@@ -35,6 +35,7 @@ def validate_snapshot(snapshot: dict) -> None:
         raise ValueError("nonempty forecast list required")
     seen = set()
     for row in snapshot["forecasts"]:
+        if not isinstance(row, dict): raise ValueError("invalid forecast object")
         if row.get("schema") != "prophet.industry_transition.v1" or row.get("financial_influence") is not False:
             raise ValueError("invalid forecast boundary")
         if row.get("authority") != "research_only" or row.get("evidence_mode") != snapshot["evidence_mode"]:
@@ -46,7 +47,7 @@ def validate_snapshot(snapshot: dict) -> None:
         dt = datetime.fromisoformat(row["decision_date"]).date()
         if dt != asof.date(): raise ValueError("mixed forecast decision dates")
         p = row.get("probabilities", {})
-        if set(p) != {"upside_first", "downside_first", "timeout"}:
+        if not isinstance(p, dict) or set(p) != {"upside_first", "downside_first", "timeout"}:
             raise ValueError("invalid outcome partition")
         if not all(_finite(v) and 0 <= v <= 1 for v in p.values()) or abs(sum(p.values()) - 1) > 1e-8:
             raise ValueError("invalid probabilities")
@@ -57,13 +58,24 @@ def validate_snapshot(snapshot: dict) -> None:
         if not _finite(row.get("outside_support_share")) or not 0 <= row["outside_support_share"] <= 1:
             raise ValueError("invalid support diagnostic")
         model = row.get("model", {})
+        if not isinstance(model, dict): raise ValueError("invalid model metadata")
+        label = model.get("label_contract", {})
+        if not isinstance(label, dict): raise ValueError("missing outcome contract")
+        for name in ("horizon", "entry_delay"):
+            if type(label.get(name)) is not int or label[name] < 1:
+                raise ValueError("invalid outcome horizon")
+        for name in ("target", "loss"):
+            if not _finite(label.get(name)) or not 0 < label[name] < 1:
+                raise ValueError("invalid outcome boundary")
+        if not _finite(label.get("cost")) or not 0 <= label["cost"] < 1:
+            raise ValueError("invalid cost contract")
         if datetime.fromisoformat(model["calibration_label_end"]).date() >= dt:
             raise ValueError("model calibration has future outcomes")
         if datetime.fromisoformat(model["prediction_start"]).date() > dt:
             raise ValueError("forecast predates model boundary")
         if row.get("context_changes_forecast", False) is not False:
             raise ValueError("unvalidated context cannot alter forecasts")
-        if "k3e" in row and row["k3e"].get("financial_influence") is not False:
+        if "k3e" in row and (not isinstance(row["k3e"], dict) or row["k3e"].get("financial_influence") is not False):
             raise ValueError("K3E authority mismatch")
 
 

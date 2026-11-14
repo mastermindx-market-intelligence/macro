@@ -111,7 +111,8 @@ def expectation_changes(observations: Iterable[dict], *, as_of: str,
                     age_days=age, records=len(values), latest_observation_id=latest[2],
                     previous_observation_id=previous[2] if previous else None,
                     source_refs=sorted({x[5] for x in values}), clock_assumed=latest[4],
-                    historical_knowability_proven=not latest[4],
+                    historical_knowability_proven=False,
+                    clock_evidence="RECONSTRUCTED_ASSUMPTION" if latest[4] else "CAPTURE_TIMESTAMPS_SUPPLIED_NOT_INDEPENDENTLY_ATTESTED",
                     change_semantics="captured_or_reconstructed_value_change_not_analyst_revision")
         nodes.append(node)
     return {"schema": SCHEMA, "as_of": cutoff.isoformat(), "mode": mode,
@@ -196,6 +197,10 @@ def compose_with_k3e(forecast: dict, *, expectation_inspection: dict | None = No
             raise ValueError("K3E membership not effective at decision")
         if forecast["evidence_mode"] == "OBSERVED_SHADOW" and clock(member_binding["known_at"]) > cutoff:
             raise ValueError("K3E membership not known at decision")
+    expectation_cutoff = result["k3e"].get("expectation", {}).get("as_of")
+    if expectation_cutoff is not None:
+        if clock(expectation_cutoff) > clock(forecast["decision_date"] + "T23:59:59+00:00"):
+            raise ValueError("K3E expectation cutoff is after forecast decision")
     result["k3e_member_binding"] = member_binding
     if research_context is not None:
         if research_context.get("schema") != SCHEMA or research_context.get("financial_influence") is not False:

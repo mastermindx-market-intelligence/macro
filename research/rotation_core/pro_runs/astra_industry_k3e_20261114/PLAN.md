@@ -35,3 +35,15 @@ Feature and model changes after seeing these results require an explicit adaptiv
 ## Remaining acceptance
 
 The parent goal of superior live trading signals is not established by a passing software suite, a retrospective model, a PR or a merge. Keep scientific validation and production activation separate from source delivery. Every milestone records exact code/input/output identities and the next unresolved consumer or empirical test.
+
+## Milestone: executable baseline and connected research consumer
+
+Original experiment ran from a93214df184d29001470a1fcc1f7575314fe0188, process86945, exit0. It produced41223 industry-month labeled events; chronological evaluation covers29861 observations/633months, with22 fitted model-fold receipts. Aggregate BASELINE_RESULTS.json hash72eea568180075f75276af078a831af51331be8d69853ea8188a0e56468d5f92. The source-vintage and cutoff assertions passed. The49-industry historical snapshot passed the actual existing K3E composer and the new Prophet artifact reader; snapshot hash5c7e969eb64a975d86c228c8447ca1d0de2c346ce2e4f9cb92f1af0066f922b5. No production install is inferred.
+
+At equal20%-target coverage, context versus price-only reduced bad10 incidence by2.09percentage points (unadjusted descriptive interval[-3.60,-0.67]), but did not beat simple126-session momentum. All-event probabilistic scores favor the price-only model over the richer context model. Do not hide this counterevidence or promote a sophisticated model because it has more features. Adaptive next-policy specification is preserved separately before its outcome read.
+
+Subsequent engineering changes add numeric JSON model persistence, input/clock validation, tests, and an additive authenticated /api/prophet/industry-research/v1 reader using the existing Lab auth, entitlement, kill-switch and private headers. Existing boards, ranker and K3E qualification are unchanged. Same-file open PRs identified by exact path query:10176(withdrawn episode handling),7399(effective-ledger performance),8333(opportunity-context helper); the new independent endpoint does not retarget their effects or clear holds.
+
+Native focused suite process20497:73passed/5existing-library deprecation warnings,8.59seconds. Includes actual K3E-owner composition, original auth-wrapper401/403 tests, missing/corrupt/historical reader states, future-data separation, probability partitions, reconstruction lag and fiscal-period semantics. Author self-check, not independent review. No production/authenticated human credential path has been exercised.
+
+Parent mission remains incomplete. Next: execute the fixed adaptive momentum-protection comparison; qualify actual SRC-A1-to-industry research context without claiming original-vintage economics; finish consumer/reproducible inference workflow and normal source delivery. No raw vendor rows, local prediction CSV, credentials or live data are staged.
