@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T09:11:15.289946+00:00",
-  "count": 3355,
+  "generated_at": "2026-11-14T14:11:44.847872+00:00",
+  "count": 3370,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -125,6 +125,27 @@
   ],
   "items": [
     {
+      "id": "marketdesk-vgtyqascgn9-e0b535",
+      "title": "EM Weekly Fund Flows Monitor Foreign selling in Taiwan, buying in India continues MTD",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T04:31:19Z",
+      "summary_points": [
+        "MSCI rebalancing impact: $30bn gross passive flows expected across APAC/GEM indices (11/30), with India/Korea/Taiwan as top inflow beneficiaries, driving near-term technical momentum.",
+        "India-Taiwan flow divergence: India sees $2.3bn MTD foreign buying vs.",
+        "Taiwan’s $2.9bn selling, reflecting geopolitical policy tensions and divergent regional sentiment (Japan leads with $569bn buying).",
+        "Southbound flows surge: $53.1bn cumulative YTD (Dec-24), with $1.5bn/w/w weekly net buying (Nov 9-13), dominated by Tencent, Alibaba, and tech/semis, signaling structural capital allocation to Chinese equities.",
+        "EM sector risk exposure: Taiwan Tech/HW underweighted (Exhibit 3) amid China Industrials overweighting, highlighting vulnerability in Taiwan tech and rebalancing risks for EM portfolios."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-vjeyidjjgwq-8838a8",
       "title": "US Equities Weekly Rundown 11 13 26",
       "institution": "Prime",
@@ -185,6 +206,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-w8be7uk7f8m-fdf2e6",
+      "title": "The Lead November 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-14T03:49:49Z",
+      "summary_points": [
+        "Negative Correlation Extremes: Historic 3-month rolling correlation near -100% between Quality (Free Cash Flow Yield) and Momentum (2025), signaling divergent performance and heightened risk for momentum-driven portfolios.",
+        "Quality Risk Factor: Negative Free Cash Flow (FCF) companies reliant on debt markets face elevated risk during investor reassessment, as quality metrics (unencumbered cash flow/value) show negative extremes.",
+        "Beta-Momentum Alignment: 3-month rolling correlation at 100% (Nov 2026), indicating extreme technical alignment between beta and momentum—critical for tactical positioning shifts.",
+        "Quality Divergence Opportunity: Historic divergence between quality (strong balance sheets, FCF yield) and beta presents strategic opportunity within four-pillar framework (high returns, earnings growth, attractive valuations)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-eythpwrrvv4-237ea5",
       "title": "Portfolio Intelligence report July 2026",
       "institution": "Other",
@@ -221,6 +262,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rabo3v176v8-93ef94",
+      "title": "A blue wave meets divided government Executive summary English",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T01:52:14Z",
+      "summary_points": [
+        "Divided Government Fiscal Impact: Democratic control post-2026 midterms forces fiscal compromises (2027 debt-limit/appropriations deadlines), sustaining high deficits (>6% GDP) and limiting Trump’s agenda while enabling Democratic influence.",
+        "Inflation & Fed Outlook: Persistent inflation above target drives two additional Fed hikes expected; fundamentals (earnings, AI monetization) dominate equity returns despite lower AI/fiscal overheating risks.",
+        "Geopolitical Energy Risks: Ukraine war escalation and Middle East stalemate (Nov-Dec 2026) threaten energy markets, compounding fiscal deficit pressures and sustaining high Treasury yields (4.75%-5.25% range).",
+        "Fiscal Policy & Yield Anchor: Debt limit (Q1 2027) and deficit pressures anchor yields at 4.75%-5.25% for 2027, with Fed independence risk (Senate scrutiny 7 Sep 2027) threatening rate decision efficacy."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },
@@ -266,6 +327,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-3lru6xjaafz-88693a",
+      "title": "BofA Morning Market Tidbits Adding another hike to our Fed call",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:47Z",
+      "summary_points": [
+        "Fed Hike Timeline: 25bp hikes at Dec, Jan, Mar '27 targeting 4.5-4.75% terminal rate, driven by inflation lag post-Oct CPI.",
+        "Policy Gap: Markets price ~50bp hikes next two meetings; Fed may delay/skip last hike if data softens or financial tightening intensifies.",
+        "GDP Beat: US GDP tracking unchanged at 3.9% q/q (exceeding BoFA's 3.4% forecast), driven by strong Final Sales (5.0%) and PCE (3.8%).",
+        "PPI & Speakers: Oct PPI estimate (0.3%) below prior (0.7%) signals slowing inflation; Fed speakers (Jefferson, Logan, Bowman, Collins, Daly) to shape policy expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-gsqtn17sojj-2e5b71",
       "title": "BofA Global FX weekly Greenback Mountain",
       "institution": "Bank of America",
@@ -283,6 +364,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 31,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4pqc4bspt1n-832722",
+      "title": "BofA GEMs Flow Talk Sharp outflows are partly mitigated by largest negative net issuance in 3 years",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:28Z",
+      "summary_points": [
+        "China LDM AUM Collapse: China LDM funds AUM down 82% ($57bn to $10bn), signaling \"fleeing China\" trend amid geopolitical tensions with $40bn+ foreign outflows YTD 2024-2026.",
+        "Colombia Foreign Inflow Surge: Foreign investors net bought $2.8bn in Colombia local govt bonds (Oct), reducing YTD net outflows to -$2.7bn (vs.",
+        "Sept 2022 peak of 27.3% foreign holdings).",
+        "EM Sovereign Default Rate at 0%: Default rate in EM sovereign debt dropped to 0% post-2020-2022 restructurings, with 77% of USD DGHY rated B or better.",
+        "LDM ex-China Flows Rebound: LDM ex-China EPFR flows rebounded +$0.2bn (Oct), reversing 2024 outflows (-$8bn) to YTD +$8.3bn (larger than 2023)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
       "language": "en",
       "needs_metadata": false
     },
@@ -348,6 +450,65 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-petogp1dwka-4a56ab",
+      "title": "UBS S&T Nvidia Event Fed's Williams Yen Weakness Microsoft Outage Jolie Ho 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:47Z",
+      "summary_points": [
+        "Nvidia CEO Exit: Huang's departure pauses AI funding deals, disrupts unique supply chain leadership, and heightens US export restriction risks; market resilient with AMD/AVGO outperformance accelerating funding trade dynamics.",
+        "Iran Geopolitics: Trump's \"no deal\" stance on Iran shuts down back-channel talks, pushes short-end yields 10-12bp, and flattens rate moves, capping cyclical/consumer stock upside amid durable risk.",
+        "Fed Hawkishness: Multiple officials (Williams, Daly, Goolsbee, Hammack) signal sustained tightening due to persistent inflation above target, driving rate hike expectations and increasing volatility in rate-sensitive assets.",
+        "US-China Tech Restrictions: OpenAI-backed bipartisan push to restrict China's AI chip access escalates export controls on Nvidia chips/ASML machinery, creating supply chain disruption and semiconductor sector volatility."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ufxqad8apkr-a83415",
+      "title": "UBS S&T Network Thoughts Cautious But Confident in Europe; Inflation Worries In Australia Simon Penn 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:44Z",
+      "summary_points": [
+        "European Industrials Structural Tightness: Capex sectors (grid, electrification, defense, energy infra) face tight supply until 2028/29; cost cuts and pricing constraints in autos/retail drive M&A focus; financials outperform on strong balance sheets.",
+        "Australia Inflation & Rate Pressure: RBA/RBNZ hawkish on inflation amid 5 rate hikes, 7% dwelling decline, 15% home loans drop; earnings forecasts declining fast; muted hedge fund activity with elevated short exposures amplifying volatility.",
+        "European Debt Monetization Risk: 63% of investors believe Western governments made false promises on debt monetization; French sovereign spreads not peaked; AI enthusiasm tempered by disinflation caveats (2028) and credit stress risks.",
+        "US Equities Bullish Allocation: 62% of investors view US equities as top performer for 2027, contrasting with European caution on sovereign spreads and regulatory barriers."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-dle1yqpqopn-b79d14",
+      "title": "UBS S&T Higher for Longer, Stronger for Longer Dimitrios Laloudakis 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:40Z",
+      "summary_points": [
+        "US PPI & Fed Hike Pricing: October PPI y/y final demand (+6.6%) and core (+5.0%) at post-2022 highs confirm persistent inflation, driving 4th consecutive day of ~48bps Dec+Jan Fed hike pricing and SOFR repricing tied to oil.",
+        "CAD Depreciation Risk: Sustained US-CAD rate differentials (Nov-25 to Nov-26) signal CAD depreciation pressure, necessitating immediate FX risk management for Canadian asset exposure.",
+        "Dec-27 Yield Dynamics: Current yield exceeding 10d/21d levels with Jun27 peak indicates elevated growth/oil-linked expectations, critical for rate outlook and risk asset positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-pxjimzanoh2-1d7269",
       "title": "UBS S&T Fed's Williams Nvidia Impacts Japan's Katayama Microsoft Outage Wayne Gouro 2026 11 13",
       "institution": "UBS",
@@ -385,6 +546,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-7oqyhdiikow-46c228",
+      "title": "Global strategy a us political shift doesnt shift iran realpolitik",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T16:50:24Z",
+      "summary_points": [
+        "Iran's Strategic Autonomy: Iran's realpolitik remains unchanged by US political shifts (e.g., midterms), prioritizing regional dominance and oil price shocks to extend anti-war momentum, risking cyclical escalation.",
+        "Blockade Escalation Risk: US sea/land blockade of Iran triggers Iranian retaliation (oil tanker attacks, missile strikes), forces GCC into economic war, and threatens Russian supply routes (Caspian Sea), with no market-friendly exit.",
+        "Geopolitical Pathways & No Exit: Three escalation scenarios (US-led, Iran-triggered, US retreat) all feature limited resolution options, creating sustained cyclical military escalation and regional instability.",
+        "Market Volatility Constraint: Historical market impacts are irrelevant; sustained volatility persists due to no clear crisis resolution path, despite varied geopolitical endpoints.",
+        "Regional Instability Catalyst: Anti-war sentiment in Middle East (despite affordability concerns) combined with Iran's missile advancements, GCC military unity, and Israel's preemptive strike readiness amplifies instability risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
       "language": "en",
       "needs_metadata": false
     },
@@ -632,6 +814,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-9d5exjf2yte-bcd21c",
+      "title": "GS Global Equities Call GS Global Equities Call 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:51:33Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fqf9cgsdzif-4103b6",
       "title": "GS Blekos GS 2027 Outlooks Global Equity Outlook Global Macro Outlook Nvidia Siemens Semicon Takes Ottobock Zealand Global Transport Europe Banks Tracker 13 Nov 2026",
       "institution": "S&T",
@@ -685,6 +882,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-77oiomkwtcj-9b8612",
+      "title": "GS McGeoch Aluminium Copper Ali Record spread strength (Spot deficit vs forward surplus) Copper pricing peak tightness 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:32:56Z",
+      "summary_points": [
+        "Smelter Utilization & Supply Shock: China's smelter utilization at 60% drives refined metal production decline, forcing cathode imports/stock draws; BHP Cu trip (Nov 23) and GLEN CMD (Dec 7) signal 2027 supply constraints, making GSXGCOPP index the strategic play.",
+        "Aluminum Spot Deficit: Record prompt spread backwardation (Nov/Dec $100b) reflects legacy Middle Eastern supply disruptions + Chinese tightness, with back-end anchored on forward surplus expectations.",
+        "China-LME Competition: SHFE/LME spread inversion (Nov/Dec ¥350b) and open import ARB for Russian metal persist as China’s demand drives competition, with geopolitical supply pressure dominating flows."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
@@ -967,6 +1183,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-huwifso5ohn-b6c9f2",
+      "title": "mfse fly",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T04:00:33Z",
+      "summary_points": [
+        "Market Concentration at Record Levels: Top 10 S&P 500 firms hold 38% of index (near historic highs), US equities dominate MSCI World (70%), with semiconductors (17%) and IT (38%) showing extreme sector concentration.",
+        "Geopolitical Fragmentation Drives Divergent Risks: US-China strategic competition (semiconductors, AI, critical minerals) intensifies export controls, forcing global vs. domestic-focused firms to face materially different risks (market access, capital allocation).",
+        "AI Benefits Unevenly Distributed: Adoption alone does not yield uniform benefits; key differentiators are proprietary data access, workflow integration, regulatory expertise, and execution quality—only select firms strengthen via AI.",
+        "Selectivity Essential Amid Structural Shifts: Extreme concentration, geopolitical fragmentation, and uneven AI impact necessitate deep company-specific analysis to navigate winner/loser gaps and identify adaptable firms for long-term value."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-p2orjrkzdbd-63b5be",
       "title": "nb.com AI Data Centers and the New Compute of Politics Power and Capex",
       "institution": "Other",
@@ -1003,6 +1239,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yjmef0cxnru-aa50d5",
+      "title": "Artificial intelligence managing concentration risk",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T03:39:53Z",
+      "summary_points": [
+        "AI Equity Concentration Risk: Hyperscalers (17.79%) + AI-adjacent firms (28.08%) constitute 45.88% of S&P 500 market cap, creating severe single-asset vulnerability despite outperformance (Hyperscalers Index: 186 vs S&P 500: 150).",
+        "Infrastructure Capex & Systemic Risk: $9T US AI infrastructure capex (3.2% of GDP) over 6 years drives growth but risks overcapacity, delayed productivity gains (Stage 3), and geopolitical competition, demanding active exposure monitoring.",
+        "Private Market & Credit Concentration: AI represents 16% of $4.5T global private equity assets and 25% of direct lending; $32B AI high-yield issuance (40% of H1 2026 new supply) signals nascent debt concentration risk (only 4% of total high-yield debt).",
+        "Mitigation Imperative: Portfolio managers must deploy equal-weight equity strategies, target AI-downstream beneficiaries, and integrate Total Portfolio Approach (TPA) to address liquidity needs and overlapping exposures (e.g., semiconductor dependencies).",
+        "Financing Cost Threat: Rising risk premiums and rate hikes erode AI investment returns; highly leveraged AI borrowers face sharp financing cost spikes, while creditworthy issuers see modest spread widening."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
@@ -1309,6 +1566,25 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lbuqbjvdszn-e9094a",
+      "title": "Turkiye TCMB Raised Year End Inflation Forecast to 29.5%yoy for 2026 and to 21.0%yoy for 2027 While Its Guidance Turned More...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:03:46Z",
+      "summary_points": [
+        "Inflation Forecast Hike & Dovish Guidance: TCMB raised 2026 inflation forecast to 29.5% (from 28.0%) and 2027 to 21.0% (from 15.0%), citing war uncertainty, fiscal risks, and demand slowdown; dovish tone implies limited rate cuts despite easing core inflation.",
+        "Regulatory Measures & Credit Growth Slowdown: TCMB deploying tax adjustments to counter dollarization amid rate cuts, while credit growth slows (0.7pp drag) and financial conditions tighten 100bp, signaling policy efficacy risks.",
+        "Financial Conditions Index Spike: Tightened 100bp in September 2026, reaching tightest level since 2024, indicating acute monetary stress and liquidity pressure."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-nwddwoitkyu-5def51",
       "title": "Swisscom (SCMN.S) Data Update Changes to estimates",
       "institution": "Goldman Sachs",
@@ -1446,6 +1722,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t2oeesob8yq-87e9a1",
+      "title": "GS Bartlett GS TMT TODAY 11.12.26 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:15Z",
+      "summary_points": [
+        "NVIDIA CEO Scandal: Board preparing to remove Jensen Huang over extramarital affairs (suspected Chinese spy link), triggering AI sector sell-off (SMH -2.5%, DRAM -3.5%, Neoclouds -5% to -10%); critical risk factor for AI stocks.",
+        "AI Capex Macro Impact: AI-driven hardware/IP spending to exceed $900bn by 2026 ($1.4tn by 2027, 4% of US GDP), boosting true capex growth by 5.3pp vs measured 4.3pp and GDP by 0.6pp vs measured 0.2pp; 2027 real GDP forecast at 2.4%.",
+        "China Internet Collapse: TMT portfolios face severe risk as China Internet YTD down -30.53% due to geopolitical/policy-driven collapse (regulatory crackdowns, US-China tensions).",
+        "TMT Technical Oversold: TMT Size RSI at 19 signals extreme oversold condition—potential rebound but heightened risk of further downside if sentiment deteriorates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
