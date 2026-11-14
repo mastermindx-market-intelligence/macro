@@ -1,0 +1,85 @@
+{
+  "registration_status": "ORIGINAL_RECORDS_READBACK_NOT_A_NEW_REGISTRATION",
+  "rows": [
+    {
+      "id": "ceo-trough-entry-mainline",
+      "line": 1248,
+      "ts": "2026-11-14T05:35:37.961020+00:00"
+    },
+    {
+      "id": "trough-plan-v1-hash-ok-rulings",
+      "line": 1249,
+      "ts": "2026-11-14T05:38:02Z"
+    },
+    {
+      "id": "ceo-dot-gate-1",
+      "line": 1271,
+      "ts": "2026-11-14T05:57:49.080214+00:00"
+    },
+    {
+      "id": "dot-gate-1-hash-ok-rulings",
+      "line": 1272,
+      "ts": "2026-11-14T05:58:07Z"
+    },
+    {
+      "id": "dot-gate-1-hash-ok-rulings",
+      "line": 1273,
+      "ts": "2026-11-14T05:58:36.280158+00:00"
+    },
+    {
+      "id": "dot-gate-1-runnotes-hash-ok",
+      "line": 1275,
+      "ts": "2026-11-14T05:58:47Z"
+    },
+    {
+      "id": "dot-gate-1-runnotes-hash-ok",
+      "line": 1276,
+      "ts": "2026-11-14T05:59:13.223666+00:00"
+    },
+    {
+      "id": "dot-gate-1-brief-hash-ok",
+      "line": 1277,
+      "ts": "2026-11-14T05:59:30Z"
+    },
+    {
+      "id": "dot-gate-1-brief-hash-ok",
+      "line": 1278,
+      "ts": "2026-11-14T05:59:43.153796+00:00"
+    },
+    {
+      "id": "dot-gate-1-g1-mixed-cluster-ruling",
+      "line": 1336,
+      "ts": "2026-11-14T06:46:23Z"
+    },
+    {
+      "id": "dot-gate-1-g1-mixed-cluster-ruling",
+      "line": 1337,
+      "ts": "2026-11-14T06:46:45.077271+00:00"
+    },
+    {
+      "id": "dot-gate-1-complete",
+      "line": 1344,
+      "ts": "2026-11-14T06:56:51.268542+00:00"
+    },
+    {
+      "id": "dot-gate-1-leader-blind-read-accept",
+      "line": 1345,
+      "ts": "2026-11-14T06:57:42Z"
+    },
+    {
+      "id": "dot-gate-1-leader-blind-read-accept",
+      "line": 1348,
+      "ts": "2026-11-14T06:58:08.500661+00:00"
+    },
+    {
+      "id": "dot-gate-1-lsi-missing-rows",
+      "line": 1351,
+      "ts": "2026-11-14T07:03:32Z"
+    }
+  ],
+  "snapshot_sha256": "3c78f4c041af83a372715092111a32c75c8977a512d4e55f0e15b90feb6fbe0b",
+  "source_bytes_at_read": 1259284,
+  "source_path": "/home/ubuntu2/tmp/rotation-core/v4/trials.jsonl",
+  "source_sha256_at_read": "ec57bdcb3b06055ec9586d11eeab7625d3af08dfab0457440447a5b07fa5324d",
+  "w1_brief_sha256": "0db9deb6e98726a1ecddd2c5082dd99d936d74d1b710464dd18e4ea5db1a862d"
+}

@@ -1,0 +1,111 @@
+{
+  "counts": {
+    "event_id_set_sha256": "c57c4c9681f167a46b6381c9d6adc973a6391ee070a42b809be2c7e7c78881c1",
+    "outside_primary_analytic": 1292,
+    "primary_analytic": 21773,
+    "primary_any": 14441,
+    "primary_none": 7332,
+    "screen_retained": 23065
+  },
+  "export": {
+    "bytes": 293362,
+    "columns": [
+      "event_id",
+      "ticker",
+      "table",
+      "date",
+      "bar_label",
+      "window",
+      "group",
+      "family",
+      "coverage_grade",
+      "counting",
+      "in_washout_context",
+      "prefix_verified_at_declared_date",
+      "primary_analytic",
+      "A1",
+      "A2",
+      "A3",
+      "ANY",
+      "A4",
+      "defined"
+    ],
+    "file": "metadata.parquet",
+    "sha256": "2e953e197b328816f502e635459e2c820aa870a3992345c7e12f738ced28422c"
+  },
+  "extractor_sha256": "3d941c53d67bea6c8e0938e8d8cc61b70e8d7967c9c7a676e70f143974ce7689",
+  "holdout_rows_materialized_in_export": false,
+  "inputs": [
+    {
+      "bytes": 3047305,
+      "decoded_columns": [
+        "event_id",
+        "ticker",
+        "table",
+        "date",
+        "bar_label",
+        "window",
+        "group",
+        "family",
+        "coverage_grade",
+        "counting",
+        "in_washout_context"
+      ],
+      "materialized_window": [
+        "2013-01-04",
+        "2019-12-30"
+      ],
+      "path": "events_v1/EVENTS_G3.parquet",
+      "projected_rows_materialized": 23065,
+      "sha256": "bad2ff33eeacfc073960fbfcdded814ccc566d7772740d0fe119707b510727f3",
+      "source_digest_verified_before_and_after_projection": true
+    },
+    {
+      "bytes": 359266,
+      "decoded_columns": [
+        "event_id",
+        "ticker",
+        "date",
+        "agree"
+      ],
+      "materialized_window": [
+        "2013-01-04",
+        "2019-12-30"
+      ],
+      "path": "events_v1/FULL_GUARD_RESULTS.parquet",
+      "projected_rows_materialized": 23219,
+      "sha256": "4abb5a80e3d832655b9fef19d65e4c4c050f6ade87c5c0a2f7a9755fd94513a5",
+      "source_digest_verified_before_and_after_projection": true
+    },
+    {
+      "bytes": 1558384,
+      "decoded_columns": [
+        "event_id",
+        "ticker",
+        "date",
+        "group",
+        "A1",
+        "A2",
+        "A3",
+        "ANY",
+        "A4",
+        "defined"
+      ],
+      "materialized_window": [
+        "2013-01-04",
+        "2019-09-30"
+      ],
+      "path": "dot_gate_1/ANALYTIC_EVENTS.parquet",
+      "projected_rows_materialized": 21773,
+      "sha256": "96d8464a7b43be23f2b26ec05e7e17c2e8f8aab24324a6356b7d2407f325d3c4",
+      "source_digest_verified_before_and_after_projection": true
+    }
+  ],
+  "only_metadata_columns_decoded": true,
+  "original_archive_modified": false,
+  "outcomes_decoded": false,
+  "schema": "prophet.recovered_screen_metadata/v1",
+  "source_manifest_sha256": "6215ac12fa47ab594f424295365e72c6e71865d5c7a6bd9986df23b6f9aada6c",
+  "source_mode": "ARCHIVED_PREFIX_VERIFIED_RECONSTRUCTION",
+  "source_root": "/home/ubuntu2/tmp/rotation-core/v4/catalogue/trough"
+}

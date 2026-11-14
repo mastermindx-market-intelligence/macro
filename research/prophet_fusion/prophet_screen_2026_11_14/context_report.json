@@ -1,0 +1,140 @@
+{
+  "authority": "RESEARCH_DIAGNOSTIC_ONLY",
+  "consumer_output": {
+    "file": "joined_metadata.parquet",
+    "rows": 23065,
+    "sha256": "bf122ce5e388ca8054bc3f0e062ab075149eba6dc0fc018b808641c6e2d023fb"
+  },
+  "context_inputs": [
+    {
+      "bytes": 108659,
+      "calendar_rule": "house_NYSE_equity_session_grid_no_forward_fill",
+      "decoded_columns": [
+        "date",
+        "vix_close"
+      ],
+      "decoded_rows": 2264,
+      "decoded_window": [
+        "2011-01-03",
+        "2019-12-31"
+      ],
+      "excluded_non_equity_session_rows": 0,
+      "git_source": "6bbc4b0fc694c847077661ff5bf4c19ea41e4e81",
+      "missing_native_levels": 0,
+      "name": "vix",
+      "path": "data/fred/VIXCLS.parquet",
+      "sha256": "408e283fa0b7b7686a00960ba267e4494759145b29ee96e611878033aba2adbc",
+      "source_availability": "reconstructed_store_vintage_not_original_publication_receipts"
+    },
+    {
+      "bytes": 68943,
+      "calendar_rule": "house_NYSE_equity_session_grid_no_forward_fill",
+      "decoded_columns": [
+        "date",
+        "vvix"
+      ],
+      "decoded_rows": 2263,
+      "decoded_window": [
+        "2011-01-03",
+        "2019-12-31"
+      ],
+      "excluded_non_equity_session_rows": 0,
+      "git_source": "6bbc4b0fc694c847077661ff5bf4c19ea41e4e81",
+      "missing_native_levels": 0,
+      "name": "vvix",
+      "path": "data/cboe/vvix.parquet",
+      "sha256": "5331b3fbe605033d79d98d73afac35ddd4adef2a400050fc4d19c1169cea7a50",
+      "source_availability": "reconstructed_store_vintage_not_original_publication_receipts"
+    }
+  ],
+  "context_join_rule": "declared date joins incumbent context already lagged one expected NYSE session",
+  "export_receipt_sha256": "2e486b65dfe5d6d10625cb0c88d3db4b9cc5e350c26cbbe4893916fb30cb1786",
+  "holdout_rows_materialized_in_export": false,
+  "join_status_counts": {
+    "CONTEXT_WINDOW_INCOMPLETE": 205,
+    "JOINED_DATE_PROXY_ONLY": 22860
+  },
+  "limitations": [
+    "Research diagnostic only; no forecast, ranking, sizing, gate or promotion.",
+    "Source date is declared known date, verified visible on that price prefix; it is not an original first-seen receipt or a complete live-event census.",
+    "bar_label is a display label and is never substituted for the decision date.",
+    "Context uses the preceding expected NYSE session, without forward fill; input vintage is reconstructed, not original publication evidence.",
+    "ANY/A4 are complementary only within the original primary analytic subset. Events outside that subset remain unclassified, not A4.",
+    "Original primary membership reflects the original analysis selection, including label availability; it is not prospective eligibility.",
+    "A2/A3 SCREEN80 cuts use the entire development window and are retrospective calibrations, not historically available thresholds.",
+    "Native coverage grades are retained: 2013\u201317 survivor-biased, 2018\u201319 usable. The latter is the source designation, not a new general certification.",
+    "This original archive predates the incumbent W1 split-calendar quarantine. No W1 exclusions, corrected labels, or corporate-action vintage are inferred.",
+    "No new outcome comparison, holdout access, or experiment execution."
+  ],
+  "outcomes_decoded": false,
+  "outside_primary_remains_unclassified": 1292,
+  "preserved_event_id_set_sha256": "c57c4c9681f167a46b6381c9d6adc973a6391ee070a42b809be2c7e7c78881c1",
+  "primary_direction_counts": {
+    "A4": {
+      "BOTH_FALLING": 3240,
+      "BOTH_RISING": 2377,
+      "UNAVAILABLE": 87,
+      "VIX_FALLING_VVIX_RISING": 874,
+      "VIX_RISING_VVIX_FALLING": 754
+    },
+    "ANY": {
+      "BOTH_FALLING": 3871,
+      "BOTH_RISING": 7580,
+      "UNAVAILABLE": 113,
+      "VIX_FALLING_VVIX_RISING": 648,
+      "VIX_RISING_VVIX_FALLING": 2229
+    }
+  },
+  "primary_join_status_counts": {
+    "CONTEXT_WINDOW_INCOMPLETE": 200,
+    "JOINED_DATE_PROXY_ONLY": 21573
+  },
+  "promotion_eligible": false,
+  "registered_experiment_executed": false,
+  "schema": "prophet.recovered_screen_context/v1",
+  "source_counts": {
+    "event_id_set_sha256": "c57c4c9681f167a46b6381c9d6adc973a6391ee070a42b809be2c7e7c78881c1",
+    "outside_primary_analytic": 1292,
+    "primary_analytic": 21773,
+    "primary_any": 14441,
+    "primary_none": 7332,
+    "screen_retained": 23065
+  },
+  "source_grade_breakdown": [
+    {
+      "events": 446,
+      "join_status_counts": {
+        "CONTEXT_WINDOW_INCOMPLETE": 5,
+        "JOINED_DATE_PROXY_ONLY": 441
+      },
+      "primary_analytic": false,
+      "source_coverage_grade": "survivor-biased"
+    },
+    {
+      "events": 846,
+      "join_status_counts": {
+        "JOINED_DATE_PROXY_ONLY": 846
+      },
+      "primary_analytic": false,
+      "source_coverage_grade": "usable"
+    },
+    {
+      "events": 15430,
+      "join_status_counts": {
+        "CONTEXT_WINDOW_INCOMPLETE": 200,
+        "JOINED_DATE_PROXY_ONLY": 15230
+      },
+      "primary_analytic": true,
+      "source_coverage_grade": "survivor-biased"
+    },
+    {
+      "events": 6343,
+      "join_status_counts": {
+        "JOINED_DATE_PROXY_ONLY": 6343
+      },
+      "primary_analytic": true,
+      "source_coverage_grade": "usable"
+    }
+  ],
+  "source_manifest_sha256": "6215ac12fa47ab594f424295365e72c6e71865d5c7a6bd9986df23b6f9aada6c"
+}
