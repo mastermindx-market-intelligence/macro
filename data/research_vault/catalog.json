@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T17:11:45.750802+00:00",
-  "count": 3374,
+  "generated_at": "2026-11-14T17:26:45.491891+00:00",
+  "count": 3375,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sjzl5wfclnd-e44fb0",
+      "title": "2027 Global FX Outlook Timing the Turn",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T16:58:02Z",
+      "summary_points": [
+        "Dollar's 2027 Trajectory: Stubborn inflation, energy resilience, and AI investment expectations shift from boost to drag, weakening USD against DM currencies post-2026 despite near-term strength from Fed policy and political uncertainty.",
+        "Dollar Overvaluation Risk: Broad USD in overvalued territory (Exhibit 1), signaling potential downside pressure for USD-centric positions amid mixed FX volatility dynamics.",
+        "JPY AI-Driven Outperformance: JPY shows strongest gains vs USD on AI underperformance days (Exhibit 12), with Yen acting as key hedge against tech downturns amid persistent AI uncertainty.",
+        "EUR/USD Near-Term Depreciation: EUR/USD pressured to 1.08 (3m) due to lagged trade terms, tighter global yields, and France’s flat H1 growth; rebound to 1.15 by 2027 via synchronized policy.",
+        "Fed Policy & USD Strength: Rising expectations for tighter Fed policy correlate with USD strength vs majors, driven by 5-year nominal rate differentials and USD index trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 44,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-msvgehbosha-8fc352",
       "title": "GS Soria What is Momentum Made of 12 Nov 2026",
