@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T02:55:21.651713+00:00",
-  "count": 3337,
+  "generated_at": "2026-11-14T03:10:27.156918+00:00",
+  "count": 3338,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -264,6 +264,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wxorr6kcwny-799148",
+      "title": "UBS S&T 📊 UBS Europe Equity Weekly Lisa von Ahnen 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:23Z",
+      "summary_points": [
+        "AI Ecosystem Resilience Shift: Nvidia leadership uncertainty (Jensen Huang) and Microsoft outage highlight operational/geopolitical risks, shifting focus from AI demand to ecosystem resilience as critical risk factor for tech-heavy portfolios.",
+        "European Earnings Strategy Pivot: Industrial investment surge (Schneider, Siemens, ABB) and China demand drive earnings narrative; UBS reduces equity allocation to <50% by 2028 as bonds regain value, prioritizing earnings delivery over sector exposure.",
+        "2027-30 Structural Growth Imperative: Investors demand credible 2027-30 earnings/margins/FCF bridges (e.g., Continental, ACS), moving beyond quarterly beats to structural growth validation for valuation support.",
+        "European Bull Case Vulnerabilities: Reliant on stable energy prices, bond yields, and French political stability; renewed energy shocks threaten margins, while higher oil/yields challenge valuations.",
+        "AI Infrastructure Expansion: Physical infrastructure (Legrand, Schneider, Siemens, Iberdrola, EDP) gains traction as AI trade broadens beyond software, creating sector-specific opportunities."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
