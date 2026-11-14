@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -343,6 +343,120 @@ def evaluate(
     }
 
 
+ROTATION_READ_SCHEMA = "si.rotation_read/v1"
+
+
+def _as_date(value) -> date:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return date.fromisoformat(str(value)[:10])
+
+
+def is_completed_weekly_close(d: date) -> bool:
+    """True iff no NYSE session exists on any day after ``d`` up to and including
+    the Sunday of ``d``'s Mon-Sun week. Calendar only — no wall clock.
+
+    A normal Friday close is complete (the weekend carries no session); a
+    midweek date is not while later sessions remain in its week. A holiday
+    Friday with no later session that week is complete by the same rule.
+    """
+    d = _as_date(d)
+    sunday = d + timedelta(days=6 - d.weekday())
+    day = d + timedelta(days=1)
+    while day <= sunday:
+        if market_session.is_session_date("US", day):
+            return False
+        day += timedelta(days=1)
+    return True
+
+
+def last_completed_weekly_close(dates) -> date | None:
+    """The latest input date that is a completed weekly close; None if none."""
+    completed = [
+        d for d in {_as_date(value) for value in dates}
+        if is_completed_weekly_close(d)
+    ]
+    return max(completed) if completed else None
+
+
+def _last_session_of_week(monday: date) -> date | None:
+    day = monday + timedelta(days=6)
+    while day >= monday:
+        if market_session.is_session_date("US", day):
+            return day
+        day -= timedelta(days=1)
+    return None
+
+
+def completed_weekly_closes_between(as_of: date, latest: date) -> int:
+    """Number of calendar weeks whose last NYSE session ``s`` satisfies
+    ``as_of < s <= latest``.
+
+    Weeks are counted by their LAST session; a week whose last session falls
+    after ``latest`` does not count (a week still in progress is not a
+    completed close behind the read).
+    """
+    as_of, latest = _as_date(as_of), _as_date(latest)
+    if latest <= as_of:
+        return 0
+    monday = as_of - timedelta(days=as_of.weekday())
+    last_monday = latest - timedelta(days=latest.weekday())
+    count = 0
+    while monday <= last_monday:
+        s = _last_session_of_week(monday)
+        if s is not None and as_of < s <= latest:
+            count += 1
+        monday += timedelta(days=7)
+    return count
+
+
+def check_rotation_read(root: Path) -> list[str]:
+    """Vintage coherence of the rotation read against its own input history.
+
+    The written as_of must equal the last completed weekly close of the
+    committed breadth history — never a wall-clock comparison. Called only
+    from main(); evaluate() and ARTIFACT_PATHS are untouched. The calendar
+    helpers above are the builder's own (scripts/build_rotation_read.py imports
+    them from here), so this module imports nothing from the builder.
+    """
+    import pandas as pd
+
+    root = Path(root)
+    hist_path = root / "data/breadth/history/basket_breadth_weekly_current.parquet"
+    json_path = root / "site/sectordata/rotation_read.json"
+    if not hist_path.exists():
+        return []
+    try:
+        hist = pd.read_parquet(hist_path)
+        # Same date normalisation as the builder, so the two cannot diverge.
+        expected = last_completed_weekly_close(
+            pd.to_datetime(hist["date"]).dt.normalize().unique()
+        )
+    except Exception as exc:  # noqa: BLE001 - an unreadable history is named, not raised
+        return [f"rotation_read: cannot read input history {hist_path.name}: {exc}"]
+    if expected is None:
+        if json_path.exists():
+            return ["rotation_read.json written with no completed weekly close in its history"]
+        return []
+    if not json_path.exists():
+        return ["site/sectordata/rotation_read.json is missing although its history exists"]
+    try:
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        return [f"site/sectordata/rotation_read.json is unreadable: {exc}"]
+    if not isinstance(payload, dict) or payload.get("schema") != ROTATION_READ_SCHEMA:
+        return [f"site/sectordata/rotation_read.json schema is not {ROTATION_READ_SCHEMA}"]
+    as_of = payload.get("as_of")
+    if as_of != expected.isoformat():
+        return [
+            "ROTATION READ VINTAGE SPLIT: as_of="
+            f"{as_of}, input history last completed weekly close={expected.isoformat()}"
+        ]
+    return []
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", type=Path, default=ROOT)
@@ -355,10 +469,11 @@ def main(argv: list[str] | None = None) -> int:
         now=datetime.now(timezone.utc),
         max_sessions_behind=max(0, args.max_sessions_behind),
     )
+    rotation_errors = check_rotation_read(args.root)
     if not args.quiet:
         for warning in report["warnings"]:
             print(f"::warning title=sector-intelligence-freshness::{warning}")
-        for error in report["errors"]:
+        for error in report["errors"] + rotation_errors:
             print(f"::error title=sector-intelligence-freshness::{error}")
         facts = report["facts"]
         print(
@@ -366,7 +481,7 @@ def main(argv: list[str] | None = None) -> int:
                 facts.get("as_of"), facts.get("sessions_behind"), report["ok"]
             )
         )
-    return 0 if report["ok"] else 1
+    return 0 if report["ok"] and not rotation_errors else 1
 
 
 if __name__ == "__main__":
