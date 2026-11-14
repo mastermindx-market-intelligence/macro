@@ -317,18 +317,661 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans supportive. <b>20</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏积极。其中 <b>20</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-supportive"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>20</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-supportive" style="--ac:#3bb277">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans supportive</span><span class="l-zh">偏积极</span></div>
+        <div class="tg-z">+1.4</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="left:50%;width:27.0%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 155<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-11-14</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">9</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:56%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:33%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:22%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 19 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 3 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days">3</span><span class="nx-unit"><span class="l-en">days out</span><span class="l-zh">天后</span></span>
+        
+      </div>
+      <p class="nx-name"><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></p>
+      <p class="nx-date"><span class="l-en">Nov 16</span><span class="l-zh">11月16日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://wallstreetcn.com/livenews/3200093" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="吴清：科学把握节奏的同时加强对科技企业发行上市的制度适配性研究 wu qing: while scientifically grasping the pace, strengthen research on institutional adaptability for the issuance and listing of tech companies 吴清：科学把握节奏的同时加强对科技企业发行上市的制度适配性研究 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化制度包容性适应性研究。资本市场作为市场化资源配置的重要平台，要进一步研究深化投融资综合改革，加快构建适应创新规律、产业规律的直接融资体系，统筹发挥私募市场与公开市场、股票市场与债券市场的协同功能，尤其是要在科学把握节奏的同时，加强对大型和新型科技企业发行上市的制度适配性和风险应对机制研究。同时，要全面准确理解新质生产力发展的科学内涵，深入研究支持新型消费、传统产业升级等不同领域优质企业上市发展，不断改善和优化上市公司结构，促进市场均衡协调发展。 csrc chairman wu qing said at the 2026 china capital market academic annual meeting that research on the inclusiveness and adaptability of systems should be further deepened. as an important platform for market-based resource allocation, the capital market should further study and deepen comprehensive investment and financing reform, accelerate the building of a direct financing system that adapts to innovation and industrial patterns, and coordinate the synergistic functions of the private market and the public market and of the stock market and the bond market. in particular, while scientifically grasping the pace, it is necessary to strengthen research on institutional adaptability and risk-response mechanisms for the issuance and listing of large and new-type technology enterprises. at the same time, it is necessary to fully and accurately understand the scientific connotation of the development of new quality productive forces, conduct in-depth research on supporting the listing and development of high-quality enterprises in different fields such as new consumption and traditional industrial upgrading, continuously improve and optimize the structure of listed companies, and promote balanced and coordinated market development. 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化制度包容性适应性研究。资本市场作为市场化资源配置的重要平台，要进一步研究深化投融资综合改革，加快构建适应创新规律、产业规律的直接融资体系，统筹发挥私募市场与公开市场、股票市场与债券市场的协同功能，尤其是要在科学把握节奏的同时，加强对大型和新型科技企业发行上市的制度适配性和风险应对机制研究。同时，要全面准确理解新质生产力发展的科学内涵，深入研究支持新型消费、传统产业升级等不同领域优质企业上市发展，不断改善和优化上市公司结构，促进市场均衡协调发展。 华尔街见闻 consumer markets consumer 消费 equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14T03:55:41+00:00" datetime="2026-11-14T03:55:41+00:00">11-14<br>03:55</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T03:55:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>96</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing: While scientifically grasping the pace, strengthen research on institutional adaptability for the issuance and listing of tech companies</span><span class="l-zh">吴清：科学把握节奏的同时加强对科技企业发行上市的制度适配性研究</span></h2>
+            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing said at the 2026 China Capital Market Academic Annual Meeting that research on the inclusiveness and adaptability of systems should be further deepened. As an important platform for market-based resource allocation, the capital market should further study and deepen comprehensive investment and financing reform, accelerate the building of a direct financing system that adapts to innovation and industrial patterns, and coordinate the synergistic functions of the private market and the public market and of the stock market and the bond market. In particular, while scientifically grasping the pace, it is necessary to strengthen research on institutional adaptability and risk-response mechanisms for the issuance and listing of large and new-type technology enterprises. At the same time, it is necessary to fully and accurately understand the scientific connotation of the development of new quality productive forces, conduct in-depth research on supporting the listing and development of high-quality enterprises in different fields such as new consumption and traditional industrial upgrading, continuously improve and optimize the structure of listed companies, and promote balanced and coordinated market development.</span><span class="l-zh">证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化制度包容性适应性研究。资本市场作为市场化资源配置的重要平台，要进一步研究深化投融资综合改革，加快构建适应创新规律、产业规律的直接融资体系，统筹发挥私募市场与公开市场、股票市场与债券市场的协同功能，尤其是要在科学把握节奏的同时，加强对大型和新型科技企业发行上市的制度适配性和风险应对机制研究。同时，要全面准确理解新质生产力发展的科学内涵，深入研究支持新型消费、传统产业升级等不同领域优质企业上市发展，不断改善和优化上市公司结构，促进市场均衡协调发展。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3200099" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="吴清：a股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二 wu qing: the a-share market has over 200 million stock investors and over 800 million fund holders, a national and market condition that is unique in the world 吴清：a股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化中国资本市场发展特点规律研究。a股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二。这要求我们在市场建设中，既要研究借鉴成熟市场发展的一般规律，更要深入研究中国的市场特点和面临的结构性问题，坚持市场化、法治化、国际化改革方向的同时，统筹好稳与进、效率与公平、发展与安全等辩证关系，坚定走好中国特色金融发展之路。 csrc chairman wu qing, speaking at the 2026 china capital market academic annual conference, said research into the characteristics and patterns of china's capital market development will be further deepened. the a-share market has more than 200 million stock investors and over 800 million fund holders—a national and market condition unique in the world. this requires that in building the market, we study and learn from the general patterns of mature market development while conducting deeper research into china's market characteristics and structural problems, and while adhering to the market-oriented, law-based and internationalized reform direction, coordinate dialectical relationships such as stability and progress, efficiency and equity, and development and security, and firmly follow the path of financial development with chinese characteristics. 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化中国资本市场发展特点规律研究。a股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二。这要求我们在市场建设中，既要研究借鉴成熟市场发展的一般规律，更要深入研究中国的市场特点和面临的结构性问题，坚持市场化、法治化、国际化改革方向的同时，统筹好稳与进、效率与公平、发展与安全等辩证关系，坚定走好中国特色金融发展之路。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14T04:14:51+00:00" datetime="2026-11-14T04:14:51+00:00">11-14<br>04:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T04:14:51+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing: The A-share market has over 200 million stock investors and over 800 million fund holders, a national and market condition that is unique in the world</span><span class="l-zh">吴清：A股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二</span></h2>
+            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing, speaking at the 2026 China Capital Market Academic Annual Conference, said research into the characteristics and patterns of China's capital market development will be further deepened. The A-share market has more than 200 million stock investors and over 800 million fund holders—a national and market condition unique in the world. This requires that in building the market, we study and learn from the general patterns of mature market development while conducting deeper research into China's market characteristics and structural problems, and while adhering to the market-oriented, law-based and internationalized reform direction, coordinate dialectical relationships such as stability and progress, efficiency and equity, and development and security, and firmly follow the path of financial development with Chinese characteristics.</span><span class="l-zh">证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化中国资本市场发展特点规律研究。A股市场有2亿多股票投资者、8亿多基金持有人，这一国情市情在全球独一无二。这要求我们在市场建设中，既要研究借鉴成熟市场发展的一般规律，更要深入研究中国的市场特点和面临的结构性问题，坚持市场化、法治化、国际化改革方向的同时，统筹好稳与进、效率与公平、发展与安全等辩证关系，坚定走好中国特色金融发展之路。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3200092" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="吴清：进一步深化市场稳定长效机制研究 wu qing: further deepen research on long-term mechanisms for market stability 吴清：进一步深化市场稳定长效机制研究 证监会主席吴清在参加2026中国资本市场学术年会时表示，中国资本市场从未像今天这样与全球资本市场高度联动、传导共振。面对高度不确定的外部环境和输入性风险，需要我们加强对全球资本市场周期变化、资产定价逻辑演变、风险传导联动等规律性认识，进一步强化跨境跨市场跨行业风险的研究应对，系统构建稳的机制、稳的力量、稳的生态，有效防范市场异常波动。 csrc chairman wu qing said at the 2026 china capital market academic annual meeting that china's capital market has never been as highly interconnected with global capital markets, with transmission and resonance, as it is today. facing a highly uncertain external environment and imported risks, we need to strengthen understanding of the regularities of global capital market cycle changes, the evolution of asset pricing logic, and risk transmission and linkage, further strengthen research and response to cross-border, cross-market and cross-industry risks, systematically build mechanisms, forces and an ecosystem for stability, and effectively prevent abnormal market fluctuations. 证监会主席吴清在参加2026中国资本市场学术年会时表示，中国资本市场从未像今天这样与全球资本市场高度联动、传导共振。面对高度不确定的外部环境和输入性风险，需要我们加强对全球资本市场周期变化、资产定价逻辑演变、风险传导联动等规律性认识，进一步强化跨境跨市场跨行业风险的研究应对，系统构建稳的机制、稳的力量、稳的生态，有效防范市场异常波动。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14T03:55:13+00:00" datetime="2026-11-14T03:55:13+00:00">11-14<br>03:55</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T03:55:13+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing: Further deepen research on long-term mechanisms for market stability</span><span class="l-zh">吴清：进一步深化市场稳定长效机制研究</span></h2>
+            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing said at the 2026 China Capital Market Academic Annual Meeting that China's capital market has never been as highly interconnected with global capital markets, with transmission and resonance, as it is today. Facing a highly uncertain external environment and imported risks, we need to strengthen understanding of the regularities of global capital market cycle changes, the evolution of asset pricing logic, and risk transmission and linkage, further strengthen research and response to cross-border, cross-market and cross-industry risks, systematically build mechanisms, forces and an ecosystem for stability, and effectively prevent abnormal market fluctuations.</span><span class="l-zh">证监会主席吴清在参加2026中国资本市场学术年会时表示，中国资本市场从未像今天这样与全球资本市场高度联动、传导共振。面对高度不确定的外部环境和输入性风险，需要我们加强对全球资本市场周期变化、资产定价逻辑演变、风险传导联动等规律性认识，进一步强化跨境跨市场跨行业风险的研究应对，系统构建稳的机制、稳的力量、稳的生态，有效防范市场异常波动。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3200091" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="吴清：研究评估量化、减持等制度的优化和公平合理的监管安排 wu qing: study and assess the optimization of systems such as quantitative trading and share reduction, and fair and reasonable regulatory arrangements 吴清：研究评估量化、减持等制度的优化和公平合理的监管安排 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化市场微观结构研究。为进一步提升市场定价和发展质量，需要深入研究改善资本供给结构，加快发展壮大长期资本、耐心资本；深入研究改善预期引导机制，减少“羊群效应”“短期化”交易带来的市场波动；还要深入研究评估量化交易、股份减持等制度规则的优化和公平合理的监管安排，切实保护好投资者合法权益。 csrc chairman wu qing said at the 2026 china capital market academic annual meeting that research on market microstructure should be further deepened. to further improve market pricing and development quality, it is necessary to conduct in-depth research on improving the capital supply structure and accelerate the development and expansion of long-term capital and patient capital; conduct in-depth research on improving expectation-guidance mechanisms and reduce market volatility caused by the "herd effect" and "short-term" trading; and also conduct in-depth research and evaluation of the optimization of institutional rules such as quantitative trading and share reductions and of fair and reasonable regulatory arrangements, so as to effectively protect the legitimate rights and interests of investors. 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化市场微观结构研究。为进一步提升市场定价和发展质量，需要深入研究改善资本供给结构，加快发展壮大长期资本、耐心资本；深入研究改善预期引导机制，减少“羊群效应”“短期化”交易带来的市场波动；还要深入研究评估量化交易、股份减持等制度规则的优化和公平合理的监管安排，切实保护好投资者合法权益。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14T03:53:47+00:00" datetime="2026-11-14T03:53:47+00:00">11-14<br>03:53</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T03:53:47+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing: Study and assess the optimization of systems such as quantitative trading and share reduction, and fair and reasonable regulatory arrangements</span><span class="l-zh">吴清：研究评估量化、减持等制度的优化和公平合理的监管安排</span></h2>
+            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing said at the 2026 China Capital Market Academic Annual Meeting that research on market microstructure should be further deepened. To further improve market pricing and development quality, it is necessary to conduct in-depth research on improving the capital supply structure and accelerate the development and expansion of long-term capital and patient capital; conduct in-depth research on improving expectation-guidance mechanisms and reduce market volatility caused by the "herd effect" and "short-term" trading; and also conduct in-depth research and evaluation of the optimization of institutional rules such as quantitative trading and share reductions and of fair and reasonable regulatory arrangements, so as to effectively protect the legitimate rights and interests of investors.</span><span class="l-zh">证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化市场微观结构研究。为进一步提升市场定价和发展质量，需要深入研究改善资本供给结构，加快发展壮大长期资本、耐心资本；深入研究改善预期引导机制，减少“羊群效应”“短期化”交易带来的市场波动；还要深入研究评估量化交易、股份减持等制度规则的优化和公平合理的监管安排，切实保护好投资者合法权益。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.yicai.com/news/103440681.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="10月出口大增35.2%；英伟达跌破4万亿美元｜一周热点回顾 其他热点还有：ppi-cpi剪刀差进一步扩大至5%；10月份个人所得税收入增长近90%。 october exports surged 35.2%; nvidia falls below $4 trillion | weekly热点回顾 other highlights include: the ppi-cpi scissors gap further widened to 5%; october personal income tax revenue grew nearly 90%. 10月出口大增35.2%；英伟达跌破4万亿美元｜一周热点回顾 其他热点还有：ppi-cpi剪刀差进一步扩大至5%；10月份个人所得税收入增长近90%。    第一财经 consumer fiscal_trade consumer 消费 fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>88</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">October exports surged 35.2%; Nvidia falls below $4 trillion | Weekly热点回顾 Other highlights include: the PPI-CPI scissors gap further widened to 5%; October personal income tax revenue grew nearly 90%.</span><span class="l-zh">10月出口大增35.2%；英伟达跌破4万亿美元｜一周热点回顾 其他热点还有：PPI-CPI剪刀差进一步扩大至5%；10月份个人所得税收入增长近90%。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3200123" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="2026年中国资本市场学术年会在沪开幕，周小川作开幕演讲，吴清朱忠明致辞 2026 china capital market academic annual conference opens in shanghai, with zhou xiaochuan delivering the opening speech and wu qing and zhu zhongming delivering remarks 2026年中国资本市场学术年会在沪开幕，周小川作开幕演讲，吴清朱忠明致辞 2026年中国资本市场学术年会今天（11月14日）在上海开幕。第十二届全国政协副主席周小川出席并作开幕演讲。中国证监会主席、中国资本市场学会会长吴清，上海市市长朱忠明致辞。 the 2026 china capital market academic annual conference opened today (november 14) in shanghai. zhou xiaochuan, vice chairman of the 12th national committee of the chinese people's political consultative conference, attended and delivered the opening speech. csrc chairman and china capital market society president wu qing and shanghai mayor zhu zhongming delivered remarks. 2026年中国资本市场学术年会今天（11月14日）在上海开幕。第十二届全国政协副主席周小川出席并作开幕演讲。中国证监会主席、中国资本市场学会会长吴清，上海市市长朱忠明致辞。 华尔街见闻 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14T10:20:04+00:00" datetime="2026-11-14T10:20:04+00:00">11-14<br>10:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T10:20:04+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">2026 China Capital Market Academic Annual Conference opens in Shanghai, with Zhou Xiaochuan delivering the opening speech and Wu Qing and Zhu Zhongming delivering remarks</span><span class="l-zh">2026年中国资本市场学术年会在沪开幕，周小川作开幕演讲，吴清朱忠明致辞</span></h2>
+            <p class="tp-sum"><span class="l-en">The 2026 China Capital Market Academic Annual Conference opened today (November 14) in Shanghai. Zhou Xiaochuan, Vice Chairman of the 12th National Committee of the Chinese People's Political Consultative Conference, attended and delivered the opening speech. CSRC Chairman and China Capital Market Society President Wu Qing and Shanghai Mayor Zhu Zhongming delivered remarks.</span><span class="l-zh">2026年中国资本市场学术年会今天（11月14日）在上海开幕。第十二届全国政协副主席周小川出席并作开幕演讲。中国证监会主席、中国资本市场学会会长吴清，上海市市长朱忠明致辞。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://wallstreetcn.com/livenews/3200094" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="high"
+           data-search="吴清：有效防范算法黑箱、ai网络攻击、提升金融基础设施韧性等重点问题，推动人工智能安全规范应用 wu qing: effectively prevent key issues such as algorithm black boxes, ai cyberattacks, and enhancing the resilience of financial infrastructure, and promote the safe and standardized application of artificial intelligence 吴清：有效防范算法黑箱、ai网络攻击、提升金融基础设施韧性等重点问题，推动人工智能安全规范应用 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化人工智能与资本市场双向赋能研究。不可否认，人工智能对科学研究、产业创新和生产生活的系统性、深层次影响正在快速发生，但其长远影响仍需结合技术迭代、场景落地、组织变革和有效治理等持续观察。资本市场既要积极适应新技术变革，在估值定价、信息披露等方面加强制度研究，精准支持相关“硬科技”企业发展壮大并有效增进社会福祉；又要深入研究人工智能对生产力和生产关系重塑在资本市场的传导映射，加快研究责任认定、数据安全、客户保护、系统风险，有效防范算法黑箱、ai网络攻击、提升金融基础设施韧性等重点问题，推动人工 csrc chairman wu qing said at the 2026 china capital market academic annual meeting that research on the two-way empowerment of artificial intelligence and the capital market should be further deepened. it cannot be denied that the systemic and deep-level impact of artificial intelligence on scientific research, industrial innovation, and production and life is occurring rapidly, but its long-term impact still needs to be continuously observed in light of technological iteration, scenario implementation, organizational change and effective governance. the capital market should actively adapt to new technological changes, strengthen institutional research in areas such as valuation and pricing and information disclosure, precisely support the development and growth of relevant "hard tech" enterprises and effectively enhance social welfare; it should also conduct in-depth research on the transmission and mapping in the capital market of artificial intelligence's reshaping of productive forces and production relations, accelerate research on key issues such as responsibility determination, data security, customer protection and systemic risk, effectively prevent algorithm black boxes and ai cyberattacks, and enhance the resilience of financial infrastructure, so as to promote artificial intelligence 证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化人工智能与资本市场双向赋能研究。不可否认，人工智能对科学研究、产业创新和生产生活的系统性、深层次影响正在快速发生，但其长远影响仍需结合技术迭代、场景落地、组织变革和有效治理等持续观察。资本市场既要积极适应新技术变革，在估值定价、信息披露等方面加强制度研究，精准支持相关“硬科技”企业发展壮大并有效增进社会福祉；又要深入研究人工智能对生产力和生产关系重塑在资本市场的传导映射，加快研究责任认定、数据安全、客户保护、系统风险，有效防范算法黑箱、ai网络攻击、提升金融基础设施韧性等重点问题，推动人工 华尔街见闻 markets tech_policy equity market 股票市场 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-11-14T03:57:48+00:00" datetime="2026-11-14T03:57:48+00:00">11-14<br>03:57</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T03:57:48+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Wu Qing: Effectively prevent key issues such as algorithm black boxes, AI cyberattacks, and enhancing the resilience of financial infrastructure, and promote the safe and standardized application of artificial intelligence</span><span class="l-zh">吴清：有效防范算法黑箱、AI网络攻击、提升金融基础设施韧性等重点问题，推动人工智能安全规范应用</span></h2>
+            <p class="tp-sum"><span class="l-en">CSRC Chairman Wu Qing said at the 2026 China Capital Market Academic Annual Meeting that research on the two-way empowerment of artificial intelligence and the capital market should be further deepened. It cannot be denied that the systemic and deep-level impact of artificial intelligence on scientific research, industrial innovation, and production and life is occurring rapidly, but its long-term impact still needs to be continuously observed in light of technological iteration, scenario implementation, organizational change and effective governance. The capital market should actively adapt to new technological changes, strengthen institutional research in areas such as valuation and pricing and information disclosure, precisely support the development and growth of relevant "hard tech" enterprises and effectively enhance social welfare; it should also conduct in-depth research on the transmission and mapping in the capital market of artificial intelligence's reshaping of productive forces and production relations, accelerate research on key issues such as responsibility determination, data security, customer protection and systemic risk, effectively prevent algorithm black boxes and AI cyberattacks, and enhance the resilience of financial infrastructure, so as to promote artificial intelligence</span><span class="l-zh">证监会主席吴清在参加2026中国资本市场学术年会时表示，进一步深化人工智能与资本市场双向赋能研究。不可否认，人工智能对科学研究、产业创新和生产生活的系统性、深层次影响正在快速发生，但其长远影响仍需结合技术迭代、场景落地、组织变革和有效治理等持续观察。资本市场既要积极适应新技术变革，在估值定价、信息披露等方面加强制度研究，精准支持相关“硬科技”企业发展壮大并有效增进社会福祉；又要深入研究人工智能对生产力和生产关系重塑在资本市场的传导映射，加快研究责任认定、数据安全、客户保护、系统风险，有效防范算法黑箱、AI网络攻击、提升金融基础设施韧性等重点问题，推动人工</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103440706.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会主席吴清在首届中国资本市场学术年会开幕式上的致辞 首届中国资本市场学术年会在上海召开，旨在搭建专业高端的国际交流平台以凝聚共识并推动资本市场高质量发展。 remarks by csrc chairman wu qing at the opening ceremony of the first china capital market academic annual conference. the first china capital market academic annual conference was held in shanghai, aiming to build a professional and high-end international exchange platform to build consensus and promote the high-quality development of the capital market. 证监会主席吴清在首届中国资本市场学术年会开幕式上的致辞 首届中国资本市场学术年会在上海召开，旨在搭建专业高端的国际交流平台以凝聚共识并推动资本市场高质量发展。    第一财经 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Remarks by CSRC Chairman Wu Qing at the opening ceremony of the First China Capital Market Academic Annual Conference. The First China Capital Market Academic Annual Conference was held in Shanghai, aiming to build a professional and high-end international exchange platform to build consensus and promote the high-quality development of the capital market.</span><span class="l-zh">证监会主席吴清在首届中国资本市场学术年会开幕式上的致辞 首届中国资本市场学术年会在上海召开，旨在搭建专业高端的国际交流平台以凝聚共识并推动资本市场高质量发展。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3200121" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会接收！六家头部公募集体申报，“a500”拼图将补齐 csrc receives filings! six leading public fund companies collectively apply, completing the "a500" puzzle 证监会接收！六家头部公募集体申报，“a500”拼图将补齐 宽基指数的风格细分布局又迈出关键一步。11月13日，易方达基金、华夏基金、国泰基金、广发基金、招商基金、博时基金等头部公募扎堆上报的中证a500成长etf，申报材料已获证监会接收。这一批新产品，是市场在中证a500基础宽基之上，专门为成长风格打造的指数工具，补齐了a500系列的成长拼图。（券商中国） the style segmentation of broad-based indices has taken another key step. on november 13, csi a500 growth etfs jointly reported by leading public fund managers including e fund, china amc, guotai fund, gf fund, china merchants fund and bosera fund had their filing materials accepted by the csrc. this batch of new products is an index tool built specifically for the growth style on top of the csi a500 broad-based index, completing the growth piece of the a500 series. (brokerage china) 宽基指数的风格细分布局又迈出关键一步。11月13日，易方达基金、华夏基金、国泰基金、广发基金、招商基金、博时基金等头部公募扎堆上报的中证a500成长etf，申报材料已获证监会接收。这一批新产品，是市场在中证a500基础宽基之上，专门为成长风格打造的指数工具，补齐了a500系列的成长拼图。（券商中国） 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-11-14T09:57:11+00:00" datetime="2026-11-14T09:57:11+00:00">11-14<br>09:57</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T09:57:11+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC receives filings! Six leading public fund companies collectively apply, completing the "A500" puzzle</span><span class="l-zh">证监会接收！六家头部公募集体申报，“A500”拼图将补齐</span></h2>
+            <p class="tp-sum"><span class="l-en">The style segmentation of broad-based indices has taken another key step. On November 13, CSI A500 Growth ETFs jointly reported by leading public fund managers including E Fund, China AMC, Guotai Fund, GF Fund, China Merchants Fund and Bosera Fund had their filing materials accepted by the CSRC. This batch of new products is an index tool built specifically for the growth style on top of the CSI A500 broad-based index, completing the growth piece of the A500 series. (Brokerage China)</span><span class="l-zh">宽基指数的风格细分布局又迈出关键一步。11月13日，易方达基金、华夏基金、国泰基金、广发基金、招商基金、博时基金等头部公募扎堆上报的中证A500成长ETF，申报材料已获证监会接收。这一批新产品，是市场在中证A500基础宽基之上，专门为成长风格打造的指数工具，补齐了A500系列的成长拼图。（券商中国）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.gelonghui.com/live/2761697" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="中信建投：预计2027年实际利率进一步上行空间有限 金价有望震荡上行 csc: actual interest rates are expected to have limited room for further upward movement in 2027, and gold prices are expected to trend higher with fluctuations 中信建投：预计2027年实际利率进一步上行空间有限 金价有望震荡上行 中信建投发布黄金2027年投资展望称，2026年压制金价的核心矛盾来自实际利率上行，展望2027年，实际利率进一步上行空间有限，叠加本轮加息预期已被市场充分定价，同时全球央行持续购金将在金价回调阶段形成承接、构筑底部支撑，预期2027年金价有望震荡上行。风险方面，美伊地缘冲突推升油价，进而扰动通胀仍是2027年主要风险变量，但预期该因素对金价的冲击力度预计边际减弱。黄金股方面，2026年行业安全整治带来产量阶段性承压，2027年预计停产矿山陆续复产，产量有望迎来修复释放，当前板块估值安全边际充足，若金价中枢抬升，黄金板块有望迎来业绩与估值的双击行情，建议 csc released its 2027 gold investment outlook, stating that the core contradiction suppressing gold prices in 2026 came from rising real interest rates. looking ahead to 2027, the room for further increases in real interest rates is limited, and combined with the fact that this round of rate-hike expectations has been fully priced in by the market, continued gold purchases by global central banks will provide absorption and bottom support during gold price corrections. gold prices are expected to trend upward with volatility in 2027. on risks, the us-iran geopolitical conflict pushing up oil prices and thereby disrupting inflation remains the main risk variable for 2027, but the impact of this factor on gold prices is expected to diminish marginally. on gold equities, industry safety rectification in 2026 will put phased pressure on output, and suspended mines are expected to resume production gradually in 2027, with output expected to recover and be released. current sector valuations offer a sufficient margin of safety; if the central gold price rises, the gold sector could see a double boost to earnings and valuations, and we recommend 中信建投发布黄金2027年投资展望称，2026年压制金价的核心矛盾来自实际利率上行，展望2027年，实际利率进一步上行空间有限，叠加本轮加息预期已被市场充分定价，同时全球央行持续购金将在金价回调阶段形成承接、构筑底部支撑，预期2027年金价有望震荡上行。风险方面，美伊地缘冲突推升油价，进而扰动通胀仍是2027年主要风险变量，但预期该因素对金价的冲击力度预计边际减弱。黄金股方面，2026年行业安全整治带来产量阶段性承压，2027年预计停产矿山陆续复产，产量有望迎来修复释放，当前板块估值安全边际充足，若金价中枢抬升，黄金板块有望迎来业绩与估值的双击行情，建议 格隆汇 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-11-14T14:44:15+00:00" datetime="2026-11-14T14:44:15+00:00">11-14<br>14:44</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T14:44:15+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSC: Actual interest rates are expected to have limited room for further upward movement in 2027, and gold prices are expected to trend higher with fluctuations</span><span class="l-zh">中信建投：预计2027年实际利率进一步上行空间有限 金价有望震荡上行</span></h2>
+            <p class="tp-sum"><span class="l-en">CSC released its 2027 gold investment outlook, stating that the core contradiction suppressing gold prices in 2026 came from rising real interest rates. Looking ahead to 2027, the room for further increases in real interest rates is limited, and combined with the fact that this round of rate-hike expectations has been fully priced in by the market, continued gold purchases by global central banks will provide absorption and bottom support during gold price corrections. Gold prices are expected to trend upward with volatility in 2027. On risks, the US-Iran geopolitical conflict pushing up oil prices and thereby disrupting inflation remains the main risk variable for 2027, but the impact of this factor on gold prices is expected to diminish marginally. On gold equities, industry safety rectification in 2026 will put phased pressure on output, and suspended mines are expected to resume production gradually in 2027, with output expected to recover and be released. Current sector valuations offer a sufficient margin of safety; if the central gold price rises, the gold sector could see a double boost to earnings and valuations, and we recommend</span><span class="l-zh">中信建投发布黄金2027年投资展望称，2026年压制金价的核心矛盾来自实际利率上行，展望2027年，实际利率进一步上行空间有限，叠加本轮加息预期已被市场充分定价，同时全球央行持续购金将在金价回调阶段形成承接、构筑底部支撑，预期2027年金价有望震荡上行。风险方面，美伊地缘冲突推升油价，进而扰动通胀仍是2027年主要风险变量，但预期该因素对金价的冲击力度预计边际减弱。黄金股方面，2026年行业安全整治带来产量阶段性承压，2027年预计停产矿山陆续复产，产量有望迎来修复释放，当前板块估值安全边际充足，若金价中枢抬升，黄金板块有望迎来业绩与估值的双击行情，建议</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3200122" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="high"
+           data-search="何立峰出席亚太经合组织工商咨询理事会第四次会议开幕式并致辞 he lifeng attends and addresses the opening ceremony of the fourth meeting of the apec business advisory council 何立峰出席亚太经合组织工商咨询理事会第四次会议开幕式并致辞 11月14日，中共中央政治局委员、国务院副总理何立峰在深圳出席亚太经合组织（apec）工商咨询理事会第四次会议开幕式并致辞。何立峰指出，亚太经合组织第三十三次领导人非正式会议即将在深圳举行，为亚太合作明确方向、凝聚力量。希望工商咨询理事会继续发扬开拓进取、开放创新的企业家精神，推动apec向着构建亚太共同体目标再启航，为亚太区域协同合作、创新发展、互联互通做出新的贡献。 on november 14, he lifeng, member of the political bureau of the cpc central committee and vice premier of the state council, attended and addressed the opening ceremony of the fourth meeting of the apec business advisory council in shenzhen. he lifeng noted that the 33rd apec economic leaders' meeting will soon be held in shenzhen, setting the direction and pooling strength for asia-pacific cooperation. he expressed the hope that the business advisory council will continue to carry forward the entrepreneurial spirit of pioneering progress and open innovation, push apec to set sail again toward the goal of building an asia-pacific community, and make new contributions to regional coordinated cooperation, innovative development and connectivity in the asia-pacific. 11月14日，中共中央政治局委员、国务院副总理何立峰在深圳出席亚太经合组织（apec）工商咨询理事会第四次会议开幕式并致辞。何立峰指出，亚太经合组织第三十三次领导人非正式会议即将在深圳举行，为亚太合作明确方向、凝聚力量。希望工商咨询理事会继续发扬开拓进取、开放创新的企业家精神，推动apec向着构建亚太共同体目标再启航，为亚太区域协同合作、创新发展、互联互通做出新的贡献。 华尔街见闻 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-11-14T10:17:43+00:00" datetime="2026-11-14T10:17:43+00:00">11-14<br>10:17</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T10:17:43+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">He Lifeng attends and addresses the opening ceremony of the fourth meeting of the APEC Business Advisory Council</span><span class="l-zh">何立峰出席亚太经合组织工商咨询理事会第四次会议开幕式并致辞</span></h2>
+            <p class="tp-sum"><span class="l-en">On November 14, He Lifeng, member of the Political Bureau of the CPC Central Committee and Vice Premier of the State Council, attended and addressed the opening ceremony of the fourth meeting of the APEC Business Advisory Council in Shenzhen. He Lifeng noted that the 33rd APEC Economic Leaders' Meeting will soon be held in Shenzhen, setting the direction and pooling strength for Asia-Pacific cooperation. He expressed the hope that the Business Advisory Council will continue to carry forward the entrepreneurial spirit of pioneering progress and open innovation, push APEC to set sail again toward the goal of building an Asia-Pacific community, and make new contributions to regional coordinated cooperation, innovative development and connectivity in the Asia-Pacific.</span><span class="l-zh">11月14日，中共中央政治局委员、国务院副总理何立峰在深圳出席亚太经合组织（APEC）工商咨询理事会第四次会议开幕式并致辞。何立峰指出，亚太经合组织第三十三次领导人非正式会议即将在深圳举行，为亚太合作明确方向、凝聚力量。希望工商咨询理事会继续发扬开拓进取、开放创新的企业家精神，推动APEC向着构建亚太共同体目标再启航，为亚太区域协同合作、创新发展、互联互通做出新的贡献。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3200113" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="high"
+           data-search="中美举行中美经贸磋商机制项下贸易理事会首次会议 china and the united states hold the first meeting of the trade council under the china-us economic and trade consultation mechanism 中美举行中美经贸磋商机制项下贸易理事会首次会议 11月13日，中美双方通过视频会议方式举行中美经贸磋商机制项下贸易理事会首次会议。双方以中美元首会晤重要共识为引领，围绕落实前期中美经贸磋商成果，就关税、“300亿对300亿”对等降税安排、农产品贸易以及各自关心的其他议题进行了坦诚、深入、建设性的交流。 on november 13, china and the united states held the first meeting of the trade council under the china-us economic and trade consultation mechanism via video conference. guided by the important consensus reached at the meeting between the chinese and us heads of state, the two sides focused on implementing the outcomes of previous china-us economic and trade consultations and conducted candid, in-depth and constructive exchanges on tariffs, the "300 billion versus 300 billion" reciprocal tariff reduction arrangement, agricultural trade and other issues of respective concern. 11月13日，中美双方通过视频会议方式举行中美经贸磋商机制项下贸易理事会首次会议。双方以中美元首会晤重要共识为引领，围绕落实前期中美经贸磋商成果，就关税、“300亿对300亿”对等降税安排、农产品贸易以及各自关心的其他议题进行了坦诚、深入、建设性的交流。 华尔街见闻 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-11-14T06:54:41+00:00" datetime="2026-11-14T06:54:41+00:00">11-14<br>06:54</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T06:54:41+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China and the United States hold the first meeting of the Trade Council under the China-US economic and trade consultation mechanism</span><span class="l-zh">中美举行中美经贸磋商机制项下贸易理事会首次会议</span></h2>
+            <p class="tp-sum"><span class="l-en">On November 13, China and the United States held the first meeting of the Trade Council under the China-US economic and trade consultation mechanism via video conference. Guided by the important consensus reached at the meeting between the Chinese and US heads of state, the two sides focused on implementing the outcomes of previous China-US economic and trade consultations and conducted candid, in-depth and constructive exchanges on tariffs, the "300 billion versus 300 billion" reciprocal tariff reduction arrangement, agricultural trade and other issues of respective concern.</span><span class="l-zh">11月13日，中美双方通过视频会议方式举行中美经贸磋商机制项下贸易理事会首次会议。双方以中美元首会晤重要共识为引领，围绕落实前期中美经贸磋商成果，就关税、“300亿对300亿”对等降税安排、农产品贸易以及各自关心的其他议题进行了坦诚、深入、建设性的交流。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.cnstock.com/commonDetail/828536" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="社会融资规模存量同比增长7.2% 人民币贷款余额同比增长4.7% 宏观政策加力 10月金融总量合理增长 outstanding social financing stock up 7.2% year on year; rmb loan balance up 4.7% year on year; macro policy intensified; october financial aggregates grew reasonably 社会融资规模存量同比增长7.2% 人民币贷款余额同比增长4.7% 宏观政策加力 10月金融总量合理增长    上海证券报 credit_impulse yuan credit & financing 信贷与社融 yuan & fx 人民币与汇率 cny 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Outstanding social financing stock up 7.2% year on year; RMB loan balance up 4.7% year on year; macro policy intensified; October financial aggregates grew reasonably</span><span class="l-zh">社会融资规模存量同比增长7.2% 人民币贷款余额同比增长4.7% 宏观政策加力 10月金融总量合理增长</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://finance.eastmoney.com/a/202611143931339298.html" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="a股新经济公司数量、营收、市值占比均超一半 the number, revenue, and market value of new economy companies in a-shares all account for more than half a股新经济公司数量、营收、市值占比均超一半 【a股新经济公司数量、营收、市值占比均超一半】中国证监会主席吴清在首届中国资本市场学术年会开幕式上表示，目前，a股5500多家上市公司中，新经济领域公司数量、营收、市值在全市场占比均超过一半。证监会14日披露了相关信息。吴清表示，中国资本市场始终与中国经济改革同频共振，与实体经济发展共生共荣，在探索创新中不断成长壮大，逐步发展成为与中国经济体量大致匹配、具有全球影响力的重要市场。 [number, revenue and market capitalization of new-economy companies in a-shares all exceed half] csrc chairman wu qing said at the opening ceremony of the first china capital market academic annual meeting that among the more than 5,500 listed companies in the a-share market, new-economy companies account for more than half of the whole market in terms of number, revenue and market capitalization. the csrc disclosed the relevant information on the 14th. wu qing said that china's capital market has always resonated with china's economic reform and grown together with the real economy, continuously growing and expanding through exploration and innovation, and has gradually developed into an important market with global influence that roughly matches the size of china's economy. 【a股新经济公司数量、营收、市值占比均超一半】中国证监会主席吴清在首届中国资本市场学术年会开幕式上表示，目前，a股5500多家上市公司中，新经济领域公司数量、营收、市值在全市场占比均超过一半。证监会14日披露了相关信息。吴清表示，中国资本市场始终与中国经济改革同频共振，与实体经济发展共生共荣，在探索创新中不断成长壮大，逐步发展成为与中国经济体量大致匹配、具有全球影响力的重要市场。 eastmoney markets equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-11-14 15:47:33" datetime="2026-11-14 15:47:33">11-14<br>15:47</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14 15:47:33"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>65</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">The number, revenue, and market value of new economy companies in A-shares all account for more than half</span><span class="l-zh">A股新经济公司数量、营收、市值占比均超一半</span></h2>
+            <p class="tp-sum"><span class="l-en">[Number, revenue and market capitalization of new-economy companies in A-shares all exceed half] CSRC Chairman Wu Qing said at the opening ceremony of the first China Capital Market Academic Annual Meeting that among the more than 5,500 listed companies in the A-share market, new-economy companies account for more than half of the whole market in terms of number, revenue and market capitalization. The CSRC disclosed the relevant information on the 14th. Wu Qing said that China's capital market has always resonated with China's economic reform and grown together with the real economy, continuously growing and expanding through exploration and innovation, and has gradually developed into an important market with global influence that roughly matches the size of China's economy.</span><span class="l-zh">【A股新经济公司数量、营收、市值占比均超一半】中国证监会主席吴清在首届中国资本市场学术年会开幕式上表示，目前，A股5500多家上市公司中，新经济领域公司数量、营收、市值在全市场占比均超过一半。证监会14日披露了相关信息。吴清表示，中国资本市场始终与中国经济改革同频共振，与实体经济发展共生共荣，在探索创新中不断成长壮大，逐步发展成为与中国经济体量大致匹配、具有全球影响力的重要市场。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/commonDetail/828005" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="证监会：汇聚各方合力，全力维护市场平稳运行 csrc: pool efforts from all parties to fully maintain stable market operations 证监会：汇聚各方合力，全力维护市场平稳运行    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CSRC: Pool efforts from all parties to fully maintain stable market operations</span><span class="l-zh">证监会：汇聚各方合力，全力维护市场平稳运行</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/native/business/topics/putting-surplus-capital-work/article/3373883/hong-kong-businesses-have-scope-put-cash-flow-work-propel-growth-expert-says" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="hong kong businesses have scope to put cash flow to work to propel growth, expert says  专家表示，香港企业有空间盘活现金流以推动增长 hong kong’s economy is showing resilience, with real gross domestic product (gdp) growing 5.1 per cent year on year in the first half of 2026. for businesses, that momentum brings opportunities alongside the need to navigate a landscape of uneven growth.
+“we see the growth concentrated in a few sectors, which is ai-led,” says regina lee, head of commercial banking at hang seng bank.
+according to the hong kong government’s half-yearly economic report released in august, the value of overall...  香港经济展现出韧性，2026年上半年实际本地生产总值（gdp）同比增长5.1%。对企业而言，这一势头既带来机遇，也需要应对增长不均衡的格局。
+“我们看到增长集中在少数几个行业，这些行业由人工智能主导，”商业银行业务主管regina lee表示 scmp - business tech_policy tech policy 科技政策 2800.hk">
+          <time class="tp-when" data-t="2026-11-13T04:00:11+00:00" datetime="2026-11-13T04:00:11+00:00">11-13<br>04:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-13T04:00:11+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong businesses have scope to put cash flow to work to propel growth, expert says</span><span class="l-zh">专家表示，香港企业有空间盘活现金流以推动增长</span></h2>
+            <p class="tp-sum"><span class="l-en">Hong Kong’s economy is showing resilience, with real gross domestic product (GDP) growing 5.1 per cent year on year in the first half of 2026. For businesses, that momentum brings opportunities alongside the need to navigate a landscape of uneven growth.
+“We see the growth concentrated in a few sectors, which is AI-led,” says Regina Lee, head of commercial banking at Hang Seng Bank.
+According to the Hong Kong government’s half-yearly economic report released in August, the value of overall...</span><span class="l-zh">香港经济展现出韧性，2026年上半年实际本地生产总值（GDP）同比增长5.1%。对企业而言，这一势头既带来机遇，也需要应对增长不均衡的格局。
+“我们看到增长集中在少数几个行业，这些行业由人工智能主导，”商业银行业务主管Regina Lee表示</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">2800.HK</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103440834.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="2026年中国资本市场学术年会在上海开幕，周小川吴清朱忠明出席 2026年中国资本市场学术年会今天（11月14日）在上海开幕。 2026 china capital market academic annual conference opens in shanghai, with zhou xiaochuan, wu qing and zhu zhongming attending. the 2026 china capital market academic annual conference opened today (november 14) in shanghai. 2026年中国资本市场学术年会在上海开幕，周小川吴清朱忠明出席 2026年中国资本市场学术年会今天（11月14日）在上海开幕。    第一财经 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">2026 China Capital Market Academic Annual Conference opens in Shanghai, with Zhou Xiaochuan, Wu Qing and Zhu Zhongming attending. The 2026 China Capital Market Academic Annual Conference opened today (November 14) in Shanghai.</span><span class="l-zh">2026年中国资本市场学术年会在上海开幕，周小川吴清朱忠明出席 2026年中国资本市场学术年会今天（11月14日）在上海开幕。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103440789.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="a股总市值超100万亿，吴清提出资本市场六个“进一步深化” 进一步深化市场稳定长效机制研究。 total a-share market capitalization exceeds 100 trillion yuan; wu qing proposes six "further deepenings" for the capital market. further deepen research on long-term mechanisms for market stability. a股总市值超100万亿，吴清提出资本市场六个“进一步深化” 进一步深化市场稳定长效机制研究。    第一财经 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Total A-share market capitalization exceeds 100 trillion yuan; Wu Qing proposes six "further deepenings" for the capital market. Further deepen research on long-term mechanisms for market stability.</span><span class="l-zh">A股总市值超100万亿，吴清提出资本市场六个“进一步深化” 进一步深化市场稳定长效机制研究。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/economy/china-economy/article/3374160/china-signals-focus-shift-policy-delivery-pboc-drops-stimulus-language" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="china signals focus shift to policy delivery as pboc drops stimulus language: analysts  中国释放政策重心转向落实的信号，分析师称央行不再提刺激措辞 china’s central bank’s decision to drop a reference to additional policy measures from its latest quarterly report suggests beijing’s focus is shifting towards implementing existing support measures, analysts said, pointing to december’s annual policy-setting meeting as the next window for fresh stimulus.
+in its third-quarter monetary policy implementation report released on wednesday, the people’s bank of china (pboc) removed a pledge included in its previous quarterly report to “timely plan...  分析师表示，中国央行在最新季度报告中删除对额外政策措施的提及，表明北京的重心正转向落实现有支持措施，并指出12月的年度政策制定会议是推出新刺激措施的下一个窗口。
+在其第三季度货币政策执行报告中 scmp - china economy pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-11-12T05:04:45+00:00" datetime="2026-11-12T05:04:45+00:00">11-12<br>05:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-12T05:04:45+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China signals focus shift to policy delivery as PBOC drops stimulus language: analysts</span><span class="l-zh">中国释放政策重心转向落实的信号，分析师称央行不再提刺激措辞</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s central bank’s decision to drop a reference to additional policy measures from its latest quarterly report suggests Beijing’s focus is shifting towards implementing existing support measures, analysts said, pointing to December’s annual policy-setting meeting as the next window for fresh stimulus.
+In its third-quarter monetary policy implementation report released on Wednesday, the People’s Bank of China (PBOC) removed a pledge included in its previous quarterly report to “timely plan...</span><span class="l-zh">分析师表示，中国央行在最新季度报告中删除对额外政策措施的提及，表明北京的重心正转向落实现有支持措施，并指出12月的年度政策制定会议是推出新刺激措施的下一个窗口。
+在其第三季度货币政策执行报告中</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://wallstreetcn.com/livenews/3200116" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="中信证券：看好中国光通信的长期发展趋势 建议重点关注深度受益于全球ai基建的核心龙头标的 citic securities: bullish on the long-term development trend of china's optical communications; recommends focusing on core leading stocks that deeply benefit from global ai infrastructure 中信证券：看好中国光通信的长期发展趋势 建议重点关注深度受益于全球ai基建的核心龙头标的 中信证券指出，光互联产业的技术升级与需求爆发仍在持续演进，光模块向高速率加速迭代，光网络向npo/cpo/ocs多维拓展。近期市场对海外地缘政策传闻存在担忧，中信证券认为，不宜过度博弈短期的政策情绪，而应回归全球ai算力建设的真实需求。 citic securities noted that technological upgrading and explosive demand in the optical interconnect industry are still evolving, optical modules are accelerating iteration toward higher speeds, and optical networks are expanding in multiple dimensions toward npo/cpo/ocs. regarding recent market concerns over overseas geopolitical policy rumors, citic securities believes that investors should not overly speculate on short-term policy sentiment, but should return to the real demand for global ai computing power construction. 中信证券指出，光互联产业的技术升级与需求爆发仍在持续演进，光模块向高速率加速迭代，光网络向npo/cpo/ocs多维拓展。近期市场对海外地缘政策传闻存在担忧，中信证券认为，不宜过度博弈短期的政策情绪，而应回归全球ai算力建设的真实需求。 华尔街见闻 tech_policy tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-11-14T08:04:34+00:00" datetime="2026-11-14T08:04:34+00:00">11-14<br>08:04</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T08:04:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CITIC Securities: Bullish on the long-term development trend of China's optical communications; recommends focusing on core leading stocks that deeply benefit from global AI infrastructure</span><span class="l-zh">中信证券：看好中国光通信的长期发展趋势 建议重点关注深度受益于全球AI基建的核心龙头标的</span></h2>
+            <p class="tp-sum"><span class="l-en">CITIC Securities noted that technological upgrading and explosive demand in the optical interconnect industry are still evolving, optical modules are accelerating iteration toward higher speeds, and optical networks are expanding in multiple dimensions toward NPO/CPO/OCS. Regarding recent market concerns over overseas geopolitical policy rumors, CITIC Securities believes that investors should not overly speculate on short-term policy sentiment, but should return to the real demand for global AI computing power construction.</span><span class="l-zh">中信证券指出，光互联产业的技术升级与需求爆发仍在持续演进，光模块向高速率加速迭代，光网络向NPO/CPO/OCS多维拓展。近期市场对海外地缘政策传闻存在担忧，中信证券认为，不宜过度博弈短期的政策情绪，而应回归全球AI算力建设的真实需求。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/economic-indicators/article/3373727/chinas-factory-gate-prices-continue-rise-ppi-most-2022-amid-iran-war" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="china’s factory gate inflation accelerates in october with highest increase since 2022  中国10月工业生产者出厂价格通胀加速，创2022年以来最大涨幅 china’s factory-gate price growth continued to accelerate last month amid the ongoing us-iran conflict that is fuelling uncertainties in the global energy market, while consumer inflation remained subdued.
+the producer price index (ppi) rose 5.7 per cent year on year in october, according to data released by the national bureau of statistics on monday. it marked another record high since mid-2022, following a 5 per cent rise in september.
+the reading beat a projection of 5.37 per cent from...  上月，由于持续的美国-伊朗冲突加剧了全球能源市场的不确定性，中国工业品出厂价格涨势继续加速，而消费者通胀依然温和。
+国家统计局周一发布的数据显示，10月份生产者价格指数（ppi）同比上涨5.7%。它 scmp - china economy consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-11-09T02:05:49+00:00" datetime="2026-11-09T02:05:49+00:00">11-09<br>02:05</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T02:05:49+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s factory gate inflation accelerates in October with highest increase since 2022</span><span class="l-zh">中国10月工业生产者出厂价格通胀加速，创2022年以来最大涨幅</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s factory-gate price growth continued to accelerate last month amid the ongoing US-Iran conflict that is fuelling uncertainties in the global energy market, while consumer inflation remained subdued.
+The producer price index (PPI) rose 5.7 per cent year on year in October, according to data released by the National Bureau of Statistics on Monday. It marked another record high since mid-2022, following a 5 per cent rise in September.
+The reading beat a projection of 5.37 per cent from...</span><span class="l-zh">上月，由于持续的美国-伊朗冲突加剧了全球能源市场的不确定性，中国工业品出厂价格涨势继续加速，而消费者通胀依然温和。
+国家统计局周一发布的数据显示，10月份生产者价格指数（PPI）同比上涨5.7%。它</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3200087" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="中证协启动券商财务数智化应用调研 securities association of china launches research on financial digital-intelligence applications at brokerages 中证协启动券商财务数智化应用调研 中国证券业协会日前向各证券公司下发通知，开展财务数智化应用调研，为行业深化财务数智化建设、提升财务核算质效和推动财务职能升级提供参考。此次调研问卷将财务数智化建设划分为五个依次递进阶段，聚焦六大财务领域，同时把ai相关风险列为重点，做到“提效”与“安全”并重。（中证金牛座） the securities association of china recently issued a notice to securities companies to conduct a survey on financial digital and intelligent applications, providing reference for the industry to deepen financial digital and intelligent development, improve the quality and efficiency of financial accounting, and promote the upgrading of financial functions. the survey questionnaire divides financial digital and intelligent development into five progressive stages, focuses on six major financial areas, and also lists ai-related risks as a key priority, emphasizing both "efficiency improvement" and "security". (china securities journal bullseye) 中国证券业协会日前向各证券公司下发通知，开展财务数智化应用调研，为行业深化财务数智化建设、提升财务核算质效和推动财务职能升级提供参考。此次调研问卷将财务数智化建设划分为五个依次递进阶段，聚焦六大财务领域，同时把ai相关风险列为重点，做到“提效”与“安全”并重。（中证金牛座） 华尔街见闻 tech_policy tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="2026-11-14T03:26:23+00:00" datetime="2026-11-14T03:26:23+00:00">11-14<br>03:26</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14T03:26:23+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Securities Association of China launches research on financial digital-intelligence applications at brokerages</span><span class="l-zh">中证协启动券商财务数智化应用调研</span></h2>
+            <p class="tp-sum"><span class="l-en">The Securities Association of China recently issued a notice to securities companies to conduct a survey on financial digital and intelligent applications, providing reference for the industry to deepen financial digital and intelligent development, improve the quality and efficiency of financial accounting, and promote the upgrading of financial functions. The survey questionnaire divides financial digital and intelligent development into five progressive stages, focuses on six major financial areas, and also lists AI-related risks as a key priority, emphasizing both "efficiency improvement" and "security". (China Securities Journal Bullseye)</span><span class="l-zh">中国证券业协会日前向各证券公司下发通知，开展财务数智化应用调研，为行业深化财务数智化建设、提升财务核算质效和推动财务职能升级提供参考。此次调研问卷将财务数智化建设划分为五个依次递进阶段，聚焦六大财务领域，同时把AI相关风险列为重点，做到“提效”与“安全”并重。（中证金牛座）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-11-14/doc-iniytfyx2723413.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="牌照获批后加紧“招兵买马”，花旗在华独资券商预计明年下半年展业 accelerating recruitment after license approval, citigroup's wholly owned securities firm in china is expected to begin operations in the second half of next year 牌照获批后加紧“招兵买马”，花旗在华独资券商预计明年下半年展业    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-11-14" datetime="2026-11-14">11-14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-14"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Accelerating recruitment after license approval, Citigroup's wholly owned securities firm in China is expected to begin operations in the second half of next year</span><span class="l-zh">牌照获批后加紧“招兵买马”，花旗在华独资券商预计明年下半年展业</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">3</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">2800.HK</span><span class="nm"><span class="l-en">Hang Seng</span><span class="l-zh">恒生</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
