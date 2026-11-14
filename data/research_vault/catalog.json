@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T15:11:47.766947+00:00",
-  "count": 3373,
+  "generated_at": "2026-11-14T17:11:45.750802+00:00",
+  "count": 3374,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,25 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-msvgehbosha-8fc352",
+      "title": "GS Soria What is Momentum Made of 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T16:52:05Z",
+      "summary_points": [
+        "Momentum Regime Shift: 12m momentum (GSPRHIMO) outperformed 3m/6m (GSPRHMO3/GSPRHMO6) with negative correlation, signaling structural regime shift; positioning collapsed to 23rd percentile (5-yr), de-crowding consensus winners.",
+        "AI Momentum Disconnect: IT leads 12M momentum (27.3%) but shows net outflows, creating critical disconnect between trend-following strategies and capital flows—high risk for tactical rotation.",
+        "Factor Rotation Criticality: Momentum/Beta factors lagged while Quality factor outperformed, indicating fundamental shift in factor leadership requiring strategic rebalancing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vgtyqascgn9-e0b535",
       "title": "EM Weekly Fund Flows Monitor Foreign selling in Taiwan, buying in India continues MTD",
