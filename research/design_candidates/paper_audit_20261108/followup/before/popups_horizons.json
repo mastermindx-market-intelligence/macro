@@ -1,0 +1,145 @@
+{
+  "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+  "nodes": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8Q7-0",
+        "jsx": "(\n    <div id=\"8Q7-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21-BUSINESS-DAY MODEL\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8QB-0",
+        "jsx": "(\n    <div id=\"8QB-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      US source defines a ≥5% SPY drop within 21 business days. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8RV-0",
+        "jsx": "(\n    <div id=\"8RV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      Within 21 business days<br />Retained · normal reference 18%<br />Calibration receipt unverified.\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8SQ-0",
+        "jsx": "(\n    <div id=\"8SQ-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21-BUSINESS-DAY MODEL\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8SU-0",
+        "jsx": "(\n    <div id=\"8SU-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      US source defines a ≥5% SPY drop within 21 business days. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "980-0",
+        "jsx": "(\n    <div id=\"980-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      Within 21 business days<br />Retained · normal reference 18%<br />Calibration receipt unverified.\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "997-0",
+        "jsx": "(\n    <div id=\"997-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21-BUSINESS-DAY MODEL\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "993-0",
+        "jsx": "(\n    <div id=\"993-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      US source defines a ≥5% SPY drop within 21 business days. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8YV-0",
+        "jsx": "(\n    <div id=\"8YV-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      21个工作日内<br />留存值 · 常态参考为18%<br />校准证据尚未核验。\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "99Y-0",
+        "jsx": "(\n    <div id=\"99Y-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>\n      21个工作日内<br />留存值 · 常态参考为18%<br />校准证据尚未核验。\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "902-0",
+        "jsx": "(\n    <div id=\"902-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21个工作日模型\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8ZY-0",
+        "jsx": "(\n    <div id=\"8ZY-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      美国源定义：SPY在21个工作日内下跌≥5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "906-0",
+        "jsx": "(\n    <div id=\"906-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      美国 · 21个工作日 · 2026年9月23日快照\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8ZH-0",
+        "jsx": "(\n    <div id=\"8ZH-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>\n      美国 · 21个工作日 · 保留滚动位置与焦点\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "9B5-0",
+        "jsx": "(\n    <div id=\"9B5-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      21个工作日模型\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "9B1-0",
+        "jsx": "(\n    <div id=\"9B1-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', lineHeight: '22px' }}>\n      美国源定义：SPY在21个工作日内下跌≥5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "9B9-0",
+        "jsx": "(\n    <div id=\"9B9-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>\n      美国 · 21个工作日 · 2026年9月23日快照\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "9AK-0",
+        "jsx": "(\n    <div id=\"9AK-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '12px', lineHeight: '18px' }}>\n      美国 · 21个工作日 · 保留滚动位置与焦点\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "8ZM-0",
+        "jsx": "(\n    <div id=\"8ZM-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-light-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n      21个工作日历史 · 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。\n    </div>\n  )"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "9AP-0",
+        "jsx": "(\n    <div id=\"9AP-0\" style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '13px', lineHeight: '20px' }}>\n      21个工作日历史 · 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。\n    </div>\n  )"
+      }
+    }
+  ]
+}

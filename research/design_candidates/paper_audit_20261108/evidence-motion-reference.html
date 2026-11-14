@@ -3,16 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GMI · Evidence and exact return · Design reference</title>
+<title>Evidence return and estimate transitions · Design reference</title>
 <style>
 :root{color-scheme:dark;--canvas:#0f1115;--surface:#181b21;--raised:#1e222a;--text:#f2f4f7;--muted:#a5acb8;--line:#333a46;--accent:#8ab4f8;--button:#f2f4f7;--button-ink:#0f1115;--motion-base:200ms;--ease-out:cubic-bezier(.2,.8,.2,1)}
 :root[data-theme=light]{color-scheme:light;--canvas:#f7f8fa;--surface:#fff;--raised:#eef1f6;--text:#1c2430;--muted:#5d6b7e;--line:#dde2e9;--accent:#285fff;--button:#285fff;--button-ink:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--text);font:15px/1.55 Inter,system-ui,-apple-system,"PingFang SC",sans-serif}button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button,a,select,input{outline-offset:4px}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,h1:focus-visible{outline:2px solid var(--accent)}a{color:var(--accent)}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}button,select{min-height:44px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);padding:8px 14px}button:hover:not(:disabled),select:hover{background:var(--raised)}[hidden]{display:none!important}.reference-bar{border-bottom:1px solid var(--line);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.reference-bar strong{color:var(--text);font-weight:600}.shell{max-width:1120px;margin:auto;padding:0 28px 64px}.masthead{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.wordmark{font-size:12px;font-weight:800;letter-spacing:.12em}.product-name{font-size:17px;line-height:22px;font-weight:700}.content{max-width:800px;margin:40px auto 0}.context{font-size:12px;color:var(--muted);margin:0 0 16px}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar button{min-width:44px}.search{display:flex;gap:12px;align-items:center;margin:0 0 28px}.search input{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:8px;min-height:44px;padding:10px 14px;width:100%}.search label{font-size:13px;white-space:nowrap;color:var(--muted)}h1{font-size:clamp(28px,4vw,42px);font-weight:650;line-height:1.12;letter-spacing:-.03em;margin:0 0 16px}h2{font-size:clamp(22px,3vw,28px);line-height:1.3;letter-spacing:-.02em;font-weight:600;margin:0}.lede{color:var(--muted);margin:0 0 28px}.card{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:28px;display:flex;flex-direction:column;gap:20px}.eyebrow{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}.source-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;color:var(--muted);font-size:12px}.status{border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--text)}.copy{color:var(--muted);max-width:58ch;margin:0}.primary{display:inline-flex;min-height:44px;align-items:center;justify-content:center;background:var(--button);color:var(--button-ink);border:0;text-decoration:none;border-radius:8px;padding:12px 18px;font-weight:600;font-size:14px}.primary:hover{filter:brightness(.95);background:var(--button)}.action-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.quiet-link{min-height:44px;display:inline-flex;align-items:center;font-size:14px;text-decoration:none}.quiet-link:hover{text-decoration:underline}.relationship{border-top:1px solid var(--line);padding-top:20px}.relationship ol{list-style:none;padding:0;margin:18px 0 0;display:flex;gap:12px;align-items:center}.relationship li{flex:1;min-width:0}.relationship b{display:block;font-size:14px;font-weight:600}.relationship small{display:block;color:var(--muted);font-size:12px}.relationship .arrow{flex:0 0 auto;color:var(--muted);font-size:20px}.scope{font-size:12px;color:var(--muted);margin:20px 0 0}.back-link{display:inline-flex;align-items:center;min-height:44px;margin:0 0 20px;text-decoration:none;font-size:14px}.subtle{color:var(--muted)}.source-note{border-top:1px solid var(--line);padding-top:20px}.source-note p{margin:8px 0 0}.notice{padding:24px;background:var(--surface);border:1px solid var(--line);border-radius:14px}.notice h2{font-size:22px}.notice p{color:var(--muted)}.controls{max-width:800px;margin:36px auto 0;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:13px}.controls summary{min-height:44px;cursor:pointer;display:flex;align-items:center;gap:8px}.control-grid{display:flex;gap:20px;flex-wrap:wrap;padding-top:12px}.control-grid label{display:flex;gap:8px;align-items:center;min-height:44px}.control-grid select{max-width:100%}.controls p{max-width:76ch}.receipt{font-family:ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.enter{animation:panel-enter var(--motion-base) var(--ease-out) both}@keyframes panel-enter{from{opacity:.5;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}:root[data-motion=reduce] .enter{animation:none}:root[data-motion=reduce] *{scroll-behavior:auto!important}@media(prefers-reduced-motion:reduce){.enter{animation:none}*{scroll-behavior:auto!important}}
 @media(max-width:640px){.reference-bar{padding:10px 20px;gap:4px}.shell{padding:0 20px 40px}.masthead{height:64px}.content{margin-top:24px}.card{padding:20px;gap:16px}.action-row{align-items:stretch;flex-direction:column;gap:4px}.primary{width:100%}.quiet-link{justify-content:center}.relationship ol{align-items:flex-start;flex-direction:column;gap:12px}.relationship .arrow{padding-left:2px;transform:rotate(90deg);font-size:18px}.search{align-items:stretch;flex-direction:column;gap:8px}.toolbar{gap:6px}.toolbar button{padding:8px 10px}.control-grid{flex-direction:column;gap:8px}.control-grid label{flex-wrap:wrap}.controls{margin-top:28px}.product-name{font-size:17px}}
+
+.expectations-study{border-top:1px solid var(--line);margin-top:24px;padding-top:24px;display:flex;flex-direction:column;gap:16px;color:var(--text)}
+.expectations-study h2{font-size:22px}.expectations-study p{margin:0}.estimate-actions,.estimate-delivery{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.estimate-actions label{font-size:14px;color:var(--muted)}.estimate-actions select{min-width:140px}.expectations-study button{transition:background-color 160ms var(--ease-out)}
+.estimate-panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;min-height:270px;display:flex;flex-direction:column;gap:16px}.estimate-reading{display:flex;flex-direction:column;gap:16px}.estimate-value{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}.estimate-value strong{font-size:38px;line-height:1.15;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.025em}.estimate-value span{font-size:14px;color:var(--muted)}.reading-grid{display:flex;gap:20px;flex-wrap:wrap;margin:0}.reading-grid div{flex:1 1 190px;min-width:0}.reading-grid dt{font-size:12px;color:var(--muted)}.reading-grid dd{font-size:14px;margin:4px 0 0}.estimate-placeholder{display:flex;flex-direction:column;gap:10px;padding-top:8px;min-height:138px}.estimate-placeholder span{height:14px;border-radius:5px;background:var(--raised);width:70%}.estimate-placeholder span:first-child{height:32px;width:40%}.estimate-placeholder span:last-child{width:55%}
+:root[data-motion=reduce] .expectations-study button{transition:none}@media(prefers-reduced-motion:reduce){.expectations-study button{transition:none}}
+@media(max-width:640px){.estimate-panel{padding:20px;min-height:320px}.estimate-placeholder{min-height:190px}.estimate-actions{align-items:stretch}.estimate-actions select{flex:1}.estimate-actions button{width:100%}.estimate-delivery button{flex:1 1 140px}.reading-grid{gap:12px}}
 </style>
 </head>
 <body>
-<div class="reference-bar"><strong data-copy="reference">INTERACTION REFERENCE · 08 NOV 2026</strong><span data-copy="fixture">Saved design example · no live service calls</span></div>
+<div class="reference-bar"><strong data-copy="reference">INTERACTION REFERENCE · 09 NOV 2026</strong><span data-copy="fixture">Saved design example · no live service calls</span></div>
 <div class="shell">
  <header class="masthead"><div><div class="wordmark">MASTERMINDX</div><div class="product-name">GMI Explorer</div></div><div class="toolbar"><button id="language" type="button" aria-label="Switch to Chinese">中文</button><button id="theme" type="button" aria-label="Switch to light theme">Light</button></div></header>
  <main id="main" class="content">
@@ -48,14 +54,36 @@
   <section id="read-notice" class="notice" aria-labelledby="read-notice-title" hidden><h2 id="read-notice-title" tabindex="-1"></h2><p id="read-notice-copy"></p></section>
   <section id="source-context" class="source-note"><p class="eyebrow" data-copy="sourceHeading">About this reference</p><p class="copy" data-copy="sourceExplanation">This is the dated example already shown in the Paper design. The reference demonstrates navigation, focus, theme, language and motion. It does not retrieve or validate market evidence.</p></section>
  </main>
- <details class="controls"><summary data-copy="controls">Reference controls</summary><div class="control-grid"><label><span data-copy="state">Evidence state</span><select id="source-state"><option value="ready" data-copy="ready">Ready</option><option value="failed" data-copy="failed">Read failed · retain dated example</option><option value="denied" data-copy="denied">Access changed · hide evidence</option></select></label><label><input id="reduce" type="checkbox"><span data-copy="reduce">Reduce motion</span></label></div><p data-copy="controlHelp">These controls simulate a view state only. No authentication, saving, monitoring or research request occurs. Use browser Back/Forward and reload to inspect the return path.</p><p id="receipt" class="receipt" aria-live="polite"></p></details>
+ <details class="controls"><summary data-copy="controls">Reference controls</summary><div class="control-grid"><label><span data-copy="state">Evidence state</span><select id="source-state"><option value="ready" data-copy="ready">Ready</option><option value="failed" data-copy="failed">Read failed · retain dated example</option><option value="denied" data-copy="denied">Access changed · hide evidence</option></select></label><label><input id="reduce" type="checkbox"><span data-copy="reduce">Reduce motion</span></label></div><p data-copy="controlHelp">These controls simulate a view state only. No authentication, saving, monitoring or research request occurs. Use browser Back/Forward and reload to inspect the return path.</p><p id="receipt" class="receipt" aria-live="polite"></p>
+ <section class="expectations-study" aria-labelledby="ex-title">
+  <p class="eyebrow" data-copy="exSynthetic">SYNTHETIC FIXTURE · NOT MARKET DATA</p>
+  <h2 id="ex-title" data-copy="exTitle">Expectations · simulated reads</h2>
+  <p class="copy" data-copy="exHelp">Change the measure or refresh it. Then deliver a response below to inspect the pending and committed states.</p>
+  <div class="estimate-actions"><label for="ex-context" data-copy="exMeasure">Measure</label><select id="ex-context"><option value="eps">EPS</option><option value="revenue" data-copy="exRevenue">Revenue</option></select><button id="ex-refresh" type="button" data-copy="exRefresh">Refresh selection</button></div>
+  <article id="ex-panel" class="estimate-panel" aria-busy="false">
+   <p id="ex-selected" class="eyebrow"></p>
+   <p id="ex-status" class="subtle"></p>
+   <div id="ex-reading" class="estimate-reading">
+    <p id="ex-metric" class="eyebrow"></p>
+    <div class="estimate-value"><strong id="ex-value"></strong><span id="ex-unit"></span></div>
+    <dl class="reading-grid"><div><dt data-copy="exPeriodLabel">Fiscal period</dt><dd id="ex-period"></dd></div><div><dt data-copy="exCaptureLabel">Captured</dt><dd id="ex-capture"></dd></div></dl>
+   </div>
+   <div id="ex-placeholder" class="estimate-placeholder" aria-hidden="true" hidden><span></span><span></span><span></span></div>
+  </article>
+  <div id="ex-delivery" class="estimate-delivery" role="group" aria-label="Simulated response delivery"><button id="ex-deliver-latest" type="button" data-copy="exDeliver" disabled>Deliver latest</button><button id="ex-deliver-earlier" type="button" data-copy="exEarlier" disabled>Deliver earlier</button><button id="ex-fail-latest" type="button" data-copy="exFail" disabled>Fail latest</button></div>
+  <p class="copy" data-copy="exDeliveryHelp">One earlier response is retained so you can test a late arrival. These controls only change this disposable example.</p>
+  <p id="ex-receipt" class="receipt"></p>
+  <div id="ex-announce" class="sr-only" role="status" aria-live="polite"></div>
+ </section>
+</details>
  <div id="announce" class="sr-only" role="status" aria-live="polite"></div>
 </div>
 <script>
 (()=>{'use strict';
  const SNAPSHOT='gmi-2026-11-03',THEME='hbm-advanced-packaging';
  const $=id=>document.getElementById(id),root=document.documentElement;
- const translations={zh:{reference:'交互参考 · 2026年11月8日',fixture:'已保存的设计示例 · 无实时服务调用',breadcrumb:'半导体与硬件 / AI 半导体',filterLabel:'筛选此示例',themeTitle:'HBM 与先进封装',definition:'高带宽内存堆叠与先进封装。',documented:'有据可查的关联',planned:'来源当时的计划',sourceDate:'来源 · 2024年2月26日',claim:'Micron 曾计划将 HBM3E 用于 NVIDIA H200。',limit:'公告支持这一产品关联。当前交付与营收敞口尚未由此证实。',open:'查看公司证据 →',sourceContext:'阅读来源背景 ↓',relationship:'来源中的产品背景',company:'公司 · MU',product:'所述产品',platform:'所述平台',scope:'研究快照 · 2026年11月3日 · 一条有据可查的公司关联。缺少证据不表示不存在关联。',back:'← 返回主题研究',origin:'来自 HBM 与先进封装 · 2026年11月3日快照',evidenceSubtitle:'MU · 公司证据',evidenceScope:'此保存示例包含一条有日期的关联。不据此推断当前交付量或营收。',sourceHeading:'关于此参考',sourceExplanation:'这是 Paper 设计中已有的历史示例。此参考演示导航、焦点、主题、语言与动效，不获取或验证市场证据。',controls:'参考控制',state:'证据状态',ready:'可用',failed:'读取失败 · 保留历史示例',denied:'权限已变更 · 隐藏证据',reduce:'减少动态效果',controlHelp:'这些控制仅模拟视图状态，不进行身份验证、保存、监控或研究请求。可使用浏览器前进、后退和刷新检查返回路径。',noResultTitle:'此示例中没有匹配的主题。',noResultText:'已保留搜索内容。清除后返回保存的示例。',clear:'清除筛选'}};
+ const translations={zh:{reference:'交互参考 · 2026年11月9日',fixture:'已保存的设计示例 · 无实时服务调用',breadcrumb:'半导体与硬件 / AI 半导体',filterLabel:'筛选此示例',themeTitle:'HBM 与先进封装',definition:'高带宽内存堆叠与先进封装。',documented:'有据可查的关联',planned:'来源当时的计划',sourceDate:'来源 · 2024年2月26日',claim:'Micron 曾计划将 HBM3E 用于 NVIDIA H200。',limit:'公告支持这一产品关联。当前交付与营收敞口尚未由此证实。',open:'查看公司证据 →',sourceContext:'阅读来源背景 ↓',relationship:'来源中的产品背景',company:'公司 · MU',product:'所述产品',platform:'所述平台',scope:'研究快照 · 2026年11月3日 · 一条有据可查的公司关联。缺少证据不表示不存在关联。',back:'← 返回主题研究',origin:'来自 HBM 与先进封装 · 2026年11月3日快照',evidenceSubtitle:'MU · 公司证据',evidenceScope:'此保存示例包含一条有日期的关联。不据此推断当前交付量或营收。',sourceHeading:'关于此参考',sourceExplanation:'这是 Paper 设计中已有的历史示例。此参考演示导航、焦点、主题、语言与动效，不获取或验证市场证据。',controls:'参考控制',state:'证据状态',ready:'可用',failed:'读取失败 · 保留历史示例',denied:'权限已变更 · 隐藏证据',reduce:'减少动态效果',controlHelp:'这些控制仅模拟视图状态，不进行身份验证、保存、监控或研究请求。可使用浏览器前进、后退和刷新检查返回路径。',noResultTitle:'此示例中没有匹配的主题。',noResultText:'已保留搜索内容。清除后返回保存的示例。',clear:'清除筛选'}};
+ Object.assign(translations.zh,{exSynthetic:'合成示例 · 非市场数据',exTitle:'预期数据 · 模拟读取',exHelp:'切换指标或刷新，然后在下方返回响应，检查加载与完成状态。',exMeasure:'指标',exRevenue:'营收',exRefresh:'刷新所选指标',exPeriodLabel:'财务期间',exCaptureLabel:'采集时间',exDeliver:'返回最新响应',exEarlier:'返回较早响应',exFail:'使最新读取失败',exDeliveryHelp:'保留一个较早响应，用于检查迟到结果。这些控制仅改变此临时示例。'});
  const english=new Map([...document.querySelectorAll('[data-copy]')].map(el=>[el,el.textContent]));
  const initialUrl=new URL(location.href);
  let locale=initialUrl.searchParams.get('lang')==='zh'?'zh':'en',theme=initialUrl.searchParams.get('appearance')==='light'?'light':'dark';
@@ -63,6 +91,65 @@
  let query=initialUrl.searchParams.get('q')||'',reduce=initialUrl.searchParams.get('motion')==='reduce';
  let view=initialUrl.searchParams.get('view')==='evidence'?'evidence':'theme';
  const motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
+
+ // This disposable fixture demonstrates the incumbent loader contract. It is
+ // not a product state owner, data client, persistence path or request queue.
+ const exContexts={
+  eps:{security:'EXAMPLE',metric:'eps',period:'2027-08-31',label:'EPS',labelZh:'每股收益',unit:'USD/share',unitZh:'美元/股',values:['11.02','11.12','11.20']},
+  revenue:{security:'EXAMPLE',metric:'revenue',period:'2027-08-31',label:'Revenue',labelZh:'营收',unit:'USD bn',unitZh:'十亿美元',values:['39.8','40.1','40.4']}
+ };
+ function exKey(context){return [context.security,context.metric,context.period].join('|');}
+ function exSample(id,version){
+  const context=exContexts[id],index=Math.min(version,2),day=20+index;
+  return Object.freeze({contextId:id,key:exKey(context),metric:context.label,metricZh:context.labelZh,value:context.values[index],unit:context.unit,unitZh:context.unitZh,period:'FY 2027 · 31 Aug 2027',periodZh:'2027财年 · 2027年8月31日',captured:day+' Oct 2026 · 13:05 UTC',capturedZh:'2026年10月'+day+'日 · 13:05 UTC'});
+ }
+ const ex={selected:'eps',accepted:exSample('eps',0),pending:null,earlier:null,attempt:0,commits:0,outcome:'ready',versions:{eps:0,revenue:0}};
+ function exText(en,zh){return locale==='zh'?zh:en;}
+ function renderExDelivery(){
+  $('ex-deliver-latest').disabled=!ex.pending;$('ex-fail-latest').disabled=!ex.pending;$('ex-deliver-earlier').disabled=!ex.earlier;
+  $('ex-receipt').textContent=exText('Simulated attempts: ','模拟尝试：')+ex.attempt+' · '+exText('Committed: ','已完成：')+ex.commits+' · '+exText('Pending: ','等待中：')+(ex.pending?ex.pending.id:'—')+' · '+exText('Earlier: ','较早响应：')+(ex.earlier?ex.earlier.id:'—');
+ }
+ function renderExpectations({animate=false}={}){
+  const context=exContexts[ex.selected],reading=ex.accepted,hasReading=!!reading,pending=!!ex.pending;
+  $('ex-context').value=ex.selected;
+  $('ex-delivery').ariaLabel=exText('Simulated response delivery','模拟响应返回');
+  $('ex-selected').textContent=exText('Example Co. · ','示例公司 · ')+(locale==='zh'?context.labelZh:context.label);
+  $('ex-panel').ariaBusy=pending?'true':'false';
+  $('ex-reading').hidden=!hasReading;$('ex-placeholder').hidden=hasReading||!pending;
+  // Retire all result fields together. A hidden previous value must never be
+  // rebound to the newly selected metric, unit, fiscal period or capture time.
+  $('ex-metric').textContent=reading?(locale==='zh'?reading.metricZh:reading.metric):'';
+  $('ex-value').textContent=reading?reading.value:'';
+  $('ex-unit').textContent=reading?(locale==='zh'?reading.unitZh:reading.unit):'';
+  $('ex-period').textContent=reading?(locale==='zh'?reading.periodZh:reading.period):'';
+  $('ex-capture').textContent=reading?(locale==='zh'?reading.capturedZh:reading.captured):'';
+  $('ex-status').textContent=pending?(hasReading?exText('Refreshing · dated reading retained.','正在刷新 · 保留原采集时间的数据。'):exText('Loading selected estimates…','正在加载所选预期数据…')):ex.outcome==='failed'?(hasReading?exText('Read failed · dated reading retained.','读取失败 · 保留原采集时间的数据。'):exText('The selected estimates could not load.','无法加载所选预期数据。')):exText('Saved synthetic reading.','已保存的合成示例数据。');
+  $('ex-refresh').textContent=ex.outcome==='failed'?exText('Retry selected read','重试所选读取'):exText('Refresh selection','刷新所选指标');
+  $('ex-reading').classList.remove('enter');
+  if(animate&&hasReading&&!reduce&&!motionQuery.matches){void $('ex-reading').offsetWidth;$('ex-reading').classList.add('enter');}
+  renderExDelivery();
+ }
+ function requestExpectation(id){
+  if(!Object.hasOwn(exContexts,id))return;
+  if(ex.pending&&!ex.earlier)ex.earlier=ex.pending;
+  ex.selected=id;ex.attempt+=1;ex.versions[id]+=1;
+  const key=exKey(exContexts[id]);
+  if(ex.accepted?.key!==key)ex.accepted=null;
+  ex.pending=Object.freeze({id:ex.attempt,key,payload:exSample(id,ex.versions[id])});ex.outcome='pending';
+  renderExpectations();
+  $('ex-announce').textContent=exText('Simulated read started.','模拟读取已开始。');
+ }
+ function completeExpectation(response,failed=false){
+  // Context equality alone is insufficient after A→B→A. The request identity
+  // must still be current; an obsolete response has no reading/UI side effect.
+  if(!response||!ex.pending||response.id!==ex.pending.id||response.key!==ex.pending.key||response.key!==exKey(exContexts[ex.selected])||response.payload.key!==response.key)return false;
+  ex.pending=null;ex.outcome=failed?'failed':'ready';
+  if(!failed){ex.accepted=response.payload;ex.commits+=1;}
+  // Acceptance is synchronous. Animation is optional decoration after commit.
+  renderExpectations({animate:!failed});
+  $('ex-announce').textContent=failed?exText('Simulated read failed.','模拟读取失败。'):exText('Selected reading updated.','所选数据已更新。');
+  return true;
+ }
  function locationFor(next){const url=new URL(location.href);url.hash='';url.searchParams.set('theme',THEME);url.searchParams.set('snapshot',SNAPSHOT);url.searchParams.set('view',next);url.searchParams.set('lang',locale);url.searchParams.set('appearance',theme);url.searchParams.set('state',sourceState);query?url.searchParams.set('q',query):url.searchParams.delete('q');reduce?url.searchParams.set('motion','reduce'):url.searchParams.delete('motion');return url;}
  function replaceCurrent(extra={}){history.replaceState({...history.state,reference:'gmi-motion-v1',snapshot:SNAPSHOT,themeId:THEME,view,query,...extra},'',locationFor(view));updateLinks();}
  function updateLinks(){$('open-evidence').href=locationFor('evidence').href;$('back').href=locationFor('theme').href;}
@@ -70,7 +157,7 @@
  function applyLanguage(){root.lang=locale==='zh'?'zh-CN':'en';for(const [el,en]of english)el.textContent=translated(el.dataset.copy,en);$('language').textContent=locale==='en'?'中文':'EN';$('language').ariaLabel=locale==='en'?'Switch to Chinese':'切换为英文';$('theme').textContent=locale==='en'?(theme==='dark'?'Light':'Dark'):(theme==='dark'?'浅色':'深色');$('theme').ariaLabel=locale==='en'?`Switch to ${theme==='dark'?'light':'dark'} theme`:`切换为${theme==='dark'?'浅色':'深色'}主题`;$('query').placeholder=locale==='zh'?'HBM、内存或封装':'HBM, memory or packaging';}
  function hasMatch(){return !query.trim()||query.trim().toLowerCase().split(/\s+/).every(part=>'hbm memory advanced packaging micron 半导体 高带宽 内存 先进 封装'.includes(part));}
  function showState(){const matched=hasMatch(),denied=sourceState==='denied';$('theme-card').hidden=denied||!matched;$('theme-scope').hidden=denied||!matched;$('no-results').hidden=matched||denied;$('evidence-card').hidden=denied;$('source-context').hidden=denied;$('read-notice').hidden=sourceState==='ready';$('read-notice-title').textContent=sourceState==='denied'?(locale==='zh'?'此权限下无法查看证据。':'Evidence is unavailable with this access.'):(locale==='zh'?'暂时无法读取更新。':'The latest read could not load.');$('read-notice-copy').textContent=sourceState==='denied'?(locale==='zh'?'已保留主题与搜索内容。返回研究或通过现有账户流程检查权限。':'Your topic and query are kept. Return to research or check access through the existing account flow.'):(locale==='zh'?'已保留原有日期的历史示例。读取失败不表示没有证据。':'The saved example retains its original date. A failed read does not mean no evidence exists.');}
- function render({animate=false,focus=false}={}){root.dataset.theme=theme;root.dataset.motion=reduce?'reduce':'system';$('query').value=query;$('source-state').value=sourceState;$('reduce').checked=reduce;applyLanguage();$('theme-view').hidden=view!=='theme';$('evidence-view').hidden=view!=='evidence';showState();updateLinks();const target=sourceState==='denied'?$('read-notice-title'):$(view==='evidence'?'evidence-title':'theme-title');$('evidence-view').classList.remove('enter');if(animate&&view==='evidence'&&!reduce&&!motionQuery.matches){void $('evidence-view').offsetWidth;$('evidence-view').classList.add('enter');}if(focus)target.focus({preventScroll:true});$('receipt').textContent=`${SNAPSHOT} · ${THEME} · ${view} · ${sourceState} · ${reduce||motionQuery.matches?'reduced motion':'200 ms entrance'}`;}
+ function render({animate=false,focus=false}={}){root.dataset.theme=theme;root.dataset.motion=reduce?'reduce':'system';$('query').value=query;$('source-state').value=sourceState;$('reduce').checked=reduce;applyLanguage();$('theme-view').hidden=view!=='theme';$('evidence-view').hidden=view!=='evidence';showState();updateLinks();const target=sourceState==='denied'?$('read-notice-title'):$(view==='evidence'?'evidence-title':'theme-title');$('evidence-view').classList.remove('enter');if(animate&&view==='evidence'&&!reduce&&!motionQuery.matches){void $('evidence-view').offsetWidth;$('evidence-view').classList.add('enter');}if(focus)target.focus({preventScroll:true});$('receipt').textContent=`${SNAPSHOT} · ${THEME} · ${view} · ${sourceState} · ${reduce||motionQuery.matches?'reduced motion':'200 ms entrance'}`;renderExpectations();}
  function normalClick(e){return e.button===0&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey;}
  $('open-evidence').addEventListener('click',e=>{if(!normalClick(e))return;e.preventDefault();if(sourceState==='denied')return;replaceCurrent({scrollY:scrollY,focusId:'open-evidence'});const origin={view:'theme',query,scrollY,focusId:'open-evidence',snapshot:SNAPSHOT,themeId:THEME};view='evidence';history.pushState({reference:'gmi-motion-v1',snapshot:SNAPSHOT,themeId:THEME,view,query,origin},'',locationFor(view));render({animate:true,focus:true});scrollTo({top:0,behavior:'instant'});$('announce').textContent=locale==='zh'?'已打开公司证据。':'Company evidence opened.';});
  $('back').addEventListener('click',e=>{if(!normalClick(e))return;e.preventDefault();if(history.state?.reference==='gmi-motion-v1'&&history.state?.origin?.themeId===THEME){history.back();return;}view='theme';replaceCurrent();render({focus:true});scrollTo({top:0,behavior:'instant'});});
@@ -86,9 +173,16 @@
  $('theme').addEventListener('click',()=>{theme=theme==='dark'?'light':'dark';replaceCurrent();render();});
  $('source-state').addEventListener('change',()=>{sourceState=$('source-state').value;replaceCurrent();render();$('announce').textContent=sourceState==='denied'?(locale==='zh'?'权限变更，证据已隐藏。':'Access changed. Evidence hidden.'):(locale==='zh'?'示例状态已更新。':'Example state updated.');});
  $('reduce').addEventListener('change',()=>{reduce=$('reduce').checked;replaceCurrent();render();});
+
+ $('ex-context').addEventListener('change',()=>requestExpectation($('ex-context').value));
+ $('ex-refresh').addEventListener('click',()=>requestExpectation(ex.selected));
+ $('ex-deliver-latest').addEventListener('click',()=>completeExpectation(ex.pending));
+ $('ex-fail-latest').addEventListener('click',()=>completeExpectation(ex.pending,true));
+ $('ex-deliver-earlier').addEventListener('click',()=>{const earlier=ex.earlier;ex.earlier=null;completeExpectation(earlier);renderExDelivery();});
  motionQuery.addEventListener('change',()=>render());
  const initialPlace=history.state;history.scrollRestoration='manual';replaceCurrent();render();restorePlace(initialPlace,{initial:true});
 })();
 </script>
 </body>
 </html>
+

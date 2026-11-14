@@ -1,0 +1,2421 @@
+{
+  "schema": "paper_audit_followup.verification.v1",
+  "date": "2026-11-09",
+  "capability": "Paper design references implemented and inspected; runtime extensions specified",
+  "pins": {
+    "governance": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+    "macro": "b5674d8ef898e503d6164922654f5ff89be9981c",
+    "terminal": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e"
+  },
+  "effects": {
+    "total": 173,
+    "applied_response_observed": 171,
+    "invalid_argument_reconciled": 2,
+    "partial_frame_target_errors_reconciled": 3,
+    "unresolved": []
+  },
+  "text_readback": {
+    "count": 142,
+    "passed": 142,
+    "checks": [
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "12-0",
+        "expected": "EPS estimate cuts outnumber raises in the latest capture.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "EPS estimate cuts outnumber raises in the latest capture.",
+        "surface": "expectations_desktop_dark",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "1RA-0",
+        "expected": "EPS estimate cuts outnumber raises in the latest capture.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "EPS estimate cuts outnumber raises in the latest capture.",
+        "surface": "expectations_desktop_light",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "2PA-0",
+        "expected": "EPS estimate cuts outnumber raises in the latest capture.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "EPS estimate cuts outnumber raises in the latest capture.",
+        "surface": "expectations_mobile_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "2N5-0",
+        "expected": "最新采集期，EPS 预期下调多于上调。",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "最新采集期，EPS 预期下调多于上调。",
+        "surface": "expectations_desktop_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "39S-0",
+        "expected": "最新采集期，EPS 预期下调多于上调。",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "最新采集期，EPS 预期下调多于上调。",
+        "surface": "expectations_mobile_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "HX-0",
+        "expected": "Estimate history",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate history",
+        "surface": "expectations_desktop_dark",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "1AQ-0",
+        "expected": "Estimate history",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate history",
+        "surface": "expectations_desktop_light",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "31U-0",
+        "expected": "Estimate history",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate history",
+        "surface": "expectations_mobile_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "KM-0",
+        "expected": "Average estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Average estimate",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "186-0",
+        "expected": "Average estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Average estimate",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "33X-0",
+        "expected": "Average estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Average estimate",
+        "surface": "expectations_mobile_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "KT-0",
+        "expected": "Median estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Median estimate",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "17Z-0",
+        "expected": "Median estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Median estimate",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "343-0",
+        "expected": "Median estimate",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Median estimate",
+        "surface": "expectations_mobile_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "KZ-0",
+        "expected": "Estimate range",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate range",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "17T-0",
+        "expected": "Estimate range",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate range",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "349-0",
+        "expected": "Estimate range",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate range",
+        "surface": "expectations_mobile_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "3XS-0",
+        "expected": "Security, metric, fiscal period and source snapshot travel together. A mover opens that exact tuple in Estimate history. When the security, metric, fiscal period or explicitly selected snapshot changes, retire the old chart and values together and name the pending selection. A refresh of the same security, metric and fiscal period may retain the last settled result, clearly labeled with its original capture clock, while a newer snapshot loads. Commit the accepted snapshot, labels, chart and values atomically. A refreshed result with a changed fiscal period follows the context-change rule. Ignore obsolete responses. Exact-tuple binding and request-generation protection are required extensions, not verified runtime behavior.",
+        "op": "paper-audit-c3-expectations-snapshot-and-period-contract-20261109-v1",
+        "actual": "Security, metric, fiscal period and source snapshot travel together. A mover opens that exact tuple in Estimate history. When the security, metric, fiscal period or explicitly selected snapshot changes, retire the old chart and values together and name the pending selection. A refresh of the same security, metric and fiscal period may retain the last settled result, clearly labeled with its original capture clock, while a newer snapshot loads. Commit the accepted snapshot, labels, chart and values atomically. A refreshed result with a changed fiscal period follows the context-change rule. Ignore obsolete responses. Exact-tuple binding and request-generation protection are required extensions, not verified runtime behavior.",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "3Y0-0",
+        "expected": "At 390px, show three movers per direction; Show all [n] reveals the source list without reordering it (currently at most 25 per direction). Show numbers expands the exact values below the chart; Hide the numbers collapses them. The chart stays visible. Preserve metric, capture, fiscal period and focus; keep expanded state accurate.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "At 390px, show three movers per direction; Show all [n] reveals the source list without reordering it (currently at most 25 per direction). Show numbers expands the exact values below the chart; Hide the numbers collapses them. The chart stays visible. Preserve metric, capture, fiscal period and focus; keep expanded state accurate.",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "R5-0",
+        "expected": "Estimate data is unavailable. Coverage and methods are still available.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Estimate data is unavailable. Coverage and methods are still available.",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "R6-0",
+        "expected": "预期数据暂不可用。仍可查看覆盖范围与方法。",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "status": "PASS",
+        "surface": "extra_nodes.json",
+        "actual": "预期数据暂不可用。仍可查看覆盖范围与方法。",
+        "method": "exact get_node_info textContent; hidden locale"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "V1-0",
+        "expected": "Couldn’t load MU estimates. Retry or choose another security.",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "actual": "Couldn’t load MU estimates. Retry or choose another security.",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "V2-0",
+        "expected": "无法加载 MU 的预期数据。请重试或选择其他证券。",
+        "op": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+        "status": "PASS",
+        "surface": "extra_nodes.json",
+        "actual": "无法加载 MU 的预期数据。请重试或选择其他证券。",
+        "method": "exact get_node_info textContent; hidden locale"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "3OO-0",
+        "expected": "平均预期",
+        "op": "paper-audit-c3-expectation-zh-readout-labels-20261108-v1",
+        "actual": "平均预期",
+        "surface": "expectations_mobile_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "3OU-0",
+        "expected": "预期中位数",
+        "op": "paper-audit-c3-expectation-zh-readout-labels-20261108-v1",
+        "actual": "预期中位数",
+        "surface": "expectations_mobile_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "3P0-0",
+        "expected": "预期区间",
+        "op": "paper-audit-c3-expectation-zh-readout-labels-20261108-v1",
+        "actual": "预期区间",
+        "surface": "expectations_mobile_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "8M3-0",
+        "expected": "R4 · retained state catalogue",
+        "op": "paper-audit-c3-sector-history-qualification-20261108-v1",
+        "actual": "R4 · retained state catalogue",
+        "surface": "sector_retained_catalogue",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "8W2-0",
+        "expected": "Original model fixture",
+        "op": "paper-audit-c3-sector-history-qualification-20261108-v1",
+        "actual": "Original model fixture",
+        "surface": "sector_retained_catalogue",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "8W5-0",
+        "expected": "Historical example · Up leg ends within",
+        "op": "paper-audit-c3-sector-preserve-event-meaning-20261108-v1",
+        "actual": "Historical example · Up leg ends within",
+        "surface": "sector_retained_catalogue",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "8XL-0",
+        "expected": "RETAINED FIXTURE · Not current",
+        "op": "paper-audit-c3-sector-history-qualification-20261108-v1",
+        "actual": "RETAINED FIXTURE · Not current",
+        "surface": "sector_retained_catalogue",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "8WW-0",
+        "expected": "Superseded presentation. The 14% model fixture is retained as history; current unqualified model estimates are unavailable. Historical PRIOR values keep their own definitions. Current mapping: Build · Clarity, models & interaction → GPI-0.",
+        "op": "paper-audit-c3-sector-history-qualification-20261108-v1",
+        "actual": "Superseded presentation. The 14% model fixture is retained as history; current unqualified model estimates are unavailable. Historical PRIOR values keep their own definitions. Current mapping: Build · Clarity, models & interaction → GPI-0.",
+        "surface": "sector_retained_catalogue",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "X7-0",
+        "expected": "Did the evidence support your question?",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Did the evidence support your question?",
+        "surface": "options_watch",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "XF-0",
+        "expected": "The receipt records a 230.12 hub quote at 15:40:01Z. Rotation fade is not defined, so the timing question remains inconclusive.",
+        "op": "paper-audit-c3-options-assessment-and-range-correction-20261109-v1",
+        "actual": "The receipt records a 230.12 hub quote at 15:40:01Z. Rotation fade is not defined, so the timing question remains inconclusive.",
+        "surface": "options_watch",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "W3-0",
+        "expected": "The latest quote is above 230.00. If it still qualifies at the next check, the watch will fire once.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "The latest quote is above 230.00. If it still qualifies at the next check, the watch will fire once.",
+        "surface": "options_watch",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "160-0",
+        "expected": "The watch checks a quote every five minutes. It fires once when a qualifying quote meets the condition, then disarms. Re-arming is manual. A quote that already meets the threshold can trigger the next check if it still qualifies.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "The watch checks a quote every five minutes. It fires once when a qualifying quote meets the condition, then disarms. Re-arming is manual. A quote that already meets the threshold can trigger the next check if it still qualifies.",
+        "surface": "options_help",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "HP-0",
+        "expected": "BELOW $250K",
+        "op": "paper-audit-c3-options-layout-followthrough-20261109-v1",
+        "actual": "BELOW $250K",
+        "surface": "options_flow",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "GV-0",
+        "expected": "5 filtered rows + 1 related print · newest first",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "5 filtered rows + 1 related print · newest first",
+        "surface": "options_flow",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "PQ-0",
+        "expected": "Total-variance interpolation · No extrapolation beyond 2D–90D.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Total-variance interpolation · No extrapolation beyond 2D–90D.",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "154-0",
+        "expected": "Constant-tenor points interpolate total variance (IV² × calendar days) between the nearest supplied expiries, then convert back to IV. The 21D value uses the 14D and 30D points. Skew uses a different rule: linear IV in actual strike, with supplied-strike tolerance and no bridging of missing legs. Interpolated values are labeled; no tenor is extrapolated beyond 2D–90D.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Constant-tenor points interpolate total variance (IV² × calendar days) between the nearest supplied expiries, then convert back to IV. The 21D value uses the 14D and 30D points. Skew uses a different rule: linear IV in actual strike, with supplied-strike tolerance and no bridging of missing legs. Interpolated values are labeled; no tenor is extrapolated beyond 2D–90D.",
+        "surface": "options_help",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "KY-0",
+        "expected": "7 expiries supplied · source date 21 Oct",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "7 expiries supplied · source date 21 Oct",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "KW-0",
+        "expected": "Vol source date 21 Oct 2026 · spot 10:40:12 ET · options hub vol v1",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Vol source date 21 Oct 2026 · spot 10:40:12 ET · options hub vol v1",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "LK-0",
+        "expected": "21 Oct · date only",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "21 Oct · date only",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "M7-0",
+        "expected": "7 supplied · 1 interpolated · source date 21 Oct 2026",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "7 supplied · 1 interpolated · source date 21 Oct 2026",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "PV-0",
+        "expected": "One daily snapshot · No trade recommendation.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "One daily snapshot · No trade recommendation.",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "QG-0",
+        "expected": "21 Oct 2026 · date only",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "21 Oct 2026 · date only",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "R2-0",
+        "expected": "Skew · 23 Oct expiry · 2D",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Skew · 23 Oct expiry · 2D",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "R4-0",
+        "expected": "Reference strike 236.5 · ATM proxy, not spot · Delta unavailable.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Reference strike 236.5 · ATM proxy, not spot · Delta unavailable.",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RG-0",
+        "expected": "—",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "—",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RI-0",
+        "expected": "Unavailable · No strike supplied",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "Unavailable · No strike supplied",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RN-0",
+        "expected": "40.8 %",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "40.8 %",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RP-0",
+        "expected": "supplied · put IV at strike 224.5",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "supplied · put IV at strike 224.5",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RU-0",
+        "expected": "36.9 %",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "36.9 %",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "RW-0",
+        "expected": "supplied · put IV at strike 236.5",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "supplied · put IV at strike 236.5",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "S1-0",
+        "expected": "34.0 %",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "34.0 %",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "S3-0",
+        "expected": "supplied · call IV at strike 248",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "supplied · call IV at strike 248",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "SC-0",
+        "expected": "95% strike IV is 3.9 vol pts above the reference. Unsupported points stay blank.",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "95% strike IV is 3.9 vol pts above the reference. Unsupported points stay blank.",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "SM-0",
+        "expected": "Earnings · AAPL · Fri 30 Oct 2026",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "Earnings · AAPL · Fri 30 Oct 2026",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "SU-0",
+        "expected": "FOMC decision · Thu 29 Oct 2026",
+        "op": "paper-audit-c3-options-logic-and-source-copy-20261109-v2",
+        "actual": "FOMC decision · Thu 29 Oct 2026",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "F-0",
+        "expected": "Research · r3 of 3 · Illustrative data",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "Research · r3 of 3 · Illustrative data",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "Z-0",
+        "expected": "Re-arm keeps 230.00. The watch fires once if the next qualifying quote meets it.",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "Re-arm keeps 230.00. The watch fires once if the next qualifying quote meets it.",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "1J-0",
+        "expected": "Source clocks",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "Source clocks",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "1K-0",
+        "expected": "Quote 15:40:01Z Vintage 15:40:03Z",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "Quote 15:40:01Z Vintage 15:40:03Z",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "2F-0",
+        "expected": "1 changed · 2 supported",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "1 changed · 2 supported",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "2G-0",
+        "expected": "Call wall 230 → 232.5",
+        "op": "paper-audit-c3-options-mobile-watch-clarity-20261109-v1",
+        "actual": "Call wall 230 → 232.5",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "PU-0",
+        "expected": "2D IV is 2.1 vol pts above 7D and 7.5 above 30D.",
+        "op": "paper-audit-c3-options-semantic-visual-alignment-20261109-v1",
+        "actual": "2D IV is 2.1 vol pts above 7D and 7.5 above 30D.",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "LJ-0",
+        "expected": "Side not stated by source",
+        "op": "paper-audit-c3-options-layout-followthrough-20261109-v1",
+        "actual": "Side not stated by source",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8Q7-0",
+        "expected": "21-TRADING-DAY MODEL",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "21-TRADING-DAY MODEL",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8QB-0",
+        "expected": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8RV-0",
+        "expected": "Within 21 trading days Retained · normal reference 18% Calibration receipt unverified.",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "Within 21 trading days Retained · normal reference 18% Calibration receipt unverified.",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8SQ-0",
+        "expected": "21-TRADING-DAY MODEL",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "21-TRADING-DAY MODEL",
+        "surface": "risk_popup_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8SU-0",
+        "expected": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "surface": "risk_popup_en",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "980-0",
+        "expected": "Within 21 trading days Retained · normal reference 18% Calibration receipt unverified.",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "Within 21 trading days Retained · normal reference 18% Calibration receipt unverified.",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "997-0",
+        "expected": "21-TRADING-DAY MODEL",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "21-TRADING-DAY MODEL",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "993-0",
+        "expected": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "US model: SPY falls ≥5% within the next 21 closing observations. Snapshot-matched calibration is unverified; this is not the 36/100 risk index.",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8YV-0",
+        "expected": "21个交易日内 留存值 · 常态参考为18% 校准证据尚未核验。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "21个交易日内 留存值 · 常态参考为18% 校准证据尚未核验。",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "99Y-0",
+        "expected": "21个交易日内 留存值 · 常态参考为18% 校准证据尚未核验。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "21个交易日内 留存值 · 常态参考为18% 校准证据尚未核验。",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "902-0",
+        "expected": "21个交易日模型",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "21个交易日模型",
+        "surface": "risk_popup_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8ZY-0",
+        "expected": "美国模型：SPY在接下来21次收盘观测内下跌至少5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "美国模型：SPY在接下来21次收盘观测内下跌至少5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。",
+        "surface": "risk_popup_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "906-0",
+        "expected": "美国 · 21个交易日 · 2026年9月23日快照",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "美国 · 21个交易日 · 2026年9月23日快照",
+        "surface": "risk_popup_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8ZH-0",
+        "expected": "美国 · 21个交易日 · 保留滚动位置与焦点",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "美国 · 21个交易日 · 保留滚动位置与焦点",
+        "surface": "risk_popup_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "9B5-0",
+        "expected": "21个交易日模型",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "21个交易日模型",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "9B1-0",
+        "expected": "美国模型：SPY在接下来21次收盘观测内下跌至少5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "美国模型：SPY在接下来21次收盘观测内下跌至少5%。与快照匹配的校准证据尚未核验；此值并非36/100风险指数。",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "9B9-0",
+        "expected": "美国 · 21个交易日 · 2026年9月23日快照",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "美国 · 21个交易日 · 2026年9月23日快照",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "9AK-0",
+        "expected": "美国 · 21个交易日 · 保留滚动位置与焦点",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "美国 · 21个交易日 · 保留滚动位置与焦点",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "8ZM-0",
+        "expected": "留存历史（原标记：21D）· 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "actual": "留存历史（原标记：21D）· 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。",
+        "surface": "risk_popup_zh",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+        "nodeId": "9AP-0",
+        "expected": "留存历史（原标记：21D）· 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。",
+        "op": "paper-audit-c3-popups-trading-observation-horizon-20261109-v1",
+        "status": "PASS",
+        "actual": "留存历史（原标记：21D）· 300条观测 · 实测1%。与13%模型的匹配关系尚未核验。",
+        "surface": "extra_nodes.json"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10U8-0",
+        "expected": "Assessment unavailable",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "Assessment unavailable",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10U9-0",
+        "expected": "Current entry conditions can’t be verified.",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "Current entry conditions can’t be verified.",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10UC-0",
+        "expected": "Source checks incomplete",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "Source checks incomplete",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10UM-0",
+        "expected": "What is unavailable",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "What is unavailable",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10UP-0",
+        "expected": "Current rank, entry conditions and confidence are unavailable.",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "Current rank, entry conditions and confidence are unavailable.",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10UX-0",
+        "expected": "What needs verification",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "What needs verification",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10VO-0",
+        "expected": "Inspect the source history or read the dated research.",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "Inspect the source history or read the dated research.",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10W9-0",
+        "expected": "How source checks work",
+        "op": "paper-audit-c3-prophet-unavailable-clarity-20261109-v1",
+        "actual": "How source checks work",
+        "surface": "prophet_unavailable",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "7IU-0",
+        "expected": "Activation unavailable",
+        "op": "paper-audit-c3-hub-capability-clarity-20261109-v1",
+        "actual": "Activation unavailable",
+        "surface": "hub_operating_states",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "7IV-0",
+        "expected": "Draft saving unavailable",
+        "op": "paper-audit-c3-hub-capability-clarity-20261109-v1",
+        "actual": "Draft saving unavailable",
+        "surface": "hub_operating_states",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "7IS-0",
+        "expected": "AXON’s source is not connected to alerts.",
+        "op": "paper-audit-c3-hub-capability-clarity-20261109-v1",
+        "actual": "AXON’s source is not connected to alerts.",
+        "surface": "hub_operating_states",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "1B2-0",
+        "expected": "No qualifying lead. Review the published research list.",
+        "op": "paper-audit-c3-hub-capability-clarity-20261109-v1",
+        "actual": "No qualifying lead. Review the published research list.",
+        "surface": "hub_operating_states",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "1B4-0",
+        "expected": "Open research list →",
+        "op": "paper-audit-c3-hub-capability-clarity-20261109-v1",
+        "actual": "Open research list →",
+        "surface": "hub_operating_states",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "75X-0",
+        "expected": "How research is ordered →",
+        "op": "paper-audit-c3-hub-ranking-entry-20261109-v1",
+        "actual": "How research is ordered →",
+        "surface": "hub_us_command",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "47W-0",
+        "expected": "Reuse _comparable_pairs in scripts/build_expectation_surface.py: the same security, metric and raw horizon need equal, known period_end values. Preserve prior_at, latest_at and source identity. Scope the explorer series to the selected fiscal period. If earlier periods are intentionally displayed, break and label each segment by its actual period end; the selected readout and percentage remain within the selected period. New fiscal period, unknown period, first capture and zero prior each withhold an unsupported percentage. Zero prior still contributes to breadth.",
+        "op": "paper-audit-c3-expectations-snapshot-and-period-contract-20261109-v1",
+        "actual": "Reuse _comparable_pairs in scripts/build_expectation_surface.py: the same security, metric and raw horizon need equal, known period_end values. Preserve prior_at, latest_at and source identity. Scope the explorer series to the selected fiscal period. If earlier periods are intentionally displayed, break and label each segment by its actual period end; the selected readout and percentage remain within the selected period. New fiscal period, unknown period, first capture and zero prior each withhold an unsupported percentage. Zero prior still contributes to breadth.",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "Q4-0",
+        "expected": "$228.38 – $243.90",
+        "op": "paper-audit-c3-options-assessment-and-range-correction-20261109-v1",
+        "actual": "$228.38 – $243.90",
+        "surface": "options_volatility",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+        "nodeId": "27-0",
+        "expected": "The receipt records a 230.12 hub quote at 15:40:01Z. Rotation fade is not defined, so the timing question remains inconclusive.",
+        "op": "paper-audit-c3-options-mobile-quote-based-assessment-20261109-v1",
+        "actual": "The receipt records a 230.12 hub quote at 15:40:01Z. Rotation fade is not defined, so the timing question remains inconclusive.",
+        "surface": "options_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FFW-0",
+        "expected": "Both sectors use the same return calculation, time window and benchmark.",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Both sectors use the same return calculation, time window and benchmark.",
+        "surface": "sector_current_desktop",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FS0-0",
+        "expected": "Both sectors use the same return calculation, time window and benchmark.",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Both sectors use the same return calculation, time window and benchmark.",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FJ3-0",
+        "expected": "CYCLE OUTLOOK",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "CYCLE OUTLOOK",
+        "surface": "sector_current_desktop",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FVE-0",
+        "expected": "CYCLE OUTLOOK",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "CYCLE OUTLOOK",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FHD-0",
+        "expected": "Price and cycle differ",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Price and cycle differ",
+        "surface": "sector_current_desktop",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FTI-0",
+        "expected": "Price and cycle differ",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Price and cycle differ",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FKU-0",
+        "expected": "Current stance",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Current stance",
+        "surface": "sector_current_desktop",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FXC-0",
+        "expected": "Current stance",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Current stance",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FVN-0",
+        "expected": "Energy · Watch — don’t chase",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Energy · Watch — don’t chase",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FVR-0",
+        "expected": "Technology · Stand aside",
+        "op": "paper-audit-c3-sector-comparison-plain-language-20261109-v1",
+        "actual": "Technology · Stand aside",
+        "surface": "sector_current_mobile",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "10WB-0",
+        "expected": "Illustrative data · No live assessment",
+        "actual": "Illustrative data · No live assessment",
+        "status": "PASS",
+        "surface": "prophet_unavailable",
+        "op": "paper-audit-c3-prophet-footer-content-placement-20261109-v1"
+      },
+      {
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "1CBT-0",
+        "expected": "Compare → verify. Each evidence action belongs to its own selected candidate occurrence and source generation. Enable it only when that subject’s exact record is available through the existing verification owner. Missing or mismatched identity leaves that subject unavailable; never substitute a same-ticker record or another subject’s detail. Return preserves the ordered comparison and restores focus to the invoking subject control. Opening evidence does not mark it verified. INTC/MSFT in 133D-0 have no exact records or Plan links; both remain unavailable. VBF-0 is NVDA and is not their destination. The p-C / ZE5 uncertain-effect fence and Phase 2A acceptance remain unchanged.",
+        "actual": "Compare → verify. Each evidence action belongs to its own selected candidate occurrence and source generation. Enable it only when that subject’s exact record is available through the existing verification owner. Missing or mismatched identity leaves that subject unavailable; never substitute a same-ticker record or another subject’s detail. Return preserves the ordered comparison and restores focus to the invoking subject control. Opening evidence does not mark it verified. INTC/MSFT in 133D-0 have no exact records or Plan links; both remain unavailable. VBF-0 is NVDA and is not their destination. The p-C / ZE5 uncertain-effect fence and Phase 2A acceptance remain unchanged.",
+        "status": "PASS",
+        "surface": "prophet_compare_contract",
+        "op": "paper-audit-c3-prophet-compare-build-contrast-20261109-v1"
+      },
+      {
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "26E-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "surface": "244-1",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "294-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "surface": "26W-1",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "nodeId": "2BP-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "surface": "2AP-1",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "2U8-0",
+        "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "surface": "2S4-0",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "2WI-0",
+        "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "surface": "2UE-0",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANJ-0",
+        "expected": "9 NOV 2026 · IMPLEMENTATION COMPANION",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "9 NOV 2026 · IMPLEMENTATION COMPANION",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANK-0",
+        "expected": "Build the improved journeys.",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "Build the improved journeys.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANL-0",
+        "expected": "Ten Paper files. Twelve scoped build slices. Start with the source-backed behavior and reuse each product’s existing owners.",
+        "op": "paper-audit-20261109-builder-companion-header-v1",
+        "actual": "Ten Paper files. Twelve scoped build slices. Start with the source-backed behavior and reuse each product’s existing owners.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANO-0",
+        "expected": "01",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "01",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANQ-0",
+        "expected": "Correct the meaning",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "Correct the meaning",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANR-0",
+        "expected": "F01–F03 · Comparable periods, atomic loading, reduced motion and selected-expiry evidence.",
+        "op": "paper-audit-20261109-builder-companion-row01-v1",
+        "actual": "F01–F03 · Comparable periods, atomic loading, reduced motion and selected-expiry evidence.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANU-0",
+        "expected": "02",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "02",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANW-0",
+        "expected": "Keep the journey coherent",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "Keep the journey coherent",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "ANX-0",
+        "expected": "F04–F08 + F11 · Touch review, Risk horizons, Sector and Hub return, subject-specific evidence and Guide navigation.",
+        "op": "paper-audit-20261109-builder-companion-row02-v1",
+        "actual": "F04–F08 + F11 · Touch review, Risk horizons, Sector and Hub return, subject-specific evidence and Guide navigation.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO0-0",
+        "expected": "03",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "03",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO2-0",
+        "expected": "Confirm effects and time",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "Confirm effects and time",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO3-0",
+        "expected": "F09–F10 + F12 · Save and re-arm use their current owners. Keep the clock that governs the verdict or action visible.",
+        "op": "paper-audit-20261109-builder-companion-row03-v1",
+        "actual": "F09–F10 + F12 · Save and re-arm use their current owners. Keep the clock that governs the verdict or action visible.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO6-0",
+        "expected": "Implementation plan and proof",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "Implementation plan and proof",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO7-0",
+        "expected": "RESULTS · BUILD_PLAN · SOURCE_RULINGS · exact Paper node and capture records",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "RESULTS · BUILD_PLAN · SOURCE_RULINGS · exact Paper node and capture records",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AO8-0",
+        "expected": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+        "op": "paper-audit-20261109-builder-companion-source-v1",
+        "actual": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "AOA-0",
+        "expected": "Design verification is separate from product implementation. Existing source, navigation, state and effect owners remain authoritative. F01/F02 provenance and acceptance holds remain in force; this companion does not freeze or promote the shared system.",
+        "op": "paper-audit-20261109-builder-companion-scope-v1",
+        "actual": "Design verification is separate from product implementation. Existing source, navigation, state and effect owners remain authoritative. F01/F02 provenance and acceptance holds remain in force; this companion does not freeze or promote the shared system.",
+        "surface": "shared_build_companion",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "15A-0",
+        "expected": "Each source keeps its own observation time. No qualifying spot → percent only.",
+        "op": "paper-audit-20261109-options-two-clock-caption-v1",
+        "actual": "Each source keeps its own observation time. No qualifying spot → percent only.",
+        "surface": "options_help",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "18D-0",
+        "expected": "Clock dependency illustration",
+        "op": "paper-audit-20261109-options-two-clock-build-v1",
+        "actual": "Clock dependency illustration",
+        "surface": "options_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+        "nodeId": "18E-0",
+        "expected": "Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.",
+        "op": "paper-audit-20261109-options-two-clock-build-v1",
+        "actual": "Help 17X-0 explains expectedMoveFromIv; it adds no calculation or interaction. Reuse terminal/lib/volTenorComparison.ts:134 at d7a83d3348a4fcb762d93221f19c4e94cbe4505e. The percent estimate uses a trading-day horizon/252; a price range additionally requires a finite positive spot with its own non-empty observation time. Keep IV and spot in the admitted source context. Preserve the selected view and its existing return through 150-0. Provide a figure name that states both inputs and the percent-only fallback; this static diagram needs no animation.",
+        "surface": "options_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4CZ-0",
+        "expected": "Run the transition study",
+        "actual": "Run the transition study",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4D0-0",
+        "expected": "In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.",
+        "actual": "In evidence-motion-reference.html, open Reference controls → Expectations. Switch measure or refresh; then deliver the latest, earlier or failed response. The study is in research/design_candidates/paper_audit_20261108/ under PR #10872.",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
+      },
+      {
+        "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+        "nodeId": "4D1-0",
+        "expected": "14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.",
+        "actual": "14 source/DOM checks pass. EN/ZH, manual and system reduced motion, and A→B→A are exercised. Browser layout and rendered animation remain unverified. This disposable study does not replace the existing product loader.",
+        "op": "paper-audit-20261109-expectations-runnable-study-v1",
+        "surface": "expectations_build",
+        "status": "PASS"
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "key": "expectations_desktop_dark",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "6-0",
+      "chars": 153634,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "expectations_desktop_light",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "WI-0",
+      "chars": 154528,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "expectations_desktop_zh",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "1SD-0",
+      "chars": 153903,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "expectations_mobile_en",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "2NZ-0",
+      "chars": 94979,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "expectations_mobile_zh",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "392-0",
+      "chars": 95213,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "expectations_build",
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "3UR-0",
+      "chars": 128459,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "sector_retained_catalogue",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeId": "8M0-0",
+      "chars": 104012,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "sector_current_desktop",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeId": "FB7-0",
+      "chars": 85214,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "sector_current_mobile",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeId": "FO0-0",
+      "chars": 75112,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "sector_build_mapping",
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeId": "GYT-0",
+      "chars": 7201,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "news_touch_rail",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "nodeId": "27L-0",
+      "chars": 41909,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "news_original_controls",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "nodeId": "3H7-0",
+      "chars": 17506,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_flow",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "ET-0",
+      "chars": 53465,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_volatility",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "KT-0",
+      "chars": 73311,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_watch",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "TP-0",
+      "chars": 46349,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_build",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "16B-0",
+      "chars": 37981,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_help",
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "nodeId": "16E-0",
+      "chars": 17547,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "options_mobile",
+      "fileId": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "nodeId": "1-0",
+      "chars": 24697,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "risk_popup_en",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8SH-0",
+      "chars": 19587,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "risk_popup_zh",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8ZF-0",
+      "chars": 17929,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "risk_horizon_build",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "AZL-0",
+      "chars": 2043,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "prophet_unavailable",
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "nodeId": "10TD-0",
+      "chars": 23591,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "prophet_comparison",
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "nodeId": "133D-0",
+      "chars": 30798,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "prophet_compare_contract",
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "nodeId": "13L8-0",
+      "chars": 21565,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "prophet_unavailable_contract",
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "nodeId": "1CBL-0",
+      "chars": 1920,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "hub_operating_states",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "nodeId": "1AP-0",
+      "chars": 25945,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "hub_ordering_explanation",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "nodeId": "854-0",
+      "chars": 11179,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "hub_source_contract",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "nodeId": "83A-0",
+      "chars": 3913,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "hub_us_command",
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "nodeId": "7FJ-0",
+      "chars": 105049,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_search_desktop",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "244-1",
+      "chars": 12390,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_search_mobile",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "26W-1",
+      "chars": 9867,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_recovery_mobile",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "2AP-1",
+      "chars": 9187,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "pattern_material_dark",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "2S4-0",
+      "chars": 23168,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "pattern_material_light",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "2UE-0",
+      "chars": 23168,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "shared_build_companion",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "ANH-0",
+      "chars": 6687,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "shared_build_directory",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "9ZS-0",
+      "chars": 61383,
+      "state": "OBSERVED"
+    }
+  ],
+  "supplemental_nodes": [
+    {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "R6-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": true
+    },
+    {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "V2-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": true
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8Q7-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8QB-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8RV-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "980-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "997-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "993-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "8YV-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "99Y-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "9B5-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "9B1-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "9B9-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "9AK-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    },
+    {
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "nodeId": "9AP-0",
+      "state": "OBSERVED",
+      "hidden_jsx_omitted": false
+    }
+  ],
+  "hidden_locale_reads": [
+    {
+      "id": "R6-0",
+      "name": "预期数据暂不可用。仍可查看覆盖范围与方法…",
+      "component": "Text",
+      "width": null,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null,
+      "isVisible": false,
+      "isLocked": false,
+      "parentId": "R4-0",
+      "childIds": [],
+      "childCount": 0,
+      "artboardId": "3UR-0",
+      "textContent": "预期数据暂不可用。仍可查看覆盖范围与方法。"
+    },
+    {
+      "id": "V2-0",
+      "name": "无法加载 MU 的预期数据。请重试或选择…",
+      "component": "Text",
+      "width": null,
+      "height": null,
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null,
+      "isVisible": false,
+      "isLocked": false,
+      "parentId": "V0-0",
+      "childIds": [],
+      "childCount": 0,
+      "artboardId": "3UR-0",
+      "textContent": "无法加载 MU 的预期数据。请重试或选择其他证券。"
+    }
+  ],
+  "news_styles": [
+    {
+      "old": "27Q-0",
+      "new": "3HB-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "28R-0",
+      "new": "3HE-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "28T-0",
+      "new": "3HM-0",
+      "found": true,
+      "minHeight44": false
+    },
+    {
+      "old": "2B3-0",
+      "new": "3IS-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2BU-0",
+      "new": "3IV-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2CZ-0",
+      "new": "3IY-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "29D-0",
+      "new": "3JD-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "29Y-0",
+      "new": "3JR-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2BI-0",
+      "new": "3KI-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2CQ-0",
+      "new": "3KX-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2AQ-0",
+      "new": "3MG-0",
+      "found": true,
+      "minHeight44": true
+    }
+  ],
+  "numeric_check": {
+    "method": "one-off independent arithmetic using the inspected source conventions; not an executed production component",
+    "tenor21d": 30.480157479908137,
+    "expected_move_percent": 3.28731327552282,
+    "unrounded_range": [
+      228.3773384311804,
+      243.90266156881958
+    ],
+    "formatted_range": [
+      "228.38",
+      "243.90"
+    ]
+  },
+  "preservation_readback_commits": [
+    "81a03478b2787fab20723316512370de6f62d3da",
+    "be18d26cd2471ac5d27869bf9dc1537a3ec54cee",
+    "69570f33c31168c1c93f19c035591b805ff4bc09",
+    "a11cf1790bd921811a7242464483e27c5fa88510",
+    "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
+    "bbfe49afa54e33f0e842c2ff45f15d1b54adec19"
+  ],
+  "reconciliation": {
+    "binding": [
+      {
+        "status": "fulfilled",
+        "value": {
+          "key": "binding",
+          "value": {
+            "state": "CONNECTED",
+            "id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+            "ready": true,
+            "snapshot": "1d9e7a4139acfdffea26bbb1479efa7ffcb2395a0278c7d3d0242c89460b2f76"
+          }
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "key": "news_more_original",
+          "value": "(\n    <div id=\"2AQ-0\" style={{ boxSizing: 'border-box', display: 'inline-block', fontSize: '12px', fontSynthesis: 'none', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflowWrap: 'anywhere', paddingTop: '8px', WebkitFontSmoothing: 'antialiased' }}>\n      <div id=\"2AR-0\" style={{ boxSizing: 'border-box', color: 'var(--brand-2)', display: 'inline-block', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '12px', fontWeight: 600, lineHeight: '17px', textDecoration: 'underline 1px', textUnderlineOffset: '3px' }}>\n        Show 1 more report\n      </div>\n    </div>\n  )"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "key": "news_owned_archive",
+          "value": {
+            "children": [
+              {
+                "id": "3H8-0",
+                "name": "Original compact con…",
+                "component": "Text",
+                "childCount": 0,
+                "worldX": null,
+                "worldY": null,
+                "x": null,
+                "y": null
+              },
+              {
+                "id": "3H9-0",
+                "name": "Historical component…",
+                "component": "Text",
+                "childCount": 0,
+                "worldX": null,
+                "worldY": null,
+                "x": null,
+                "y": null
+              },
+              {
+                "id": "27Q-0",
+                "name": "View select",
+                "component": "Frame",
+                "childCount": 2,
+                "worldX": 8893,
+                "worldY": 174,
+                "x": 8892,
+                "y": 173
+              },
+              {
+                "id": "28R-0",
+                "name": "Frame",
+                "component": "Frame",
+                "childCount": 1,
+                "worldX": 8922,
+                "worldY": 261,
+                "x": 8921,
+                "y": 260
+              },
+              {
+                "id": "28T-0",
+                "name": "Filter chips",
+                "component": "Frame",
+                "childCount": 4,
+                "worldX": 8741,
+                "worldY": 297,
+                "x": 8740,
+                "y": 296
+              },
+              {
+                "id": "2B3-0",
+                "name": "Frame",
+                "component": "Frame",
+                "childCount": 1,
+                "worldX": 8741,
+                "worldY": 916,
+                "x": 8740,
+                "y": 915
+              },
+              {
+                "id": "2BU-0",
+                "name": "Frame",
+                "component": "Frame",
+                "childCount": 1,
+                "worldX": 8741,
+                "worldY": 1206,
+                "x": 8740,
+                "y": 1205
+              },
+              {
+                "id": "2CZ-0",
+                "name": "Frame",
+                "component": "Frame",
+                "childCount": 1,
+                "worldX": 8741,
+                "worldY": 1588,
+                "x": 8740,
+                "y": 1587
+              },
+              {
+                "id": "29D-0",
+                "name": "Ladder (button sentence)",
+                "component": "Frame",
+                "childCount": 7,
+                "worldX": 8741,
+                "worldY": 449,
+                "x": 8740,
+                "y": 448
+              },
+              {
+                "id": "29Y-0",
+                "name": "Ladder (button sentence, open)",
+                "component": "Frame",
+                "childCount": 7,
+                "worldX": 8741,
+                "worldY": 603,
+                "x": 8740,
+                "y": 602
+              },
+              {
+                "id": "2BI-0",
+                "name": "Ladder (wraps at a step boundary)",
+                "component": "Frame",
+                "childCount": 7,
+                "worldX": 8741,
+                "worldY": 1113,
+                "x": 8740,
+                "y": 1112
+              },
+              {
+                "id": "2CQ-0",
+                "name": "Ladder (button sentence)",
+                "component": "Frame",
+                "childCount": 7,
+                "worldX": 8741,
+                "worldY": 1535,
+                "x": 8740,
+                "y": 1534
+              }
+            ],
+            "count": 12
+          }
+        }
+      }
+    ],
+    "options": [
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "X7-0",
+          "requestedApplied": false,
+          "current": "Did the firing support the saved thesis?"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "XF-0",
+          "requestedApplied": false,
+          "current": "Price reached the wall two sessions after the relative trend turned. The exposure context saved in revision 1 is unchanged; the 230 wall still holds the largest call open interest for 24 Oct."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "W3-0",
+          "requestedApplied": false,
+          "current": "Above threshold. Re-arming will fire at the next evaluation."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "160-0",
+          "requestedApplied": false,
+          "current": "The watch checks a quote every five minutes. It fires once and disarms. Re-arming is manual; if the current quote already meets the threshold, it will fire at the next evaluation."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "HP-0",
+          "requestedApplied": false,
+          "current": "POSSIBLE LEG"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "GV-0",
+          "requestedApplied": false,
+          "current": "6 of 23 shown · newest first · sort stays fixed while the tape updates"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "PQ-0",
+          "requestedApplied": false,
+          "current": "Variance-linear interpolation · No extrapolation beyond 2D–90D."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "154-0",
+          "requestedApplied": false,
+          "current": "Interpolation is variance-linear in calendar days between the nearest supplied expiries. Interpolated values are labelled. Nothing is extrapolated beyond 2D–90D."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "KY-0",
+          "requestedApplied": false,
+          "current": "7 expiries supplied · nightly EOD"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "KW-0",
+          "requestedApplied": false,
+          "current": "Vol as of 20 Oct 2026 (nightly) · spot 10:40:12 ET · source: options hub vol v1"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "LK-0",
+          "requestedApplied": false,
+          "current": "20 Oct nightly"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "M7-0",
+          "requestedApplied": false,
+          "current": "7 supplied · 1 interpolated for this read · nightly EOD 20 Oct"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "PV-0",
+          "requestedApplied": false,
+          "current": "One nightly observation · No trade recommendation."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "QG-0",
+          "requestedApplied": false,
+          "current": "20 Oct nightly EOD"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "R2-0",
+          "requestedApplied": false,
+          "current": "Skew · 30D · strike space"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "R4-0",
+          "requestedApplied": false,
+          "current": "Strike as % of reference price · Delta unavailable."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RG-0",
+          "requestedApplied": false,
+          "current": "38.2 %"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RI-0",
+          "requestedApplied": false,
+          "current": "supplied"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RN-0",
+          "requestedApplied": false,
+          "current": "32.4 %"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RP-0",
+          "requestedApplied": false,
+          "current": "interpolated · 90 % → ATM"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RU-0",
+          "requestedApplied": false,
+          "current": "29.4 %"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "RW-0",
+          "requestedApplied": false,
+          "current": "supplied · 30D term point"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "S1-0",
+          "requestedApplied": false,
+          "current": "—"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "S3-0",
+          "requestedApplied": false,
+          "current": "Unavailable · Missing upper endpoint"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "SC-0",
+          "requestedApplied": false,
+          "current": "90% strike IV is 8.8 vol pts above ATM. Unsupported points stay blank."
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "SM-0",
+          "requestedApplied": false,
+          "current": "Earnings · AAPL · Thu 30 Oct 2026"
+        }
+      },
+      {
+        "status": "fulfilled",
+        "value": {
+          "nodeId": "SU-0",
+          "requestedApplied": false,
+          "current": "FOMC decision · Wed 29 Oct 2026"
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "Static Paper and source evidence only.",
+    "News minimum styles are not actual runtime hit-testing proof.",
+    "No live feed, current event-calendar, model qualification, browser interaction, accessibility tree, save/watch effect or production acceptance.",
+    "Prior local file preview was security-policy denied and not replayed through another scheme/carrier.",
+    "Post snapshots include pre-existing/concurrent content; only the effect ledger attributes this session's writes."
+  ],
+  "visual_captures": [
+    {
+      "key": "expectation-rollover",
+      "path": "proof/expectation-rollover.jpg",
+      "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "paper_node_id": "499-0"
+    },
+    {
+      "key": "expectation-motion",
+      "path": "proof/expectation-motion.jpg",
+      "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "paper_node_id": "3YE-0"
+    },
+    {
+      "key": "expectation-mobile",
+      "path": "proof/expectation-mobile.jpg",
+      "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "paper_node_id": "2NZ-0"
+    },
+    {
+      "key": "expectation-desktop-readout",
+      "path": "proof/expectation-desktop-readout.jpg",
+      "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "paper_node_id": "4B2-0"
+    },
+    {
+      "key": "expectation-light-readout",
+      "path": "proof/expectation-light-readout.jpg",
+      "paper_file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "paper_node_id": "4BZ-0"
+    },
+    {
+      "key": "sector-historical",
+      "path": "proof/sector-historical.jpg",
+      "paper_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "paper_node_id": "8W4-0"
+    },
+    {
+      "key": "sector-current-mapping",
+      "path": "proof/sector-current-mapping.jpg",
+      "paper_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "paper_node_id": "GYT-0"
+    },
+    {
+      "key": "sector-desktop-stance",
+      "path": "proof/sector-desktop-stance.jpg",
+      "paper_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "paper_node_id": "FKT-0"
+    },
+    {
+      "key": "sector-mobile-comparison",
+      "path": "proof/sector-mobile-comparison.jpg",
+      "paper_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "paper_node_id": "FO0-0"
+    },
+    {
+      "key": "news-touch-rail",
+      "path": "proof/news-touch-rail.jpg",
+      "paper_file_id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "paper_node_id": "27L-0"
+    },
+    {
+      "key": "options-mobile-watch",
+      "path": "proof/options-mobile-watch.jpg",
+      "paper_file_id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "paper_node_id": "1-0"
+    },
+    {
+      "key": "options-vol-source",
+      "path": "proof/options-vol-source.jpg",
+      "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "paper_node_id": "KT-0"
+    },
+    {
+      "key": "options-watch-assessment",
+      "path": "proof/options-watch-assessment.jpg",
+      "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "paper_node_id": "TP-0"
+    },
+    {
+      "key": "options-flow-context",
+      "path": "proof/options-flow-context.jpg",
+      "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "paper_node_id": "ET-0"
+    },
+    {
+      "key": "risk-popup-en",
+      "path": "proof/risk-popup-en.jpg",
+      "paper_file_id": "01M38EVF74SJWG1GANN5VP380Z",
+      "paper_node_id": "8SH-0"
+    },
+    {
+      "key": "risk-popup-zh",
+      "path": "proof/risk-popup-zh.jpg",
+      "paper_file_id": "01M38EVF74SJWG1GANN5VP380Z",
+      "paper_node_id": "8ZF-0"
+    },
+    {
+      "key": "prophet-assessment-unavailable",
+      "path": "proof/prophet-assessment-unavailable.jpg",
+      "paper_file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "paper_node_id": "10TD-0"
+    },
+    {
+      "key": "prophet-comparison-verification",
+      "path": "proof/prophet-comparison-verification.jpg",
+      "paper_file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "paper_node_id": "13B3-0"
+    },
+    {
+      "key": "hub-honest-operating-states",
+      "path": "proof/hub-honest-operating-states.jpg",
+      "paper_file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "paper_node_id": "1AP-0"
+    },
+    {
+      "key": "hub-ordering-explanation",
+      "path": "proof/hub-ordering-explanation.jpg",
+      "paper_file_id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "paper_node_id": "854-0"
+    },
+    {
+      "key": "prophet-verification-contract",
+      "path": "proof/prophet-verification-contract.jpg",
+      "paper_file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "paper_node_id": "1CBT-0"
+    },
+    {
+      "key": "guide_search_desktop",
+      "path": "proof/guide_search_desktop.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "244-1"
+    },
+    {
+      "key": "guide_search_mobile",
+      "path": "proof/guide_search_mobile.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "26W-1"
+    },
+    {
+      "key": "guide_recovery_mobile",
+      "path": "proof/guide_recovery_mobile.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "2AP-1"
+    },
+    {
+      "key": "pattern_material_dark",
+      "path": "proof/pattern_material_dark.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "2S4-0"
+    },
+    {
+      "key": "pattern_material_light",
+      "path": "proof/pattern_material_light.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "2UE-0"
+    },
+    {
+      "key": "options-clock-explanation",
+      "path": "proof/options-clock-explanation.jpg",
+      "paper_file_id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "paper_node_id": "14Z-0"
+    },
+    {
+      "key": "shared-build-companion",
+      "path": "proof/shared-build-companion.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "ANH-0"
+    }
+  ],
+  "local_artifact_check": {
+    "json_files_valid": 13,
+    "new_discovery_frontmatter_contracts": 3,
+    "method": "Current local continuation JSON files parsed; three discovery frontmatter shapes were checked earlier and the repaired canonical repository fence passed. Hosted final-head CI and browser proof remain separate."
+  },
+  "ci_repair": {
+    "original_head": "790a71c3460c04863b9bc3b193d24d938fdd44ab",
+    "failure": "Two discovery provenance fields lacked a recognized source token.",
+    "repair_head": "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
+    "repair": "Real pinned source locations added; two records and manifest passed exact readback.",
+    "observed_checks": {
+      "fence_pack": "success",
+      "self_mod_fence": "success",
+      "capability_broker": "success",
+      "grader_manifest": "success"
+    },
+    "release": "Other required checks remain governed by the exact current PR head; this is not a merge receipt."
+  },
+  "clock_diagram": {
+    "nodeId": "17X-0",
+    "sourceFunction": "terminal/lib/volTenorComparison.ts:134",
+    "pin": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e",
+    "labels": [
+      {
+        "label": "IV + trading days",
+        "present": true
+      },
+      {
+        "label": "IV observation time",
+        "present": true
+      },
+      {
+        "label": "Move %",
+        "present": true
+      },
+      {
+        "label": "Estimate",
+        "present": true
+      },
+      {
+        "label": "Spot price",
+        "present": true
+      },
+      {
+        "label": "Spot observation time",
+        "present": true
+      },
+      {
+        "label": "Price range",
+        "present": true
+      },
+      {
+        "label": "Dollars",
+        "present": true
+      }
+    ],
+    "ariaLabelPresent": true,
+    "order": true,
+    "proof": "Static Paper screenshot inspected; no browser or calculation execution inferred."
+  },
+  "builder_companion": {
+    "fileId": "01M312VSDSZFVT45674GDVJVZN",
+    "nodeId": "ANH-0",
+    "parentId": "9ZS-0",
+    "firstChild": true,
+    "originalSibling": "9ZT-0",
+    "source": "https://github.com/mastermindx-market-intelligence/macro/pull/10872",
+    "qualified": "Static source navigation, not runtime or programme acceptance."
+  },
+  "motion_reference": {
+    "path": "MOTION_REFERENCE_VERIFICATION.json",
+    "checks": 14,
+    "result": "PASS",
+    "preserved_baseline_checks": 9,
+    "new_behavior_checks": 5,
+    "limitations": "Source/DOM harness; browser layout, accessibility tree, rendered animation and production integration remain unverified."
+  },
+  "guide_source_map": {
+    "comparison_pin": "b5674d8ef898e503d6164922654f5ff89be9981c",
+    "template_current_main_refresh": "0997d488f73ebe76773ce4d534fa97749a0c1674",
+    "template_unchanged_at_refresh": true,
+    "committed_reference_inline_script_matches_template": true,
+    "existing_owners": [
+      "templates/reference.html.j2",
+      "scripts/build_market_reference.py",
+      "templates/shared_shell_bridge.js"
+    ],
+    "concrete_gaps": [
+      "Canonical selected lesson and its parent group can remain hidden by active filters.",
+      "Result and related-link openers lack stable IDs for existing shell focusId."
+    ],
+    "proposed_not_implemented": [
+      "Exact query/filter/results/scroll/opener return after document recreation.",
+      "Dedicated direct-entry fallback.",
+      "Alias-to-canonical route resolution and dominant exact-match ranking."
+    ],
+    "paper_contract": "D25 44J-0 inspected and preserved; R20 remains a proposed integration contract.",
+    "production_source_changed": false,
+    "ruling": "SOURCE_RULINGS.md R13",
+    "builder_slice": "BUILD_PLAN.md F11"
+  }
+}

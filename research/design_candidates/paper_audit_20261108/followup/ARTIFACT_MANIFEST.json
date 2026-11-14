@@ -1,0 +1,563 @@
+{
+  "scope": "Final publication delta; initial preserved inputs also remain in their earlier readback-verified commits.",
+  "artifacts": [
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/SOURCE_RULINGS.md",
+      "bytes": 15366,
+      "git_blob_sha": "799a62b35324a962dc781751762080aa3042dc51",
+      "sha256": "06f7f556ec97b36127422d64e3711858f52c925ad4baf7b5a0466e14bf142ce3"
+    },
+    {
+      "path": "agentos/discoveries/DSC-EXPECTATIONS-EXPLORER-PERIOD-BINDING-GAP-20261109.md",
+      "bytes": 2916,
+      "git_blob_sha": "73be2a9e4b1fdac824fb0bc6e50ccbe027d15173",
+      "sha256": "33a3efed45b0f1f7cce0b447efca1f08d2409e8288e8437d6998bb6b267e6101"
+    },
+    {
+      "path": "agentos/discoveries/DSC-OPTIONS-VOLATILITY-OWNER-AND-SAVE-BOUNDARY-20261109.md",
+      "bytes": 2932,
+      "git_blob_sha": "5401fbbc88b79a09dbba018b07e1c2ac34c911e1",
+      "sha256": "f029cf7e770025f58eefbdea206510bbe9530e2abc338628dd4550905157e06c"
+    },
+    {
+      "path": "agentos/discoveries/DSC-HUB-EDGE-FALLBACK-NEEDS-COMPONENT-COVERAGE-20261109.md",
+      "bytes": 2335,
+      "git_blob_sha": "289407167c5e74e0ee5b9cecbb48688dc73e9cc7",
+      "sha256": "c0c04b958d0a7a3a9de786b2c66942daea3b588d5983de17e54df81a1e88f50e"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/RESULTS.md",
+      "bytes": 18322,
+      "sha256": "27fbff362cc7cc1b37e2813143bd96549cae82961a961541acae4365475cdb1b",
+      "git_blob_sha": "366c906b36bcef00aadae1e0055de7f9853436ee"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/BUILD_PLAN.md",
+      "bytes": 24526,
+      "sha256": "a3881659a54808ab1175076b50b629bb12653bcf01ee8a03f91c8f63ed5a0f26",
+      "git_blob_sha": "a6e4bd6c28dfb5500dfaf84c23c56c4a2e05faab"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/EFFECTS_CURRENT.json",
+      "bytes": 341398,
+      "sha256": "bfa319e3c42fc06c5fa4195f907e1768881e7a2cce3f9ea1faaa22a3f5bb7d25",
+      "git_blob_sha": "a9be1a537d9a069789d0178155c31b6a2658d812"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/NODE_MIGRATION.json",
+      "bytes": 5192,
+      "sha256": "d3a5efe626f58a10c09c9812d58eb1dd88eab1db359727cba36521b33a0b0e79",
+      "git_blob_sha": "3f2a19447e0efb063491eed30123e26cb1489c5d"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/VERIFICATION.json",
+      "bytes": 92886,
+      "sha256": "7a2bf142c756553b47d4e12f3d09ba99db00dea2240c82c83450aa2b25b95b07",
+      "git_blob_sha": "e77b107714028879e474ff6591e7257d119176ef"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/CONTINUITY.json",
+      "bytes": 3148,
+      "sha256": "5fec0c83966cbde858cc5ba2db17aaf5e579d6e9986ff3493de9685abe46d679",
+      "git_blob_sha": "2f7d5a1ceb7cc5a415e811395116c4ad518dfa04"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/extra_nodes.json",
+      "bytes": 5575,
+      "git_blob_sha": "033df42aae787fa56c2badd1bbdec45d436d01b6",
+      "sha256": "5661d47bb2a118b113b22d26c6a96071f578059af3b3623a5e088a2f59569ad2"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_desktop_dark.jsx",
+      "bytes": 153671,
+      "git_blob_sha": "4fa4958a3aec7823309f999f0944198632981810",
+      "sha256": "37cb9faba9a67e26ae3f0b95d2339edba06f95816c1e1db7d1938d91399e5396"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_desktop_light.jsx",
+      "bytes": 154565,
+      "git_blob_sha": "d2b9c8c6e64335397e997b1d4cc0aee0b57a8419",
+      "sha256": "d3a060ded38fb5d29eb3273c87eb43cf8d5a65926ce16e343811b210c8a8610e"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_desktop_zh.jsx",
+      "bytes": 155034,
+      "git_blob_sha": "da21fb849060425b0745c7357c67dc69d6b21183",
+      "sha256": "de9c0899ce9e6f7795c4dc791e4089ab535498648d0eb4a836a5e6d159c86ff0"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_mobile_en.jsx",
+      "bytes": 95018,
+      "git_blob_sha": "cbb99187c478f3138dd8a456d1bfa965d67001e9",
+      "sha256": "cfd387a58902fac59ef23ead868e5faf6fef19b734558b95fde0abe2e5c24da2"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_mobile_zh.jsx",
+      "bytes": 96202,
+      "git_blob_sha": "6cadbf299fb3486e3b44af9fe86cb10a33eebd41",
+      "sha256": "4abc96a6587e71490161d5143077c2ee83df38feebb97b3c9ea30d277ce24491"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/expectations_build.jsx",
+      "bytes": 128722,
+      "sha256": "cba52aa5104ee41f856082d9ab7be3b0aa90fc4d882efd021f74a57a694800c5",
+      "git_blob_sha": "a2caa8f9169ec9294815c81e7714e2576eaf5a35"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/sector_retained_catalogue.jsx",
+      "bytes": 104159,
+      "git_blob_sha": "07c117216b73058d0b2cbc6719c1d57c5a523d4f",
+      "sha256": "3ced3a575eff6828576c6f097dfb792ba68fa66a948002b79b8ca0e86c9756ec"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/sector_current_desktop.jsx",
+      "bytes": 85276,
+      "git_blob_sha": "cf6685c438ba63aeca9583ef50870ae990e4cc95",
+      "sha256": "318dc04befe3bde37d3c5ea8f411459049755bbbfbb201eb8549b1887b5b7248"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/sector_current_mobile.jsx",
+      "bytes": 75177,
+      "git_blob_sha": "b9ae9ee493003c0fb8596c106ff09523a3d84757",
+      "sha256": "da67c3d96a08cb9b9b2118d9b6d5b9fd9cb37e2b7a4c53633dee2ea4841a6864"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/sector_build_mapping.jsx",
+      "bytes": 7213,
+      "git_blob_sha": "4df8f5d82d240504285a17a21ea0605976ff5525",
+      "sha256": "a0d41af54e62ffafb142419f78e34a5fd002c8901651dfb3d926ac9eb459494f"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/news_touch_rail.jsx",
+      "bytes": 41941,
+      "git_blob_sha": "e4895cf1da1d1fdf8622f33b0e20f456660ac6a9",
+      "sha256": "96935dcf1aa2716bea5193c512e24288aa578182f79ef18764602d35a8cf11d5"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/news_original_controls.jsx",
+      "bytes": 17532,
+      "git_blob_sha": "1d0e075d7576969ace67f8c0ca32095d2d8eecca",
+      "sha256": "1b97e114cc8a855d430ba5219af9c434b9ea0f91bb70fcc7ad739613aa492d8a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_flow.jsx",
+      "bytes": 53544,
+      "git_blob_sha": "4cd64f284836d8d216060edbb22c592b7433e48b",
+      "sha256": "cdb4e08d7455ea8feb42db135d84de9fb85a7b37c111ce5cc4ef4ac1c026f487"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_volatility.jsx",
+      "bytes": 73388,
+      "git_blob_sha": "55bdc975a281a5cc3eb44e40aad0c6ca0caed9cc",
+      "sha256": "ef7c2652dc710c8b967f8df203d686e0773b15f13614d36e9d930beca15ce49e"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_watch.jsx",
+      "bytes": 46423,
+      "git_blob_sha": "30144aaef046b1a58efa0659b77a038ca0297938",
+      "sha256": "19c47f5808d864824ad1c131aa31e5d9113d8c8b4a7977ac7a6e700b3d74de0c"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_build.jsx",
+      "bytes": 38022,
+      "git_blob_sha": "0d87313aad6e076ed73769a64ee32afcc989e4fa",
+      "sha256": "f6b5877e2558a97aa60ab312c32bfe3c1d4ef4dfc078eaff5bd482bd3f038ae1"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_help.jsx",
+      "bytes": 17569,
+      "git_blob_sha": "dc29ad3beb6c3ad8d0852b6bada4ae582268897b",
+      "sha256": "6922cb5ae28773216fc4f3694fe9e17fd312a718af0e6157decc72472ded7a1b"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/options_mobile.jsx",
+      "bytes": 24727,
+      "git_blob_sha": "409ea0b7ad46876cefe5318dc86d0b6128d14cb5",
+      "sha256": "7a9b0cbc6e9b6895a6ba59c2406cac06b667c206bd7ee77f3648c93ec557664f"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/risk_popup_en.jsx",
+      "bytes": 19604,
+      "git_blob_sha": "02ec7d4f0a470708f314bdf8d21d14345f4952bf",
+      "sha256": "64e5ac61746c89953cd1b9fe450cd255da9bc4ca05789c9f9714314150bc2ca8"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/risk_popup_zh.jsx",
+      "bytes": 18698,
+      "git_blob_sha": "902d95f40f877cab68e85335daab63c00cd26431",
+      "sha256": "619ad5fdedecffb5dc1a12048f30f5997cd60e5093009c2ecdf3c4fb77949a79"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/risk_horizon_build.jsx",
+      "bytes": 2051,
+      "git_blob_sha": "f5cba4c92f7cccea0832dcdadf5b5b4e1b7e5288",
+      "sha256": "64609a93ae95aa031404889ee5485dca1f0fb54962f3847b831cda5468e439a5"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/prophet_unavailable.jsx",
+      "bytes": 23608,
+      "git_blob_sha": "f1804a500d9a815b90cc85f0aa28ca214ebed204",
+      "sha256": "c40156eb3fc26565acae889379bd0ffdd780bef6388337cd5883f970201a8f32"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/prophet_comparison.jsx",
+      "bytes": 30836,
+      "git_blob_sha": "f7481ccf9e7392cbb2d6689a69cc2d898c8eafac",
+      "sha256": "b336a3224c4812060da16eaca241fe14f3bd4b8a9c04a82251d70681197e4a14"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/prophet_compare_contract.jsx",
+      "bytes": 21595,
+      "git_blob_sha": "5afea4cf2b638868f3f1dee6a75089316162770d",
+      "sha256": "e8d614a1ebdeb993ce2e484919083b6bd2925cc2a05e77f468991449cd016028"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/prophet_unavailable_contract.jsx",
+      "bytes": 1928,
+      "git_blob_sha": "989031af379f4854b4e47702ced805f593cf9ae4",
+      "sha256": "c720587ad9c60f22dfdfc5ad317b8f480a3c0d3cf7e37e786bcaa4b62ec95cef"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/hub_operating_states.jsx",
+      "bytes": 25982,
+      "git_blob_sha": "2098e8173b3ed58c6bb286be66608a638bf13049",
+      "sha256": "d793e687aec57977385ca4394807c712bb881944fa7b68b21cb6be3118e4d2af"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/hub_ordering_explanation.jsx",
+      "bytes": 11543,
+      "git_blob_sha": "8c00a00b91ed8e2a1cf7f358132c4b03553891cf",
+      "sha256": "61f964145dcd34177b7990017bd611f538b5413902b13466cb601e193f52cd63"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/hub_source_contract.jsx",
+      "bytes": 3922,
+      "git_blob_sha": "7a5d937b206e7570aaa5b3862d93bb2cf2c0bafa",
+      "sha256": "fbbffe393aebf269bb2e997b77a0c5e3e9da1cd7fbfb68f4cda37bbc0eafb597"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/hub_us_command.jsx",
+      "bytes": 105229,
+      "git_blob_sha": "1ff4e31a2abe2513cd3b7b4e10333495bc806e92",
+      "sha256": "36e59bd9e4c534c1ca59c4545779f84c9281804088f3ab81d754d7f74bdbac5d"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/expectation_light_readout.jsx",
+      "bytes": 5191,
+      "git_blob_sha": "29a23ab0eca648f6be106fd9cd34278b3737c2ae",
+      "sha256": "0d78496aa2b0154ea6ac83cc22dada99f38c36bf40429005fc3bebf9f4754785"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/sector_current_desktop.jsx",
+      "bytes": 86012,
+      "git_blob_sha": "de59142ae024328c0e969faabb058e77f48bb684",
+      "sha256": "cf7517cf5a41cccbf6ac8fd3ba46a2e7ed93dc9686986a988b7adfa3816b2094"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/sector_current_mobile.jsx",
+      "bytes": 77154,
+      "git_blob_sha": "0d2eed02e46d5530adeec73d298a08815bfd2381",
+      "sha256": "55b6469a0b981a2808764d7be5fc082fae88693c6bf7d504c7f586d80342e719"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/prophet_compare.jsx",
+      "bytes": 30332,
+      "git_blob_sha": "e806bbaf806e51130eff46496405ac0a7298ccb6",
+      "sha256": "53c2be21aced626b807d6306e4c75f3a7782a6e238f6bccc5ad2a18a7abb6992"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/prophet_compare_contract.jsx",
+      "bytes": 20557,
+      "git_blob_sha": "544eab21295980bd3a65fdf9bd3e055cb4704120",
+      "sha256": "46b3f6f3d85dfe16b99ec7e3f4d0e8ea2a73a7f9dd531a67adcf701c850633ec"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/FURTHER_CORRECTIONS.md",
+      "bytes": 7990,
+      "git_blob_sha": "c95f8261ea409933d5bcb96768502b64f603f207",
+      "sha256": "ec02a08368dc92cb0a6d30942df209bc0e5be4db36531920a6ec48bc70547081"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/README.md",
+      "bytes": 4376,
+      "sha256": "87daf561dc04cb61fb69e5ae63c3d5eb5e59f57e5226c73460f83730299ea085",
+      "git_blob_sha": "48351235945ba5ce86e42442568c84f43ab1086b"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/README.md",
+      "bytes": 2261,
+      "sha256": "be8196169c4edbc9f8e860e8e0c20eb22faeda401b2be1b42fc14b29ed09237b",
+      "git_blob_sha": "bcc27de2faca7702103f3bc557b4d37b0a7cc786"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/PROOF_MANIFEST.json",
+      "bytes": 12425,
+      "sha256": "bf003bf0fed64789de1aafd603e4eccdc5c843ffa92e34817ffec77401f82c08",
+      "git_blob_sha": "b28bf57d88b805bb3c4bd18dc39cb8ae166c4f80"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-rollover.jpg",
+      "bytes": 74974,
+      "git_blob_sha": "3d695f06126c9759ee12676aa3b7417b7b64b3a9",
+      "sha256": "b4baac0b7adac0abfb24f1a7ef0dc4c03b60eb964a21dca92e31712124627740"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-motion.jpg",
+      "bytes": 85713,
+      "sha256": "c74550d1d397d0c9ead908f964c70aaa1d940b9463331dd3012cb5e5593b6984",
+      "git_blob_sha": "8aca185e861ff5935aa33b2c7b8cf486c1c2781e"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-mobile.jpg",
+      "bytes": 105053,
+      "git_blob_sha": "ff3847b5de55f25e6ce989846d1a82b3abe81ef2",
+      "sha256": "840c48603628fde734b6c6a4a6b817fb78c6e8c311924067a9194a9a9fa1a78f"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-desktop-readout.jpg",
+      "bytes": 9773,
+      "git_blob_sha": "743459a8772c0b733620ac66bc0b88c3b434a703",
+      "sha256": "e0b9fdc699a7fb287b0b838ba0edf36bf7753eeb46d73076a19e89f1135569e9"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/expectation-light-readout.jpg",
+      "bytes": 10513,
+      "git_blob_sha": "99c7a4739efc5d80c1f2739dbf19442d826c1a66",
+      "sha256": "3c0477b83b0ba2f7ecad3c3b5933c22b91f0c74a40f5eada39f981d2003f5934"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/sector-historical.jpg",
+      "bytes": 13857,
+      "git_blob_sha": "43d50f6debbbf436a67fd3b6c3069834d6081872",
+      "sha256": "e1811d2d2b7e4bd523083f86e64c90e021b6e03a894351699cba5c9675338cd8"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/sector-current-mapping.jpg",
+      "bytes": 67779,
+      "git_blob_sha": "e4354e20245b01d368e96d894b2738de5dbd76d4",
+      "sha256": "f77a867eab8f44d6b0461ef9961eb58d2178a81bff26e13db43d88f3b5c1d153"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/sector-desktop-stance.jpg",
+      "bytes": 12181,
+      "git_blob_sha": "55c2de8a37fc523bbf5fec204ab7f14e95c071e4",
+      "sha256": "dcd5ef0ae109d5a119ee8d2c9070ebc8d1ba4d4eb6aeedd7f28f3a4a613a3ed1"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/sector-mobile-comparison.jpg",
+      "bytes": 98352,
+      "git_blob_sha": "7f31d5a3e176e7910e1478dbb14b1eb31bb0e8e2",
+      "sha256": "97066111c96b99ff82133a64ce5a5bfb3728a879086d6f7ef68dc0e337e3b5a0"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/news-touch-rail.jpg",
+      "bytes": 135633,
+      "git_blob_sha": "dc64ea3110ecbcd9646a798610110c814b54f15b",
+      "sha256": "86973b8091c63d143b55e8d76f1c5c12a0ae6afa56e75bab76f37a41fe12299b"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/options-mobile-watch.jpg",
+      "bytes": 119334,
+      "git_blob_sha": "147606a6b11ef1284e7cf8415f8b00a45008546d",
+      "sha256": "693825229281aefed051ec6747adb5410aac5870b4667b4d8766faa245d7fa0a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/options-vol-source.jpg",
+      "bytes": 251840,
+      "git_blob_sha": "e1476f8abd97c374188b0e00cb8844166a574304",
+      "sha256": "087a440b8e2a735c4b2633dca3106bd270b5d0a21a9e4bc6faca357f248ac897"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/options-watch-assessment.jpg",
+      "bytes": 280289,
+      "git_blob_sha": "c955c38e20dcb580355656576ec049f30787ae40",
+      "sha256": "e4f3644b661045d3fc1deeb2256b0aff16fa8a8ff7e134c195e37762e6d1228a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/options-flow-context.jpg",
+      "bytes": 192567,
+      "git_blob_sha": "9f01fbfd3768469adfc71ce6027553a2e2fc3105",
+      "sha256": "75ec1e96802c4d02ce043cec0e0a889fba9e9a7514d2438c4fe9f0e88c0b27d9"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/risk-popup-en.jpg",
+      "bytes": 123753,
+      "git_blob_sha": "b904de90dd086445c8000d705c7097385720945b",
+      "sha256": "5e8b58fe1cb266d8d8395381fbffbbc0affc1ae2a9a515d25a1249e2603e4f65"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/risk-popup-zh.jpg",
+      "bytes": 104063,
+      "git_blob_sha": "2a65a1d819916bedf8ffe47f4d41c4796a081213",
+      "sha256": "55b4f9b890e7510c1e0336f371e60003f90fd9d2bc9d78c53600be4a9a8e0826"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/prophet-assessment-unavailable.jpg",
+      "bytes": 92673,
+      "git_blob_sha": "9362a9baffacb5bede5e88a20381902a08395d16",
+      "sha256": "c6dbf2c3e63169aa4429826387c5c972e6b077efa640dd44d1550f029dffb8b3"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/prophet-comparison-verification.jpg",
+      "bytes": 14972,
+      "git_blob_sha": "e130cd50ec62f9ab04a32f92eb1f0e80ca61134f",
+      "sha256": "5a402b3db2278b132643a113b417c7d22311ab799094c497be5e5b2bfcac7bd2"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/hub-honest-operating-states.jpg",
+      "bytes": 205613,
+      "git_blob_sha": "7839805195cd26c5324f04ea0b426c7f4428a98c",
+      "sha256": "0b0feda709c18ab3b9a52f9cf7f41f3a505275fb85b355e73458ff6f4b26714a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/hub-ordering-explanation.jpg",
+      "bytes": 113537,
+      "git_blob_sha": "2d66019c2ffca1de8bb042072514b6130fe20b20",
+      "sha256": "28cab2cff7c2177e767ed0ab59f3029c3b98075b7ca1aa84b3b5cbac7e9c0d06"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/prophet-verification-contract.jpg",
+      "bytes": 45413,
+      "git_blob_sha": "a6512254f4d32c697c90e76fa55f376e9c7a34b2",
+      "sha256": "6f92953e8a6d958fd6e2c063aa976ce7f43125eae8e22187895c92d8f465727a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/guide_search_desktop.jsx",
+      "bytes": 12395,
+      "git_blob_sha": "5d5093074f844d0e83c172cfb34cc26f61d95293",
+      "sha256": "b6b622b5d72255e487f804ad40736d9b8aa68c1e652196e02431d3ef05e19e77"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/guide_search_desktop.jsx",
+      "bytes": 12396,
+      "git_blob_sha": "ff9e1f6720c9c7bc0cd9b09fe6d7661192efea15",
+      "sha256": "4b75b8a39151113d4035f8ded456872e151abc5f12ca2c231354bc145e97e709"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/guide_search_mobile.jsx",
+      "bytes": 9877,
+      "git_blob_sha": "28204f77f5b8ad6800ecd033bdfe13624e01e98a",
+      "sha256": "14980369c502af6e066def0c6d729ee4ba3589be479d8bdf93c776fe626313a7"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/guide_search_mobile.jsx",
+      "bytes": 9878,
+      "git_blob_sha": "6f90195132f7d03234188a87722f57dcf13c9c9d",
+      "sha256": "bfb5fc0422dafe6c7e79d7db8a97d3deb55aaf1dd3808558665ee552ce4c6403"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/guide_recovery_mobile.jsx",
+      "bytes": 9194,
+      "git_blob_sha": "a2843a57e8572524cdbb648fd03a3f60745f6d94",
+      "sha256": "3990bbfcfba406e071885b0bf807f23f23c6165bbf147bdaf7ab21b545cb0be4"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/guide_recovery_mobile.jsx",
+      "bytes": 9195,
+      "git_blob_sha": "1a4b301bf66ad29855474101087a76469308fd01",
+      "sha256": "6631ca4df60cce89e4c784ebe1e0836fe5625bc4194d951ca2c7b11792c0e976"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/pattern_material_dark.jsx",
+      "bytes": 23159,
+      "git_blob_sha": "9e99982882d664dc41c3708acf9a5a21055b31aa",
+      "sha256": "7bd4bc10703206e1fd72726283a31dd24924b4ecbd6509cda6ac6a4ada8ffc9d"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/pattern_material_dark.jsx",
+      "bytes": 23187,
+      "git_blob_sha": "6d2251127a828ac7b7f6e7d6e79a8f25ca67cd4a",
+      "sha256": "cc1e9b1ce6b5f472f7f9a10ee4b6306ff02174b7354a8366df6ca35e73bbb5e3"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/pattern_material_light.jsx",
+      "bytes": 23159,
+      "git_blob_sha": "49ce358d7f0dd2743d0d6230430891383b4b931c",
+      "sha256": "3ab4d3623e33049e9dbd23ae6b96669c7db8c987effbfb63c8b372eb078956de"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/pattern_material_light.jsx",
+      "bytes": 23187,
+      "git_blob_sha": "50c1a8419262bcfdf75da67fa066f2f3814d43e1",
+      "sha256": "cda9b83243f0bb8bb0ca03d2fb9a3e3844ac743f03b592f523715884e087c0ec"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/guide_search_desktop.jpg",
+      "bytes": 62222,
+      "git_blob_sha": "0ca95bd8095c4d8c9820ecaeb5073a3a1c176df3",
+      "sha256": "7fe8e6676c4c4411543b4a507eebd700d79ef9ec538278bd6f69dda101a7c64a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/guide_search_mobile.jpg",
+      "bytes": 45391,
+      "git_blob_sha": "7e16614465155f17fc1f2cbeb01d366371a7f3e9",
+      "sha256": "ea2028964e768b402f5b68f8ebe36d991c5b10bde02a8bf4b24349e7dc3d6aec"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/guide_recovery_mobile.jpg",
+      "bytes": 41682,
+      "git_blob_sha": "88b37845c8f95daafcc22732104111939d024b7a",
+      "sha256": "7e2723627721be34f4a8998651929a874f0acb89ba837e78b6c6acc79892a117"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/pattern_material_dark.jpg",
+      "bytes": 182572,
+      "git_blob_sha": "c65ee9ba7872d9d24da0efd1b7a571004ecf53f4",
+      "sha256": "77249841eff1d5aaed2891a5c39c59773244ee93a4c6920897dfccc9174a8dc8"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/pattern_material_light.jpg",
+      "bytes": 193356,
+      "git_blob_sha": "9f142f533eb0bbf1e4fa49942acfa66cdefc7a7f",
+      "sha256": "ae99be6a504eebabfcf505120961c6f361eecad5b105f140373970bc7a337b46"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/before/shared_build_directory.jsx",
+      "bytes": 55505,
+      "git_blob_sha": "844c50307669fcbb09caa23a9b34904e4ad62fc1",
+      "sha256": "2bc816ed8047d3b09ed8918233b3307643a78da54cab294545395bf57bf3ade3"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/shared_build_companion.jsx",
+      "bytes": 6703,
+      "git_blob_sha": "6ac3e8589df8dd9f60cde7a2b9bfe6800d9f731c",
+      "sha256": "7d687a6a505247892c076d5b287947786a3a6cc4372bfd3838e3d642cdd65826"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/post/shared_build_directory.jsx",
+      "bytes": 62215,
+      "git_blob_sha": "75e8693cc6f92ab57282aa47385757f0ea0a23fc",
+      "sha256": "3a075c55648bf1514c33086f91fb17891b958f01be724ec6d37ae8e2e2c1bcd1"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/options-clock-explanation.jpg",
+      "bytes": 78048,
+      "git_blob_sha": "f41945e3b6718f1e72abf6e20a138886cf041a45",
+      "sha256": "a81629b2d9a3a9a132d4a192741314146a3f86ff36dacd5107bc4305f82f3c5a"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/proof/shared-build-companion.jpg",
+      "bytes": 105017,
+      "git_blob_sha": "8d2004d64d51781b1e49b239d3995307013dc7c5",
+      "sha256": "5f9524597b752ddd94239ef91c51287422e90b38ed549dcb12dab038364e7ef8"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/evidence-motion-reference.html",
+      "bytes": 31522,
+      "sha256": "315b7097b20940ceee97519167f7937d0fe50326509590bf8d8d1759bab7b73f",
+      "git_blob_sha": "b1331c57fcc75885cbb031897c0fe8e49d8a9985"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/verify-motion-reference.cjs",
+      "bytes": 12876,
+      "sha256": "873eaf431ff04b2fc098d43ebfcde6047fe200d58fb56cb8957c2dda1cb6e944",
+      "git_blob_sha": "6a8d7aa1b5b91f2128d25d95ff773f4acdcea2bd"
+    },
+    {
+      "path": "research/design_candidates/paper_audit_20261108/followup/MOTION_REFERENCE_VERIFICATION.json",
+      "bytes": 3012,
+      "sha256": "67d66dd3ab6ecb27e389d7e54ce300b03d2e777f611ccfff5f868a9c4fafa783",
+      "git_blob_sha": "9ba6b6f3186ae5434648aa62ffac2ade31ff6cf7"
+    }
+  ]
+}

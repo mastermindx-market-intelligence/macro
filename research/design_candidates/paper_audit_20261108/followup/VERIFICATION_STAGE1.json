@@ -1,0 +1,486 @@
+{
+  "expectation": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "12-0",
+        "exact": true,
+        "text": "EPS estimate cuts outnumber raises in the latest capture.",
+        "width": 680,
+        "height": 29,
+        "artboardId": "6-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "1RA-0",
+        "exact": true,
+        "text": "EPS estimate cuts outnumber raises in the latest capture.",
+        "width": 680,
+        "height": 29,
+        "artboardId": "WI-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "2PA-0",
+        "exact": true,
+        "text": "EPS estimate cuts outnumber raises in the latest capture.",
+        "width": 358,
+        "height": 50,
+        "artboardId": "2NZ-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "2N5-0",
+        "exact": true,
+        "text": "最新采集期，EPS 预期下调多于上调。",
+        "width": 680,
+        "height": 30,
+        "artboardId": "1SD-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "39S-0",
+        "exact": true,
+        "text": "最新采集期，EPS 预期下调多于上调。",
+        "width": 358,
+        "height": 25,
+        "artboardId": "392-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "HX-0",
+        "exact": true,
+        "text": "Estimate history",
+        "width": 444,
+        "height": 24,
+        "artboardId": "6-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "1AQ-0",
+        "exact": true,
+        "text": "Estimate history",
+        "width": 444,
+        "height": 24,
+        "artboardId": "WI-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "31U-0",
+        "exact": true,
+        "text": "Estimate history",
+        "width": 134,
+        "height": 22,
+        "artboardId": "2NZ-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "KM-0",
+        "exact": true,
+        "text": "Average estimate",
+        "width": 94.03125,
+        "height": 28,
+        "artboardId": "6-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "186-0",
+        "exact": true,
+        "text": "Average estimate",
+        "width": 94.03125,
+        "height": 28,
+        "artboardId": "WI-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "33X-0",
+        "exact": true,
+        "text": "Average estimate",
+        "width": 91,
+        "height": 14,
+        "artboardId": "2NZ-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "KT-0",
+        "exact": true,
+        "text": "Median estimate",
+        "width": 90.0625,
+        "height": 28,
+        "artboardId": "6-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "17Z-0",
+        "exact": true,
+        "text": "Median estimate",
+        "width": 90.0625,
+        "height": 28,
+        "artboardId": "WI-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "343-0",
+        "exact": true,
+        "text": "Median estimate",
+        "width": 87,
+        "height": 14,
+        "artboardId": "2NZ-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "KZ-0",
+        "exact": true,
+        "text": "Estimate range",
+        "width": 82,
+        "height": 14,
+        "artboardId": "6-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "17T-0",
+        "exact": true,
+        "text": "Estimate range",
+        "width": 82,
+        "height": 14,
+        "artboardId": "WI-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "349-0",
+        "exact": true,
+        "text": "Estimate range",
+        "width": 78,
+        "height": 14,
+        "artboardId": "2NZ-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "3XS-0",
+        "exact": true,
+        "text": "Security, metric, fiscal period and source snapshot travel together. A mover opens that exact tuple in Estimate history. When the context changes, retire the old chart and values together, name the pending selection, and commit its labels and data atomically. A refresh of the same context may retain clearly labeled last values and their original capture clock. Ignore obsolete responses. Exact-tuple binding and request-generation protection are required extensions, not verified runtime behavior.",
+        "width": null,
+        "height": null,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "3Y0-0",
+        "exact": true,
+        "text": "At 390px, show three movers per direction; Show all [n] reveals the source list without reordering it (currently at most 25 per direction). Show numbers expands the exact values below the chart; Hide the numbers collapses them. The chart stays visible. Preserve metric, capture, fiscal period and focus; keep expanded state accurate.",
+        "width": null,
+        "height": null,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "R5-0",
+        "exact": true,
+        "text": "Estimate data is unavailable. Coverage and methods are still available.",
+        "width": 842,
+        "height": 40,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "R6-0",
+        "exact": true,
+        "text": "预期数据暂不可用。仍可查看覆盖范围与方法。",
+        "width": null,
+        "height": null,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "V1-0",
+        "exact": true,
+        "text": "Couldn’t load MU estimates. Retry or choose another security.",
+        "width": 300,
+        "height": 40,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "V2-0",
+        "exact": true,
+        "text": "无法加载 MU 的预期数据。请重试或选择其他证券。",
+        "width": null,
+        "height": null,
+        "artboardId": "3UR-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "3OO-0",
+        "exact": true,
+        "text": "平均预期",
+        "width": 45,
+        "height": 14,
+        "artboardId": "392-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "3OU-0",
+        "exact": true,
+        "text": "预期中位数",
+        "width": 57,
+        "height": 14,
+        "artboardId": "392-0"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "nodeId": "3P0-0",
+        "exact": true,
+        "text": "预期区间",
+        "width": 45,
+        "height": 14,
+        "artboardId": "392-0"
+      }
+    }
+  ],
+  "news_nodes": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "27Q-0",
+        "new": "3HB-0",
+        "height": null,
+        "width": null,
+        "parentId": "27M-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "28R-0",
+        "new": "3HE-0",
+        "height": null,
+        "width": null,
+        "parentId": "28O-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "28T-0",
+        "new": "3HM-0",
+        "height": null,
+        "width": null,
+        "parentId": "28M-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2B3-0",
+        "new": "3IS-0",
+        "height": null,
+        "width": null,
+        "parentId": "2B2-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2BU-0",
+        "new": "3IV-0",
+        "height": null,
+        "width": null,
+        "parentId": "2BT-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2CZ-0",
+        "new": "3IY-0",
+        "height": null,
+        "width": null,
+        "parentId": "2CY-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "29D-0",
+        "new": "3JD-0",
+        "height": null,
+        "width": null,
+        "parentId": "293-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "29Y-0",
+        "new": "3JR-0",
+        "height": null,
+        "width": null,
+        "parentId": "29O-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2BI-0",
+        "new": "3KI-0",
+        "height": null,
+        "width": null,
+        "parentId": "2B6-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2CQ-0",
+        "new": "3KX-0",
+        "height": null,
+        "width": null,
+        "parentId": "2CG-0",
+        "atLeast44": false
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "old": "2AQ-0",
+        "new": "3MG-0",
+        "height": null,
+        "width": null,
+        "parentId": "2A6-0",
+        "atLeast44": false
+      }
+    }
+  ],
+  "news_styles": [
+    {
+      "old": "27Q-0",
+      "new": "3HB-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "28R-0",
+      "new": "3HE-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "28T-0",
+      "new": "3HM-0",
+      "found": true,
+      "minHeight44": false
+    },
+    {
+      "old": "2B3-0",
+      "new": "3IS-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2BU-0",
+      "new": "3IV-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2CZ-0",
+      "new": "3IY-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "29D-0",
+      "new": "3JD-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "29Y-0",
+      "new": "3JR-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2BI-0",
+      "new": "3KI-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2CQ-0",
+      "new": "3KX-0",
+      "found": true,
+      "minHeight44": true
+    },
+    {
+      "old": "2AQ-0",
+      "new": "3MG-0",
+      "found": true,
+      "minHeight44": true
+    }
+  ],
+  "notes": [
+    "News off-active-page get_node_info returns null dimensions. Do not call this a measured hit-target pass. JSX declares min-height 44px and the rendered screenshot visually confirms enlarged controls. Filter group itself has no min-height; its four action children do.",
+    "Three initial Chinese copy targets were Frame nodes and returned per-node errors. The accepted English/build updates were not replayed. Actual Chinese Text nodes 3OO/3OU/3P0 were inspected and updated successfully.",
+    "Binding changed before the More reports call. pEdit stopped before dispatch. Exact original target and owned archive were read, then News was prepared again. No uncertain effect occurred."
+  ]
+}

@@ -1,0 +1,3066 @@
+[
+  {
+    "operation_id": "paper-audit-c3-followup-expectation-copy-20261108-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "updates": [
+        {
+          "nodeId": "12-0",
+          "html": "EPS estimate cuts outnumber raises in the latest capture."
+        },
+        {
+          "nodeId": "1RA-0",
+          "html": "EPS estimate cuts outnumber raises in the latest capture."
+        },
+        {
+          "nodeId": "2PA-0",
+          "html": "EPS estimate cuts outnumber raises in the latest capture."
+        },
+        {
+          "nodeId": "2N5-0",
+          "html": "最新采集期，EPS 预期下调多于上调。"
+        },
+        {
+          "nodeId": "39S-0",
+          "html": "最新采集期，EPS 预期下调多于上调。"
+        },
+        {
+          "nodeId": "HX-0",
+          "html": "Estimate history"
+        },
+        {
+          "nodeId": "1AQ-0",
+          "html": "Estimate history"
+        },
+        {
+          "nodeId": "31U-0",
+          "html": "Estimate history"
+        },
+        {
+          "nodeId": "KM-0",
+          "html": "Average estimate"
+        },
+        {
+          "nodeId": "186-0",
+          "html": "Average estimate"
+        },
+        {
+          "nodeId": "33X-0",
+          "html": "Average estimate"
+        },
+        {
+          "nodeId": "KT-0",
+          "html": "Median estimate"
+        },
+        {
+          "nodeId": "17Z-0",
+          "html": "Median estimate"
+        },
+        {
+          "nodeId": "343-0",
+          "html": "Median estimate"
+        },
+        {
+          "nodeId": "KZ-0",
+          "html": "Estimate range"
+        },
+        {
+          "nodeId": "17T-0",
+          "html": "Estimate range"
+        },
+        {
+          "nodeId": "349-0",
+          "html": "Estimate range"
+        },
+        {
+          "nodeId": "3OK-0",
+          "html": "平均预期"
+        },
+        {
+          "nodeId": "3OQ-0",
+          "html": "预期中位数"
+        },
+        {
+          "nodeId": "3OW-0",
+          "html": "预期区间"
+        },
+        {
+          "nodeId": "3XS-0",
+          "html": "Security, metric, fiscal period and source snapshot travel together. A mover opens that exact tuple in Estimate history. When the context changes, retire the old chart and values together, name the pending selection, and commit its labels and data atomically. A refresh of the same context may retain clearly labeled last values and their original capture clock. Ignore obsolete responses. Exact-tuple binding and request-generation protection are required extensions, not verified runtime behavior."
+        },
+        {
+          "nodeId": "3Y0-0",
+          "html": "At 390px, show three movers per direction; Show all [n] reveals the source list without reordering it (currently at most 25 per direction). Show numbers expands the exact values below the chart; Hide the numbers collapses them. The chart stays visible. Preserve metric, capture, fiscal period and focus; keep expanded state accurate."
+        },
+        {
+          "nodeId": "R5-0",
+          "html": "Estimate data is unavailable. Coverage and methods are still available."
+        },
+        {
+          "nodeId": "R6-0",
+          "html": "预期数据暂不可用。仍可查看覆盖范围与方法。"
+        },
+        {
+          "nodeId": "V1-0",
+          "html": "Couldn’t load MU estimates. Retry or choose another security."
+        },
+        {
+          "nodeId": "V2-0",
+          "html": "无法加载 MU 的预期数据。请重试或选择其他证券。"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "12-0"
+        },
+        {
+          "nodeId": "1RA-0"
+        },
+        {
+          "nodeId": "2PA-0"
+        },
+        {
+          "nodeId": "2N5-0"
+        },
+        {
+          "nodeId": "39S-0"
+        },
+        {
+          "nodeId": "HX-0"
+        },
+        {
+          "nodeId": "1AQ-0"
+        },
+        {
+          "nodeId": "31U-0"
+        },
+        {
+          "nodeId": "KM-0"
+        },
+        {
+          "nodeId": "186-0"
+        },
+        {
+          "nodeId": "33X-0"
+        },
+        {
+          "nodeId": "KT-0"
+        },
+        {
+          "nodeId": "17Z-0"
+        },
+        {
+          "nodeId": "343-0"
+        },
+        {
+          "nodeId": "KZ-0"
+        },
+        {
+          "nodeId": "17T-0"
+        },
+        {
+          "nodeId": "349-0"
+        },
+        {
+          "nodeId": "3XS-0"
+        },
+        {
+          "nodeId": "3Y0-0"
+        },
+        {
+          "nodeId": "R5-0"
+        },
+        {
+          "nodeId": "R6-0"
+        },
+        {
+          "nodeId": "V1-0"
+        },
+        {
+          "nodeId": "V2-0"
+        }
+      ],
+      "errors": [
+        {
+          "nodeId": "3OK-0",
+          "error": "Node \"Frame\" is a Frame, not a Text node"
+        },
+        {
+          "nodeId": "3OQ-0",
+          "error": "Node \"Frame\" is a Frame, not a Text node"
+        },
+        {
+          "nodeId": "3OW-0",
+          "error": "Node \"Frame\" is a Frame, not a Text node"
+        }
+      ]
+    },
+    "before": "fdfdcb002ae24933c5b8562c2f7cdb739b2f059fbaa44344d1f5639807ae5440",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-comparison-guide-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "3UR-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Comparable estimates and continuity\" style=\"display:flex;flex-direction:column;gap:16px;padding:24px;width:1160px;background:var(--dk-panel);border:1px solid var(--dk-line);border-radius:10px;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--dk-text);\">Comparable estimates and continuity</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "47N-0",
+          "name": "Build · Comparable estimates and continuity",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47O-0",
+          "name": "Comparable estimates…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-guide-threshold-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "47N-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Headline classification\" style=\"display:flex;flex-direction:column;gap:6px;width:100%;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--dk-text);\">Headline classification</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">The retained source uses down &gt; up × 1.2 for cuts leading, up &gt; down × 1.2 for raises leading, and balanced otherwise. The streak traverses the latest captures until the class changes or becomes balanced. Four matches that definition; five displayed captures have simple cuts &gt; raises. The new glance states only the latest comparison. Preserve the original revenue classification and exact threshold in methods; do not silently change the calculation.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "47Q-0",
+          "name": "Build · Headline classification",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47R-0",
+          "name": "Headline classificat…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47S-0",
+          "name": "The retained source …",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-guide-period-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "47N-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · One comparison rule\" style=\"display:flex;flex-direction:column;gap:6px;width:100%;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--dk-text);\">One comparison rule</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">Reuse _comparable_pairs in scripts/build_expectation_surface.py: the same security, metric and raw horizon need equal, known period_end values. Preserve prior_at, latest_at and source identity. Extend the same rule to the explorer: scope its series to one fiscal period or break the plot at a period change. New fiscal period, unknown period, first capture and zero prior each withhold an unsupported percentage. Zero prior still contributes to breadth.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "47U-0",
+          "name": "Build · One comparison rule",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47V-0",
+          "name": "One comparison rule",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47W-0",
+          "name": "Reuse _comparable_pa…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-guide-source-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "47N-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Current source gap · required extension\" style=\"display:flex;flex-direction:column;gap:6px;width:100%;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--dk-text);\">Current source gap · required extension</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">At Macro b5674d8ef898e503d6164922654f5ff89be9981c, templates/expectation_surface.html.j2 priorAvg selects a previous non-null value without checking period_end; chart runs cross period boundaries. Mover buttons carry ticker, metric and horizon without an exact period/snapshot. pickHorizon may fall back. Extend these incumbent paths and the existing loader; do not add another projection, cache or return owner.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "47Y-0",
+          "name": "Build · Current source gap · required extension",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "47Z-0",
+          "name": "Current source gap ·…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "480-0",
+          "name": "At Macro b5674d8ef89…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-guide-proof-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "47N-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Acceptance and motion\" style=\"display:flex;flex-direction:column;gap:6px;width:100%;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--dk-text);\">Acceptance and motion</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">Prove rollover, unknown period, first capture, zero prior, and different previous capture dates. On a changed context, chart and exact values enter loading together; only the latest request can commit. A same-context refresh may retain explicitly dated last values. Prove rapid A→B→A, rejection, empty series, null fields, preserved focus and Show numbers expanded state. Use 160 ms control feedback and 200 ms committed-view crossfade; reduced motion commits immediately. A loading placeholder never implies a measured zero.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "482-0",
+          "name": "Build · Acceptance and motion",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "483-0",
+          "name": "Acceptance and motio…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "484-0",
+          "name": "Prove rollover, unkn…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-guide-preserve-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "47N-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Preserved original wording and state history\" style=\"display:flex;flex-direction:column;gap:6px;width:100%;\"><div style=\"font-family:Inter;font-size:15px;line-height:22px;font-weight:600;color:var(--dk-text);\">Preserved original wording and state history</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--dk-muted);\">Original product and Build inputs are retained at research/design_candidates/paper_audit_20261108/followup/before/ in Macro commit 81a03478b2787fab20723316512370de6f62d3da. The old motion illustration below is a superseded proposal: its pending cross-context chart retention must not be implemented. Current rules above govern. Paper specimens do not prove browser behavior.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "486-0",
+          "name": "Build · Preserved original wording and state history",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "487-0",
+          "name": "Preserved original w…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "488-0",
+          "name": "Original product and…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-preserve-old-motion-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "moves": [
+        {
+          "nodeId": "3YK-0",
+          "parentId": "47N-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "3YK-0",
+          "parentId": "47N-0",
+          "index": 6
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "47N-0",
+          "childIds": [
+            "47O-0",
+            "47Q-0",
+            "47U-0",
+            "47Y-0",
+            "482-0",
+            "486-0",
+            "3YK-0"
+          ]
+        },
+        {
+          "parentId": "3YE-0",
+          "childIds": [
+            "3YF-0"
+          ]
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-current-motion-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "3YE-0",
+      "mode": "insert-children",
+      "html": "<svg layer-name=\"Current · Context-change motion keyframes\" xmlns=\"http://www.w3.org/2000/svg\" width=\"1112\" height=\"230\" viewBox=\"0 0 1112 230\"><g transform=\"translate(0,0)\"><rect x=\"0.5\" y=\"0.5\" width=\"259\" height=\"229\" rx=\"10\" fill=\"#1E222A\" stroke=\"#3A4150\"/><text x=\"18\" y=\"28\" font-family=\"Inter\" font-size=\"14\" font-weight=\"600\" fill=\"#D7DCE3\">1 · Settled</text><text x=\"18\" y=\"53\" font-family=\"Inter\" font-size=\"11\" fill=\"#8B93A1\">MU · EPS · Next FY</text><path d=\"M18 170H242M18 95H242M18 132H242\" fill=\"none\" stroke=\"#3A4150\" stroke-width=\"0.7\"/><path d=\"M18 167L52 165L86 156L120 158L154 143L188 149L222 115\" fill=\"none\" stroke=\"#5B9BF0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"222\" cy=\"115\" r=\"4\" fill=\"#5B9BF0\"/><text x=\"18\" y=\"204\" font-family=\"Inter\" font-size=\"10.5\" fill=\"#8B93A1\">Capture and period stay visible</text></g><g transform=\"translate(284,0)\"><rect x=\"0.5\" y=\"0.5\" width=\"259\" height=\"229\" rx=\"10\" fill=\"#1E222A\" stroke=\"#3A4150\"/><text x=\"18\" y=\"28\" font-family=\"Inter\" font-size=\"14\" font-weight=\"600\" fill=\"#D7DCE3\">2 · Context change</text><text x=\"18\" y=\"53\" font-family=\"Inter\" font-size=\"11\" fill=\"#8B93A1\">Loading MU revenue estimates</text><rect x=\"18\" y=\"91\" width=\"132\" height=\"10\" rx=\"5\" fill=\"#3A4150\"/><rect x=\"18\" y=\"114\" width=\"202\" height=\"10\" rx=\"5\" fill=\"#3A4150\"/><rect x=\"18\" y=\"137\" width=\"168\" height=\"10\" rx=\"5\" fill=\"#3A4150\"/><text x=\"18\" y=\"175\" font-family=\"Inter\" font-size=\"11\" fill=\"#8B93A1\">No inherited value or zero</text><text x=\"18\" y=\"204\" font-family=\"Inter\" font-size=\"10.5\" fill=\"#8B93A1\">Old results leave the current view</text></g><g transform=\"translate(568,0)\"><rect x=\"0.5\" y=\"0.5\" width=\"259\" height=\"229\" rx=\"10\" fill=\"#1E222A\" stroke=\"#3A4150\"/><text x=\"18\" y=\"28\" font-family=\"Inter\" font-size=\"14\" font-weight=\"600\" fill=\"#D7DCE3\">3 · Committed</text><text x=\"18\" y=\"53\" font-family=\"Inter\" font-size=\"11\" fill=\"#8B93A1\">Revenue · verified selected period</text><path d=\"M18 170H242M18 95H242M18 132H242\" fill=\"none\" stroke=\"#3A4150\" stroke-width=\"0.7\"/><path d=\"M18 160L52 143L86 148L120 123L154 127L188 101L222 88\" fill=\"none\" stroke=\"#5B9BF0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"222\" cy=\"88\" r=\"4\" fill=\"#5B9BF0\"/><text x=\"18\" y=\"204\" font-family=\"Inter\" font-size=\"10.5\" fill=\"#8B93A1\">Labels, chart and values commit</text></g><g transform=\"translate(852,0)\"><rect x=\"0.5\" y=\"0.5\" width=\"259\" height=\"229\" rx=\"10\" fill=\"#1E222A\" stroke=\"#3A4150\"/><text x=\"18\" y=\"28\" font-family=\"Inter\" font-size=\"14\" font-weight=\"600\" fill=\"#D7DCE3\">Reduced motion</text><text x=\"18\" y=\"53\" font-family=\"Inter\" font-size=\"11\" fill=\"#8B93A1\">Immediate committed state</text><path d=\"M18 170H242M18 95H242M18 132H242\" fill=\"none\" stroke=\"#3A4150\" stroke-width=\"0.7\"/><path d=\"M18 160L52 143L86 148L120 123L154 127L188 101L222 88\" fill=\"none\" stroke=\"#5B9BF0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"222\" cy=\"88\" r=\"4\" fill=\"#5B9BF0\"/><text x=\"18\" y=\"204\" font-family=\"Inter\" font-size=\"10.5\" fill=\"#8B93A1\">Same result, clock and focus</text></g></svg>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "48A-0",
+          "name": "Current · Context-change motion keyframes",
+          "component": "SVG",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48B-0",
+          "name": "Group",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48C-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48D-0",
+          "name": "1 · Settled",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48E-0",
+          "name": "MU · EPS · Next FY",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48F-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48G-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48H-0",
+          "name": "Circle",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48I-0",
+          "name": "Capture and period s…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48J-0",
+          "name": "Group",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48K-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48L-0",
+          "name": "2 · Context change",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48M-0",
+          "name": "Loading MU revenue e…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48N-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48O-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48P-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48Q-0",
+          "name": "No inherited value o…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48R-0",
+          "name": "Old results leave th…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48S-0",
+          "name": "Group",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48T-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48U-0",
+          "name": "3 · Committed",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48V-0",
+          "name": "Revenue · verified s…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48W-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48X-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48Y-0",
+          "name": "Circle",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "48Z-0",
+          "name": "Labels, chart and va…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "490-0",
+          "name": "Group",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "491-0",
+          "name": "Rect",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "492-0",
+          "name": "Reduced motion",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "493-0",
+          "name": "Immediate committed …",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "494-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "495-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "496-0",
+          "name": "Circle",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "497-0",
+          "name": "Same result, clock a…",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "QN-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"States · Fiscal period comparison\" style=\"display:flex;flex-direction:column;gap:20px;padding:24px;width:1160px;background:var(--dk-panel);border:1px solid var(--dk-line);border-radius:10px;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--dk-text);\">Fiscal-period comparison states</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;color:var(--dk-muted);\">Proposed · synthetic rollover fixture · EN / 中文 · customer frames below. Existing values and dates illustrate the state; they do not establish an observed rollover.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "499-0",
+          "name": "States · Fiscal period comparison",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49A-0",
+          "name": "Fiscal-period compar…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49B-0",
+          "name": "Proposed · synthetic…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-state-placement-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "moves": [
+        {
+          "nodeId": "499-0",
+          "after": "3YE-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "499-0",
+          "parentId": "3UR-0",
+          "index": 4
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "3UR-0",
+          "childIds": [
+            "3US-0",
+            "3ZI-0",
+            "3XP-0",
+            "3YE-0",
+            "499-0",
+            "NG-0",
+            "QN-0",
+            "47N-0"
+          ]
+        },
+        {
+          "parentId": "QN-0",
+          "childIds": [
+            "QO-0",
+            "QV-0",
+            "RH-0",
+            "S2-0",
+            "S3-0",
+            "40F-0",
+            "45Z-0",
+            "46V-0",
+            "47F-0"
+          ]
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-row-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "499-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Rollover · EN and ZH\" style=\"display:flex;gap:24px;align-items:flex-start;width:100%;\"></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49D-0",
+          "name": "Rollover · EN and ZH",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49D-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Rollover · 390 · EN\" style=\"display:flex;flex-direction:column;gap:20px;padding:20px;width:390px;flex-shrink:0;background:var(--dk-bg);border:1px solid var(--dk-line);border-radius:12px;\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:21px;font-weight:600;color:var(--dk-text);\">MU · EPS · Next fiscal year</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49F-0",
+          "name": "Rollover · 390 · EN",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49G-0",
+          "name": "MU · EPS · Next fisc…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-answer-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49F-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Rollover answer\" style=\"display:flex;flex-direction:column;gap:8px;\"><div style=\"font-family:Inter, PingFang SC;font-size:22px;line-height:29px;font-weight:600;color:var(--dk-text);\">New fiscal period</div><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:22px;color:var(--dk-muted);\">No earlier comparable estimate.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49I-0",
+          "name": "Rollover answer",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49J-0",
+          "name": "New fiscal period",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49K-0",
+          "name": "No earlier comparabl…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49D-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Rollover · 390 · ZH\" style=\"display:flex;flex-direction:column;gap:20px;padding:20px;width:390px;flex-shrink:0;background:var(--lt-panel);border:1px solid var(--lt-line);border-radius:12px;\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:21px;font-weight:600;color:var(--lt-text);\">MU · EPS · 下一财年</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49M-0",
+          "name": "Rollover · 390 · ZH",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49N-0",
+          "name": "MU · EPS · 下一财年",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-answer-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Rollover answer\" style=\"display:flex;flex-direction:column;gap:8px;\"><div style=\"font-family:Inter, PingFang SC;font-size:22px;line-height:29px;font-weight:600;color:var(--lt-text);\">财务期已变更</div><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:22px;color:var(--lt-muted);\">暂无同财务期可比预期。</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49P-0",
+          "name": "Rollover answer",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49Q-0",
+          "name": "财务期已变更",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49R-0",
+          "name": "暂无同财务期可比预期。",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-basis-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49F-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Selected period and capture\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:16px;border-top:1px solid var(--dk-line);\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:21px;color:var(--dk-text);\">Period ends Aug 2027</div><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:19px;color:var(--dk-muted);\">Captured 20 Oct 2026 · 13:05 UTC</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49T-0",
+          "name": "Selected period and capture",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49U-0",
+          "name": "Period ends Aug 2027",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49V-0",
+          "name": "Captured 20 Oct 2026…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-values-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49F-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Latest estimate without comparison\" style=\"display:flex;gap:24px;width:100%;\"><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:18px;color:var(--dk-muted);\">Average estimate</div><div style=\"font-family:Inter;font-size:32px;line-height:38px;font-weight:600;color:var(--dk-text);\">11.02</div></div><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:18px;color:var(--dk-muted);\">Comparable change</div><div style=\"font-family:Inter;font-size:32px;line-height:38px;font-weight:600;color:var(--dk-text);\">—</div></div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "49X-0",
+          "name": "Latest estimate without comparison",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49Y-0",
+          "name": "Frame",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "49Z-0",
+          "name": "Average estimate",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4A0-0",
+          "name": "11.02",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4A1-0",
+          "name": "Frame",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4A2-0",
+          "name": "Comparable change",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4A3-0",
+          "name": "—",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-limit-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49F-0",
+      "mode": "insert-children",
+      "html": "<div style=\"font-family:Inter, PingFang SC;font-size:13px;line-height:20px;color:var(--dk-muted);\">Unit not recorded. Earlier captures belong to a different fiscal period.</div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4A5-0",
+          "name": "Unit not recorded. E…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-en-action-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49F-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Coverage and method action · 44px\" style=\"display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;padding:10px 16px;border:1px solid var(--dk-line);border-radius:8px;\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:22px;font-weight:600;color:var(--dk-link);\">Coverage &amp; method</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4A7-0",
+          "name": "Coverage and method action · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4A8-0",
+          "name": "Coverage & method",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-basis-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Selected period and capture\" style=\"display:flex;flex-direction:column;gap:6px;padding-top:16px;border-top:1px solid var(--lt-line);\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:21px;color:var(--lt-text);\">财务期截至 2027年8月</div><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:19px;color:var(--lt-muted);\">采集于 2026-10-20 13:05 UTC</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4AA-0",
+          "name": "Selected period and capture",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AB-0",
+          "name": "财务期截至 2027年8月",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AC-0",
+          "name": "采集于 2026-10-20 13:05…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-values-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Latest estimate without comparison\" style=\"display:flex;gap:24px;width:100%;\"><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:18px;color:var(--lt-muted);\">平均预期</div><div style=\"font-family:Inter;font-size:32px;line-height:38px;font-weight:600;color:var(--lt-text);\">11.02</div></div><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-family:Inter, PingFang SC;font-size:12px;line-height:18px;color:var(--lt-muted);\">可比变动</div><div style=\"font-family:Inter;font-size:32px;line-height:38px;font-weight:600;color:var(--lt-text);\">—</div></div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4AE-0",
+          "name": "Latest estimate without comparison",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AF-0",
+          "name": "Frame",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AG-0",
+          "name": "平均预期",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AH-0",
+          "name": "11.02",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AI-0",
+          "name": "Frame",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AJ-0",
+          "name": "可比变动",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AK-0",
+          "name": "—",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-limit-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49M-0",
+      "mode": "insert-children",
+      "html": "<div style=\"font-family:Inter, PingFang SC;font-size:13px;line-height:20px;color:var(--lt-muted);\">来源未记录单位。较早采集值属于另一财务期。</div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4AM-0",
+          "name": "来源未记录单位。较早采集值属于另一财务期…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-rollover-zh-action-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "targetNodeId": "49M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Coverage and method action · 44px\" style=\"display:flex;align-items:center;justify-content:center;min-height:44px;width:100%;padding:10px 16px;border:1px solid var(--lt-line);border-radius:8px;\"><div style=\"font-family:Inter, PingFang SC;font-size:14px;line-height:22px;font-weight:600;color:var(--lt-link);\">覆盖范围与方法</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "4AO-0",
+          "name": "Coverage and method action · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "4AP-0",
+          "name": "覆盖范围与方法",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-zh-readout-labels-20261108-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "updates": [
+        {
+          "nodeId": "3OO-0",
+          "html": "平均预期"
+        },
+        {
+          "nodeId": "3OU-0",
+          "html": "预期中位数"
+        },
+        {
+          "nodeId": "3P0-0",
+          "html": "预期区间"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "3OO-0"
+        },
+        {
+          "nodeId": "3OU-0"
+        },
+        {
+          "nodeId": "3P0-0"
+        }
+      ]
+    },
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-expectation-release-20261108-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeIds": [
+        "6-0",
+        "WI-0",
+        "1SD-0",
+        "2NZ-0",
+        "392-0",
+        "3UR-0"
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": "OK",
+    "before": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "after": "1a581b0ac576ca52623aadbe973caf53044eb5ee3d287bf81659172c95cb647b",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-history-qualification-20261108-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "updates": [
+        {
+          "nodeId": "8M3-0",
+          "html": "R4 · retained state catalogue"
+        },
+        {
+          "nodeId": "8W2-0",
+          "html": "Original model fixture"
+        },
+        {
+          "nodeId": "8W5-0",
+          "html": "Historical model example"
+        },
+        {
+          "nodeId": "8XL-0",
+          "html": "RETAINED FIXTURE · Not current"
+        },
+        {
+          "nodeId": "8WW-0",
+          "html": "Superseded presentation. The 14% model fixture is retained as history; current unqualified model estimates are unavailable. Historical PRIOR values keep their own definitions. Current mapping: Build · Clarity, models &amp; interaction → GPI-0."
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "8M3-0"
+        },
+        {
+          "nodeId": "8W2-0"
+        },
+        {
+          "nodeId": "8W5-0"
+        },
+        {
+          "nodeId": "8XL-0"
+        },
+        {
+          "nodeId": "8WW-0"
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-history-layer-names-20261108-v1",
+    "tool": "rename_nodes",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "updates": [
+        {
+          "nodeId": "8M0-0",
+          "name": "REFERENCE · R4 retained state catalogue"
+        },
+        {
+          "nodeId": "8W4-0",
+          "name": "HISTORICAL · 14% model fixture · Superseded"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "8M0-0",
+          "name": "REFERENCE · R4 retained state catalogue"
+        },
+        {
+          "nodeId": "8W4-0",
+          "name": "HISTORICAL · 14% model fixture · Superseded"
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-current-mapping-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "targetNodeId": "GOI-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Build · Current model-state mapping\" style=\"display:flex;flex-direction:column;gap:16px;padding:24px;width:100%;background:#181B21;border:1px solid #3A4150;border-radius:12px;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:#D7DCE3;\">Current model-state mapping</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#9CA6B5;\">The original 14% tile on p-2-0 / 8W4-0 is historical input, not a usable current estimate. This reconciles presentation only; it does not qualify the model or reopen held acceptance.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "GYT-0",
+          "name": "Build · Current model-state mapping",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "GYU-0",
+          "name": "Current model-state …",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "GYV-0",
+          "name": "The original 14% til…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-current-unavailable-specimen-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "targetNodeId": "GYT-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Current model estimate · unavailable\" style=\"display:flex;flex-direction:column;gap:6px;padding:20px;background:#0F1115;border:1px solid #3A4150;border-radius:10px;\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:#D7DCE3;\">Current estimate unavailable</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#9CA6B5;\">Inputs do not meet the requirements for this estimate.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "GYX-0",
+          "name": "Current model estimate · unavailable",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "GYY-0",
+          "name": "Current estimate una…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "GYZ-0",
+          "name": "Inputs do not meet t…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-mapping-contract-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "targetNodeId": "GYT-0",
+      "mode": "insert-children",
+      "html": "<div style=\"font-family:Inter;font-size:14px;line-height:22px;color:#9CA6B5;\">Keep the original 14% model fixture and its PARITY_FAILS provenance in history. The retained 33% (≤3 months) and 52% (≤6 months) PRIOR examples keep their historical definitions and populations; they are not current model estimates. Current comparison FB7-0 / FO0-0 remains unavailable. G4P-0 canary, BML-0 held acceptance and GPL-0 return proposal remain unchanged. Full originals: followup/before/sector_old.jsx at Macro 81a03478b2787fab20723316512370de6f62d3da.</div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "GZ1-0",
+          "name": "Keep the original 14…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-preserve-event-meaning-20261108-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "updates": [
+        {
+          "nodeId": "8W5-0",
+          "html": "Historical example · Up leg ends within"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "8W5-0"
+        }
+      ]
+    },
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-sector-release-20261108-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "nodeIds": [
+        "8M0-0",
+        "GPI-0"
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": "OK",
+    "before": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "after": "5c14bf237d60bf68c150b41788de02ed52eb7bdc416ce24dc0d904345ab0b10a",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-original-controls-shell-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "3H2-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"REFERENCE · Original compact News controls\" style=\"display:flex;flex-direction:column;gap:20px;padding:24px;width:660px;background:var(--panel);border:1px solid var(--line);border-radius:12px;\"><div style=\"font-family:Inter;font-size:22px;line-height:30px;font-weight:600;color:var(--text);\">Original compact controls</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--text-2);\">Historical components from the 360px research rail. Current touch targets use 44px heights. Opening, expanding, closing or returning never marks a story reviewed; only the explicit review action does. Preserve NewsCatchup and the existing per-story identity.</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3H7-0",
+          "name": "REFERENCE · Original compact News controls",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3H8-0",
+          "name": "Original compact con…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3H9-0",
+          "name": "Historical component…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-view-control-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "27M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Action · News &amp; announcements · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">News &amp; announcements</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3HB-0",
+          "name": "Action · News & announcements · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HC-0",
+          "name": "News & announcements",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-view-control-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "3HB-0",
+          "before": "27Q-0"
+        },
+        {
+          "nodeId": "27Q-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "3HB-0",
+          "parentId": "27M-0",
+          "index": 3
+        },
+        {
+          "nodeId": "27Q-0",
+          "parentId": "3H7-0",
+          "index": 2
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "27M-0",
+          "childIds": [
+            "27N-0",
+            "27O-0",
+            "27P-0",
+            "3HB-0",
+            "27U-0"
+          ]
+        },
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-bulk-review-control-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "28O-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Action · Mark shown as reviewed · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">Mark shown as reviewed</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3HE-0",
+          "name": "Action · Mark shown as reviewed · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HF-0",
+          "name": "Mark shown as review…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-bulk-review-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "28R-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "28R-0",
+          "parentId": "3H7-0",
+          "index": 3
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0",
+            "28R-0"
+          ]
+        },
+        {
+          "parentId": "28O-0",
+          "childIds": [
+            "28P-0",
+            "28Q-0",
+            "3HE-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-filter-controls-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "28M-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Catch-up filters · 44px\" style=\"display:flex;gap:6px;width:100%;\"><div layer-name=\"Action · All · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);min-width:44px;padding:10px 11px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">All</div></div><div layer-name=\"Action · New · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;min-width:44px;padding:10px 11px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">New</div></div><div layer-name=\"Action · Updated · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;min-width:44px;padding:10px 11px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">Updated</div></div><div layer-name=\"Action · Reviewed · 44px\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;min-width:44px;padding:10px 11px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">Reviewed</div></div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3HM-0",
+          "name": "Catch-up filters · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HN-0",
+          "name": "Action · All · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HO-0",
+          "name": "All",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HP-0",
+          "name": "Action · New · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HQ-0",
+          "name": "New",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HR-0",
+          "name": "Action · Updated · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HS-0",
+          "name": "Updated",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HT-0",
+          "name": "Action · Reviewed · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HU-0",
+          "name": "Reviewed",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-filters-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "28T-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "28T-0",
+          "parentId": "3H7-0",
+          "index": 4
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0",
+            "28R-0",
+            "28T-0"
+          ]
+        },
+        {
+          "parentId": "28M-0",
+          "childIds": [
+            "28O-0",
+            "3HM-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-view-chevron-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "3HB-0",
+      "mode": "insert-children",
+      "html": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\" viewBox=\"0 0 10 10\"><path d=\"M2 3.5L5 6.5L8 3.5\" fill=\"none\" stroke=\"#9CA6B5\" stroke-width=\"1.5\"/></svg>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3HY-0",
+          "name": "SVG",
+          "component": "SVG",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3HZ-0",
+          "name": "Path",
+          "component": "SVGVisualElement",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-review-2B3-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2B2-0",
+      "mode": "insert-children",
+      "html": "<div layer-name=\"Mark reviewed · 44px\" style=\"display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:7px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;font-weight:600;color:var(--text);\">Mark reviewed</div></div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3IS-0",
+          "name": "Mark reviewed · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3IT-0",
+          "name": "Mark reviewed",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-review-2BU-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2BT-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"3IS-0\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3IV-0",
+          "name": "Mark reviewed · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3IW-0",
+          "name": "Mark reviewed",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-review-2CZ-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2CY-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"3IS-0\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3IY-0",
+          "name": "Mark reviewed · 44px",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3IZ-0",
+          "name": "Mark reviewed",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-review-buttons-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "2B3-0",
+          "parentId": "3H7-0"
+        },
+        {
+          "nodeId": "2BU-0",
+          "parentId": "3H7-0"
+        },
+        {
+          "nodeId": "2CZ-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "2B3-0",
+          "parentId": "3H7-0",
+          "index": 5
+        },
+        {
+          "nodeId": "2BU-0",
+          "parentId": "3H7-0",
+          "index": 6
+        },
+        {
+          "nodeId": "2CZ-0",
+          "parentId": "3H7-0",
+          "index": 7
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0",
+            "28R-0",
+            "28T-0",
+            "2B3-0",
+            "2BU-0",
+            "2CZ-0"
+          ]
+        },
+        {
+          "parentId": "2B2-0",
+          "childIds": [
+            "3IS-0"
+          ]
+        },
+        {
+          "parentId": "2BT-0",
+          "childIds": [
+            "3IV-0"
+          ]
+        },
+        {
+          "parentId": "2CY-0",
+          "childIds": [
+            "3IY-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-ladder-29D-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "293-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"29D-0\" style=\"min-height:44px;height:auto;padding-top:8px;padding-bottom:8px;\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3JD-0",
+          "name": "Ladder (button sentence)",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JE-0",
+          "name": "Reporting",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JF-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JG-0",
+          "name": "3 outlets",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JH-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JI-0",
+          "name": "3 reports",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JJ-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JK-0",
+          "name": "= Reports agree",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-ladder-29Y-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "29O-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"29Y-0\" style=\"min-height:44px;height:auto;padding-top:8px;padding-bottom:8px;\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3JR-0",
+          "name": "Ladder (button sentence, open)",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JS-0",
+          "name": "Reporting",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JT-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JU-0",
+          "name": "2 outlets",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JV-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JW-0",
+          "name": "3 reports",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JX-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3JY-0",
+          "name": "Scope unverified",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-ladder-2BI-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2B6-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"2BI-0\" style=\"min-height:44px;height:auto;padding-top:8px;padding-bottom:8px;\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3KI-0",
+          "name": "Ladder (wraps at a step boundary)",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KJ-0",
+          "name": "Company announcement",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KK-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KL-0",
+          "name": "1 outlet",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KM-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KN-0",
+          "name": "2 reports",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KO-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KP-0",
+          "name": "– Not compared",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-ladder-2CQ-0-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2CG-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"2CQ-0\" style=\"min-height:44px;height:auto;padding-top:8px;padding-bottom:8px;\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3KX-0",
+          "name": "Ladder (button sentence)",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KY-0",
+          "name": "Reporting",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3KZ-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3L0-0",
+          "name": "2 outlets",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3L1-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3L2-0",
+          "name": "2 reports",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3L3-0",
+          "name": "›",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3L4-0",
+          "name": "~ Comparison limited",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-compact-ladders-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "3JD-0",
+          "before": "29D-0"
+        },
+        {
+          "nodeId": "29D-0",
+          "parentId": "3H7-0"
+        },
+        {
+          "nodeId": "3JR-0",
+          "before": "29Y-0"
+        },
+        {
+          "nodeId": "29Y-0",
+          "parentId": "3H7-0"
+        },
+        {
+          "nodeId": "3KI-0",
+          "before": "2BI-0"
+        },
+        {
+          "nodeId": "2BI-0",
+          "parentId": "3H7-0"
+        },
+        {
+          "nodeId": "3KX-0",
+          "before": "2CQ-0"
+        },
+        {
+          "nodeId": "2CQ-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "3JD-0",
+          "parentId": "293-0",
+          "index": 3
+        },
+        {
+          "nodeId": "29D-0",
+          "parentId": "3H7-0",
+          "index": 8
+        },
+        {
+          "nodeId": "3JR-0",
+          "parentId": "29O-0",
+          "index": 3
+        },
+        {
+          "nodeId": "29Y-0",
+          "parentId": "3H7-0",
+          "index": 9
+        },
+        {
+          "nodeId": "3KI-0",
+          "parentId": "2B6-0",
+          "index": 4
+        },
+        {
+          "nodeId": "2BI-0",
+          "parentId": "3H7-0",
+          "index": 10
+        },
+        {
+          "nodeId": "3KX-0",
+          "parentId": "2CG-0",
+          "index": 3
+        },
+        {
+          "nodeId": "2CQ-0",
+          "parentId": "3H7-0",
+          "index": 11
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "293-0",
+          "childIds": [
+            "294-0",
+            "299-0",
+            "29B-0",
+            "3JD-0",
+            "2FC-0"
+          ]
+        },
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0",
+            "28R-0",
+            "28T-0",
+            "2B3-0",
+            "2BU-0",
+            "2CZ-0",
+            "29D-0",
+            "29Y-0",
+            "2BI-0",
+            "2CQ-0"
+          ]
+        },
+        {
+          "parentId": "29O-0",
+          "childIds": [
+            "29P-0",
+            "29U-0",
+            "29W-0",
+            "3JR-0",
+            "2A6-0",
+            "2AS-0",
+            "2B2-0"
+          ]
+        },
+        {
+          "parentId": "2B6-0",
+          "childIds": [
+            "2B7-0",
+            "2BC-0",
+            "2BE-0",
+            "2BG-0",
+            "3KI-0",
+            "2BQ-0",
+            "2BT-0"
+          ]
+        },
+        {
+          "parentId": "2CG-0",
+          "childIds": [
+            "2CH-0",
+            "2CM-0",
+            "2CO-0",
+            "3KX-0",
+            "2CY-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-more-reports-touch-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "2A6-0",
+      "mode": "insert-children",
+      "html": "<x-paper-clone node-id=\"2AQ-0\" style=\"display:flex;align-items:center;min-height:44px;padding-top:8px;padding-bottom:8px;\" />"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3MG-0",
+          "name": "Frame",
+          "component": "Frame",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        },
+        {
+          "id": "3MH-0",
+          "name": "Show 1 more report",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-preserve-more-reports-20261108-v1",
+    "tool": "move_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "moves": [
+        {
+          "nodeId": "3MG-0",
+          "before": "2AQ-0"
+        },
+        {
+          "nodeId": "2AQ-0",
+          "parentId": "3H7-0"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "moves": [
+        {
+          "nodeId": "3MG-0",
+          "parentId": "2A6-0",
+          "index": 3
+        },
+        {
+          "nodeId": "2AQ-0",
+          "parentId": "3H7-0",
+          "index": 12
+        }
+      ],
+      "affectedParents": [
+        {
+          "parentId": "2A6-0",
+          "childIds": [
+            "2A7-0",
+            "2RI-0",
+            "2AJ-0",
+            "3MG-0"
+          ]
+        },
+        {
+          "parentId": "3H7-0",
+          "childIds": [
+            "3H8-0",
+            "3H9-0",
+            "27Q-0",
+            "28R-0",
+            "28T-0",
+            "2B3-0",
+            "2BU-0",
+            "2CZ-0",
+            "29D-0",
+            "29Y-0",
+            "2BI-0",
+            "2CQ-0",
+            "2AQ-0"
+          ]
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-touch-build-contract-20261108-v1",
+    "tool": "write_html",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "targetNodeId": "3H7-0",
+      "mode": "insert-children",
+      "html": "<div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--text-2);\">Current product reference 27L-0 shows the coarse-pointer treatment. R3 already requires 44px coarse targets for grouped evidence, more reports and Mark reviewed; compact fine-pointer specimens are retained above. Keep each grouped ladder one disclosure control with accurate expanded state, and keep the single-report ladder 2C6-0 noninteractive. Filters retain their selected semantics and focus; Mark shown uses only the shown eligible stories. No reading, opening, closing or filter action creates a review receipt. Reuse TickerNewsPanel, NewsLadder and NewsCatchup; preserve the existing DOM hooks and keyboard contract.</div>"
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "createdNodes": [
+        {
+          "id": "3MJ-0",
+          "name": "Current product refe…",
+          "component": "Text",
+          "worldX": null,
+          "worldY": null,
+          "x": null,
+          "y": null
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-touch-reference-name-20261108-v1",
+    "tool": "rename_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "updates": [
+        {
+          "nodeId": "27L-0",
+          "name": "PRODUCT · News rail · 360 · Touch controls"
+        }
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "updates": [
+        {
+          "nodeId": "27L-0",
+          "name": "PRODUCT · News rail · 360 · Touch controls"
+        }
+      ]
+    },
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  },
+  {
+    "operation_id": "paper-audit-c3-news-release-20261108-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "nodeIds": [
+        "3GX-0",
+        "3H0-0"
+      ]
+    },
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": "OK",
+    "before": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "after": "58f4e0bd22a8432b0274ec48399345d267bd8e87b786dc71259306fb1d02661e",
+    "retry_allowed": false
+  }
+]
