@@ -28,6 +28,7 @@ import argparse
 import fnmatch
 import json
 import logging
+import os
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -245,7 +246,7 @@ def render_markdown(payload: dict) -> str:
     merged_days = payload.get("merged_days", 14)
     merged_section_header = f"## Recently Merged (last {merged_days} days)"
     if merged_truncated:
-        merged_section_header += " (showing most recent 500; window truncated)"
+        merged_section_header += f" (window truncated at {_MERGED_FETCH_LIMIT:,} rows)"
     lines.append(merged_section_header)
     lines.append("")
     if recent_merged:
@@ -309,7 +310,7 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
         return None
 
 
-_OPEN_PR_FETCH_LIMIT = 100
+_OPEN_PR_FETCH_LIMIT = 2000
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
@@ -320,13 +321,17 @@ def _collect_open_prs() -> tuple[list[dict] | None, bool]:
     a missing PR indistinguishable from a PR that does not exist — so every consumer of
     ``active_builds.v1`` silently under-reports open work with no way to detect it.  The
     merged-window fetch has carried this flag since it shipped; the open-PR fetch did not.
+
+    The cap is a sentinel, not a budget: ``gh pr list`` pages internally well past 100,
+    so 2,000 sits far above the live open count (measured 560 on 2026-11-09) and means
+    "we stopped looking", which is the only thing the flag can honestly claim.
     """
     data = _run_gh([
         "pr", "list",
         "--state", "open",
         "--limit", str(_OPEN_PR_FETCH_LIMIT),
         "--json", "number,title,headRefName,updatedAt,isDraft,mergeStateStatus",
-    ])
+    ], timeout=180)
     if data is None:
         return None, False
     truncated = len(data) >= _OPEN_PR_FETCH_LIMIT
@@ -374,39 +379,98 @@ def _collect_pr_files(pr_number: int) -> tuple[list[str], bool, bool, str | None
     return files, truncated, False, resolved_merge_state
 
 
-_MERGED_FETCH_LIMIT = 500
+_MERGED_FETCH_LIMIT = 2000          # rows accumulated for the window before we call it truncated
+_MERGED_PAGE_SIZE = 100             # REST pulls list maximum
+_MERGED_MAX_PAGES = 50              # runaway guard: 5,000 rows, then truncated
+
+
+def _repo_slug() -> str:
+    """``owner/name`` for the REST paths.
+
+    ``GITHUB_REPOSITORY`` (set by Actions) wins; otherwise ask gh once.  The
+    ``{owner}/{repo}`` placeholder pair is the last resort: gh expands it from the local
+    git remote, so the sweep still targets the right repo when the view call fails.
+    """
+    env = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    if "/" in env:
+        return env
+    data = _run_gh(["repo", "view", "--json", "nameWithOwner"])
+    if isinstance(data, dict):
+        slug = data.get("nameWithOwner")
+        if isinstance(slug, str) and "/" in slug:
+            return slug
+    return "{owner}/{repo}"
+
+
+def _parse_gh_ts(value: Any) -> datetime | None:
+    """Parse a gh ISO-8601 timestamp (``…Z``), or None."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
 def _collect_recent_merged(merged_days: int) -> tuple[list[dict], bool] | tuple[None, bool]:
-    """Fetch recently merged PRs filtered to the last *merged_days* days.
+    """Sweep merged PRs for the last *merged_days* days, one REST page at a time.
 
-    Returns (list_of_prs, truncated_flag).  Returns (None, False) on gh failure.
+    Returns (list_of_prs, truncated_flag).  Returns (None, False) on failure.
 
-    Uses a server-side date filter (``merged:>=<ISO-date>``) so the fetch window
-    matches the requested window even for very busy repos.  If the API returns
-    exactly _MERGED_FETCH_LIMIT entries the window may still be truncated; the
-    flag is set in that case so callers can annotate honestly.
+    Why not one capped ``gh pr list --search merged:>=<date>`` call: that query rides the
+    Search API, which hard-caps at 1,000 results and answers 422 past it, and it returns
+    best-match order rather than merge order — so a raised ``--limit`` cannot be trusted
+    and the ``len(rows) >= limit`` sentinel can never fire (the API stops below the limit
+    and the window shrinks silently).  The REST list paginates properly.  ``merged_at <=
+    updated_at`` for every PR, so "the oldest ``updated_at`` on this page is behind the
+    cutoff" is a safe stop: everything further down was last touched before the window
+    opened, hence merged before it too.
+
+    ``truncated`` is fetch arithmetic — computed from the sweep, never from the filtered
+    list.  A post-filter rewrite would clear a true truncation whenever the exact-cutoff
+    filter trims the tail (the live artifact carried 496 rows with the flag set while the
+    cap was 500).
     """
     cutoff = datetime.now(timezone.utc) - timedelta(days=merged_days)
-    # Server-side date filter: ISO date only (YYYY-MM-DD) as required by gh search
-    cutoff_date_str = cutoff.strftime("%Y-%m-%d")
-    data = _run_gh([
-        "pr", "list",
-        "--state", "merged",
-        "--search", f"merged:>={cutoff_date_str}",
-        "--limit", str(_MERGED_FETCH_LIMIT),
-        "--json", "number,title,mergedAt",
-    ])
-    if data is None:
-        return None, False
-    truncated = len(data) >= _MERGED_FETCH_LIMIT
-    # Belt-and-suspenders: also filter client-side by exact datetime cutoff
+    slug = _repo_slug()
+    rows: list[dict] = []
+    truncated = False
+    for page in range(1, _MERGED_MAX_PAGES + 1):
+        data = _run_gh(
+            ["api", f"repos/{slug}/pulls?state=closed&sort=updated&direction=desc"
+                    f"&per_page={_MERGED_PAGE_SIZE}&page={page}"],
+            timeout=60,
+        )
+        if not isinstance(data, list):
+            if page == 1:
+                return None, False     # nothing at all: build_map fails open, untouched
+            # A page we could not read ends the sweep: keep what we already have and say
+            # so, because a partial window is still better than none.
+            truncated = True
+            break
+        rows.extend(data)
+        if len(data) < _MERGED_PAGE_SIZE:
+            break                      # short page: the closed-PR list is exhausted
+        oldest_updated = min(
+            (ts for ts in (_parse_gh_ts(row.get("updated_at")) for row in data) if ts),
+            default=None,
+        )
+        if oldest_updated is None:
+            truncated = True           # coverage cannot be proven without a timestamp
+            break
+        if oldest_updated < cutoff:
+            break                      # merged_at <= updated_at ⇒ the window is covered
+        if len(rows) >= _MERGED_FETCH_LIMIT:
+            truncated = True           # ceiling reached before coverage was proven
+            break
+    else:
+        truncated = True               # runaway guard: coverage was never proven
+
     recent: list[dict] = []
-    for item in data:
-        merged_at_str = item.get("mergedAt", "") or ""
-        try:
-            merged_dt = datetime.fromisoformat(merged_at_str.replace("Z", "+00:00"))
-        except ValueError:
+    for item in rows:
+        merged_at_str = item.get("merged_at", "") or ""
+        merged_dt = _parse_gh_ts(merged_at_str)
+        if merged_dt is None:
             continue
         if merged_dt >= cutoff:
             recent.append({
@@ -539,11 +603,15 @@ def main(argv: list[str] | None = None) -> int:
 
     payload = build_map(merged_days=args.merged_days)
     if payload is None:
-        # Fail-open: gh not available or errored — leave existing outputs untouched
+        # Fail-open: gh not available or errored — leave existing outputs untouched.
+        # The annotation is `::error` and not `::warning` because "the nightly PR map did
+        # not run" is an outage of the input every consumer reads, not a stylistic note —
+        # the step stays non-fatal (the workflow's `||` owns that decision), but it goes
+        # red so nobody has to diff two nights of artifacts to notice.
         print(
-            "WARNING: active build map generation skipped (gh unavailable or errored). "
-            "Existing output files untouched.",
-            file=sys.stderr,
+            "::error title=active-build-map::active build map generation skipped "
+            "(gh unavailable or errored) — existing output files untouched",
+            flush=True,
         )
         return 0
 

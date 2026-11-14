@@ -6824,7 +6824,7 @@ jobs:
     needs: [et_gate, collect]
     if: always() && needs.et_gate.outputs.run != 'false'
     runs-on: [self-hosted, macstudio]
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
@@ -6854,7 +6854,7 @@ jobs:
         # prevent.  One writer; staleness is printed in the artifact, never hidden.
         # No network: PR state comes only from the file written by the step above.
         run: |
-          python3 scripts/agentos.py status || echo "::warning::agent_os_state generation failed (non-fatal — fail-open)"
+          python3 scripts/agentos.py status || echo "::error title=agentos-status::agent_os_state generation flagged incomplete PR coverage (exit $?) — outputs still written, see degraded inputs"
       - name: commit active build map outputs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"
@@ -6889,7 +6889,13 @@ jobs:
           echo "::warning::could not push active build map after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 10
+        # Cap raised 10 -> 30 for full PR coverage (open 100 -> 2000-row sentinel;
+        # merged window now a REST sweep — ~562 gh calls/night vs the old ~102).
+        # The budget stays at 20, far under the kill: the cap is survival headroom
+        # for the bigger sweep, and the tripwire must keep catching real creep —
+        # lower the second number only when the sweep genuinely gets faster,
+        # never to quiet it (same idiom as the collect job's 300 240).
+        run: bash scripts/ci/nightly_timings_finish.sh 30 20
 
   # The `publish` GitHub Pages deploy job (needs: [et_gate, engine], deploy-pages@v4)
   # was RETIRED pre-private-cutover (DEC:B1-MACRO-PRIVATE-CUTOVER) — the Pages mirror
