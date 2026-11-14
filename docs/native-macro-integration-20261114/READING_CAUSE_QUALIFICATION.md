@@ -82,3 +82,15 @@ PYTHONPATH=<qualification dependencies>:<exact source root> python -m pytest -q 
 Result: **151 passed**, 8 warnings, 12.22 seconds. This includes the frozen-page identity test, all existing collapse/mutation guards, stamp preservation, the read-strip cases, and the full-checkout published-source cases. Warnings are the installed pytest plugin deprecation and unregistered marker notices in this sparse qualification root; no tests skipped or deselected. The prior 148-pass/3-fail local result was incomplete source hydration and is superseded by this result.
 
 This recovery adds only the exact collapse fixture and this appended qualification record to the existing 57b365 branch. New natural exact-head binding CI remains required. This record does not claim merge, publication, release or deployed consumer acceptance.
+
+
+## Hosted rates-chip assertion repaired — 2026-11-14
+
+Original head `6ddcae927643c9f8973d5f6922cc921b3f0793b3` ran [CI43636227110](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43636227110). Pack1, [job132574651602](https://github.com/mastermindx-market-intelligence/macro/actions/runs/43636227110/job/132574651602), reported one failed assertion among599 passed,9 skipped and13 deselected cases in the Macro pages step. The subsequent hub step did not run. Other selected packs passed; the failed binding gate was not armed.
+
+The failing test explicitly uses `STALE_SOURCE` but still required `hasn't arrived` somewhere in the full hub. That expectation contradicts this PR's source-specific copy and could also pass on an unrelated chip. The repair locates the rates chip by its existing `data-mc-topic="rates"` identity, requires the exact English and Chinese stale-source explanation, and rejects the old arrival wording there. Every E2/stance/comparison and committed-source branch assertion remains. No production source, fixture, economic calculation, data, template, frozen golden or workflow changes accompany this repair.
+
+Exact preimages: test blob `578dc05016219dafe2e3442701bcb6a062118ddf`; unchanged stale fixture blob `fc5f69ed7205e4ddea0a317a4c44c917da9f41bb`. A local run through the actual page builder and existing committed snapshot inputs reproduced the exact original assertion failure. The repaired case plus both previously affected full modules (`test_macro_command_read_strip.py`, `test_macro_rates_curves_route.py`) then passed **152 tests, zero skips or deselections**. The local run reported32 dependency/custom-marker warnings; these are not hidden or treated as production proof. Source modules, current copy-collapse registration, templates and fixture bytes remain unchanged.
+
+This successor stays on the original branch with parent6ddc, and changes only this assertion and this proof record. Normal new-head binding CI must conclude before the single incumbent-controller enrollment. No rerun, baseline dispatch or check waiver was requested. Original native Macro acceptance remains open.
+
