@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "INVA-BULL-20260826",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 12.6,
@@ -17,14 +17,14 @@
     "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.852,
+    "dist_to_stop_r": -0.796,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -1.2346,
-    "p2": -0.6173,
+    "horizon_pct_used": 173.3,
+    "p1": -1.1975,
+    "p2": -0.5988,
     "p3": null,
-    "move_r": -1.852,
+    "move_r": -1.796,
     "mfe_r": 0.38,
     "mae_r": -1.852
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 77,
-  "tau": 1.7111,
+  "days_elapsed": 78,
+  "tau": 1.7333,
   "closed": true,
   "outcome": "EXPIRED"
 }

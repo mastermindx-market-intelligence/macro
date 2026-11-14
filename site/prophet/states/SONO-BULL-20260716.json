@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SONO-BULL-20260716",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 46.1,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 53.0,
+    "progress": 51.1,
     "pace": 0.0,
-    "retention": 97.7,
+    "retention": 93.2,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 2.075,
-    "dist_to_t1_r": 0.425,
-    "dist_to_t2_r": 1.925,
-    "horizon_pct_used": 264.4,
-    "p1": 0.7168,
-    "p2": 0.3584,
+    "dist_to_stop_r": 2.025,
+    "dist_to_t1_r": 0.475,
+    "dist_to_t2_r": 1.975,
+    "horizon_pct_used": 266.7,
+    "p1": 0.6834,
+    "p2": 0.3417,
     "p3": null,
-    "move_r": 1.075,
+    "move_r": 1.025,
     "mfe_r": 1.1,
     "mae_r": -0.244
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 119,
-  "tau": 2.6444,
+  "days_elapsed": 120,
+  "tau": 2.6667,
   "closed": true,
   "outcome": "EXPIRED"
 }

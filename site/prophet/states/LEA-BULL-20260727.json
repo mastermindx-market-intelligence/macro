@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LEA-BULL-20260727",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.4,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.065,
+    "dist_to_stop_r": -0.055,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 193.3,
-    "p1": -0.7097,
-    "p2": -0.3549,
+    "horizon_pct_used": 195.6,
+    "p1": -0.7032,
+    "p2": -0.3516,
     "p3": null,
-    "move_r": -1.065,
+    "move_r": -1.055,
     "mfe_r": 0.749,
     "mae_r": -1.065
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 87,
-  "tau": 1.9333,
+  "days_elapsed": 88,
+  "tau": 1.9556,
   "closed": true,
   "outcome": "EXPIRED"
 }
