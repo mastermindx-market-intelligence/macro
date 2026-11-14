@@ -6331,6 +6331,7 @@ jobs:
       - "engine/cycle_rhythm.py"
       - "engine/cycle_phase_age.py"
       - "tests/test_ipo_prospectus_terms.py"
+      - "tests/test_ipo_calendar.py"
       - "data/ipo/lockups.parquet"
       - "data/ipo/calendar.parquet"
       - "data/yahoo/CRCL.parquet"
@@ -7130,7 +7131,7 @@ jobs:
           tests/test_guidance_source_evidence.py
           tests/test_china_archetype_d_s1.py -q
       - name: IPO retained-source identity, conditional terms and native price path
-        run: python -m pytest tests/test_ipo_prospectus_terms.py -q
+        run: python -m pytest tests/test_ipo_prospectus_terms.py tests/test_ipo_calendar.py -q
       # Gold China-premium core is a code contract, not merely a render/data
       # check. The full builder/template matrix remains on unrun-macro-panels;
       # this hermetic subset prevents the calculation or rights gate from

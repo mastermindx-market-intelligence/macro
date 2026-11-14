@@ -212,6 +212,15 @@ def fetch_ipo_calendar(lookback: int = LOOKBACK_MONTHS, ahead: int = AHEAD_MONTH
         if "deal_id" in existing.columns:           # legacy frame stored deal_id as a column
             existing = existing.set_index("deal_id")
 
+        # Apply the same no-demotion rule across refreshes, not only between
+        # months in this sweep. A stale filed/upcoming row must not replace a
+        # cached terminal row, its offer terms, marketed range or source clock.
+        # Equal ranks still admit corrections, including terminal-status ties.
+        prior_rank = existing["status"].map(_RANK).reindex(new_df.index).fillna(-1)
+        new_df = new_df.loc[new_df["status"].map(_RANK) >= prior_rank]
+        if new_df.empty:
+            return existing
+
     # MARKETED offering range — captured while a deal shows a real range (upcoming/filed),
     # PRESERVED across the transition to priced (the priced row carries only the final
     # single price). This is the only clean source for the price-revision / partial-
@@ -274,3 +283,4 @@ if __name__ == "__main__":
             tag = " [SPAC]" if r.get("is_spac") else ""
             print(f"  {r['priced_date']}  {r['ticker'] or '?':6}  ${r.get('offer_price')}"
                   f"  {r['company']}{tag}")
+
