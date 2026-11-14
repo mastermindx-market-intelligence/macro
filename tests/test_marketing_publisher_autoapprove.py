@@ -2238,3 +2238,109 @@ def test_voice_v5_rechecks_old_queued_copy_at_the_last_send_gate(
     assert len(notes) == 1, notes
     assert "first person 'I'" in notes[0], notes
     assert fake.calls == [], "copy that fails v5 reached the network backend"
+
+
+@pytest.mark.parametrize(("change_at", "post_now"), [
+    ("unchanged", False),
+    ("before_prepare", False),
+    ("after_prepare", False),
+    ("hold_after_prepare", False),
+    ("hold_after_prepare", True),
+])
+def test_operator_approval_binds_the_prepared_send_payload(
+    monkeypatch, tmp_path, change_at, post_now
+):
+    """The real runner must never send prepared A under a later approval of B."""
+    import socket
+
+    import scripts.marketing_publisher as pub
+    from engine.marketing.ledgers import append_jsonl
+    from engine.marketing.outbox import (
+        apply_decisions, current_statuses, enqueue, make_item,
+        read_ledger, record_decision,
+    )
+    from scripts.marketing_media_backfill import media_key, sidecar_path
+
+    def refuse_network(*_args, **_kwargs):
+        raise AssertionError("this publisher regression permits no network")
+
+    monkeypatch.setattr(socket.socket, "connect", refuse_network)
+    _write_publish_cfg(tmp_path, auto_approve=False, cap=-1, floor_min=0)
+    _append_publish_key(tmp_path, "media_enabled", "true")
+    chart_id = "approval-race"
+    first_url = "https://pub-test.r2.dev/c/approval-a.png"
+    second_url = "https://pub-test.r2.dev/c/approval-b.png"
+    item = make_item(
+        account="flagship", kind="signal",
+        text="$PLTR reclaimed the 50-day. Watching now.",
+        as_of=_AS_OF, scheduled_at="immediate",
+        provenance="content_studio", now=_FIXED_NOW,
+        media=[{
+            "kind": "chart_svg", "chart_id": chart_id, "ticker": "PLTR",
+            "path": f"data/marketing/outbox/media/{_AS_OF}/{chart_id}.svg",
+        }],
+        source={"chart_id": chart_id, "ticker": "PLTR"},
+    )
+    assert enqueue(item, root=tmp_path, max_per_account_day=99) == "queued"
+
+    def repair_and_approve(url):
+        assert append_jsonl(sidecar_path(tmp_path), {
+            "key": media_key(_AS_OF, chart_id),
+            "as_of": _AS_OF, "chart_id": chart_id,
+            "media_url": url, "asset_key": url.rsplit("/", 1)[-1],
+            "sha256": "a" * 64 if url == first_url else "b" * 64,
+        })
+        assert record_decision(item["id"], "approve", actor="operator", root=tmp_path)
+
+    repair_and_approve(first_url)
+    assert apply_decisions(tmp_path)["approved"] == [item["id"]]
+    if change_at == "before_prepare":
+        repair_and_approve(second_url)
+
+    real_media_paths = pub._media_paths_for
+    prepared = []
+
+    def prepare_then_change(*args, **kwargs):
+        paths = real_media_paths(*args, **kwargs)
+        prepared.append(list(paths))
+        if change_at == "after_prepare":
+            assert paths == [first_url]
+            # Freeze A first, then make B the CURRENT operator-approved payload.
+            repair_and_approve(second_url)
+        elif change_at == "hold_after_prepare":
+            assert paths == [first_url]
+            assert record_decision(item["id"], "hold", actor="operator", root=tmp_path)
+        return paths
+
+    monkeypatch.setattr(pub, "_media_paths_for", prepare_then_change)
+    fake = _FakePublisher(ok=True)
+    args = ["--live"] + (["--post-now", item["id"]] if post_now else [])
+    rc = _run_publisher(
+        monkeypatch, tmp_path, args,
+        fake_publisher=fake, kill_switch=True,
+    )
+    assert prepared
+
+    if change_at in {"after_prepare", "hold_after_prepare"}:
+        assert fake.calls == [], "stale approval or a fresh HOLD must prevent the send"
+        assert rc == (3 if post_now else 0)  # explicit post-now reports NOTHING POSTED
+        assert current_statuses(tmp_path)[item["id"]] == "approved"
+        assert not any(
+            row.get("id") == item["id"] and row.get("to") in {"posting", "posted"}
+            for row in read_ledger(tmp_path)
+        )
+        # Reapproval is needed only for HOLD; media B is already approved.
+        if change_at == "hold_after_prepare":
+            assert record_decision(item["id"], "approve", actor="operator", root=tmp_path)
+        monkeypatch.setattr(pub, "_media_paths_for", real_media_paths)
+        assert _run_publisher(
+            monkeypatch, tmp_path, ["--live"],
+            fake_publisher=fake, kill_switch=True,
+        ) == 0
+
+    assert current_statuses(tmp_path)[item["id"]] == "posted"
+    assert len(fake.calls) == 1
+    expected_url = second_url if change_at in {"before_prepare", "after_prepare"} else first_url
+    assert fake.calls[0]["media_paths"] == [expected_url]
+    assert fake.calls[0]["text"] == item["text"]
+    assert fake.calls[0]["link"] == item.get("link")
