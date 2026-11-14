@@ -408,15 +408,20 @@ def _chip_term_slope() -> dict:
         c9  = v9["close"].dropna()  if "close" in v9.columns  else pd.Series(dtype=float)
         c3m = v3m["close"].dropna() if "close" in v3m.columns else pd.Series(dtype=float)
         c9, c3m = c9.align(c3m, join="inner")
-        obs = int(len(c9))
-        last_dt = _last_date(c9) if obs else None
-        fresh = _freshness(pd.Timestamp(c9.index[-1]) if obs else None)
         ratio = (c9 / c3m.replace(0, np.nan)).dropna()
-        val = _r(float(ratio.iloc[-1]), 3) if len(ratio) else None
+        if ratio.empty:
+            return _missing_chip(key, name_en, name_zh)
+        # Value, coverage and freshness must describe the same usable ratios.
+        # A zero denominator contributes neither an observation nor a new clock.
+        obs = int(len(ratio))
+        last_dt = _last_date(ratio)
+        fresh = _freshness(pd.Timestamp(ratio.index[-1]))
+        raw_val = float(ratio.iloc[-1])
+        val = _r(raw_val, 3)
 
         # DEFINITIONAL boundary: ratio > 1.0 = backwardation (near > far demand)
-        # This is NOT a tuned constant — it is a mathematical definition.
-        if val is not None and val > 1.0:
+        # Classify before display rounding; rounding may hide a real inversion.
+        if val is not None and raw_val > 1.0:
             band, state = "inverted", "inverted"
             plain_en = ("Near-term vol demand exceeds longer-term — the curve is inverted, "
                         "a sign of acute near-term stress.")

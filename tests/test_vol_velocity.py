@@ -537,3 +537,90 @@ class TestPayloadStructure:
         payload = vv.compute_vol_weather()
         assert "display" in payload["disclaimer_en"].lower() or "never scored" in payload["disclaimer_en"].lower()
         assert payload["disclaimer_zh"] != ""
+
+
+# Term-slope value, clock and sample population must describe the same ratios.
+class TestTermSlopeRatioEvidence:
+    @staticmethod
+    def panel(monkeypatch, n=300, ratio=0.8, invalid_tail=0):
+        idx = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=n)
+        numerator = pd.DataFrame({"close": np.full(n, 20.0 * ratio)}, index=idx)
+        denominator = pd.DataFrame({"close": np.full(n, 20.0)}, index=idx)
+        if invalid_tail:
+            denominator.iloc[-invalid_tail:, 0] = 0.0
+        frames = {"_VIX9D": numerator, "_VIX3M": denominator}
+        monkeypatch.setattr(vv.store, "read", lambda cat, name: frames.get(name))
+        return frames, idx
+
+    @pytest.mark.parametrize("ratio", [0.99949, 0.9999, 1.0, 1.000001,
+                                        1.0001, 1.00025, 1.00049, 1.00051])
+    @pytest.mark.parametrize("n", [1, 251, 252, 300])
+    def test_inversion_uses_raw_ratio_not_display_rounding(self, monkeypatch, ratio, n):
+        self.panel(monkeypatch, n=n, ratio=ratio)
+        chip = vv._chip_term_slope()
+        assert chip["value"] == round(ratio, 3)
+        assert (chip["state"] == "inverted") == (ratio > 1.0)
+        assert chip["obs_count"] == n
+        if n < vv.MIN_OBS and ratio <= 1.0:
+            assert chip["freshness"] == "young"
+            assert chip["pctile"] is None
+
+    @pytest.mark.parametrize("ratio", [0.8, 1.25])
+    @pytest.mark.parametrize("tail", [1, 8, 30])
+    def test_unusable_tail_preserves_ratio_observation_clock(self, monkeypatch, ratio, tail):
+        _, idx = self.panel(monkeypatch, ratio=ratio, invalid_tail=tail)
+        chip = vv._chip_term_slope()
+        observation = idx[-tail - 1]
+        assert chip["value"] == ratio
+        assert chip["last_date"] == observation.strftime("%Y-%m-%d")
+        assert chip["freshness"] == vv._freshness(observation)
+        assert chip["obs_count"] == 300 - tail
+        if ratio > 1.0:
+            assert chip["state"] == "inverted"
+
+    @pytest.mark.parametrize("valid_count", [1, 250, 251, 252])
+    def test_maturity_counts_usable_ratios(self, monkeypatch, valid_count):
+        self.panel(monkeypatch, ratio=0.8, invalid_tail=300-valid_count)
+        chip = vv._chip_term_slope()
+        assert chip["obs_count"] == valid_count
+        if valid_count < vv.MIN_OBS:
+            assert chip["freshness"] == "young"
+            assert chip["pctile"] is None
+            assert chip["plain_en"] == "Still collecting history."
+        else:
+            assert chip["freshness"] == "stale"
+            assert chip["pctile"] == 50
+
+    def test_no_usable_ratio_is_missing(self, monkeypatch):
+        self.panel(monkeypatch, invalid_tail=300)
+        assert vv._chip_term_slope() == vv._missing_chip(
+            "term_slope", "VIX term slope (9D / 3M)", "VIX 期限斜率（9D / 3M）")
+
+    def test_interior_zero_does_not_inflate_sample_count(self, monkeypatch):
+        frames, idx = self.panel(monkeypatch)
+        frames["_VIX3M"].iloc[100:110, 0] = 0.0
+        chip = vv._chip_term_slope()
+        assert chip["obs_count"] == 290
+        assert chip["last_date"] == idx[-1].strftime("%Y-%m-%d")
+        assert chip["freshness"] == "fresh"
+        assert chip["pctile"] == 50
+
+    def test_native_parquet_reader_and_full_payload_keep_term_clock(self, monkeypatch, tmp_path):
+        idx = pd.bdate_range(end=pd.Timestamp.now().normalize(), periods=300)
+        root = tmp_path / "data"
+        (root / "yahoo").mkdir(parents=True)
+        for name, values in {
+            "_VIX9D": np.full(300, 25.0),
+            "_VIX3M": np.r_[np.full(270, 20.0), np.zeros(30)],
+            "_VIX": np.full(300, 20.0),
+        }.items():
+            pd.DataFrame({"close": values}, index=idx).to_parquet(root / "yahoo" / f"{name}.parquet")
+        monkeypatch.setattr(vv.config, "data_dir", lambda: root)
+        payload = vv.compute_vol_weather()
+        term = next(c for c in payload["chips"] if c["key"] == "term_slope")
+        assert term["last_date"] == idx[269].strftime("%Y-%m-%d")
+        assert term["freshness"] == "stale"
+        assert term["obs_count"] == 270
+        assert term["state"] == "inverted"
+        # Top-level remains the latest independent chip clock, not the term clock.
+        assert payload["as_of"] == idx[-1].strftime("%Y-%m-%d")
