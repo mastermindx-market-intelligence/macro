@@ -92,6 +92,16 @@ Policy pipeline, Market Memory and Research need their remaining destination-spe
 
 Validate deterministic lifecycle transitions, corrections, superseded records, event cancellation and unavailable comparisons. Source publication time and page build time must stay separate. If a source has not provided the next statement, the view explains what is missing and retains the last known record with its timestamp. Prove actual official source → normalized record → native decision/diff → exact source → return, plus policy exposure and calls/results ownership.
 
+### Authored deeper Policy journeys
+
+R6 now includes the lifecycle pipeline, a 41-trading-session Market Memory comparison, research calls, an evidence-linked transmission path and company exposure. The pipeline's All dates filter retains an undated next step without making up a calendar date. Historical comparison uses ±20 sessions and distinct solid/dashed series with matching keys; an episode comparison is not causal attribution.
+
+Calls retain the original proposition, resolution event, recorded horizon or review date, observed evidence and evaluation. A resolution event such as final-rule publication is not itself a review deadline. If the original call has no review date, show that absence instead of inventing a deadline or treating the pending state as a scored success.
+
+Transmission selects a particular edge and opens its exact policy-version span. Keep the edge's evidence class and legal dependency: source wording, conditional interpretation and unresolved company exposure are different states. Company exposure follows reported business → product definition → destination → revenue effect, retaining the unavailable links. A sector label or issuer-wide geographic revenue cannot establish a shipment's product classification or a license outcome.
+
+The native implementation should retain policy_id, policy_version, selected_edge_id, issuer_id and return state through source navigation. These are proposed consumer identity requirements; map them to incumbent owner fields rather than create a second graph database. Changing the legal stage or selected version must invalidate dependent interpretation while preserving its dated history.
+
 ## 4. Government Revenue
 
 ### Source scope
@@ -236,6 +246,14 @@ Render only a response matching the current complete request identity. Changing 
 Prove real issuer coverage, unit integrity, constraints, historical availability, later corrections, scenario isolation, rapid request races, saved restoration and exact evidence. A green frontend test cannot substitute for evaluable real issuer state.
 
 
+### Authored evidence and saved-version interactions
+
+The constraint inspector opens a selected operand's precise source document, locator and available-at time. The $120m registered amount and $40m utilization produce $80m registered dollar room in the fixture; 95m issued shares and 24m reserved shares remain share quantities. Missing authorization still blocks total issuability. Opening or closing this inspector updates navigation focus only; it must not change the calculation request key.
+
+The saved-version view deliberately presents a newer usage record ($40m → $52m) separately from the unchanged saved anchor. The derived registered room changes from $80m to $68m in the available record. The original scenario retains its saved inputs and output. “Create version 2” proposes a new scenario version with copied assumptions and the explicitly selected new anchor; it must not silently rewrite version 1.
+
+Use the existing saved_scenarios/scenario_inputs owners for persistence, version identity, optimistic concurrency and effect receipts. If a save response is uncertain, reconcile that same scenario/version before retry. For an unavailable operand, retain the saved snapshot and name the missing input; do not fill it with zero or recompute a plausible-looking result. A saved-screen fixture does not prove an account effect.
+
 ## 9. Global Cycles — five distinct destinations
 
 ### 9.1 Markets
@@ -291,7 +309,7 @@ Measured Long Cycle bands reuse the underlying producer; this bounded audit did 
 
 Bind canonical versus legacy position explicitly. Markets reads pos_v2 while older cards may use pos; the chart's actual osc[] endpoint must be reconciled with its chosen latest-value field. A mismatch is an integrity issue to investigate, not a value to silently average.
 
-Maintain per-series stale/missing coverage, confirmed versus provisional turns, observation date, frequency, basis, inversion and projection eligibility. Prove cross-page consistency for the same (ticker, basis), exact Local/USD selection, universe switching, bounded compare selection, shared cursor, source detail, mobile behavior and return state. Keep all forecasting/strategy claims outside this design unless separately validated.
+Comparison lines use pattern as well as color: USD and XLI are dashed, with matching legend samples. China names Electrical Equipment in the series key rather than the Shenwan classification universe. Maintain per-series stale/missing coverage, confirmed versus provisional turns, observation date, frequency, basis, inversion and projection eligibility. Prove cross-page consistency for the same (ticker, basis), exact Local/USD selection, universe switching, bounded compare selection, shared cursor, source detail, mobile behavior and return state. Keep all forecasting/strategy claims outside this design unless separately validated.
 
 ## 10. Research / Intelligence Hub
 
@@ -314,6 +332,10 @@ Models & cohorts retains existing model outputs, cohort membership and owner-iss
 Preserve catalyst chronology, sector context, research risk/coverage, source history and originating desk actions. Where an outcome cohort is empty, not started, incomplete or ineligible, show the actual state. Pending, missing, corrected and losing outcomes are not interchangeable exclusions.
 
 Following and saved views use canonical user owners where supported. Legacy device-local behavior must retain its scope. No new watchlist, notification scheduler or account database should be created for this migration. Confirmed persistence, reload and account/device boundaries require actual proof.
+
+### Authored Following, History and locale states
+
+Following visibly selects MU while preserving the canonical company/desk list and an evidence-type filter. Evidence History separates source activity from a Government Revenue evaluation that has not started; it does not render zero outcomes as a 0% success rate. The Chinese dark directory uses verified available Noto Sans SC and translated shared-shell navigation. It is a single authored locale/theme specimen, not whole-product localization proof.
 
 ## 11. Feature disposition and build sequencing
 
@@ -353,9 +375,9 @@ For each route retain evidence of:
 
 ## 12. Remaining design work and completion falsifier
 
-This is a complete engineering blueprint for the current candidate set, not a declaration that the design phase or migration is complete. The native Paper inventory is the source of exact authored pages. Current candidates cover all twelve destinations, distinct detail journeys, eight mobile family treatments, two dark product examples, eight Build boards and selected high-risk state specimens.
+This is an engineering blueprint for the current candidate set, not a declaration that the design phase or migration is complete. The [native Paper inventory](PAPER_DESIGN_INDEX_2026-11-14.md) identifies the exact authored pages. The current set contains 50 native pages: 40 product/viewport/theme/locale views, eight Build boards and two state sheets. All twelve destinations have a new primary composition. There are eight mobile family treatments, two English dark views and a Chinese dark directory. These examples do not establish systematic theme, language or breakpoint parity.
 
-Before implementation, close the remaining designs deliberately: Policy Pipeline/Memory/Research; domain-specific advanced destinations that currently only have a retained navigation contract; full state transitions for filters, evidence, access, corrections and saving; cohort/disagreement and Following detail in the Hub; route-specific keyboard/return behavior; and systematic EN/ZH, dark/light and intermediate-width review. Do not duplicate accepted screens without a concrete reason.
+Pipeline, Market Memory, research calls, transmission and company exposure are now authored in Policy R6; Following and Evidence History are authored in Research R5. Capital includes exact operand/source inspection and changed-source scenario restoration. Before implementation, close the remaining domain-specific advanced destinations, full interaction/state transitions, Models & cohorts/disagreement, route-specific keyboard/return behavior, and systematic EN/ZH, dark/light and intermediate-width composition. The next bounded design unit is BioCatalyst Trial screen and First-seen, preserving explicit NCT selection and observation-time semantics. Government Programs/recompete, Alternative Data relationships and Special Situations advanced event branches follow through the existing owner contracts. Do not duplicate accepted screens without a concrete reason.
 
 A screen may be clean while an engine is incomplete. A correct typed adapter may exist while real coverage is insufficient. A PR can be ready while release remains held. Completion requires truthful source inputs, useful intelligence, coherent interaction, supported saved effects, actual production/browser proof and the original acceptance—not a frame count, green CI or this document.
 
