@@ -136,10 +136,10 @@ _TRUTHY = ("1", "true", "yes")
 # The prompt — house exemplars transcribed from the operator's 2026-07-28 corpus
 # ─────────────────────────────────────────────────────────────────────────────
 
-#: The three corpus winners, verbatim. They are the register: number stacking
-#: that zooms out (D1), a dollar translation (D2), a "since <date>" anchor (D3),
-#: a streak count (D4). Kept as a constant so the test suite can pin that the
-#: prompt still ships them.
+#: Archived corpus references, retained verbatim for research provenance.
+#: Their narrative devices are worth studying; their "falls -17%" / "down -30%"
+#: sign conventions are NOT the live house voice. Copying those sign conventions
+#: into production caused hundreds of unreadable Hot Tape posts.
 HOUSE_EXEMPLARS: tuple[str, ...] = (
     "BREAKING: SanDisk stock, $SNDK, falls over -17% on the day, now down -30% "
     "in 5 days and -55% from its record high. That's officially over -$200 "
@@ -148,6 +148,18 @@ HOUSE_EXEMPLARS: tuple[str, ...] = (
     "5 years. Today is Day #9.",
     "$1 TRILLION has been wiped out from $NVDA marketcap as it crashes -18.50% "
     "from its ALL TIME HIGH.",
+)
+
+#: Publishable phrasing examples preserve the archived facts and devices without
+#: copying the raw sign errors, shouted casing or unnatural "marketcap" diction.
+#: The live prompt uses these, while HOUSE_EXEMPLARS remains an immutable record.
+LIVE_STYLE_EXEMPLARS: tuple[str, ...] = (
+    "SanDisk $SNDK fell 17% today. It's down 30% in five days and 55% from "
+    "its record high. Today's move is only part of the damage.",
+    "$META has closed red nine sessions in a row, its longest losing streak "
+    "in more than five years. This isn't a one-day wobble anymore.",
+    "$NVDA sits 18.5% below its record high. That tells you more about the "
+    "drawdown than today's headline move alone.",
 )
 
 #: The control case from the same crash day: same sector, bigger raw move, 95
@@ -169,10 +181,25 @@ LAWS
 8. {SOFT_CHAR_CAP} characters maximum. The hard cap is 280 — leave the headroom.
 9. Output the post text only. No JSON, no quotes around it, no preamble, no sign-off.
 
-HOUSE EXEMPLARS — this is the register:
-1. {HOUSE_EXEMPLARS[0]}
-2. {HOUSE_EXEMPLARS[1]}
-3. {HOUSE_EXEMPLARS[2]}
+EDITORIAL VOICE: Write like a knowledgeable market observer sharing one useful
+finding with another person. Use the exact subject, not a canned "on the tape"
+or "one clean read" opening. Vary rhythm from post to post. When the packet
+contains a peer comparison or breadth mechanism, make the interpretation clear:
+is this a group-wide move or an isolated stock? Do not invent a catalyst,
+investor motive, prediction or unsupported opinion to fill the space.
+
+DIRECTION AND UNITS: A negative percentage in the packet is a signed DATA VALUE,
+not the grammar of a sentence. Write "fell 9.3%" or "down 9.3%", NEVER
+"fell -9.3%" or "down -9.3%". A standalone table-style move may say "-9.3%".
+Write the percent sign on every percentage, including peer moves and medians;
+write the dollar sign on US stock prices. Do not say "down 9.3" or "median -2.9"
+when the source means a percentage. If you lack a unit, omit that claim.
+Never invert the packet's daily direction to produce a punchier sentence.
+
+LIVE VOICE EXAMPLES — borrow the clarity and evidence structure, not the wording:
+1. {LIVE_STYLE_EXEMPLARS[0]}
+2. {LIVE_STYLE_EXEMPLARS[1]}
+3. {LIVE_STYLE_EXEMPLARS[2]}
 
 NEVER THIS:
 {ANTI_EXEMPLAR}
@@ -801,6 +828,7 @@ def validate_wire_copy(text: str, packet: dict, *,
     """
     violations: list[str] = []
     violations.extend(numeric_violations(text, packet))
+    violations.extend(directional_voice_violations(text, packet))
 
     # House bans are IMPORTED from the copywriter — one list, every lane. A copy
     # here would drift the day someone adds a term upstream.
@@ -920,7 +948,147 @@ def _tidy(text: str) -> str:
         out = re.sub(r"\s*```$", "", out).strip()
     if len(out) >= 2 and out[0] == out[-1] and out[0] in "\"'":
         out = out[1:-1].strip()
-    return out
+    return _polish_signed_declines(out)
+
+
+# A directional verb already carries the negative sign: "falls -9.3%" is
+# grammatical double-negation, not a sharper market observation. The archived
+# wire corpus unfortunately taught the model exactly this. This repair changes
+# NO number and adds NO fact, so it can run before the real numeric/polarity
+# gate without another paid model call. A standalone "$AMD -9.3%" is untouched.
+_DECLINE_DOUBLE_SIGN = re.compile(
+    r"(?P<lead>\b(?:down|falls?|fell|falling|drops?|dropped|plunges?|plunged|"
+    r"slides?|slid|slips?|slipped|tumbles?|tumbled|declines?|declined|"
+    r"loses?|lost)\s+(?:(?:by|over|about|more than)\s+)?)"
+    r"-(?P<amount>\$?\d[\d,]*(?:\.\d+)?(?:%|\b))",
+    re.IGNORECASE,
+)
+
+_DAILY_PCT_WITHOUT_UNIT = re.compile(
+    r"\b(?:up|down|falls?|fell|drops?|dropped|rises?|rose|gains?|"
+    r"plunges?|slips?|slides?)\s+(?:by\s+)?"
+    r"(?P<num>[+-]?\d+(?:\.\d+)?)"
+    r"(?=\s+(?:today|right now|on the day|this session|at the close)\b)",
+    re.IGNORECASE,
+)
+
+_MEDIAN_WITHOUT_UNIT = re.compile(
+    r"\bmedian\s+(?P<num>[+-]?\d+(?:\.\d+)?)(?!\s*%)(?=\b)",
+    re.IGNORECASE,
+)
+
+_TICKER_MOVE_WITHOUT_UNIT = re.compile(
+    r"(?P<tag>\$[A-Za-z][A-Za-z.]{0,9})\s+"
+    r"(?P<num>[+-]\d+(?:\.\d+)?)(?!\s*%)(?=\b)"
+)
+
+_DAILY_DIRECTION_CLAIM = re.compile(
+    r"\b(?P<verb>is\s+up|up|rises?|rose|gains?|jumps?|climbs?|"
+    r"is\s+down|down|falls?|fell|drops?|dropped|plunges?|slips?|slides?)"
+    r"\s+(?P<num>[+-]?\d+(?:\.\d+)?)%"
+    r"\s+(?:today|right now|on the day|this session|at the close)\b",
+    re.IGNORECASE,
+)
+
+_UP_VERBS = frozenset({"is up", "up", "rise", "rises", "rose", "gain",
+                       "gains", "jump", "jumps", "climb", "climbs"})
+
+
+def _polish_signed_declines(text: str) -> str:
+    """Remove only a redundant sign following an explicit decline verb."""
+    return _DECLINE_DOUBLE_SIGN.sub(
+        lambda m: m.group("lead") + m.group("amount"), str(text or ""))
+
+
+def _percent_facts(packet: dict) -> tuple[float | None, float | None, dict[str, float]]:
+    """Typed % fields used by the wire desk; price and counts cannot license %."""
+    facts = packet.get("facts") if isinstance(packet.get("facts"), dict) else packet
+    if not isinstance(facts, dict):
+        return None, None, {}
+
+    def _finite_pct(value):
+        if isinstance(value, bool):
+            return None
+        try:
+            n = float(value)
+        except (TypeError, ValueError, OverflowError):
+            return None
+        return n if math.isfinite(n) and abs(n) <= 1000 else None
+
+    daily = next((p for key in ("pct", "pct_today", "pct_day")
+                  if (p := _finite_pct(facts.get(key))) is not None), None)
+    mechanism = facts.get("mechanism") if isinstance(facts.get("mechanism"), dict) else {}
+    median = _finite_pct(facts.get("median_pct"))
+    if median is None:
+        median = _finite_pct(mechanism.get("peer_median_pct"))
+    moves: dict[str, float] = {}
+    for key in ("peers", "leaders", "green", "movers"):
+        for row in facts.get(key) if isinstance(facts.get(key), list) else []:
+            if isinstance(row, (list, tuple)) and len(row) >= 2:
+                symbol, pct = row[0], _finite_pct(row[1])
+            elif isinstance(row, dict):
+                symbol = row.get("cashtag") or row.get("ticker")
+                pct = _finite_pct(row.get("pct"))
+            else:
+                continue
+            if pct is not None and symbol:
+                moves[str(symbol).upper().lstrip("$")] = pct
+    return daily, median, moves
+
+
+def _same_move(written: str, sourced: float | None) -> bool:
+    """Only identify an unitted source move, allowing its displayed 1dp round."""
+    if sourced is None:
+        return False
+    try:
+        return abs(abs(float(written)) - abs(sourced)) <= 0.051
+    except (TypeError, ValueError):
+        return False
+
+
+def directional_voice_violations(text: str, packet: dict) -> list[str]:
+    """Catch real, historically shipped sign/percent/direction mistakes.
+
+    Numeric provenance by itself is insufficient: a percentage fact can be
+    printed as a bare price, and an absolute-magnitude check lets "up 9.3%"
+    through even when the packet says down 9.3%. Only structured percent facts
+    are considered; a daily dollar move or a 9-session streak is not guessed.
+    """
+    body = str(text or "")
+    hits: list[str] = []
+    if _DECLINE_DOUBLE_SIGN.search(body):
+        hits.append("voice:redundant_negative_after_decline")
+    daily, median, peer_moves = _percent_facts(packet or {})
+    for m in _DAILY_PCT_WITHOUT_UNIT.finditer(body):
+        if _same_move(m.group("num"), daily):
+            hits.append("voice:daily_percentage_unit_missing")
+            break
+    for m in _MEDIAN_WITHOUT_UNIT.finditer(body):
+        if _same_move(m.group("num"), median):
+            hits.append("voice:median_percentage_unit_missing")
+            break
+    for m in _TICKER_MOVE_WITHOUT_UNIT.finditer(body):
+        tag = m.group("tag").upper().lstrip("$")
+        if _same_move(m.group("num"), peer_moves.get(tag)):
+            hits.append("voice:peer_percentage_unit_missing")
+            break
+
+    direction = str(packet.get("direction") or "").lower()
+    primary = str(packet.get("cashtag") or "").upper()
+    if not primary and packet.get("ticker"):
+        primary = "$" + str(packet["ticker"]).upper()
+    if direction in ("up", "down") and daily is not None and primary:
+        for m in _DAILY_DIRECTION_CLAIM.finditer(body):
+            if not _same_move(m.group("num"), daily):
+                continue
+            preceding = re.findall(r"\$[A-Za-z][A-Za-z.]{0,9}", body[:m.start()])
+            if not preceding or preceding[-1].upper() != primary:
+                continue
+            claim_dir = "up" if m.group("verb").lower() in _UP_VERBS else "down"
+            if claim_dir != direction:
+                hits.append("voice:daily_direction_contradicts_packet")
+                break
+    return hits
 
 
 # ─────────────────────────────────────────────────────────────────────────────

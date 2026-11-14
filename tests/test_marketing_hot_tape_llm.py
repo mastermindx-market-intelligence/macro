@@ -96,8 +96,8 @@ def _packet(pid: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_every_golden_good_phrasing_passes_every_gate():
-    # P1-P3 are the operator's corpus winners verbatim. If a gate rejects one of
-    # them, the gate is wrong — these posts are the target, not the hazard.
+    # These are the current voice standard, with the original P1-P3 corpus
+    # preserved separately. The old signed-decline grammar is NOT a target.
     for entry in GOLDEN:
         violations = htl.validate_wire_copy(
             entry["good_phrasing"], entry["packet"],
@@ -486,9 +486,14 @@ def test_module_never_imports_the_phase_1_radar():
 # ─────────────────────────────────────────────────────────────────────────────
 
 def test_system_prompt_carries_the_house_exemplars():
-    for exemplar in htl.HOUSE_EXEMPLARS:
+    for exemplar in htl.LIVE_STYLE_EXEMPLARS:
         assert exemplar in htl.SYSTEM_PROMPT
     assert len(htl.HOUSE_EXEMPLARS) == 3
+    assert len(htl.LIVE_STYLE_EXEMPLARS) == 3
+    assert "falls over -17%" in htl.HOUSE_EXEMPLARS[0], "archive was changed"
+    assert "falls over -17%" not in htl.SYSTEM_PROMPT
+    assert "down -30%" not in htl.SYSTEM_PROMPT
+    assert "marketcap" not in htl.SYSTEM_PROMPT
 
 
 def test_system_prompt_carries_the_anti_example_and_its_lesson():
@@ -502,6 +507,48 @@ def test_system_prompt_states_the_numbers_law_and_the_char_budget():
     assert "never originate a number" in htl.SYSTEM_PROMPT
     assert "270 characters maximum" in htl.SYSTEM_PROMPT
     assert "No hashtags" in htl.SYSTEM_PROMPT
+    assert "DIRECTION AND UNITS" in htl.SYSTEM_PROMPT
+
+
+def test_historically_posted_hot_tape_bad_grammar_is_detected():
+    """The ledger contains 175 buffer-accepted Hot Tape posts of this shape."""
+    p = {"cashtag": "$AMD", "cashtags": ["$AMD", "$AVGO"],
+         "direction": "down", "pct_day": -9.37, "price": 530.47,
+         "median_pct": -2.9,
+         "peers": [["AVGO", -5.25]]}
+    cases = (
+        ("$AMD falls -9.37% today.", "voice:redundant_negative_after_decline"),
+        ("$AMD closes at $530.47, down -9.37 today.", "voice:daily_percentage_unit_missing"),
+        ("$AMD fell 9.37% today; peer median -2.9.", "voice:median_percentage_unit_missing"),
+        ("$AMD fell 9.37% today. $AVGO -5.25.", "voice:peer_percentage_unit_missing"),
+        ("$AMD rises 9.37% today.", "voice:daily_direction_contradicts_packet"),
+    )
+    for copy, expected in cases:
+        assert expected in htl.directional_voice_violations(copy, p), (copy, expected)
+        assert expected in htl.validate_wire_copy(copy, p), (copy, expected)
+
+
+def test_directional_quality_gate_preserves_valid_context_and_counts():
+    p = {"cashtag": "$AMD", "cashtags": ["$AMD"],
+         "direction": "down", "pct_day": -5.0, "pct_5d": -30.0}
+    for copy in ("$AMD is down 5% today, after five straight red weeks.",
+                 "$AMD is 30% below its high but only down 5% today.",
+                 "$AMD -5% today, its fifth red session."):
+        assert htl.directional_voice_violations(copy, p) == [], copy
+
+
+def test_unambiguous_double_sign_is_fixed_before_paid_repair(monkeypatch):
+    _arm(monkeypatch)
+    packet = {"cashtag": "$SNDK", "cashtags": ["$SNDK"],
+              "direction": "down", "pct_day": -17.0, "pct_from_high": -55.0}
+    raw = "$SNDK falls -17% today. It's now 55% below its high."
+    monkeypatch.setattr(llm_auth, "make_call",
+                        lambda *a, **k: (raw, None, "deepseek"))
+    out = htl.phrase_or_fallback(packet, "mover_drop", "$SNDK -17% today.",
+                                 cfg=ARMED_CFG)
+    assert out["mode"] == "llm", out
+    assert out["text"] == "$SNDK falls 17% today. It's now 55% below its high."
+    assert htl.fallback_stats()["llm"] == 1
 
 
 def test_user_message_carries_the_packet_and_the_allowed_numbers():
@@ -684,12 +731,13 @@ def test_every_ai_tell_the_validator_enforces_is_in_the_prompt():
 
 
 def test_the_generated_prompt_still_carries_the_hand_written_half():
-    # The generated block is ADDITIVE — the exemplars and the numbers law are
-    # what make the register, and appending laws must not displace them.
+    # The generated block is ADDITIVE — the LIVE human-voice examples and the
+    # numbers law are the register. The archived double negatives cannot leak.
     prompt = htl.build_system_prompt()
     assert prompt.startswith(htl.SYSTEM_PROMPT.rstrip()[:80])
-    for exemplar in htl.HOUSE_EXEMPLARS:
+    for exemplar in htl.LIVE_STYLE_EXEMPLARS:
         assert exemplar in prompt
+    assert htl.HOUSE_EXEMPLARS[0] not in prompt
     assert "ALLOWED NUMBERS" in prompt
     assert "270 characters maximum" in prompt
 

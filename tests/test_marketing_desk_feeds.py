@@ -1472,6 +1472,27 @@ def test_stamp_value_gate_fails_soft_and_never_silences_a_desk(monkeypatch):
     assert source["value_gate"]["verdict"] == "error"
 
 
+def test_value_gate_metadata_records_actual_per_kind_enforcement():
+    """A recorded verdict must say whether this kind was genuinely policed.
+
+    The production config has enforce_kinds; calling _value_gate_enforced
+    without kind silently stamps every one of its rows as unenforced.
+    """
+    from engine.marketing import outbox
+
+    cfg = {"value_gate": {"enforce": True,
+                          "enforce_kinds": ["breaking", "chart"]}}
+    for kind, expected in (("breaking", True), ("chart", True),
+                           ("receipt", False)):
+        src: dict = {}
+        outbox.stamp_value_gate(
+            src, headline="Aldon shares closed down 5%",
+            body="Aldon shares closed down 5% after the production report.",
+            kind=kind, cfg=cfg,
+        )
+        assert src["value_gate"]["enforced"] is expected, (kind, src)
+
+
 def test_copywriter_seeding_reads_a_store_the_publisher_actually_writes(tmp_path):
     """END TO END: publisher writes → copywriter seed reads → caps see it.
 

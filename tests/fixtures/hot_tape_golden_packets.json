@@ -1,6 +1,6 @@
 {
   "schema": "hot_tape.golden_packets/v1",
-  "note": "Golden FactPackets for the Hot Tape P2 wire desk (engine/marketing/hot_tape_llm.py). Each entry carries the packet, a plausible DETERMINISTIC wire-template rendering (fallback_text, what Phase 1's radar would post on its own), and a human-written wire post whose every number is packet-derived (good_phrasing). P1-P3 use the operator's 2026-07-28 corpus exemplars verbatim. Shapes only — no live tape data.",
+  "note": "Golden FactPackets for the Hot Tape P2 wire desk (engine/marketing/hot_tape_llm.py). Each entry carries a deterministic fallback and a human-written wire post whose numbers are packet-derived (good_phrasing). Original July 28 corpus text is preserved verbatim in HOUSE_EXEMPLARS; P1-P3 here are its modern human-voice revisions. Synthetic shapes only — no live tape data.",
   "packets": [
     {
       "id": "P1",
@@ -24,7 +24,7 @@
         "high_date": "2026-06-22"
       },
       "fallback_text": "$SNDK -17% today, -30% over 5 days, -55% from its high. About $200 billion of market cap gone since 2026-06-22.",
-      "good_phrasing": "BREAKING: SanDisk stock, $SNDK, falls over -17% on the day, now down -30% in 5 days and -55% from its record high. That's officially over -$200 billion in lost market cap since June 22nd."
+      "good_phrasing": "SanDisk $SNDK fell 17% today. It's down 30% in five days and 55% from its record high. That's roughly $200 billion in market value lost since June 22."
     },
     {
       "id": "P2",
@@ -44,7 +44,7 @@
         "pct_day": -1.4
       },
       "fallback_text": "$META has closed red 9 sessions in a row. The last run like this was over 5 years ago.",
-      "good_phrasing": "Meta $META has not seen a double digit streak of red daily candles in over 5 years. Today is Day #9."
+      "good_phrasing": "$META has closed red nine sessions in a row. It hasn't had a streak like that in more than five years."
     },
     {
       "id": "P3",
@@ -64,7 +64,7 @@
         "high_date": "2026-06-30"
       },
       "fallback_text": "$NVDA is -18.5% from its record high set on 2026-06-30. That is $1 trillion of market cap gone.",
-      "good_phrasing": "$1 TRILLION has been wiped out from $NVDA marketcap as it crashes -18.50% from its ALL TIME HIGH."
+      "good_phrasing": "$NVDA is 18.5% below its record high. That's roughly $1 trillion in market value erased."
     },
     {
       "id": "P4",

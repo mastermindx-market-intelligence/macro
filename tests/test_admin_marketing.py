@@ -3209,6 +3209,37 @@ class TestIntelligenceApproveRefusals:
         r2 = marketing.intelligence_approve("story-thin", "draft-thin-1", root=root2)
         assert r2["ok"] is True
 
+    def test_per_kind_arming_refuses_thin_breaking_draft(self, tmp_path):
+        """Production config specifies enforce_kinds; the operator approval
+        must pass its actual breaking kind when asking whether to block.
+
+        Without that argument _value_gate_enforced returns False, allowing an
+        abstaining Intelligence draft into the real publisher's queue.
+        """
+        root = _write_intel_root(
+            tmp_path,
+            cfg=_INTEL_CFG + "value_gate:\n  enforce: true\n"
+            "  enforce_kinds: [breaking, chart, signal]\n",
+        )
+        r = marketing.intelligence_approve("story-thin", "draft-thin-1", root=root)
+        assert r["ok"] is False, r
+        assert r["reason"] == "value_gate", r
+        assert _intel_items(root) == []
+
+    def test_unarmed_kind_only_records_the_value_gate(self, tmp_path):
+        """Kind-specific arming may not become a global block by accident."""
+        root = _write_intel_root(
+            tmp_path,
+            cfg=_INTEL_CFG + "value_gate:\n  enforce: true\n"
+            "  enforce_kinds: [chart, signal]\n",
+        )
+        r = marketing.intelligence_approve("story-thin", "draft-thin-1", root=root)
+        assert r["ok"] is True, r
+        items = _intel_items(root)
+        assert len(items) == 1
+        assert items[0]["source"]["value_gate"]["verdict"] == "abstain"
+        assert items[0]["source"]["value_gate"]["enforced"] is False
+
     def test_a_gate_that_cannot_run_refuses(self, intel_root, monkeypatch):
         """Publish-adjacent polarity: the display panels above fail OPEN, this
         path fails CLOSED. A language screen that raises must not be read as a

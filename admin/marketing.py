@@ -3560,7 +3560,7 @@ def intelligence_approve(story_id, draft_id, root=None, *, now=None) -> dict:
             cfg=cfg,
         )
         verdict = source.get("value_gate") or {}
-        if _ob._value_gate_enforced(cfg):
+        if _ob._value_gate_enforced(cfg, "breaking"):
             # stamp_value_gate is fail-soft by design (a downed gate must not
             # silence the automated desks). With enforcement ARMED that softness
             # is wrong here: an unevaluated gate is not a passed gate.

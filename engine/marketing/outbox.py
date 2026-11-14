@@ -868,7 +868,10 @@ def stamp_value_gate(
             media_withheld=media_withheld,
         )
         meta = _vg.verdict_metadata(verdict)
-        meta["enforced"] = _value_gate_enforced(cfg)
+        # The gate is armed per *kind*. Omitting kind always stamps False when
+        # enforce_kinds is configured, even for kinds the caller just blocked.
+        # That makes the persisted audit evidence contradict the real action.
+        meta["enforced"] = _value_gate_enforced(cfg, kind)
         source["value_gate"] = meta
         return verdict.verdict != "pass"
     except Exception as exc:  # noqa: BLE001
