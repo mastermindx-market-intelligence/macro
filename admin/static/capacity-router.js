@@ -30,7 +30,7 @@
   function mount(host, options = {}) {
     unmount();
     const s = {host, options, data:null, view:"flow", minutes:15, query:"", status:"all", model:"all", selected:null,
-      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false, claudeFilter:"all", claudeFamily:"all"};
+      paused:false, pending:false, disposed:false, timer:null, tick:null, controller:null, scale:1, page:0, error:null, received:0, stream:null, transport:"connecting", requestGeneration:0, changes:new Map(), nodeOrder:{}, arrivals:0, updates:0, history:null, intelligence:null, settings:null, detailTimer:null, detailPending:false, custom:null, chartField:"output_tokens", showConfigured:true, mapFitted:false, claudeFilter:"all", claudeFamily:"all", claudeLastFresh:null};
     active = s;
     host.innerHTML = `<section class="cf-shell" aria-label="Capacity Fabric router">
       <header class="cf-hero"><div><div class="cf-eyebrow"><span class="cf-mark">${icon("flow")}</span> INFRASTRUCTURE <span>/</span> ROUTER</div><h1>Capacity Fabric<span class="cf-title-dot">.</span></h1><p>Follow the intelligence. From capacity to every consumer.</p></div>
@@ -217,6 +217,15 @@
     notice.hidden=!msg; notice.textContent=msg;
     const svg=s.root.querySelector(".cf-topology");
     if(svg&&svg.pauseAnimations){if(state!=="live"||document.hidden||window.matchMedia("(prefers-reduced-motion: reduce)").matches)svg.pauseAnimations();else svg.unpauseAnimations();}
+    // No fresh snapshot is required to let a previously current reading expire.
+    // Avoid repeated DOM work: re-render only on a freshness boundary crossing.
+    if(s.view==="claude"&&d&&d.claude) {
+      const current=claudeObservationFresh(d);
+      if(s.claudeLastFresh!==current) {
+        s.claudeLastFresh=current;
+        renderView(s);
+      }
+    }
     s.root.querySelector(".cf-footnote").textContent=d&&d.ok?`${s.transport==="stream"?"Push stream":"Polling fallback"} · source age ${age==null?"unknown":Math.floor(age)+"s"} · ${d.limits.recent} recent requests retained · ${d.history_state==="recorded"?"durable history recording":d.history_state==="degraded"?"history storage degraded":"history not yet recording"} · no prompt content` : "Private, read-only observation of the existing router";
   }
 
@@ -372,14 +381,19 @@
       ${events?`<section class="cf-panel"><div class="cf-panel-heading"><div><span class="cf-section-kicker">DIVERSION LOG</span><h2>Recent overflow events</h2></div></div><div class="cf-table-scroll"><table><thead><tr><th>Event</th><th>Family</th><th>Requested → served</th><th>Route</th><th>Time</th></tr></thead><tbody>${events}</tbody></table></div></section>`:""}`;
   }
 
+  function claudeObservationFresh(d) {
+    const cl=d&&d.claude,now=Date.now()/1000;
+    const gatewayAge=cl&&typeof cl.observed_at==="number"&&Number.isFinite(cl.observed_at)?now-cl.observed_at:null;
+    const routerAge=d&&typeof d.generated_at==="number"&&Number.isFinite(d.generated_at)?now-d.generated_at:null;
+    return cl&&cl.reachable===true && gatewayAge!==null && routerAge!==null
+      && gatewayAge>=-30 && gatewayAge<=90 && routerAge>=-30 && routerAge<=15;
+  }
+
   function claudeView(s) {
     const d=s.data, cl=d&&d.claude;
     if(!cl) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude capacity</h2><p>The gateway has not supplied an account observation.</p></div></div>${empty("Usage and availability unknown","The gateway status is polled separately from router traffic. No quota or availability conclusion is possible yet.")}`;
     const now=Date.now()/1000;
-    const gatewayAge=typeof cl.observed_at==="number" && Number.isFinite(cl.observed_at)?now-cl.observed_at:null;
-    const routerAge=typeof d.generated_at==="number" && Number.isFinite(d.generated_at)?now-d.generated_at:null;
-    const fresh=cl.reachable===true && gatewayAge!==null && routerAge!==null
-      && gatewayAge>=-30 && gatewayAge<=90 && routerAge>=-30 && routerAge<=15;
+    const fresh=claudeObservationFresh(d);
     const accounts=Array.isArray(cl.accounts)?cl.accounts:[];
     const familyNames=[...new Set(accounts.flatMap(a=>Object.keys(a.families||{})))].sort((a,b)=>{
       const order=["fable","opus","sonnet","haiku","other"];
@@ -471,10 +485,10 @@
         ${summary("Accounts reported",String(accounts.length),"Configured gateway seats, not validated subscriptions")}
         ${summary("Benched lanes",fresh?String(benchCount):"—",fresh?"Reported cooldowns currently active":"Unknown with stale telemetry")}
         ${summary("Draining accounts",fresh?String(draining):"—","Not available for new requests while draining")}
-        ${summary("Counters needing verification",String(questionable),`${allLanes.length} family lanes · missing or inconsistent`)}
+        ${summary("Verified provider balance","—",`Not supplied · ${questionable} gateway counters incomplete or inconsistent`)}
       </div>
       <div class="cf-cap-controls">
-        <div><h3>Account health & family usage</h3><p>${fresh?`${noHold} lanes have no reported hold; this is not a promise of availability.`:"Last-known values are shown for diagnosis only."}</p></div>
+        <div><h3>Account health & family usage</h3><p>${fresh?`${noHold} lanes have no reported hold; ${questionable} counters need checking. This is not a provider availability guarantee.`:"Last-known values are shown for diagnosis only."}</p></div>
         <div class="cf-cap-selects"><label>Show <select data-field="claude-filter" aria-label="Filter Claude accounts by attention">
           <option value="all"${selectedFilter==="all"?" selected":""}>All accounts · problems first</option>
           <option value="attention"${selectedFilter==="attention"?" selected":""}>Needs attention</option>
