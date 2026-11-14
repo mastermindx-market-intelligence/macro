@@ -632,6 +632,14 @@ def serialize_snapshot(snapshot):
     return body
 
 
+def _weekly_reset_expiring(resets, horizon, now):
+    """Only a future, nearby reset qualifies; stale or malformed dates do not."""
+    reset_at = number(resets)
+    expiry_window = number(horizon, None, 31 * 86400)
+    return bool(reset_at is not None and expiry_window is not None
+                and 0 <= reset_at - now <= expiry_window)
+
+
 _CLAUDE_LANE_FIELDS = ("used_weekly", "budget_weekly", "remaining_weekly", "pressure",
                        "cooldown_until", "weekly_resets_at", "weekly_reset_source", "expiring_soon")
 _CLAUDE_ACCOUNT_FIELDS = ("id", "label", "used_5h", "budget_5h", "remaining_5h",
@@ -671,12 +679,7 @@ async def poll_claude_lanes(store, config):
                     continue
                 row = {k: lane.get(k) for k in _CLAUDE_LANE_FIELDS}
                 resets = lane.get("weekly_resets_at")
-                # A reset that already passed is overdue, not "expiring soon";
-                # malformed gateway timestamps must not poison the entire status poll.
-                reset_at = number(resets)
-                expiry_window = number(horizon, None, 31 * 86400)
-                row["expiring_soon"] = bool(reset_at is not None and expiry_window is not None
-                                             and 0 <= reset_at - now <= expiry_window)
+                row["expiring_soon"] = _weekly_reset_expiring(resets, horizon, now)
                 lanes_by_account.setdefault(lane.get("account"), {})[lane.get("family")] = row
             accounts = []
             for account in (payload.get("accounts") or [])[:16]:
