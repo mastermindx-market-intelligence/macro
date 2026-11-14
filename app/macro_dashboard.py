@@ -14,9 +14,10 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 from app.macro_command import _bounded_bytes, _served_root, require_user
-from lib.macro_dashboard_view import LIVE, MAX_BYTES, RELEASE_FEED, SCHEMA, project
+from lib.macro_dashboard_view import LIVE, MAX_BYTES, RELEASE_FEED, SCHEMA, project, project_release_forecast
 
 router = APIRouter()
+MAX_RESPONSE_BYTES = 4 * 1024 * 1024 - 4096  # Below the incumbent BFF ceiling.
 HEADERS = {"Cache-Control": "private, no-store", "Vary": "Authorization",
            "X-Robots-Tag": "noindex, noarchive", "X-Content-Type-Options": "nosniff"}
 
@@ -66,5 +67,42 @@ def macro_dashboard(request: Request, _user: dict = Depends(require_user)) -> JS
             releases = project(candidate, RELEASE_FEED)
     except (OSError, ValueError, TypeError):
         pass
-    return JSONResponse({**payload, "current_risk": live, "release_feed": releases, "publication_sha256": hashlib.sha256(raw).hexdigest(),
-                         "read_at": datetime.now(timezone.utc).isoformat()}, headers=HEADERS)
+    forecast = None
+    forecast_sha = None
+    forecast_state = "unavailable"
+    try:
+        candidate, forecast_raw = _read(root / "macrodata" / "release_forecast.json", root)
+        authority = candidate.get("authority")
+        if (candidate.get("schema") != "release_forecast.v2" or candidate.get("display_only") is not True
+                or not isinstance(authority, dict)
+                or any(authority.get(key) is not False for key in ("can_score", "can_size", "can_trade"))):
+            raise ValueError("unqualified forecast authority")
+        forecast_clock = datetime.fromisoformat(candidate["asof"])
+        if forecast_clock.tzinfo is None or forecast_clock > datetime.now(timezone.utc):
+            raise ValueError("unqualified forecast clock")
+        projected = project_release_forecast(candidate)
+        if len(json.dumps(projected, ensure_ascii=False, allow_nan=False).encode("utf-8")) > MAX_BYTES:
+            raise ValueError("forecast projection exceeds bound")
+        forecast, forecast_sha, forecast_state = projected, hashlib.sha256(forecast_raw).hexdigest(), "available"
+    except OSError:
+        pass  # The forecast's separate publisher cannot make the dashboard unavailable.
+    except (ValueError, TypeError, KeyError, RecursionError):
+        forecast_state = "unqualified"  # Explicit refusal must replace any previous client value.
+    body = {**payload, "current_risk": live, "release_feed": releases,
+                         "release_forecast": forecast, "release_forecast_sha256": forecast_sha,
+                         "release_forecast_state": forecast_state,
+                         "publication_sha256": hashlib.sha256(raw).hexdigest(),
+                         "read_at": datetime.now(timezone.utc).isoformat()}
+    response = JSONResponse(body, headers=HEADERS)
+    for optional in ("release_forecast", "release_feed", "current_risk"):
+        if len(response.body) <= MAX_RESPONSE_BYTES:
+            return response
+        body[optional] = None
+        if optional == "release_forecast":
+            body["release_forecast_sha256"] = None
+            if body["release_forecast_state"] == "available":
+                body["release_forecast_state"] = "unavailable"
+        response = JSONResponse(body, headers=HEADERS)
+    if len(response.body) > MAX_RESPONSE_BYTES:
+        return JSONResponse({"error": "dashboard_unavailable"}, status_code=503, headers=HEADERS)
+    return response

@@ -108,6 +108,93 @@ RELEASE_FEED = {
     "events": [PUBLICATION], "publications": [PUBLICATION],
 }
 
+# Release Radar has its own publisher and clock. This projection never upgrades
+# its experimental models, withdrawn claims or excluded history into authority.
+FORECAST_AUTHORITY = fields("can_score can_size can_trade")
+FORECAST_BANDS = fields("point p10 p25 p50 p75 p90 mode reason")
+FORECAST_COMPONENT = {**fields("name block contrib_pp contribution_pp mom_est weight confidence prior_only degraded legs_used legs_expected"), "missing_legs": [None]}
+FORECAST_MARKET = fields("source event_key event_title event_ticker implied_median implied prob_top p_above_lowest_strike n_brackets asof")
+FORECAST_WITHDRAWN = fields("verdict task target mae_ratio_vs_declared_baseline trial_family receipt receipt_sha256 protocol_sha256 note")
+FORECAST_SHADOW = {
+    **FORECAST_BANDS, **fields("schema model release period release_date asof display_only authority status warning model_epoch target_epoch promotion_authorized inputs_hash code_receipt prior_driven_share coverage_residual_pp weight_coverage confidence input_completeness weight_basis weight_basis_warning"),
+    "claim_withdrawn": FORECAST_WITHDRAWN, "components": [FORECAST_COMPONENT],
+    "degraded_blocks": [None], "known_scope_mismatches": [fields("block official_label warning")],
+    **{key: fields("ref path sha256 schema status model_id release period decision_asof decision_cutoff model_epoch target_epoch source_sha256 receipt_sha256 content_sha256 input_manifest_sha256 training_receipt_sha256 point_raw") for key in ("input_manifest", "model_receipt", "truth_receipt", "training_receipt", "interval_receipt", "pit_provenance")},
+    "mf_energy_components": {"*": None},
+}
+FORECAST_ITEM = {
+    **fields("release release_type period release_date target cutoff_label primary_forecast_basis context_metrics_basis basis_warning confidence confidence_v2 input_completeness inputs_hash input_snapshot_ref model_epoch target_epoch code_receipt regime_axis print_integrity_regime"),
+    "projection": FORECAST_BANDS,
+    "benchmark_set": {**fields("naive_prior trailing_3m trailing_4w ar_model cleveland_nowcast expanding_mean"), "market_implied": FORECAST_MARKET},
+    "combined": {**FORECAST_BANDS, **fields("combined_point n_scored_basis inputs_hash model_epoch target_epoch code_receipt display_only authority"),
+        "combined_components": {**fields("MAE_pool sigma_champion Var_w sigma_combined cold_start k"), "inputs_used": [None],
+            **{key: {"*": None} for key in ("points", "weights", "n_i", "MAE_shrunk_i", "input_hashes")}}},
+    "shadows": {key: FORECAST_SHADOW for key in ("v3_factor", "cpi_bridge", "mf_energy", "coherent_ridge_v1")},
+    "components": [FORECAST_COMPONENT], "input_manifest": {"*": None},
+    "pit": {**fields("display_only authority n_train n_features_used reason note"),
+        **{key: [None] for key in ("revision_optimistic_legs", "vintaged_legs", "unrevised_legs", "absent_legs")}},
+    "confidence_components_v2": fields("w_known w_proxy w_residual c_raw input_completeness"),
+    "coverage_flags": fields("weight_coverage fresh_proxy_coverage non_vintaged_share model_maturity"),
+    "surprise_skew": fields("sigma sigma_scale_pp tag inline_band"),
+    "surprise_distribution": fields("p_hot p_cold p_inline"),
+    "expectation_read": {**fields("tag delta_pp standardized expectation_median n_sources"), "sources": [None]},
+    "market_implied": FORECAST_MARKET,
+    # Legacy gap/cut numbers have no comparability receipt; the rates owner
+    # remains the only source for qualified numerical policy comparisons.
+    "policy_backdrop": fields("fed_stance next_fomc guidance_direction"),
+    "reaction_sensitivity": fields("dgs10_h1_hot_bp dgs10_h1_cold_bp spy_h1_hot_pct spy_h1_cold_pct era_basis regime_cells_used note"),
+    "quirk_flags": [fields("code en zh cite")],
+    "print_integrity": {**fields("regime collection_rate_vs_5y cpi_median_se_trend revision_streak as_of display_only authority"), "source_years": [None]},
+    "revision_risk": fields("mean_k pct_upward n_periods"),
+    "revision_context": {**fields("display_only authority"),
+        "model_status": fields("track_r lean_display note"),
+        "level_bias_annotation": fields("expansion_mean_cumulative_revision_k contraction_mean_cumulative_revision_k note display_only authority source")},
+    "event_window_ctx": {**fields("is_context_only phase phase_read_en phase_read_zh"), "active_collisions": [None],
+        "ex_ante": fields("available glance_en glance_zh disclaimer_en disclaimer_zh")},
+}
+FORECAST_TRACK = {
+    **fields("release model clean_n first_print_matched_n proxy_scored_n other_basis_n display_state mae_ours mae_naive_prior early benchmark_only"),
+    "mae_ours_ci": [None], "target_epochs": [None],
+}
+FORECAST_SCORED = {
+    **fields("schema row_type model release release_type period release_date target prediction_id actual actual_first raw_initial_print actual_source exact_target_id asof_night point error abs_error covered_80 covered_50 actual_basis actual_source_url actual_source_sha256 actual_observed_at actual_receipt_id frozen_asof_night frozen_prediction_id score_receipt_id model_epoch target_epoch frozen_projection_point frozen_projection_p10 frozen_projection_p25 frozen_projection_p50 frozen_projection_p75 frozen_projection_p90 our_surprise surprise_vs_naive surprise_vs_trailing surprise_vs_ar surprise_vs_cleveland interval_hit skew_hit projection_mode benchmark_trailing_key expectation_hit cutoff_label code_receipt"),
+    "supersedes_score_receipt_ids": [None],
+    "projection": FORECAST_BANDS,
+    "evaluation": {**fields("eligible basis"), "excluded_defect_ids": [None]},
+}
+RELEASE_FORECAST = {
+    **fields("schema asof display_only scoreboard_ref"), "authority": FORECAST_AUTHORITY,
+    "methodology_status": fields("forecast_epoch accuracy_claim street_consensus coherent_target_refit_status coherent_current_projection_n clean_forward_cpi_n next_required_step note"),
+    "upcoming": [FORECAST_ITEM], "last_scored": [FORECAST_SCORED], "last_scored_all_forward": [FORECAST_SCORED],
+    "track_record": {**fields("schema accuracy_claim display_min_n verdict_min_n evaluation_target evaluation_basis excluded_n"),
+        "score_receipts": fields("raw_n canonical_n superseded_n note"), "releases": [FORECAST_TRACK], "shadows": [FORECAST_TRACK]},
+    "capture_health": {**fields("last_nightly_asof nightly_gap_days past_due_unscored_count"),
+        "enricher_staleness": fields("kalshi_releases_asof cleveland_nowcast_asof work_stoppages_asof print_integrity_asof"),
+        "past_due_unscored": [fields("release release_type period release_date reason")]},
+}
+
+
+def project_release_forecast(value: dict) -> dict:
+    result = project(value, RELEASE_FORECAST)
+    for source, item in zip((value.get("upcoming") or [])[:200], result.get("upcoming") or []):
+        if not isinstance(source, dict) or not isinstance(item, dict):
+            continue
+        if isinstance(source.get("components"), dict):
+            item["components"] = project(source["components"], {
+                **fields("private_trend government_trend birth_death_residual_prior residual"),
+                "confidence_map": {"*": None}, "method_notes": {"*": None},
+            })
+        original_shadows = source.get("shadows") if isinstance(source.get("shadows"), dict) else {}
+        for key, shadow in (item.get("shadows") or {}).items():
+            original = original_shadows.get(key)
+            if isinstance(original, dict) and isinstance(shadow, dict) and (original.get("claim_withdrawn") is True or isinstance(original.get("claim_withdrawn"), dict)):
+                # A truthy withdrawal always suppresses numbers, even if an old
+                # publisher used a boolean instead of the current receipt map.
+                shadow["claim_withdrawn"] = project(original["claim_withdrawn"], FORECAST_WITHDRAWN) or True
+                for field in ("point", "p10", "p25", "p50", "p75", "p90", "confidence", "components", "mf_energy_components"):
+                    shadow.pop(field, None)
+    return result
+
 
 def project(value: Any, specification: Any) -> Any:
     """Finite, bounded, scalar-only leaves. Unknown keys and objects are omitted."""

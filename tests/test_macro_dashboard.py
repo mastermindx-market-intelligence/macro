@@ -130,3 +130,90 @@ def test_authentication_precedes_artifact_read(api, monkeypatch):
     client.app.dependency_overrides[endpoint.require_user] = denied
     monkeypatch.setattr(endpoint, "_served_root", lambda: pytest.fail("read before authentication"))
     assert client.get("/api/macro/dashboard").status_code == 401
+
+
+def forecast_source():
+    return json.loads((Path(__file__).parent / "fixtures" / "release_forecast_full.json").read_text())
+
+
+def test_forecast_uses_its_own_served_artifact_clock_receipt_and_disclosures(api):
+    import hashlib
+    client, _, root, _ = api
+    source = forecast_source()
+    source["methodology_status"] = {"accuracy_claim": "withheld_until_clean_aligned_forward_evidence", "street_consensus": "unavailable"}
+    source["track_record"] = {"score_receipts": {"raw_n": 20, "canonical_n": 8, "superseded_n": 12}, "releases": []}
+    source["private_key"] = "never export"
+    raw = json.dumps(source).encode()
+    (root / "macrodata" / "release_forecast.json").write_bytes(raw)
+    body = client.get("/api/macro/dashboard").json()
+    forecast = body["release_forecast"]
+    assert forecast["asof"] == source["asof"] != body["published_at"]
+    assert body["release_forecast_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert forecast["upcoming"][3]["projection"]["mode"] == "benchmark_only"
+    assert forecast["upcoming"][9]["projection"]["point"] is None
+    assert forecast["upcoming"][9]["components"]["private_trend"] is None
+    assert forecast["methodology_status"]["street_consensus"] == "unavailable"
+    assert forecast["track_record"]["score_receipts"]["canonical_n"] == 8
+    assert body["release_forecast_state"] == "available"
+    assert "gap_bp" not in forecast["upcoming"][0]["policy_backdrop"]
+    assert "never export" not in json.dumps(forecast)
+
+
+@pytest.mark.parametrize("withdrawal", [True, {}, {"verdict": "WITHDRAWN", "receipt_sha256": "a" * 64}])
+def test_withdrawal_removes_shadow_forecast_numbers_and_components(withdrawal):
+    from lib.macro_dashboard_view import project_release_forecast
+    source = forecast_source()
+    source["upcoming"][0]["shadows"]["v3_factor"] = {"display_only": True, "claim_withdrawn": withdrawal,
+        "point": 777, "p10": 700, "p90": 800, "confidence": .9, "components": [{"name": "hidden", "contrib_pp": 777}]}
+    shadow = project_release_forecast(source)["upcoming"][0]["shadows"]["v3_factor"]
+    assert shadow["claim_withdrawn"]
+    assert not {"point", "p10", "p90", "confidence", "components"}.intersection(shadow)
+
+
+@pytest.mark.parametrize("failure", ["schema", "authority", "undated", "future", "nonfinite", "oversized", "symlink"])
+def test_unqualified_forecast_does_not_disable_dashboard(api, failure):
+    client, _, root, _ = api
+    source = forecast_source()
+    if failure == "schema": source["schema"] = "other"
+    if failure == "authority": source["authority"]["can_trade"] = True
+    if failure == "undated": source["asof"] = "2026-07-10"
+    if failure == "future": source["asof"] = "2999-01-01T00:00:00Z"
+    if failure == "nonfinite": source["upcoming"][0]["projection"]["point"] = float("nan")
+    path = root / "macrodata" / "release_forecast.json"
+    path.write_text(json.dumps(source))
+    if failure == "oversized": path.write_bytes(b" " * (MAX_BYTES + 1))
+    if failure == "symlink":
+        other = root / "forecast-other.json"; path.rename(other); path.symlink_to(other)
+    response = client.get("/api/macro/dashboard")
+    assert response.status_code == 200
+    assert response.json()["release_forecast"] is None
+    assert response.json()["release_forecast_sha256"] is None
+    assert response.json()["release_forecast_state"] == "unqualified"
+    assert response.json()["market_state"]["score"] == 0
+
+
+def test_optional_forecast_respects_aggregate_response_budget(api, monkeypatch):
+    client, endpoint, root, _ = api
+    base_size = len(client.get("/api/macro/dashboard").content)
+    monkeypatch.setattr(endpoint, "MAX_RESPONSE_BYTES", base_size + 500)
+    (root / "macrodata" / "release_forecast.json").write_text(json.dumps(forecast_source()))
+    response = client.get("/api/macro/dashboard")
+    assert response.status_code == 200
+    assert len(response.content) <= base_size + 500
+    assert response.json()["release_forecast"] is None
+    assert response.json()["release_forecast_sha256"] is None
+
+
+def test_response_trimming_never_downgrades_forecast_refusal_to_transient_failure(api, monkeypatch):
+    client, endpoint, root, live = api
+    base_size = len(client.get("/api/macro/dashboard").content)
+    monkeypatch.setattr(endpoint, "MAX_RESPONSE_BYTES", base_size + 500)
+    source = forecast_source(); source["authority"]["can_trade"] = True
+    (root / "macrodata" / "release_forecast.json").write_text(json.dumps(source))
+    (live / "release_publications.json").write_text(json.dumps({"schema": "release_publications.v2", "is_context_only": True,
+        "publications": [{"actual": {"summary_en": "x" * 6000}}]}))
+    response = client.get("/api/macro/dashboard")
+    assert response.status_code == 200
+    assert len(response.content) <= base_size + 500
+    assert response.json()["release_forecast_state"] == "unqualified"
+    assert response.json()["release_feed"] is None
