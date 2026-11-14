@@ -3,14 +3,14 @@
 Status: DESIGN CANDIDATE / DESIGN PHASE IN PROGRESS  
 Date: 14 November 2026  
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md)  
-Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md)  
+Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md)  
 Exact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
 
 ## What is authored
 
-The set contains **50 editable native Paper pages**: **40 product and responsive/theme/locale views, eight Build boards and two state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
+The set contains **62 editable native Paper pages**: **49 product and responsive/theme/locale views, ten Build boards and three state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
 
-Eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
+Ten mobile compositions are included, including additional BioCatalyst First-seen and Government Calendar views. The original eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
 
 The final compositions were screenshot-inspected. Specific repairs include overlaps, excessive gaps, wrapped date/year labels, missing selected states, source-date consistency, source-group counts, unit/basis labels, comparison-line patterns and ambiguity between a resolution event and a review deadline. Inspection establishes static design quality, not working buttons, production data, saved effects or browser proof.
 
@@ -106,15 +106,34 @@ All new financial, procurement, clinical and policy values are synthetic design 
 | [Research R5 · Evidence history](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-M-1) | Desktop product · 1440px · EN light | A0M-1 |
 | [Research R5 · 全部研究 · Dark locale proof](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-N-1) | Desktop product · 1440px · ZH dark | A6K-1 |
 
+## C7 additions — BioCatalyst R11 and Government Revenue R14
+
+| Paper view | Format | Root |
+|---|---|---|
+| [Bio R11 · Trial screen · Candidate](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-A-0) | Product · 1440px · EN light | 32C-0 |
+| [Bio R11 · First-seen · Candidate](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-B-0) | Product · 1440px · EN light | 3AV-0 |
+| [Bio R11 · Date filters · 768](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-C-0) | Product · 768px · EN light | 3P8-0 |
+| [Bio R11 · Coverage inspector · Candidate](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-D-0) | Product · 1440px · EN light | 3SD-0 |
+| [Bio R11 · First-seen · Mobile](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-E-0) | Product · 390px · EN light | 3YK-0 |
+| [Bio R11 · Availability & recovery states](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-F-0) | States · 1400px · EN light | 45Z-0 |
+| [Bio R11 · Trial discovery & observation · Build](https://app.paper.design/file/01M6Y34XE4JKS3A40GMMZ954JE/p-G-0) | Build · 1400px · EN light | 48A-0 |
+| [Revenue R14 · Programs · Candidate](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-C-0) | Product · 1440px · EN light | 4ZV-0 |
+| [Revenue R14 · Calendar & expiry watches · Candidate](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-D-0) | Product · 1440px · EN light | 573-0 |
+| [Revenue R14 · Award & company connections · Candidate](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-E-0) | Product · 1440px · EN light | 5L5-0 |
+| [Revenue R14 · Calendar · Mobile](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-F-0) | Product · 390px · EN light | 5RB-0 |
+| [Revenue R14 · Advanced workflow build contract](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-G-0) | Build · 1400px · EN light | 5TL-0 |
+
+Bio adds full-interval trial screening, complete observation events, mixed per-trial coverage, 768px date filtering, mobile and recovery states. Government adds stage-aware Programs, a typed date agenda, source-native award relationships and mobile Calendar. R13’s older “Upcoming recompetes” entry now says “Contract expiry watches.” The per-trial Bio coverage projection, retained program source comparisons and canonical company attribution are implementation work, not existing runtime proof.
+
 ## Distinct interaction capabilities
 
 | Family | Authored investigation path |
 |---|---|
 | Policy | Source change → version dossier → legal pipeline → market-memory comparison → accountable call → transmission edge → company-exposure evidence |
-| Government Revenue | Procurement change → exact award/order → recipient/issuer attribution → funding correction; device-local save and unresolved-recipient states |
+| Government Revenue | Procurement change → exact award/order → program/document-stage evidence → typed date agenda → exact vehicle/issuer evidence; device-local save and scoped unavailable states |
 | Alternative Data | Company queue → evidence group → transaction/filing/observation clocks → distinct patent-family evidence |
 | Special Situations | Event queue → exact case terms and amendment → condition/date inspection; narrow-screen reading |
-| BioCatalyst | Precision-aware milestone → before/after registry fields → explicit peer matrix with comparability limits |
+| BioCatalyst | Precision-aware milestone → literal Trial screen → explicit peer matrix → complete First-seen event → mixed coverage and source/return |
 | Capital | Dominant missing constraint → separate financing measures → then-known snapshot → explicit scenario → source operand inspector → preserved saved version and newer-input comparison |
 | Global Cycles | Measured roster; Local/USD comparison; U.S. universes; China measured history plus separate timing window; Long Cycle historical Frames and proxy distinctions |
 | Research | First-observed discovery → source desk; canonical Following; complete directory; source history separated from unevaluated research outcomes |
@@ -125,8 +144,8 @@ These are scoped gaps, not permission or review ceremonies. Preserve already ins
 
 | Unit | Concrete next design | Required meaning/proof |
 |---|---|---|
-| D1-BIO | Trial screen and First-seen | Explicit NCT selection; partial date bounds; record availability; selected trial and return state |
-| D1-GOV | Programs, recompete/calendar and deeper company relationships | Exact award/program identity; scheduled versus observed events; obligation/revenue separation |
+| D1-BIO follow-through | Larger-event omissions, selection restoration and remaining access/fact states | R11 core views are authored; complete cross-theme/locale and interactive state coverage |
+| D1-GOV follow-through | Program version comparison, entity conflicts and deadline corrections | R14 core views are authored; retained source cuts and unresolved economics stay explicit |
 | D1-ALT | Relationship inspection and source/maturity states | Canonical entity/edge identity; event dependence; provider access and coverage |
 | D1-SPECIAL | Activism/international and advanced case branches | Case isolation; reviewed terms; cash/stock/contingent arithmetic; terminal-state and amendment handling |
 | D1-POLICY | Regional/world/people depth and complete interaction states | Retained source owners; corrections, coverage and legal-stage-dependent interpretation |
@@ -134,7 +153,7 @@ These are scoped gaps, not permission or review ceremonies. Preserve already ins
 | D1-CAPITAL | Remaining unavailable/conflict/restore states | Request identity and navigation focus separation; saved anchor; unknown inputs remain unknown |
 | D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
 
-The next bounded action is **D1-BIO** in the existing BioCatalyst file: inspect the pinned five-view source contract, author Trial screen and First-seen on new owned pages, verify their selection/date/observation semantics and screenshot-review the populated/degraded states. Then continue the remaining design units. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
+The next bounded action is **D1-ALT**: relationship evidence, source availability and research-status inspectors in the existing Alternative Data file. Preserve the accepted Companies/Evidence/mobile views; make required lineage and provider-state engine upgrades explicit. Continue the remaining family and cross-product design units afterward. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
 
 ## Preservation and evidence limits
 
