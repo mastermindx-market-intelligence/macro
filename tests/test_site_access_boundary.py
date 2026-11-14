@@ -101,6 +101,13 @@ def test_caddy_public_boundary_matches_policy_exactly():
     assert _caddy_public_exclusions() == expected
 
 
+def test_cycle_engine_transports_share_the_protected_static_boundary():
+    for asset in ("/cycledata/cycle_engine.js", "/cycledata/cycle_engine.json"):
+        assert asset not in POLICY["public"]["exact"]
+        assert not any(asset.startswith(prefix) for prefix in POLICY["public"]["prefixes"])
+        assert asset not in _caddy_public_exclusions()
+
+
 def test_help_build_clock_is_one_exact_public_ui_asset():
     """Public Help must load its local clock; nearby resources stay gated."""
     asset = "/help_refresh.js"

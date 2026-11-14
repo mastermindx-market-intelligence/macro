@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T15:11:47.766947+00:00",
-  "count": 3373,
+  "generated_at": "2026-11-14T22:57:02.549739+00:00",
+  "count": 3382,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,142 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-yd7c1f34bud-4aa384",
+      "title": "GS Pasquariello markets macro 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:16Z",
+      "summary_points": [
+        "2026 Risk/Reward Framework: Technicals (post-position cleansing, supportive flows), seasonals (69% up weeks, 2.1% avg rally), AI demand (TSMC/CRWV), nominal US GDP above trend accelerating H2 - US Political/Inflation Risks: Infrastructure political disruption (geopolitics), broadening CPI (data release), regulatory/tax risks (policy); NDX uptrend clashes with 2027 supply surge (fundamentals) - Extreme Market Flows: Largest AI stock sale since 2020 (flows), significant risk liquidation since October (flows), net exposure at 3rd percentile (positioning)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zh8d0nndjxx-f77037",
+      "title": "GS Quinn Energy Futures Brent Oil Election Exits 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:14Z",
+      "summary_points": [
+        "Managed Money Liquidation: $4.4bn net sell (long unwinds $2.8bn, new shorts $1.6bn) amid US midterms; physical participants liquidated $13.9bn gross longs, pushing net positioning below 2-year median (35% on Nov 10), marking 4th largest 2-week bearish flow in 5 years.",
+        "Geopolitical & Technical Trigger: Goldman Sachs cites minimal geopolitical risk premium; 10% price decline warranted for medium-term momentum, with small gains halting short-term selling.",
+        "Institutional Bullish Momentum: Brent managed money net long positions surged sharply since April 2024, aligning with price rise, indicating strong institutional bullish positioning and potential upward momentum continuation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ztyrnp76ayw-537bdc",
+      "title": "GS Miller Global Reflections 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:12Z",
+      "summary_points": [
+        "AI Theme Rebalancing: Power theme (GSENEPOW) up, barbell approach (selective AI + defensive FCF) amid regime shift risk; memory stocks double if fundamental confidence returns.",
+        "Cash Flow Focus: Market rewards high FCF in higher rates; prefer High vs Low FCF (GSPUFCPP) and Lending Sensitive basket (GSXULEND) for capital needs.",
+        "Europe's Defensive AI Hedge: Low AI beta (SXXP 2y daily beta to GSPUARTI <0.05), EU High & Stable Margins (GSXEMARG) basket offers low/no AI correlation + defensive skew.",
+        "SPXAI Technical Outperformance: SPXAI (116.71) outperforms SPX (112.02); market at left tail of 2027 Memory outcomes—significant upside if trade confidence resumes."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sfdsd4mp4qx-0beb0f",
+      "title": "GS Crook Connecting You to GS Thoughts from the Floor 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:09Z",
+      "summary_points": [
+        "Fed Policy Pivot: CPI data solidifies 2027 hike pricing (Jan/Mar as % of total), with terminal rate at ~4.75% vs Fed’s 4.25-4.5% range; 2 hikes then pause, Dec hike likely but 50bp unlikely.",
+        "Data Center Policy Risks: Democratic-led states (TX, GA, MI) may impose moratoria; Texas accounts for 25% of US data center capacity, with incremental costs marginal vs development, but voter focus on cost of living (not AI) reduces long-term risk.",
+        "Inflation Dynamics: Shelter inflation (Rent/OER) key driver; hotter prints risk 30bps MoM run rate vs 20bps, potentially triggering 2027 price resets; broad-based inflation surprises challenge transitory outlook.",
+        "EM Flow Pressures: EWZ US Equity down 23.83% post-election; $1.5bn redemption overhang ($150mn/day) indicates sustained outflow pressure until mid-December; post-election volumes collapsed to $5bn/day from $15bn.",
+        "Geopolitical & Oil: Gulf escalation probability reduced; oil market remains $85-105 range with downside bias; US growth robust (6% Q3 Nominal GDP) fuels dollar strength amid policy divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-pwtuyigxwzl-4d6845",
+      "title": "Next week",
+      "institution": "Deutsche Bank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T17:33:02Z",
+      "summary_points": [
+        "Key Data Releases & Geopolitics: FOMC minutes, US retail/industrial production (Oct), UK CPI/GfK (Oct-Nov), Japan Q3 GDP (preliminary), China APEC meeting drive near-term policy shifts and trade dynamics.",
+        "Earnings Focus: Nvidia (Tue), Alibaba/Tencent/JD.com, and major US retailers (Walmart, Home Depot) dictate sector rotations and tech/retail valuation trajectories.",
+        "Critical Data & Central Bank Events: US manufacturing/housing/retail data, Japan Q3 GDP, Eurozone production, and high-impact US 20-yr bonds ($16bn) / 10-yr TIPS ($19bn) auctions directly influence yield curves and risk asset allocation."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-sjzl5wfclnd-e44fb0",
+      "title": "2027 Global FX Outlook Timing the Turn",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T16:58:02Z",
+      "summary_points": [
+        "Dollar's 2027 Trajectory: Stubborn inflation, energy resilience, and AI investment expectations shift from boost to drag, weakening USD against DM currencies post-2026 despite near-term strength from Fed policy and political uncertainty.",
+        "Dollar Overvaluation Risk: Broad USD in overvalued territory (Exhibit 1), signaling potential downside pressure for USD-centric positions amid mixed FX volatility dynamics.",
+        "JPY AI-Driven Outperformance: JPY shows strongest gains vs USD on AI underperformance days (Exhibit 12), with Yen acting as key hedge against tech downturns amid persistent AI uncertainty.",
+        "EUR/USD Near-Term Depreciation: EUR/USD pressured to 1.08 (3m) due to lagged trade terms, tighter global yields, and France’s flat H1 growth; rebound to 1.15 by 2027 via synchronized policy.",
+        "Fed Policy & USD Strength: Rising expectations for tighter Fed policy correlate with USD strength vs majors, driven by 5-year nominal rate differentials and USD index trends."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 44,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-msvgehbosha-8fc352",
+      "title": "GS Soria What is Momentum Made of 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T16:52:05Z",
+      "summary_points": [
+        "Momentum Regime Shift: 12m momentum (GSPRHIMO) outperformed 3m/6m (GSPRHMO3/GSPRHMO6) with negative correlation, signaling structural regime shift; positioning collapsed to 23rd percentile (5-yr), de-crowding consensus winners.",
+        "AI Momentum Disconnect: IT leads 12M momentum (27.3%) but shows net outflows, creating critical disconnect between trend-following strategies and capital flows—high risk for tactical rotation.",
+        "Factor Rotation Criticality: Momentum/Beta factors lagged while Quality factor outperformed, indicating fundamental shift in factor leadership requiring strategic rebalancing."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-vgtyqascgn9-e0b535",
       "title": "EM Weekly Fund Flows Monitor Foreign selling in Taiwan, buying in India continues MTD",
@@ -302,6 +438,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-rvvt2b5eslj-48de8e",
+      "title": "BofA US Watch October PCE inflation tracking: Tracking 0.29% m:m for core PCE after PPI",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:36:05Z",
+      "summary_points": [
+        "PCE Inflation & Fed Policy: Core PCE revised down to 0.29% m/m (from 0.32%) due to weaker PPI components - PCE Inflation & Fed Policy: Headline PCE at 0.30% m/m (down from 0.34%), signaling cooling inflation trend - PCE Inflation & Fed Policy: Fed expected to raise rates by 25bp per meeting with terminal rate at 4.5%-4.75%"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -525,6 +678,23 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-4rqfqxuatsq-eec716",
+      "title": "UBS S&T Buy German Short End Covereds Versus KfW Robert Mathur 2026 11 13",
+      "institution": "UBS",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:22:27Z",
+      "summary_points": [
+        "Covered Bonds vs KfW: Buy at 16bp spread premium driven by safe asset demand (renewed credit uncertainty/French spread widening), diversification from bund/KfW funding risks (2027), and supply dynamics favoring covered bonds (KfW funding needs + Lander pressures) - Trade Execution: 20m DE000WBP0BK9 vs KfW 3■ 10/10/2028; Entry KfW+18bp, Profit KfW+10bp, Stop KfW+22bp; Strongest relative value vs KfW (1-4y) vs NRW (5-6y) - Corporate Risk Premium: DE CBs - NRW spread spiked Feb-26, signaling rising German corporate credit risk vs NRW due to geopolitical tensions (Ukraine war) and ECB policy uncertainty, with NRW/KfW 5Y declining as safe-haven demand surges - WUWGR Liquidity Event: March 2026 low (2.405) in WUWGR (vs KFW) indicates liquidity crisis/credit downgrade risk for German utilities, with recovery reflecting market reassessment amid geopolitical stress"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
