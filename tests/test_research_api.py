@@ -1226,7 +1226,7 @@ def test_pro_search_cannot_surface_a_corpus_row_the_catalog_has_not_admitted(cli
     )
 
 
-def test_search_restricts_visibility_before_ranking_and_limit(client):
+def test_search_restricts_visibility_before_ranking_and_limit(client, monkeypatch):
     """An eligible preview hit must not disappear behind stronger private hits.
 
     This executes real FTS5 with a catalog-admitted old document, a public
@@ -1269,15 +1269,40 @@ def test_search_restricts_visibility_before_ranking_and_limit(client):
     corpus_mod.reset_cache()
     _bust_cache()
 
+    # Assert the route uses pre-LIMIT eligibility on the ACTUAL FTS5 query.
+    # Native BM25 ties/frequencies differ across SQLite builds, so the order
+    # of two equally eligible Pro documents is not a stable API contract.
+    actual_search = corpus_mod.search
+    observed_allowed_ids = []
+
+    def traced_search(conn, query, **kwargs):
+        allowed = kwargs.get("allowed_ids")
+        assert isinstance(allowed, set), "visibility must be applied before FTS LIMIT"
+        observed_allowed_ids.append(set(allowed))
+        return actual_search(conn, query, **kwargs)
+
+    monkeypatch.setattr(corpus_mod, "search", traced_search)
+
     anon = c.get("/api/research/search", params={"q": "hyperscaler", "limit": 1})
     assert anon.status_code == 200
     assert [it["id"] for it in anon.json()["items"]] == [_DOC_ID]
+    assert observed_allowed_ids[-1] == set(preview_ids)
 
     ctl["tier"] = "pro"
     pro = c.get("/api/research/search", params={"q": "hyperscaler", "limit": 1},
                 headers=_AUTH)
     assert pro.status_code == 200
-    assert [it["id"] for it in pro.json()["items"]] == [older_id]
+    assert pro.json()["count"] == 1
+    assert pro.json()["items"][0]["id"] in {_DOC_ID, older_id}
+    assert observed_allowed_ids[-1] == {*preview_ids, older_id}
+
+    # Unique title/summary keyword proves the older Pro document is reachable
+    # even when it is beyond the fixed public preview.
+    older = c.get("/api/research/search", params={"q": "outlook", "limit": 1},
+                  headers=_AUTH)
+    assert older.status_code == 200
+    assert [it["id"] for it in older.json()["items"]] == [older_id]
+    assert observed_allowed_ids[-1] == {*preview_ids, older_id}
 
 
 def test_search_reports_unavailable_when_visibility_cannot_be_established(client):
