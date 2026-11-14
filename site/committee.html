@@ -50,11 +50,12 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
 <link rel="stylesheet" href="theme.css?v=9bd171a6">
+<link rel="stylesheet" href="neural-map.css?v=598ee495">
 <script>
   window.SUPABASE_CFG = {"url": "https://fsldfzlxyavsuwqbceod.supabase.co", "anonKey": "sb_publishable_f33VG8fZuyIZPl_lZIDX3w_RFuuZtpv", "ref": "fsldfzlxyavsuwqbceod"};
   window.COMMITTEE_GENERATED = "2026-11-14 10:24";
 </script>
-<link rel="stylesheet" href="assets/css/c488e51e.css?v=c488e51e">
+<link rel="stylesheet" href="assets/css/743dd929.css?v=743dd929">
 <link rel="preload" as="style" href="product-nav-icons.css?v=432f6a45">
 <link rel="preload" as="style" href="navigation-refresh.css?v=edfd821b">
 </head>
@@ -501,43 +502,12 @@
     </details>
   </div>
 
-  <!-- 2. SYNAPSE MAP -->
+  <!-- 2. SYNAPSE MAP: the same graph surface is retained by the Observatory embed. -->
   <div class="panel section-lazy" id="cm_graph_section" style="order:20">
-    <div class="panel-head">
-      <h1><span class="l-en">Synapse Map — watch the machine think</span><span class="l-zh">突触地图 — 看机器思考</span></h1>
-      <span class="is-context-badge"><span class="l-en">CONTEXT ONLY</span><span class="l-zh">仅供参考</span></span>
-    </div>
-    <div class="plain-eng">
-      <strong><span class="l-en">In plain English:</span><span class="l-zh">用白话说：</span></strong>
-      <span class="l-en">This is a curated map of the brain — engines grouped into four regions (US Equity, China &amp; Intl, Signals &amp; Options, Macro &amp; Meta), each linked to the sectors, regimes, and theses they reason about. Bright <span style="color:var(--ink-up, var(--up))">green</span> and <span style="color:var(--ink-down, var(--down))">red</span> pulses are the only <em>graded</em> signals (co-firing confirms / contradictions). Thin structural links are for legibility (display-only). Toggle "all nodes" to bring back every other node — the full radar thesis fan and the raw data-plumbing underlay. Zoom and pan to explore; click any node for its connections.</span><span class="l-zh">这是大脑的精选地图——引擎分为四个区域（美股、中国及国际、信号与期权、宏观与元），分别连接至其推理的板块、周期和论点。亮<span style="color:var(--ink-up, var(--up))">绿色</span>和<span style="color:var(--ink-down, var(--down))">红色</span>脉冲是唯一<em>评分</em>信号（共触发确认/矛盾）。细结构连线仅供展示。切换"全部节点"可显示所有其他节点——完整的雷达论点扇形和原始数据管道底层。缩放平移以探索；点击任意节点查看其连接。</span>
-    </div>
-    <div class="cm-loading" id="graph_loading"><span class="l-en">Loading synapse map…</span><span class="l-zh">加载突触地图中…</span></div>
-    <div class="graph-wrap" id="graph_wrap">
-      <canvas id="graph_canvas" aria-label="Synapse map — Neural Web confluence graph"></canvas>
-      <div class="graph-controls">
-        <button class="gc-btn" id="gc_plus" aria-label="Zoom in">+</button>
-        <button class="gc-btn" id="gc_minus" aria-label="Zoom out">−</button>
-        <button class="gc-btn" id="gc_fit" aria-label="Fit all" style="font-size:11px;width:auto;padding:0 8px"><span class="l-en">fit</span><span class="l-zh">适配</span></button>
-        <button class="gc-btn" id="gc_wire" style="font-size:11px;width:auto;padding:0 8px" data-tip-en="Show every other node — full thesis fan + data plumbing" data-tip-zh="显示所有其他节点——完整论点扇形 + 数据管道"><span class="l-en">all nodes</span><span class="l-zh">全部节点</span></button>
-        <button class="gc-btn" id="gc_fs" aria-label="Fullscreen" style="font-size:16px">⛶</button>
+    <div class="graph-wrap neural-map" id="graph_wrap" aria-busy="true">
+      <div class="nm-fallback" id="graph_loading" role="status">
+        <p><span class="l-en">Preparing the intelligence network…</span><span class="l-zh">正在准备智脑网络…</span></p>
       </div>
-      <div class="graph-tooltip" id="graph_tooltip"></div>
-      <div class="graph-info-card" id="graph_info_card"></div>
-    </div>
-    <div id="graph_subset_note" style="font-size:0.82em;color:var(--muted);margin:0.5em 0 0.1em"></div>
-    <div class="graph-legend" id="graph_legend">
-      <span class="gl-dot" style="background:#e2e8f0"></span> <span class="l-en">Core</span><span class="l-zh">核心</span> &nbsp;
-      <span class="gl-dot" style="background:#4da3ff"></span> <span class="l-en">US Equity</span><span class="l-zh">美股</span> &nbsp;
-      <span class="gl-dot" style="background:#f0883e"></span> <span class="l-en">China &amp; Intl</span><span class="l-zh">中国及国际</span> &nbsp;
-      <span class="gl-dot" style="background:#a78bfa"></span> <span class="l-en">Signals &amp; Options</span><span class="l-zh">信号与期权</span> &nbsp;
-      <span class="gl-dot" style="background:#2dd4bf"></span> <span class="l-en">Macro &amp; Meta</span><span class="l-zh">宏观与元</span> &nbsp;
-      <span class="gl-dot" style="background:#f472b6"></span> <span class="l-en">Regime</span><span class="l-zh">周期</span> &nbsp;
-      <span class="gl-dot" style="background:#f5b301"></span> <span class="l-en">Sector</span><span class="l-zh">板块</span> &nbsp;
-      <span class="gl-dot" style="background:#7dd3fc"></span> <span class="l-en">Thesis</span><span class="l-zh">论点</span> &nbsp;&nbsp;
-      <span class="gl-line" style="background:rgba(34,197,94,.75);height:2.5px;border-radius:1px"></span> <span class="l-en">Confirms (graded)</span><span class="l-zh">确认（评分）</span> &nbsp;
-      <span class="gl-line" style="background:rgba(239,68,68,.75);height:2.5px;border-radius:1px;border-top:2px dashed rgba(239,68,68,.9)"></span> <span class="l-en">Contradicts (graded)</span><span class="l-zh">矛盾（评分）</span> &nbsp;
-      <span class="gl-line" style="background:rgba(100,130,180,.45);height:1px;border-radius:1px"></span> <span class="l-en">Structure (display-only)</span><span class="l-zh">结构（展示用）</span> &nbsp;
-      <span class="gl-dot" style="background:rgba(91,157,255,.5);width:7px;height:7px"></span> <span class="l-en">Moving light = signal transmission, refreshed nightly</span><span class="l-zh">移动光点 = 信号传输（每晚刷新）</span>
     </div>
   </div>
 
@@ -878,6 +848,7 @@
 <script src="watchstore.js?v=7"></script>
 <!-- Shared nav chrome: settings-gear (theme + language live inside it), account system, mega-menu. -->
 <script src="theme.js?v=aa83d371" defer></script>
+<script data-sync src="neural-map.js?v=08fa8ffb"></script>
 <script>
 (function () {
   'use strict';
@@ -1233,26 +1204,7 @@
   }
 
   // ── Living synapse map (curated neural-web engine) ────────────────────────
-  var _graphData = null;
-  var _graphPositions = null;
-  var _graphNodes = null;
-  var _graphEdges = null;
-  var _graphView = { scale: 1, tx: 0, ty: 0 };
-  var _selectedNode = null;
-  var _graphRaf = null;
-  var _graphPhase = 0;
-  var _graphPulses = [];
-  var _graphDust = [];
-  var _graphSpawnTimer = 0;
-  var _graphReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var _graphDpr = Math.min(window.devicePixelRatio || 1, 2);
-  var _graphHovered = null;
-  var _tooltipThrottle = false;
-  var _graphShowWiring = false;
-  var _graphDefaultNodes = [];
-  var _graphDefaultEdges = [];
-  var _graphWiringNodes = [];
-  var _graphWiringEdges = [];
+  var _graphRequest = null;
 
   // ── Curated display maps ──────────────────────────────────────────────────
   var ENGINE_NAMES_EN = {
@@ -1318,14 +1270,6 @@
     'placebo': 'meta', 'desk:ai_desk': 'meta'
   };
 
-  var LOBE_COLORS = {
-    us: '#4da3ff', intl: '#f0883e', signals: '#a78bfa', meta: '#2dd4bf',
-    core: '#e2e8f0',
-    regime: '#f472b6', sector: '#f5b301', complex: '#f5b301',
-    thesis: '#7dd3fc', signal: '#94a3b8',
-    'wiring-module': '#8b7cf6', 'wiring-artifact': '#38bdf8'
-  };
-
   var COMPLEX_MEMBERS = {
     'complex:ai_compute': ['sector:xlk'],
     'complex:software': ['sector:xlk', 'sector:xlc'],
@@ -1376,19 +1320,6 @@
     return ENGINE_NAMES_ZH[bare] || ENGINE_NAMES_ZH[id] || engineLabelEn(id);
   }
 
-  function nodeDisplayColor(n) {
-    if (n.type === 'core') return LOBE_COLORS.core;
-    if (n.type === 'hub')  return LOBE_COLORS.sector; // sectors_hub → sector amber
-    if (n.type === 'engine') return LOBE_COLORS[n._lobe] || '#4da3ff';
-    if (n.type === 'regime') return LOBE_COLORS.regime;
-    if (n.type === 'sector' || n.type === 'complex') return LOBE_COLORS.sector;
-    if (n.type === 'thesis') return LOBE_COLORS.thesis;
-    if (n.type === 'signal') return LOBE_COLORS.signal;
-    if (n.type === 'wiring-module') return LOBE_COLORS['wiring-module'];
-    if (n.type === 'wiring-artifact') return LOBE_COLORS['wiring-artifact'];
-    return '#94a3b8';
-  }
-
   function nodeRadius(n) {
     if (n.type === 'core')   return 18; // FIX 6: r~18
     if (n.type === 'hub')    return 11; // FIX 2: hub nodes r~11
@@ -1406,28 +1337,31 @@
     return 4;
   }
 
-  var TYPE_LABEL_EN = { core:'CORE', hub:'HUB', engine:'ENGINE', regime:'REGIME', complex:'COMPLEX', sector:'SECTOR', thesis:'THESIS', signal:'SIGNAL', 'wiring-module':'MODULE', 'wiring-artifact':'ARTIFACT' };
-  var TYPE_LABEL_ZH = { core:'核心', hub:'枢纽', engine:'引擎', regime:'周期', complex:'复合板块', sector:'板块', thesis:'论点', signal:'信号', 'wiring-module':'模块', 'wiring-artifact':'工件' };
-
   function loadGraph() {
-    document.getElementById('graph_loading').style.display = 'block';
-    fetch('neuralwebdata/confluence_graph.json')
-      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (d) {
-        _graphData = d;
-        document.getElementById('graph_loading').style.display = 'none';
-        initGraph(d);
+    if (_graphRequest) return _graphRequest;
+    var root = document.getElementById('graph_wrap');
+    if (window.NeuralMap) window.NeuralMap.unmount(root);
+    root.setAttribute('aria-busy', 'true');
+    root.innerHTML = '<div class="nm-fallback" role="status"><p><span class="l-en">Preparing the intelligence network…</span><span class="l-zh">正在准备智脑网络…</span></p></div>';
+    _graphRequest = fetch('neuralwebdata/confluence_graph.json')
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(data) {
+        if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.edges)) throw new Error('Invalid graph payload');
+        if (!data.nodes.length) {
+          root.innerHTML = '<div class="nm-fallback" role="status"><p><span class="l-en">No graph snapshot is available yet. Check again after the next data publication.</span><span class="l-zh">暂无图谱快照。请在下一次数据发布后重试。</span></p><button type="button" class="nm-btn" data-graph-retry><span class="l-en">Try again</span><span class="l-zh">重试</span></button></div>';
+          root.querySelector('[data-graph-retry]').addEventListener('click', loadGraph);
+          return;
+        }
+        initGraph(data);
       })
-      .catch(function (err) {
-        // Re-show the loader: initGraph can throw AFTER the loader was hidden,
-        // which used to leave a blank canvas with no failure indication.
-        var gl = document.getElementById('graph_loading');
-        gl.style.display = 'block';
-        gl.textContent = (document.documentElement.getAttribute('data-lang') === 'zh')
-          ? '突触地图渲染失败 — ' + (err && err.message ? err.message : 'unknown error')
-          : 'Synapse map failed to render — ' + (err && err.message ? err.message : 'unknown error');
+      .catch(function(err) {
+        if (window.NeuralMap) window.NeuralMap.unmount(root);
+        root.innerHTML = '<div class="nm-fallback" role="status"><p><span class="l-en">The network could not be loaded. Your other dashboard sections remain available.</span><span class="l-zh">网络加载失败。仪表盘的其他部分仍可使用。</span></p><button type="button" class="nm-btn" data-graph-retry><span class="l-en">Try again</span><span class="l-zh">重试</span></button></div>';
+        root.querySelector('[data-graph-retry]').addEventListener('click', loadGraph);
         if (window.console && console.error) console.error('synapse map:', err);
-      });
+      })
+      .finally(function() { root.setAttribute('aria-busy', 'false'); _graphRequest = null; });
+    return _graphRequest;
   }
 
   // ── Curated endpoint names for materialized synapse nodes ────────────────
@@ -1778,7 +1712,7 @@
           // Materialize a signal endpoint with curated label
           var label = friendlyArtifactLabel(id);
           var labelZh = friendlyArtifactLabelZh(id);
-          var sn = { id: id, type: 'signal', label: label, labelZh: labelZh, meta: {}, _synapseEndpoint: true };
+          var sn = { id: id, type: 'signal', label: label, labelZh: labelZh, meta: (rawById[id] && rawById[id].meta) || {}, _synapseEndpoint: true };
           addDN(sn);
           // FIX 3: Route endpoint to owning cluster, not always core
           var clusterTarget = endpointCluster(id, allRegimesId, defNodeSet);
@@ -1786,7 +1720,7 @@
           addDE(id, clusterTarget, 'structure');
         }
       });
-      if (e.src !== e.dst) defEdges.push({ src: e.src, dst: e.dst, edge_type: e.edge_type }); // skip degenerate self-synapse
+      if (e.src !== e.dst) defEdges.push(Object.assign({}, e)); // retain display-only notes and evidence metadata; skip self-synapse
     });
 
     // INVARIANT: every node has degree ≥ 1
@@ -1815,11 +1749,11 @@
             id: id,
             type: isModule ? 'wiring-module' : 'wiring-artifact',
             label: friendlyArtifactLabel(id), labelZh: friendlyArtifactLabelZh(id),
-            meta: {}
+            meta: (rawById[id] && rawById[id].meta) || {}
           });
         }
       });
-      wirEdges.push({ src: e.src, dst: e.dst, edge_type: 'wiring' });
+      wirEdges.push(Object.assign({}, e));
     });
 
     // "All nodes" also restores every raw semantic node the curated default
@@ -1845,7 +1779,7 @@
         wtype = 'wiring-artifact';
       }
       addWN({ id: n.id, type: wtype, label: label, labelZh: labelZh, meta: n.meta || {} });
-      wirEdges.push({ src: n.id, dst: parent, edge_type: 'wiring' });
+      wirEdges.push({ src: n.id, dst: parent, edge_type: 'structure', display_only: true });
     });
 
     return {
@@ -1855,50 +1789,6 @@
       thesisOverflow: thesisOverflow,
       engineCount: engNodes.length
     };
-  }
-
-  function buildSpatialGrid(positions, cellSize) {
-    var grid = {};
-    Object.keys(positions).forEach(function(id){
-      var p = positions[id];
-      var cx = Math.floor(p.x / cellSize);
-      var cy = Math.floor(p.y / cellSize);
-      var key = cx + ',' + cy;
-      if (!grid[key]) grid[key] = [];
-      grid[key].push(id);
-    });
-    return { grid: grid, cellSize: cellSize };
-  }
-
-  function hitTestGrid(gobj, x, y, positions, radii) {
-    var cs = gobj.cellSize;
-    var cx = Math.floor(x / cs), cy = Math.floor(y / cs);
-    var best = null, bestDist = Infinity;
-    for (var dx = -1; dx <= 1; dx++) {
-      for (var dy = -1; dy <= 1; dy++) {
-        var key = (cx+dx) + ',' + (cy+dy);
-        var cell = gobj.grid[key];
-        if (!cell) continue;
-        cell.forEach(function(id){
-          var p = positions[id];
-          var d = Math.sqrt((p.x-x)*(p.x-x)+(p.y-y)*(p.y-y));
-          var r = (radii[id] || 5) + 4;
-          if (d < r && d < bestDist) { bestDist = d; best = id; }
-        });
-      }
-    }
-    return best;
-  }
-
-  function computeBezier(pa, pb, edgeIdx) {
-    var mx = (pa.x + pb.x) / 2;
-    var my = (pa.y + pb.y) / 2;
-    var dx = pb.x - pa.x, dy = pb.y - pa.y;
-    var len = Math.sqrt(dx*dx + dy*dy) || 1;
-    var perpX = -dy / len, perpY = dx / len;
-    var sign = (edgeIdx % 2 === 0) ? 1 : -1;
-    var offset = len * (0.08 + (edgeIdx % 7) * 0.009) * sign;
-    return { cx: mx + perpX*offset, cy: my + perpY*offset };
   }
 
   // ── Force-directed layout ─────────────────────────────────────────────────
@@ -2090,21 +1980,14 @@
 
   function initGraph(data) {
     var curatedResult = buildCuratedGraph(data);
-    _graphDefaultNodes = curatedResult.defaultNodes;
-    _graphDefaultEdges = curatedResult.defaultEdges;
-    _graphWiringNodes  = curatedResult.wiringNodes;
-    _graphWiringEdges  = curatedResult.wiringEdges;
-
-    var synapseCount   = curatedResult.synapseCount;
-    var thesisOverflow = curatedResult.thesisOverflow || [];
-    var engCount2      = curatedResult.engineCount;
-
+    var synapseCount = curatedResult.synapseCount;
+    var engCount2 = curatedResult.engineCount;
     // Update hero chips
     var chipN = document.getElementById('chip_neurons_val');
     var chipS = document.getElementById('chip_synapses_val');
     var chipE = document.getElementById('chip_engines_val');
     var chipA = document.getElementById('chip_asof_val');
-    if (chipN) chipN.textContent = _graphDefaultNodes.length;
+    if (chipN) chipN.textContent = curatedResult.defaultNodes.length;
     if (chipS) chipS.textContent = synapseCount;
     if (chipE) chipE.textContent = engCount2;
     if (chipA && data.asof) chipA.textContent = data.asof.slice(0,10);
@@ -2158,977 +2041,12 @@
       }
     })();
 
-    // Active node/edge sets (switch by wiring toggle)
-    var allNodes, allEdges;
-    function activateLayer() {
-      if (_graphShowWiring) {
-        allNodes = _graphDefaultNodes.concat(_graphWiringNodes);
-        allEdges = _graphDefaultEdges.concat(_graphWiringEdges);
-      } else {
-        allNodes = _graphDefaultNodes;
-        allEdges = _graphDefaultEdges;
-      }
-      _graphNodes = allNodes;
-      _graphEdges = allEdges;
-    }
-    activateLayer();
-
-    // Subset note
-    function updateSubsetNote() {
-      var subEl = document.getElementById('graph_subset_note');
-      if (!subEl) return;
-      var en = 'Showing ' + _graphDefaultNodes.length + ' nodes ('
-        + engCount2 + ' engines, '
-        + _graphDefaultNodes.filter(function(n){ return n.type==='regime'; }).length + ' regimes, '
-        + (_graphDefaultNodes.filter(function(n){ return n.type==='sector'||n.type==='complex'; }).length) + ' sectors, '
-        + _graphDefaultNodes.filter(function(n){ return n.type==='thesis'; }).length + ' radar theses) &mdash; '
-        + synapseCount + ' graded synapses.'
-        + (thesisOverflow.length ? ' (' + thesisOverflow.length + ' thesis keys capped for clarity.)' : '')
-        + (_graphShowWiring ? ' <strong>+' + _graphWiringNodes.length + ' more nodes shown (full thesis fan + data plumbing).</strong>' : ' Toggle &#8220;all nodes&#8221; to add every other node.');
-      var zh = '显示' + _graphDefaultNodes.length + '个节点（'
-        + engCount2 + '个引擎，'
-        + _graphDefaultNodes.filter(function(n){ return n.type==='regime'; }).length + '个周期，'
-        + (_graphDefaultNodes.filter(function(n){ return n.type==='sector'||n.type==='complex'; }).length) + '个板块，'
-        + _graphDefaultNodes.filter(function(n){ return n.type==='thesis'; }).length + '个雷达论点）&mdash;'
-        + synapseCount + '个评分突触。'
-        + (thesisOverflow.length ? '（' + thesisOverflow.length + '个论点主题已上限压缩。）' : '')
-        + (_graphShowWiring ? '<strong>已额外显示 ' + _graphWiringNodes.length + ' 个节点（完整论点扇形 + 数据管道）。</strong>' : '切换"全部节点"以添加所有其他节点。');
-      subEl.innerHTML = '<span class="l-en">' + en + '</span><span class="l-zh">' + zh + '</span>';
-    }
-    updateSubsetNote();
-
-    var canvas = document.getElementById('graph_canvas');
-    var W = canvas.offsetWidth || 800;
-    var H = canvas.getBoundingClientRect().height || 640;
-    if (H < 100) H = 640;
-
-    // Force-directed layout
-    var layoutResult = runForceLayout(allNodes, allEdges.filter(function(e){ return e.edge_type !== 'wiring'; }), W, H, false);
-    var positions = layoutResult.positions;
-    var radii = layoutResult.radii;
-    _graphPositions = positions;
-
-    // Precompute bezier for all edges
-    allEdges.forEach(function(e, i){
-      var pa2 = positions[e.src], pb5 = positions[e.dst];
-      if (!pa2 || !pb5) return;
-      var bz = computeBezier(pa2, pb5, i);
-      e._cx = bz.cx; e._cy = bz.cy;
+    // One presentation owner; stable world coordinates make resize and the
+    // expanded layer independent of the layout solver and preserve orientation.
+    var layout = runForceLayout(curatedResult.defaultNodes, curatedResult.defaultEdges, 1200, 760, false);
+    window.NeuralMap.mount(document.getElementById('graph_wrap'), {
+      graph: curatedResult, layout: layout, asof: data.asof
     });
-
-    // Seed dust
-    if (!_graphReducedMotion) {
-      _graphDust = [];
-      var dprng = mulberry32(99);
-      for (var di2 = 0; di2 < 40; di2++) {
-        _graphDust.push({
-          x: dprng()*W, y: dprng()*H,
-          vx: (dprng()-0.5)*0.25, vy: (dprng()-0.5)*0.25,
-          alpha: 0.015 + dprng()*0.02
-        });
-      }
-    }
-
-    var _spatialGrid = buildSpatialGrid(positions, 40);
-
-    var confirmEdges = allEdges.filter(function(e){ return e.edge_type==='confirms' && e._cx!=null; });
-    var contradictEdges = allEdges.filter(function(e){ return e.edge_type==='contradicts' && e._cx!=null; });
-
-    // Pre-seed travelers on graded edges
-    if (!_graphReducedMotion) {
-      _graphPulses = [];
-      var seedPrng = mulberry32(77);
-      confirmEdges.concat(contradictEdges).forEach(function(e){
-        _graphPulses.push({ edge: e, t: seedPrng(), type: e.edge_type, persistent: true });
-      });
-    }
-
-    // Wiring toggle
-    // Cheap, cached placement for the wiring (plumbing) layer. The default web
-    // NEVER moves; wiring nodes are seeded near their placed neighbours and given
-    // a short wiring-only relaxation (default nodes held fixed). O(w²·iters) with
-    // a distance cutoff — a few ms — instead of the full O(n²) force sim, which
-    // froze the tab for ~6 s on 500+ nodes.
-    var _wiringLaidOut = false;
-    function placeWiringNodes() {
-      var wprng = mulberry32(4242);
-      var wadj = {};
-      _graphWiringNodes.forEach(function(n){ wadj[n.id] = []; });
-      _graphWiringEdges.forEach(function(e){
-        if (wadj[e.src]) wadj[e.src].push(e.dst);
-        if (wadj[e.dst]) wadj[e.dst].push(e.src);
-      });
-      // Seed: centroid of already-placed neighbours (default web), else phyllotaxis ring.
-      _graphWiringNodes.forEach(function(n, i){
-        if (positions[n.id]) return;
-        var sx = 0, sy = 0, k = 0;
-        (wadj[n.id] || []).forEach(function(nb){ var p = positions[nb]; if (p) { sx += p.x; sy += p.y; k++; } });
-        if (k) {
-          positions[n.id] = { x: sx/k + (wprng()-0.5)*44, y: sy/k + (wprng()-0.5)*44 };
-        } else {
-          var ang = i * 2.39996;
-          var rr = Math.min(W, H) * 0.55 * Math.sqrt(i / Math.max(_graphWiringNodes.length, 1));
-          positions[n.id] = { x: W*0.5 + Math.cos(ang)*rr, y: H*0.5 + Math.sin(ang)*rr };
-        }
-        if (!radii[n.id]) radii[n.id] = nodeRadius(n);
-      });
-      // Wiring-only relaxation; default nodes are read but never moved.
-      var wn = _graphWiringNodes;
-      for (var it = 0; it < 16; it++) {
-        for (var a = 0; a < wn.length; a++) {
-          var pa = positions[wn[a].id];
-          var fx = 0, fy = 0;
-          for (var b = 0; b < wn.length; b++) {
-            if (a === b) continue;
-            var pb = positions[wn[b].id];
-            var dx = pa.x - pb.x, dy = pa.y - pb.y;
-            var d2 = dx*dx + dy*dy || 1;
-            if (d2 < 6400) { var f = 620 / d2; fx += dx*f; fy += dy*f; }
-          }
-          var nbrs = wadj[wn[a].id] || [];
-          for (var c = 0; c < nbrs.length; c++) {
-            var pn = positions[nbrs[c]];
-            if (pn) { fx += (pn.x - pa.x)*0.02; fy += (pn.y - pa.y)*0.02; }
-          }
-          pa.x += Math.max(-12, Math.min(12, fx));
-          pa.y += Math.max(-12, Math.min(12, fy));
-        }
-      }
-    }
-
-    var _wireBtn = document.getElementById('gc_wire');
-    if (_wireBtn) {
-      _wireBtn.addEventListener('click', function(){
-        _graphShowWiring = !_graphShowWiring;
-        _wireBtn.style.color = _graphShowWiring ? 'var(--up)' : '';
-        _wireBtn.style.borderColor = _graphShowWiring ? 'var(--up)' : '';
-        activateLayer();
-        if (_graphShowWiring && !_wiringLaidOut) {
-          placeWiringNodes();   // cheap; cached so repeat toggles are instant
-          _wiringLaidOut = true;
-        }
-        // Recompute beziers for the active edges + rebuild grid from active nodes only
-        var activePos = {};
-        allNodes.forEach(function(n){ if (positions[n.id]) activePos[n.id] = positions[n.id]; });
-        allEdges.forEach(function(e, i){
-          var pp1 = positions[e.src], pp2 = positions[e.dst];
-          if (!pp1 || !pp2) return;
-          var bz2 = computeBezier(pp1, pp2, i);
-          e._cx = bz2.cx; e._cy = bz2.cy;
-        });
-        _spatialGrid = buildSpatialGrid(activePos, 40);
-        // Reseed graded pulses (references may have new bezier control points)
-        if (!_graphReducedMotion) {
-          var ce2 = allEdges.filter(function(e){ return e.edge_type==='confirms' && e._cx!=null; });
-          var de2 = allEdges.filter(function(e){ return e.edge_type==='contradicts' && e._cx!=null; });
-          var sp2 = mulberry32(77);
-          _graphPulses = ce2.concat(de2).map(function(e){ return { edge: e, t: sp2(), type: e.edge_type, persistent: true }; });
-        }
-        updateSubsetNote();
-        zoomToFit(canvas.clientWidth || W, canvas.clientHeight || H);
-        if (_graphReducedMotion) drawFrame(performance.now());
-      });
-    }
-
-    // True when the synapse map's wrapper is the active fullscreen element.
-    function isGraphFullscreen() {
-      var wrapEl = document.getElementById('graph_wrap');
-      var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-      return !!(fsEl && wrapEl && (fsEl === wrapEl || fsEl.contains(wrapEl)));
-    }
-
-    // Setup canvas (DPR-aware)
-    function resizeCanvas() {
-      var wrapEl = document.getElementById('graph_wrap');
-      var fs = isGraphFullscreen();
-      var cw, ch;
-      if (fs) {
-        // Fullscreen: size the canvas explicitly to the fullscreen viewport.
-        // A CSS `height:100vh` class is unreliable here — `vh` resolves against
-        // the document viewport, not the fullscreened element — so the canvas
-        // could stay 640px and render as a strip across the top of the screen.
-        cw = (wrapEl && wrapEl.clientWidth)  || window.innerWidth;
-        ch = (wrapEl && wrapEl.clientHeight) || window.innerHeight;
-        canvas.style.width  = cw + 'px';
-        canvas.style.height = ch + 'px';
-      } else {
-        // Normal: drop any fullscreen inline sizing so the stylesheet size
-        // (width:100%, height:640px) applies again, then measure it.
-        canvas.style.width  = '';
-        canvas.style.height = '';
-        // offsetWidth can be 0 pre-layout or while a parent is display:none;
-        // ResizeObserver refits once real dimensions arrive.
-        cw = (wrapEl && wrapEl.offsetWidth) || canvas.offsetWidth || 800;
-        ch = canvas.offsetHeight || 640;
-        if (ch < 100) ch = 640;
-      }
-      canvas.width  = cw * _graphDpr;
-      canvas.height = ch * _graphDpr;
-      // Zoom to fit; fullscreen allows a larger scale so a big display zooms IN.
-      zoomToFit(cw, ch, fs ? 4.5 : 2);
-    }
-
-    function zoomToFit(cw, ch, maxScale) {
-      // Fullscreen fills a whole monitor, so allow a larger fit scale: on a big
-      // display the graph zooms IN to fill the screen (past the wiring-label
-      // min-zoom of 1.4, so titles render) instead of floating small in the middle.
-      if (maxScale == null) maxScale = isGraphFullscreen() ? 4.5 : 2;
-      // Fit only the ACTIVE layer (default web, or default+wiring when toggled on);
-      // stale wiring positions must not blow up the bounding box when wiring is off.
-      var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      var any = false;
-      allNodes.forEach(function(n){
-        var p = positions[n.id];
-        if (!p) return;
-        any = true;
-        if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
-        if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
-      });
-      if (!any) return;
-      var pad = 44; // FIX 5: 44px margin to fill both width and height
-      var scaleX = (cw - 2*pad) / (maxX - minX || 1);
-      var scaleY = (ch - 2*pad) / (maxY - minY || 1);
-      var s = Math.min(scaleX, scaleY, maxScale);
-      var midX = (minX+maxX)/2, midY = (minY+maxY)/2;
-      _graphView.scale = s;
-      _graphView.tx = cw/2 - midX*s;
-      _graphView.ty = ch/2 - midY*s;
-    }
-
-    resizeCanvas();
-
-    // ResizeObserver
-    if (window.ResizeObserver) {
-      var ro = new ResizeObserver(function(){
-        resizeCanvas();
-        if (!_graphRaf) drawFrame(performance.now()); // repaint when loop is paused/static
-      });
-      ro.observe(document.getElementById('graph_wrap') || canvas);
-    }
-
-    // Fullscreen
-    document.getElementById('gc_fs').addEventListener('click', function(){
-      var wrap = document.getElementById('graph_wrap');
-      if (wrap && wrap.requestFullscreen) wrap.requestFullscreen();
-      else if (wrap && wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
-    });
-    function onFullscreenChange(){
-      // Resize now (snappy) and again after the browser settles the transition,
-      // so the canvas grows/shrinks to match the fullscreen viewport and re-fits.
-      resizeCanvas();
-      setTimeout(resizeCanvas, 100);
-    }
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
-
-    // Controls
-    document.getElementById('gc_plus').addEventListener('click', function(){
-      zoomAt(canvas.clientWidth/2, canvas.clientHeight/2, 1.4);
-    });
-    document.getElementById('gc_minus').addEventListener('click', function(){
-      zoomAt(canvas.clientWidth/2, canvas.clientHeight/2, 1/1.4);
-    });
-    document.getElementById('gc_fit').addEventListener('click', function(){
-      zoomToFit(canvas.clientWidth, canvas.clientHeight);
-    });
-
-    function zoomAt(cx, cy, factor) {
-      var newScale = Math.max(0.35, Math.min(9, _graphView.scale * factor));
-      var ratio = newScale / _graphView.scale;
-      _graphView.tx = cx - (cx - _graphView.tx) * ratio;
-      _graphView.ty = cy - (cy - _graphView.ty) * ratio;
-      _graphView.scale = newScale;
-    }
-
-    // Pointer events for pan/zoom/pinch
-    var pointers = {};
-    var lastPinchDist = null;
-    var dragging = false, lastPX = 0, lastPY = 0;
-
-    canvas.addEventListener('wheel', function(e){
-      e.preventDefault();
-      var rect = canvas.getBoundingClientRect();
-      var cx = e.clientX - rect.left, cy = e.clientY - rect.top;
-      var factor = e.deltaY < 0 ? 1.12 : 1/1.12;
-      zoomAt(cx, cy, factor);
-    }, { passive: false });
-
-    canvas.addEventListener('pointerdown', function(e){
-      pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
-      var pc = Object.keys(pointers).length;
-      if (pc === 1) { dragging = true; lastPX = e.clientX; lastPY = e.clientY; lastPinchDist = null; }
-    });
-    canvas.addEventListener('pointermove', function(e){
-      pointers[e.pointerId] = { x: e.clientX, y: e.clientY };
-      var pkeys = Object.keys(pointers);
-      if (pkeys.length === 2) {
-        // Pinch zoom
-        var p1 = pointers[pkeys[0]], p2 = pointers[pkeys[1]];
-        var dist = Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
-        if (lastPinchDist !== null) {
-          var rect2 = canvas.getBoundingClientRect();
-          var mcx = ((p1.x+p2.x)/2) - rect2.left;
-          var mcy = ((p1.y+p2.y)/2) - rect2.top;
-          zoomAt(mcx, mcy, dist/lastPinchDist);
-        }
-        lastPinchDist = dist;
-        dragging = false;
-      } else if (pkeys.length === 1 && dragging) {
-        _graphView.tx += e.clientX - lastPX;
-        _graphView.ty += e.clientY - lastPY;
-        lastPX = e.clientX; lastPY = e.clientY;
-        // Tooltip: throttled hit test during drag
-        if (!_tooltipThrottle) {
-          _tooltipThrottle = true;
-          requestAnimationFrame(function(){
-            _tooltipThrottle = false;
-            updateHover(e);
-          });
-        }
-      }
-    });
-    canvas.addEventListener('pointerup', function(e){
-      delete pointers[e.pointerId];
-      if (Object.keys(pointers).length === 0) { dragging = false; lastPinchDist = null; }
-    });
-    canvas.addEventListener('pointercancel', function(e){ delete pointers[e.pointerId]; dragging = false; lastPinchDist = null; });
-    canvas.addEventListener('pointermove', function(e){
-      if (dragging) return;
-      if (!_tooltipThrottle) {
-        _tooltipThrottle = true;
-        requestAnimationFrame(function(){
-          _tooltipThrottle = false;
-          updateHover(e);
-        });
-      }
-    });
-
-    canvas.addEventListener('dblclick', function(e){
-      var rect = canvas.getBoundingClientRect();
-      zoomAt(e.clientX - rect.left, e.clientY - rect.top, 1.8);
-    });
-
-    // Click to select
-    canvas.addEventListener('click', function(e){
-      if (dragging) return;
-      var rect = canvas.getBoundingClientRect();
-      var wx = (e.clientX - rect.left - _graphView.tx) / _graphView.scale;
-      var wy = (e.clientY - rect.top  - _graphView.ty) / _graphView.scale;
-      var hit = hitTestGrid(_spatialGrid, wx, wy, positions, radii);
-      if (hit) {
-        selectNode(hit);
-      } else {
-        _selectedNode = null;
-        var ic = document.getElementById('graph_info_card');
-        if (ic) { ic.classList.remove('visible'); }
-      }
-    });
-
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') {
-        _selectedNode = null;
-        var ic = document.getElementById('graph_info_card');
-        if (ic) ic.classList.remove('visible');
-      }
-    });
-
-    function updateHover(e) {
-      var rect = canvas.getBoundingClientRect();
-      var wx = (e.clientX - rect.left - _graphView.tx) / _graphView.scale;
-      var wy = (e.clientY - rect.top  - _graphView.ty) / _graphView.scale;
-      var hit = hitTestGrid(_spatialGrid, wx, wy, positions, radii);
-      _graphHovered = hit;
-      canvas.style.cursor = hit ? 'pointer' : 'grab';
-
-      var isZhH = document.documentElement.getAttribute('data-lang') === 'zh';
-      var tooltip = document.getElementById('graph_tooltip');
-      if (hit) {
-        var n = allNodes.filter(function(x){ return x.id===hit; })[0];
-        if (n) {
-          var degIn  = allEdges.filter(function(e2){ return e2.dst===hit; }).length;
-          var degOut = allEdges.filter(function(e2){ return e2.src===hit; }).length;
-          var rows = (n.meta && n.meta.n_spine_rows) ? n.meta.n_spine_rows : null;
-          var displayLabel = isZhH ? (n.labelZh || n.label || n.id) : (n.label || n.id);
-          var typeLabelH = isZhH ? (TYPE_LABEL_ZH[n.type] || n.type) : (TYPE_LABEL_EN[n.type] || n.type);
-          tooltip.innerHTML = '<strong>' + esc(displayLabel) + '</strong><br>'
-            + '<span style="font-size:10px;color:var(--muted)">'+esc(n.id)+'</span><br>'
-            + '<span style="font-size:11px">'+esc(typeLabelH)+(rows?' · spine rows: '+rows:'')+'</span><br>'
-            + '<span style="font-size:11px;color:var(--muted)">in: '+degIn+' · out: '+degOut+'</span>';
-          var cx = e.clientX - rect.left + 14;
-          var cy = e.clientY - rect.top  - 10;
-          if (cx + 270 > rect.width) cx = e.clientX - rect.left - 280;
-          tooltip.style.left = cx + 'px';
-          tooltip.style.top  = cy + 'px';
-          tooltip.classList.add('visible');
-        }
-      } else {
-        tooltip.classList.remove('visible');
-      }
-    }
-
-    function selectNode(id) {
-      _selectedNode = id;
-      var n = allNodes.filter(function(x){ return x.id===id; })[0];
-      if (!n) return;
-
-      var ic = document.getElementById('graph_info_card');
-      if (!ic) return;
-      ic.classList.add('visible');
-
-      var rows = (n.meta && n.meta.n_spine_rows) ? n.meta.n_spine_rows : null;
-      var conns = { confirms: [], contradicts: [], structure: [], wiring: [] };
-      allEdges.forEach(function(e){
-        if (e.src === id || e.dst === id) {
-          var otherId = e.src === id ? e.dst : e.src;
-          var otherN = allNodes.filter(function(x){ return x.id===otherId; })[0];
-          var label = otherN ? (otherN.label||otherN.id) : otherId;
-          if (label.length > 22) label = label.slice(0,20)+'…';
-          var et = e.edge_type || 'structure';
-          conns[et] = conns[et] || [];
-          conns[et].push({ id: otherId, label: label });
-        }
-      });
-
-      var isZhS = document.documentElement.getAttribute('data-lang')==='zh';
-      var displayLabel = isZhS ? (n.labelZh || n.label || n.id) : (n.label || n.id);
-      var typeLabel = isZhS ? (TYPE_LABEL_ZH[n.type] || n.type) : (TYPE_LABEL_EN[n.type] || n.type);
-      var lobeStr = (n._lobe && n._lobe !== 'core') ? (' · ' + n._lobe) : '';
-
-      var html = '<div class="graph-info-title">'+esc(displayLabel)+'</div>'
-        + '<div class="graph-info-type">'+esc(typeLabel)+esc(lobeStr)+(rows?' · '+rows+' spine rows':'')+'</div>'
-        + '<div style="font-size:10px;color:var(--muted);word-break:break-all;margin-bottom:6px">'+esc(n.id)+'</div>';
-
-      if (conns.confirms.length) {
-        html += '<div class="graph-info-section" style="color:var(--ink-up, var(--up))">'+(isZhS?'确认（评分）':'Confirms (graded)')+'</div>';
-        conns.confirms.slice(0,8).forEach(function(nb){
-          html += '<span class="graph-nbr-chip" data-id="'+esc(nb.id)+'">'+esc(nb.label)+'</span>';
-        });
-        if (conns.confirms.length > 8) html += '<span class="graph-nbr-chip" style="color:var(--muted)">+' + (conns.confirms.length-8) + '</span>';
-      }
-      if (conns.contradicts.length) {
-        html += '<div class="graph-info-section" style="color:var(--ink-down, var(--down))">'+(isZhS?'矛盾（评分）':'Contradicts (graded)')+'</div>';
-        conns.contradicts.slice(0,8).forEach(function(nb){
-          html += '<span class="graph-nbr-chip" data-id="'+esc(nb.id)+'">'+esc(nb.label)+'</span>';
-        });
-      }
-      if (conns.structure.length) {
-        html += '<div class="graph-info-section">'+(isZhS?'结构连接 ('+conns.structure.length+')':'Structure ('+conns.structure.length+')')+'</div>';
-        conns.structure.slice(0,8).forEach(function(nb){
-          html += '<span class="graph-nbr-chip" data-id="'+esc(nb.id)+'">'+esc(nb.label)+'</span>';
-        });
-        if (conns.structure.length > 8) html += '<span class="graph-nbr-chip" style="color:var(--muted)">+' + (conns.structure.length-8) + '</span>';
-      }
-      if (conns.wiring && conns.wiring.length) {
-        html += '<div class="graph-info-section">'+(isZhS?'其他 ('+conns.wiring.length+')':'Other ('+conns.wiring.length+')')+'</div>';
-        conns.wiring.slice(0,5).forEach(function(nb){
-          html += '<span class="graph-nbr-chip" data-id="'+esc(nb.id)+'">'+esc(nb.label)+'</span>';
-        });
-        if (conns.wiring.length > 5) html += '<span class="graph-nbr-chip" style="color:var(--muted)">+' + (conns.wiring.length-5) + '</span>';
-      }
-
-      ic.innerHTML = html;
-      ic.querySelectorAll('.graph-nbr-chip[data-id]').forEach(function(chip){
-        chip.addEventListener('click', function(){
-          var nid = chip.dataset.id;
-          if (positions[nid]) { animatePanTo(nid); selectNode(nid); }
-        });
-      });
-    }
-
-    function animatePanTo(id) {
-      var p = positions[id];
-      if (!p) return;
-      var cw2 = canvas.clientWidth, ch2 = canvas.clientHeight;
-      var targetTx = cw2/2 - p.x * _graphView.scale;
-      var targetTy = ch2/2 - p.y * _graphView.scale;
-      var startTx = _graphView.tx, startTy = _graphView.ty;
-      var start = performance.now();
-      var dur = 400;
-      function step(now) {
-        var prog = Math.min((now - start) / dur, 1);
-        var ease = 1 - Math.pow(1-prog, 3);
-        _graphView.tx = startTx + (targetTx - startTx)*ease;
-        _graphView.ty = startTy + (targetTy - startTy)*ease;
-        if (prog < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    // Build neighbor set for dimming
-    function getNeighborSet(id) {
-      var s = {};
-      s[id] = true;
-      allEdges.forEach(function(e){
-        if (e.src===id) s[e.dst]=true;
-        if (e.dst===id) s[e.src]=true;
-      });
-      return s;
-    }
-
-    // CSS var reader
-    var _cssCache = {};
-    function cssVar(name) {
-      if (_cssCache[name]) return _cssCache[name];
-      var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-      if (v) _cssCache[name] = v;
-      return v || (name==='--up'?'#22c55e':name==='--down'?'#ef4444':name==='--link'?'#5b9dff':'#8b93a1');
-    }
-
-    function hexAlpha(hex, alpha) {
-      var r = parseInt(hex.slice(1,3)||'88',16)||136;
-      var g = parseInt(hex.slice(3,5)||'88',16)||136;
-      var b = parseInt(hex.slice(5,7)||'88',16)||136;
-      return 'rgba('+r+','+g+','+b+','+alpha+')';
-    }
-
-    function parseHex(hex) {
-      return { r: parseInt(hex.slice(1,3),16)||0, g: parseInt(hex.slice(3,5),16)||0, b: parseInt(hex.slice(5,7),16)||0 };
-    }
-
-    var lastFrameTime = 0;
-
-    function drawFrame(ts) {
-      var dt = ts - lastFrameTime; lastFrameTime = ts;
-      if (dt > 200) dt = 16;
-
-      // Update pulses
-      if (!_graphReducedMotion) {
-        _graphPulses.forEach(function(pulse){
-          var speed = pulse.speed || 0.00035;
-          pulse.t += dt * speed;
-          if (pulse.persistent && pulse.t > 1) pulse.t -= 1;
-        });
-        _graphPulses = _graphPulses.filter(function(p){ return p.t <= 1 || p.persistent; });
-      }
-
-      var cvs = document.getElementById('graph_canvas');
-      var ctx = cvs.getContext('2d');
-      var cw = cvs.width, ch = cvs.height;
-      ctx.clearRect(0, 0, cw, ch);
-      ctx.save();
-      ctx.scale(_graphDpr, _graphDpr);
-
-      var canW = cw / _graphDpr, canH = ch / _graphDpr;
-
-      ctx.save();
-      ctx.translate(_graphView.tx, _graphView.ty);
-      ctx.scale(_graphView.scale, _graphView.scale);
-
-      var scale = _graphView.scale;
-      var COL_UP3   = cssVar('--up');
-      var COL_DOWN3 = cssVar('--down');
-      var COL_LINK3 = cssVar('--link');
-      var isZhD = document.documentElement.getAttribute('data-lang') === 'zh';
-
-      // Ambient dust
-      if (!_graphReducedMotion && _graphDust.length) {
-        _graphDust.forEach(function(d){
-          d.x += d.vx; d.y += d.vy;
-          if (d.x < 0) d.x = W; if (d.x > W) d.x = 0;
-          if (d.y < 0) d.y = H; if (d.y > H) d.y = 0;
-          ctx.beginPath();
-          ctx.arc(d.x, d.y, 0.9/scale, 0, 2*Math.PI);
-          ctx.fillStyle = hexAlpha(COL_LINK3, d.alpha);
-          ctx.fill();
-        });
-      }
-
-      var neighborSet = _selectedNode ? getNeighborSet(_selectedNode) : null;
-
-      // ── LAYER 1: Wiring edges (dimmest, underlay) ──────────────────────
-      if (_graphShowWiring) {
-        allEdges.forEach(function(e){
-          if (e.edge_type !== 'wiring') return;
-          var pa = positions[e.src], pb = positions[e.dst];
-          if (!pa || !pb || e._cx == null) return;
-          var alpha = 0.10;
-          if (neighborSet) {
-            if (!neighborSet[e.src] && !neighborSet[e.dst]) alpha = 0.025;
-            else alpha = 0.22;
-          }
-          ctx.globalAlpha = alpha;
-          ctx.strokeStyle = '#6b7a90';
-          ctx.lineWidth = 0.5 / scale;
-          ctx.setLineDash([]);
-          ctx.beginPath();
-          ctx.moveTo(pa.x, pa.y);
-          ctx.quadraticCurveTo(e._cx, e._cy, pb.x, pb.y);
-          ctx.stroke();
-        });
-        ctx.globalAlpha = 1;
-      }
-
-      // ── LAYER 2: Structure edges ────────────────────────────────────────
-      allEdges.forEach(function(e){
-        if (e.edge_type !== 'structure') return;
-        var pa = positions[e.src], pb = positions[e.dst];
-        if (!pa || !pb) return;
-        if (e._cx == null) return;
-        // Color by child node's type (src is typically the "child")
-        var childNode = allNodes.filter(function(n){ return n.id === e.src; })[0];
-        var col = childNode ? nodeDisplayColor(childNode) : '#5b7090';
-        var baseAlpha = 0.32;
-        if (neighborSet) {
-          if (!neighborSet[e.src] && !neighborSet[e.dst]) baseAlpha = 0.06;
-          else if (_selectedNode === e.src || _selectedNode === e.dst) baseAlpha = 0.7;
-        }
-        ctx.globalAlpha = baseAlpha;
-        ctx.strokeStyle = hexAlpha(col, 1);
-        ctx.lineWidth = 1.1 / scale;
-        ctx.setLineDash([]);
-        ctx.beginPath();
-        ctx.moveTo(pa.x, pa.y);
-        ctx.quadraticCurveTo(e._cx, e._cy, pb.x, pb.y);
-        ctx.stroke();
-      });
-      ctx.globalAlpha = 1;
-
-      // ── LAYER 3: Graded edges (confirms / contradicts) ─────────────────
-      allEdges.forEach(function(e){
-        var isConf = e.edge_type === 'confirms';
-        var isContra = e.edge_type === 'contradicts';
-        if (!isConf && !isContra) return;
-        var pa = positions[e.src], pb = positions[e.dst];
-        if (!pa || !pb || e._cx == null) return;
-
-        var alpha = 0.80, lw = 2.4; // FIX 6: slightly brighter base
-        if (neighborSet) {
-          if (!neighborSet[e.src] && !neighborSet[e.dst]) { alpha = 0.09; lw = 1; }
-          else if (_selectedNode === e.src || _selectedNode === e.dst) { alpha = 0.98; lw = 3.0; }
-        }
-
-        ctx.globalAlpha = alpha;
-        ctx.lineWidth = lw / scale;
-
-        var col = isConf ? COL_UP3 : COL_DOWN3;
-        if (isContra) ctx.setLineDash([7/scale, 5/scale]);
-        else ctx.setLineDash([]);
-
-        // FIX 6: stronger glow so green/red pulses pop against structure links
-        if (alpha > 0.5) {
-          ctx.shadowBlur = 10 / scale; // FIX 6: increased from 6 → 10
-          ctx.shadowColor = hexAlpha(col, 0.65); // FIX 6: increased from 0.45 → 0.65
-        }
-
-        try {
-          var grd = ctx.createLinearGradient(pa.x, pa.y, pb.x, pb.y);
-          var rgb = parseHex(col.length===7?col:'#22c55e');
-          grd.addColorStop(0, 'rgba('+rgb.r+','+rgb.g+','+rgb.b+',0.3)');
-          grd.addColorStop(1, 'rgba('+rgb.r+','+rgb.g+','+rgb.b+',1)');
-          ctx.strokeStyle = grd;
-        } catch(ex) { ctx.strokeStyle = col; }
-
-        ctx.beginPath();
-        ctx.moveTo(pa.x, pa.y);
-        ctx.quadraticCurveTo(e._cx, e._cy, pb.x, pb.y);
-        ctx.stroke();
-        ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-        ctx.setLineDash([]);
-      });
-      ctx.globalAlpha = 1;
-
-      // ── LOBE HULLS (zoomed out) ─────────────────────────────────────────
-      if (scale < 1.3 && scale >= 0.28) {
-        var LOBE_EN = { us:'US EQUITY', intl:'CHINA & INTL', signals:'SIGNALS & OPTIONS', meta:'MACRO & META' };
-        var LOBE_ZH = { us:'美股', intl:'中国及国际', signals:'信号与期权', meta:'宏观与元' };
-        Object.keys(LOBE_ANCHORS).forEach(function(lobe){
-          var la2 = LOBE_ANCHORS[lobe];
-          var ang4 = la2.angle * Math.PI / 180;
-          var cx = (0.5 + la2.r * Math.cos(ang4)) * W;
-          var cy2 = (0.5 + la2.r * Math.sin(ang4)) * H;
-          var col2 = LOBE_COLORS[lobe] || '#4da3ff';
-          // FIX 6: Soft radial hull with raised alpha + 1px tinted ring
-          try {
-            var hullGrd = ctx.createRadialGradient(cx, cy2, 0, cx, cy2, 100);
-            hullGrd.addColorStop(0, hexAlpha(col2, 0.10)); // FIX 6: raised from 0.07
-            hullGrd.addColorStop(0.7, hexAlpha(col2, 0.05));
-            hullGrd.addColorStop(1, hexAlpha(col2, 0.0));
-            ctx.fillStyle = hullGrd;
-            ctx.beginPath();
-            ctx.ellipse(cx, cy2, 100, 78, 0, 0, 2*Math.PI);
-            ctx.fill();
-            // Tinted ring
-            ctx.strokeStyle = hexAlpha(col2, 0.18);
-            ctx.lineWidth = 1.0 / scale;
-            ctx.setLineDash([]);
-            ctx.stroke();
-          } catch(ex){}
-          // Label chip
-          if (scale >= 0.35) {
-            var lobeNm = isZhD ? LOBE_ZH[lobe] : LOBE_EN[lobe];
-            var fs3 = Math.max(7.5, 8/scale);
-            ctx.font = '700 ' + fs3 + 'px -apple-system,sans-serif';
-            ctx.fillStyle = hexAlpha(col2, 0.55);
-            ctx.textAlign = 'center';
-            ctx.fillText(lobeNm, cx, cy2 - 78 / scale);
-          }
-        });
-        // Sector ring label
-        if (scale >= 0.35) {
-          var fs4 = Math.max(7.5, 8/scale);
-          ctx.font = '600 ' + fs4 + 'px -apple-system,sans-serif';
-          ctx.fillStyle = hexAlpha(LOBE_COLORS.sector, 0.5);
-          ctx.textAlign = 'center';
-          ctx.fillText(isZhD ? '板块' : 'SECTORS', 0.78*W, 0.56*H);
-        }
-        // Regime arc label
-        if (scale >= 0.35) {
-          ctx.font = '600 ' + Math.max(7.5, 8/scale) + 'px -apple-system,sans-serif';
-          ctx.fillStyle = hexAlpha(LOBE_COLORS.regime, 0.5);
-          ctx.textAlign = 'center';
-          ctx.fillText(isZhD ? '周期' : 'REGIMES', 0.5*W, 0.07*H);
-        }
-      }
-
-      // ── NODES ──────────────────────────────────────────────────────────
-
-      // Label collision state — built per frame
-      var placedBoxes = [];
-      var labelPriorityOrder = [];
-      var forceShowLabels = {};  // nodeId → true (hovered/selected/neighbor)
-      if (neighborSet) {
-        Object.keys(neighborSet).forEach(function(id){ forceShowLabels[id] = true; });
-      }
-      if (_graphHovered) forceShowLabels[_graphHovered] = true;
-      if (_selectedNode) forceShowLabels[_selectedNode] = true;
-
-      // Sort by draw priority for label placement
-      var priorityMap = { core: 0, hub: 0, engine: 1, regime: 2, complex: 3, thesis: 4, sector: 5, signal: 6, 'wiring-module': 7, 'wiring-artifact': 8 };
-
-      // Draw nodes (all), collect label candidates
-      var labelCandidates = [];
-      allNodes.forEach(function(n, i){
-        var p = positions[n.id];
-        if (!p) return;
-        var r = radii[n.id] || 4;
-        var isCore = n.type === 'core';
-        var breathing = !_graphReducedMotion && (n.type === 'engine' || isCore || n.type === 'hub');
-        var displayR = breathing ? r * (1 + 0.05 * Math.sin(_graphPhase * (isCore ? 0.5 : n.type === 'hub' ? 0.6 : 0.8) + i * 0.7)) : r;
-
-        var alpha = 1;
-        if (neighborSet && !neighborSet[n.id]) alpha = 0.12;
-        var isHovered = _graphHovered === n.id;
-        var isSelected = _selectedNode === n.id;
-
-        ctx.globalAlpha = alpha;
-
-        var col = nodeDisplayColor(n);
-
-        // FIX 6: Core — layered radial glow (outer soft halo + bright inner core) + breathing
-        if (isCore && !_graphReducedMotion) {
-          var haloPulse = 0.5 + 0.5 * Math.sin(_graphPhase * 0.5);
-          // Outer soft halo
-          try {
-            var haloGrd = ctx.createRadialGradient(p.x, p.y, displayR, p.x, p.y, displayR * 3.5);
-            haloGrd.addColorStop(0, hexAlpha(col, 0.18 * haloPulse * alpha));
-            haloGrd.addColorStop(0.5, hexAlpha(col, 0.08 * haloPulse * alpha));
-            haloGrd.addColorStop(1, hexAlpha(col, 0.0));
-            ctx.fillStyle = haloGrd;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, displayR * 3.5, 0, 2*Math.PI);
-            ctx.fill();
-          } catch(ex){}
-          // Bright inner corona
-          try {
-            var coronaGrd = ctx.createRadialGradient(p.x, p.y, displayR * 0.6, p.x, p.y, displayR * 1.8);
-            coronaGrd.addColorStop(0, hexAlpha(col, 0.45 * alpha));
-            coronaGrd.addColorStop(1, hexAlpha(col, 0.0));
-            ctx.fillStyle = coronaGrd;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, displayR * 1.8, 0, 2*Math.PI);
-            ctx.fill();
-          } catch(ex){}
-        }
-
-        // FIX 6: Hub nodes — subtle glow
-        if (n.type === 'hub' && scale > 0.25) {
-          try {
-            var hubGrd = ctx.createRadialGradient(p.x, p.y, displayR * 0.5, p.x, p.y, displayR * 2.2);
-            hubGrd.addColorStop(0, hexAlpha(col, 0.25 * alpha));
-            hubGrd.addColorStop(1, hexAlpha(col, 0.0));
-            ctx.fillStyle = hubGrd;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, displayR * 2.2, 0, 2*Math.PI);
-            ctx.fill();
-          } catch(ex){}
-        }
-
-        // Glow for prominent nodes
-        if ((n.type === 'engine' || isCore || n.type === 'hub') && scale > 0.25) {
-          ctx.shadowBlur = (isCore ? 24 : n.type === 'hub' ? 14 : 12) / scale; // FIX 6: stronger core glow
-          ctx.shadowColor = hexAlpha(col, (isCore ? 0.9 : 0.65) * alpha);
-        }
-
-        // Radial gradient soma
-        try {
-          var grd2 = ctx.createRadialGradient(p.x - displayR*0.32, p.y - displayR*0.32, 0, p.x, p.y, displayR);
-          grd2.addColorStop(0, hexAlpha(col, 0.96));
-          grd2.addColorStop(1, hexAlpha(col, 0.38));
-          ctx.fillStyle = grd2;
-        } catch(ex) { ctx.fillStyle = hexAlpha(col, 0.72); }
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, displayR, 0, 2*Math.PI);
-        ctx.fill();
-        ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-
-        // Rim
-        var rimAlpha = isHovered ? 1 : isSelected ? 0.95 : 0.4;
-        ctx.strokeStyle = isSelected ? COL_LINK3 : hexAlpha(col, rimAlpha);
-        ctx.lineWidth = (isHovered || isSelected ? 2.2 : 1.0) / scale;
-        ctx.globalAlpha = Math.min(alpha * 1.2, 1);
-        ctx.stroke();
-
-        ctx.globalAlpha = 1;
-
-        // Queue label candidate
-        labelCandidates.push({ n: n, p: p, displayR: displayR, alpha: alpha, isHovered: isHovered, isSelected: isSelected, priority: priorityMap[n.type] != null ? priorityMap[n.type] : 9 });
-      });
-
-      // ── LABEL COLLISION PASS ──────────────────────────────────────────
-      labelCandidates.sort(function(a, b){ return a.priority - b.priority; });
-      var isZhLabel = document.documentElement.getAttribute('data-lang') === 'zh';
-
-      labelCandidates.forEach(function(lc2){
-        var n = lc2.n, p = lc2.p;
-        var force = forceShowLabels[n.id];
-
-        // Min-zoom gate per priority
-        var minZoom = 0;
-        if (n.type === 'core' || n.type === 'hub' || n.type === 'engine') minZoom = 0;
-        else if (n.type === 'regime' || n.type === 'complex') minZoom = 0.48;
-        else if (n.type === 'thesis' || n.type === 'sector') minZoom = 0.82;
-        else if (n.type === 'signal') minZoom = 1.0;
-        else minZoom = 1.4; // wiring
-
-        if (!force && scale < minZoom) return;
-
-        var isBold = (n.type === 'core' || n.type === 'hub' || n.type === 'engine' || lc2.isSelected);
-        var fontSizePx = Math.max(10, Math.min(13, 11 / scale));
-        var fontSizeCanvas = fontSizePx / scale;
-        ctx.font = (isBold ? '700 ' : '') + fontSizeCanvas + 'px -apple-system,sans-serif';
-
-        var rawLabel = isZhLabel ? (n.labelZh || n.label || n.id) : (n.label || n.id);
-        var label = rawLabel.replace(/_/g, ' ');
-        if (label.length > 18) label = label.slice(0, 16) + '…';
-
-        var tw = ctx.measureText(label).width;
-        var lx = p.x - tw / 2;
-        var ly = p.y + lc2.displayR + (fontSizeCanvas * 0.3) + 2 / scale;
-        var box = { x1: lx - 2/scale, y1: ly - fontSizeCanvas, x2: lx + tw + 2/scale, y2: ly + 2/scale };
-
-        // Overlap test (skip if not forced)
-        if (!force) {
-          for (var bi = 0; bi < placedBoxes.length; bi++) {
-            var pb6 = placedBoxes[bi];
-            if (box.x1 < pb6.x2 && box.x2 > pb6.x1 && box.y1 < pb6.y2 && box.y2 > pb6.y1) return; // overlap → skip
-          }
-        }
-        placedBoxes.push(box);
-
-        ctx.fillStyle = lc2.isSelected ? COL_LINK3 : (lc2.alpha < 0.5 ? hexAlpha('#8b99b5', 0.5) : '#e6edf7');
-        ctx.globalAlpha = Math.max(lc2.alpha, 0.25);
-        ctx.textAlign = 'center';
-        ctx.fillText(label, p.x, ly);
-        ctx.globalAlpha = 1;
-      });
-
-      // ── PULSE TRAVELERS ───────────────────────────────────────────────
-      if (!_graphReducedMotion) {
-        _graphPulses.forEach(function(pulse){
-          var e = pulse.edge;
-          var pa2 = positions[e.src], pb2 = positions[e.dst];
-          if (!pa2 || !pb2 || e._cx == null) return;
-          var t2 = pulse.t;
-
-          function bezierAt(t3) {
-            var mt = 1 - t3;
-            return {
-              x: mt*mt*pa2.x + 2*mt*t3*e._cx + t3*t3*pb2.x,
-              y: mt*mt*pa2.y + 2*mt*t3*e._cy + t3*t3*pb2.y
-            };
-          }
-
-          var pos2 = bezierAt(t2);
-          var isConf2 = pulse.type === 'confirms';
-          var pAlpha = 0.88;
-          var pR = 3.0 / scale;
-          var pCol = isConf2 ? COL_UP3 : COL_DOWN3;
-
-          if (neighborSet && !neighborSet[e.src] && !neighborSet[e.dst]) pAlpha *= 0.1;
-
-          // Fading ghost tail
-          for (var ghost = 3; ghost >= 0; ghost--) {
-            var ghostT = Math.max(0, t2 - ghost * 0.035);
-            var ghostPos = bezierAt(ghostT);
-            ctx.globalAlpha = pAlpha * (1 - ghost * 0.22) * 0.55;
-            ctx.beginPath();
-            ctx.arc(ghostPos.x, ghostPos.y, pR * (1 - ghost * 0.18), 0, 2*Math.PI);
-            ctx.fillStyle = pCol;
-            ctx.fill();
-          }
-
-          // Main dot with glow
-          ctx.globalAlpha = pAlpha;
-          ctx.shadowBlur = 9 / scale;
-          ctx.shadowColor = hexAlpha(pCol, 0.75);
-          ctx.beginPath();
-          ctx.arc(pos2.x, pos2.y, pR, 0, 2*Math.PI);
-          ctx.fillStyle = pCol;
-          ctx.fill();
-          ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
-          ctx.globalAlpha = 1;
-        });
-      }
-
-      ctx.restore(); // pop transform
-      ctx.restore(); // pop DPR scale
-
-      _graphPhase += 0.016;
-    }
-
-    // rAF loop with visibility pause
-    var _graphPaused = false;
-    var _io2 = window.IntersectionObserver ? new IntersectionObserver(function(entries){
-      entries.forEach(function(entry){
-        _graphPaused = !entry.isIntersecting;
-        if (!_graphPaused && !_graphRaf) startAnim();
-      });
-    }) : null;
-    if (_io2) _io2.observe(canvas);
-
-    document.addEventListener('visibilitychange', function(){
-      _graphPaused = document.hidden;
-      if (!_graphPaused && !_graphRaf) startAnim();
-    });
-
-    function startAnim() {
-      if (_graphRaf) return;
-      function loop(ts) {
-        if (_graphPaused) { _graphRaf = null; return; }
-        if (_graphReducedMotion) {
-          drawFrame(ts);
-          _graphRaf = null; // static: only redraw on interaction
-        } else {
-          drawFrame(ts);
-          _graphRaf = requestAnimationFrame(loop);
-        }
-      }
-      _graphRaf = requestAnimationFrame(loop);
-    }
-
-    if (!_graphReducedMotion) {
-      // Paint one frame synchronously: rAF is throttled to zero in hidden or
-      // prerendered tabs, and the canvas must not sit blank until first tick.
-      drawFrame(performance.now());
-      startAnim();
-    } else {
-      // Static render
-      drawFrame(performance.now());
-      // Redraw on interaction
-      canvas.addEventListener('click', function(){ drawFrame(performance.now()); });
-      canvas.addEventListener('wheel', function(){ drawFrame(performance.now()); });
-    }
   }
 
   // ── PR-4 M1: Today's Read / 今日读数 ─────────────────────────────────────

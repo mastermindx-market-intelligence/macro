@@ -343,7 +343,7 @@
     "tagline": {"en": "What is current, candidate, and archived", "zh": "何为现行、候选、归档", "role": "subtitle", "source": "NEW"},
     "current_label": {"en": "Current", "zh": "现行", "role": "label", "source": "NEW"},
     "candidate_label": {"en": "Candidate", "zh": "候选", "role": "label", "source": "NEW"},
-    "archive_label": {"en": "Archive", "zh": "归档", "role": "label", "source": "templates/committee.html.j2:1702"},
+    "archive_label": {"en": "Archive", "zh": "归档", "role": "label", "source": "templates/committee.html.j2:1594"},
     "toc_label": {"en": "Table of contents", "zh": "目录", "role": "label", "source": "NEW"},
     "built_asof": {"en": "Built {timestamp}", "zh": "生成于 {timestamp}", "role": "asof", "source": "templates/sector_central.html.j2:2510"},
     "generated_asof": {"en": "Generated {timestamp}", "zh": "生成于 {timestamp}", "role": "asof", "source": "templates/sector_central.html.j2:2510"},

@@ -4624,6 +4624,7 @@ CURATED_EXCLUSIVE = {
     # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
     "ci-control-plane-structure",
     "ci-control-plane-census",
+    "neural-map-browser",  # Shared Synapse map real-browser job; all nine fixture dependencies are explicitly scoped.
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on

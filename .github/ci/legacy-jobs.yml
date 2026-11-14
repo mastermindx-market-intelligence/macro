@@ -51811,6 +51811,38 @@ jobs:
       - name: K3-D Economic Propagation hypothesis contract and laundering kills
         run: python -m pytest tests/test_economic_propagation_hypothesis_contract.py tests/test_economic_propagation_source_grain.py tests/test_economic_propagation_v2.py tests/test_economic_propagation_v2_semantics.py tests/test_economic_propagation_native_carrier.py -q
 
+  neural-map-browser:
+    # Actual shared map and Admin embedding journeys; no live account/network.
+    if: ${{ false }}  # Executed by the incumbent ci-pack runner.
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/__init__.py"
+      - "tests/test_neural_map_browser.py"
+      - "tests/neural_map_fixture.py"
+      - "templates/committee.html.j2"
+      - "templates/neural-map.js"
+      - "templates/neural-map.css"
+      - "templates/theme.css"
+      - "admin/static/app.js"
+      - "site/neuralwebdata/confluence_graph.json"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install browser test dependencies
+        run: pip install pytest playwright==1.62.0
+      - name: install Chromium
+        run: |
+          timeout --signal=TERM --kill-after=15s 240s python -m playwright install --with-deps chromium \
+            || { echo "::warning::browser dependencies failed or stalled; installing browser only"; \
+                 timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
+      - name: shared Neural Web map browser journeys
+        run: MM_REQUIRE_BROWSER=1 NEURAL_MAP_FIXTURE_DIR= PYTHONDONTWRITEBYTECODE=1 python -m pytest tests/test_neural_map_browser.py -q
+
   bot-session-recovery-browser:
     # Exercise the real shipped broker + vendored GoTrue lifecycle, with a
     # synthetic provider and no live account or network. Browser absence is red.
