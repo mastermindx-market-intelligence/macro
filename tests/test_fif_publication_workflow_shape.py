@@ -12,8 +12,10 @@ stay in the owning curated job.
 """
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
+import sys
 from pathlib import Path
 
 import yaml
@@ -353,6 +355,91 @@ def _glob_matches(glob: str, path: str) -> bool:
     """The legacy-jobs path-filter semantics: ``**`` crosses directories, ``*`` does not."""
     pattern = re.escape(glob).replace(r"\*\*", ".*").replace(r"\*", "[^/]*")
     return re.fullmatch(pattern, path) is not None
+
+
+def _kernel_runner():
+    path = ROOT / "scripts" / "ci" / "run_fif_kernel_suites.py"
+    spec = importlib.util.spec_from_file_location("run_fif_kernel_suites", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_kernel_suite_uses_two_isolated_interpreters() -> None:
+    """The class-A kernel step is the hosted critical path.
+
+    Dispatch 41580998932 measured one interpreter at 73m50s. Shared xdist
+    workers on run 41601828795 were faster and leaked process state across
+    files. Two interpreters, one file each, keep the serial file contract.
+    """
+    manifest = yaml.safe_load(LEGACY_JOBS_PATH.read_text(encoding="utf-8"))["jobs"]
+    kernel = manifest[FKG_JOB]
+    install = next(step for step in kernel["steps"] if step.get("name") == "install minimal deps")
+    assert "pytest-xdist" not in str(install["run"]).split()
+    suite_step = next(step for step in kernel["steps"] if step.get("name") == FKG_SUITE_STEP)
+    tokens = str(suite_step["run"]).split()
+    assert tokens[:4] == ["python", "scripts/ci/run_fif_kernel_suites.py", "--workers", "2"]
+    files = tokens[4:]
+    runner = _kernel_runner()
+    runner.validate_invocation(2, files)
+    for suite in NEW_TEST_SUITES:
+        assert suite in files, suite
+    assert "scripts/ci/run_fif_kernel_suites.py" in [str(path) for path in kernel["paths"]]
+    # This guard owns FIF; other jobs retain their existing worker contracts.
+    shared_worker_steps = [
+        (job_id, step.get("name"))
+        for job_id, job in ((FKG_JOB, kernel),)
+        for step in job.get("steps") or []
+        if isinstance(step, dict) and "--dist loadfile" in str(step.get("run") or "")
+    ]
+    assert shared_worker_steps == []
+
+
+def test_kernel_runner_schedules_longest_first() -> None:
+    """Run 41613020910 serialized the two ~16m files; LPT starts them together."""
+    runner = _kernel_runner()
+    ordered = runner.schedule_files(
+        [
+            "tests/test_a_light.py",
+            "tests/test_fif_coverage_manifest.py",
+            "tests/test_b_light.py",
+            "tests/test_fundamental_forensics_production_publisher.py",
+            "tests/test_fif_a18_publish_fault_drill.py",
+        ]
+    )
+    assert ordered == [
+        "tests/test_fundamental_forensics_production_publisher.py",
+        "tests/test_fif_coverage_manifest.py",
+        "tests/test_fif_a18_publish_fault_drill.py",
+        "tests/test_a_light.py",
+        "tests/test_b_light.py",
+    ]
+    assert runner.FILE_WEIGHTS["tests/test_fundamental_forensics_production_publisher.py"] == 1018
+    assert runner.FILE_WEIGHTS["tests/test_fif_coverage_manifest.py"] == 959
+
+
+def test_kernel_runner_rejects_shared_workers(monkeypatch) -> None:
+    runner = _kernel_runner()
+    assert runner.main(["--workers", "4", "tests/test_fif_publication_workflow_shape.py"]) == 2
+    assert runner.main(["--workers", "2", "tests/nested/test_fif.py"]) == 2
+    assert runner.main(["--workers", "2", "tests/a.py", "tests/a.py"]) == 2
+    calls: list[list[str]] = []
+
+    def fake_run(cmd):
+        calls.append(list(cmd))
+
+        class Completed:
+            returncode = 0 if cmd[-1] != "tests/bad.py" else 1
+
+        return Completed()
+
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+    assert runner.main(["--workers", "2", "tests/a.py", "tests/b.py"]) == 0
+    assert sorted(calls) == sorted([
+        [sys.executable, "-m", "pytest", "-q", "tests/a.py"],
+        [sys.executable, "-m", "pytest", "-q", "tests/b.py"],
+    ])
+    assert runner.main(["--workers", "2", "tests/ok.py", "tests/bad.py"]) == 1
 
 
 def test_new_suites_wired_into_fif_kernel_guards() -> None:
