@@ -369,9 +369,10 @@ function routeFor(url) {
   return { status: 503, body: '{"detail":"missing fixture"}', contentType: 'application/json' };
 }
 
-var fetchCalls = [], heldResponses = {};
-function fetch(url) {
+var fetchCalls = [], fetchBodies = [], heldResponses = {};
+function fetch(url, options) {
   fetchCalls.push(String(url));
+  fetchBodies.push(options && options.body ? JSON.parse(options.body) : null);
   var route = routeFor(url);
   var status = route.status == null ? 200 : route.status;
   var body = route.body == null ? '' : String(route.body);
@@ -397,6 +398,7 @@ var fixtureAuth = scenario.authSubject ? {
     return Promise.resolve({ data: { session: authSubject ? { access_token: 'fixture-only', user: { id: authSubject } } : null } });
   } } }); }
 } : null;
+var windowListeners = {};
 var window = {
   location: location,
   history: history,
@@ -405,7 +407,7 @@ var window = {
   MDXAuth: fixtureAuth,
   MMBrain: null,
   matchMedia: function (query) { return { matches: !!scenario.mobile && query.indexOf('1120px') >= 0, addEventListener: function () {}, addListener: function () {} }; },
-  addEventListener: function () {},
+  addEventListener: function (name, fn) { (windowListeners[name] = windowListeners[name] || []).push(fn); },
   innerWidth: 1440
 };
 window.window = window;
@@ -442,6 +444,9 @@ function snapshot() {
     subtitle: byId['bci-queue-subtitle'].textContent,
     stance: byId['bci-decision-stance'].textContent,
     why: byId['bci-decision-why'].textContent,
+    cohortDraft: byId['bci-cohort-input'].value,
+    activeElement: document.activeElement && document.activeElement.id,
+    fetchBodies: fetchBodies.slice(),
     fetchCalls: fetchCalls.slice()
   };
 }
@@ -496,7 +501,21 @@ waitFor(function () { return settled(workspace.dataset.state || workspace.getAtt
           byId['bci-field-filter'].value = action.value;
           byId['bci-field-filter'].listeners.change.forEach(function (callback) { callback({ target: byId['bci-field-filter'] }); });
         }
-        else if (action.type === 'auth') {
+        else if (action.type === 'cohort-input') {
+          byId['bci-cohort-input'].focus();
+          byId['bci-cohort-input'].value = action.value;
+          byId['bci-cohort-input'].dispatchEvent({ type: 'input' });
+        } else if (action.type === 'compare') byId['bci-cohort-run'].click();
+        else if (action.type === 'compare-key') byId['bci-cohort-input'].dispatchEvent({ type: 'keydown', key: 'Enter', ctrlKey: !!action.ctrl, metaKey: !!action.meta });
+        else if (action.type === 'clear') byId['bci-clear'].click();
+        else if (action.type === 'language') {
+          html.setAttribute('data-lang', action.lang);
+          (documentListeners.langchange || []).forEach(function (callback) { callback({ type: 'langchange' }); });
+        } else if (action.type === 'window') document.querySelector('[data-window="' + action.value + '"]').click();
+        else if (action.type === 'popstate') {
+          history.replaceState(null, '', '/biocatalyst.html' + action.search);
+          (windowListeners.popstate || []).forEach(function (callback) { callback({ type: 'popstate' }); });
+        } else if (action.type === 'auth') {
           authSubject = action.subject || '';
           authListeners.forEach(function (callback) { callback(authSubject ? { id: authSubject } : null, action.event || 'SIGNED_IN'); });
         } else if (action.type === 'silent-principal-refresh') {

@@ -126,7 +126,7 @@
     facetsToken: 0,
     facetsController: null,
     cohort: [],
-    cohortText: '',
+    cohortText: '', // Raw textarea draft; cohort holds only the accepted request.
     peerNarrow: false,
     braid: [],
     stateCodes: [],
@@ -1059,7 +1059,7 @@
     ui.pcFrom.value = state.filters.pc_from;
     ui.pcTo.value = state.filters.pc_to;
     ui.review.value = state.filters.review_state;
-    ui.cohortInput.value = state.cohortText;
+    if (ui.cohortInput.value !== state.cohortText) ui.cohortInput.value = state.cohortText;
     ui.screenControls.hidden = !isScreenMode();
     ui.cohort.hidden = !isPeerMode();
     ui.reviewControl.hidden = !isChangeMode();
@@ -2637,12 +2637,12 @@
   }
   function resolveCohort() {
     var parsed = parseCohort(ui.cohortInput.value);
-    state.cohort = parsed;
     state.cohortText = ui.cohortInput.value;
     if (parsed.length && parsed.length < PEER_MIN_COHORT) {
       setNotice('stale', tr('List at least two trials to compare. One trial on its own is a dossier, not a comparison.', '请至少列出两项试验进行对照。单项试验属于档案，不构成对照。'));
       return;
     }
+    state.cohort = parsed;
     setNotice('', '');
     closeInspector({ restoreFocus: false, writeUrl: false, render: false });
     writeUrl();
@@ -2670,6 +2670,7 @@
     ui.condition.addEventListener('input', function () { window.clearTimeout(debounceId); debounceId = window.setTimeout(applyFilters, 260); });
     [ui.sponsor, ui.intervention].forEach(function (node) { node.addEventListener('input', function () { window.clearTimeout(debounceId); debounceId = window.setTimeout(applyFilters, 260); }); });
     [ui.field, ui.changeKind, ui.phase, ui.statusFilter, ui.studyType, ui.pcFrom, ui.pcTo, ui.review].forEach(function (node) { node.addEventListener('change', applyFilters); });
+    ui.cohortInput.addEventListener('input', function () { state.cohortText = ui.cohortInput.value; });
     ui.cohortRun.addEventListener('click', resolveCohort);
     ui.cohortInput.addEventListener('keydown', function (event) { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) resolveCohort(); });
     ui.modeButtons.forEach(function (button) { button.addEventListener('click', function () { setMode(button.getAttribute('data-mode'), button); }); });
