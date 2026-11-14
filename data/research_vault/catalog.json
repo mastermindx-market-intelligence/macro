@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T02:10:19.740576+00:00",
-  "count": 3335,
+  "generated_at": "2026-11-14T02:40:48.794444+00:00",
+  "count": 3336,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-e2x1lkcmtfh-c96667",
+      "title": "WEEKLY MARKET GUIDE",
+      "institution": "Raymond James",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T02:02:54Z",
+      "summary_points": [
+        "AI Infrastructure Rotation: Persistent selling in AI/data center stocks amid sector rotation, but fundamentals (semiconductor earnings visibility) remain strong; long-term thesis intact despite election volatility.",
+        "Market Bifurcation: 33% of S&P 500 constituents in bear markets (15.1% down 20-30%, 18.5% >30% down), while major indices near all-time highs, highlighting deep sector divergence.",
+        "Technical Resilience: S&P 500 holds 200-day MA with RSI not oversold, confirming bullish trend despite rotation waves; next critical test is reclaiming 200-DMA for bottom confirmation.",
+        "Fed Policy & Inflation: Markets price in December rate hike + hikes through 2027 due to persistent inflation (core Services/CPI elevated), driving rate-sensitive technicals and sector rotation dynamics."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-zsgvsit12vf-323bb3",
       "title": "BofA US Economic Weekly Fed call change: Adding a hike in Jan ’27",
