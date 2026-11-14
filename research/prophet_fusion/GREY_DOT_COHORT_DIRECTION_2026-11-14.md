@@ -120,14 +120,20 @@ boundary, double-charged cost avoidance, compounding identity and non-nesting pa
 extrema. Tests use synthetic inputs. The two real-data consumers above have separate
 actual execution receipts. This is author self-review, not an independent reviewer.
 
-CF-C1/C3/C4 are implemented and synthetically qualified. CF-C2 is qualified against
-the native event contract but has NOT been joined to the Fable team's screenshot
-sample; its exact event archive and research-schema mapping remain owed. CF-C5 has
-actual input-consumer proof; the added same-entry development attribution is explicitly
-post-hoc, not a new primary test. CF-C6 requires source publication/readback and the
-existing programme's intake. GitHub delivery never means T3 pickup or an accepted
-holdout release. Hosted CI, merge, installed consumer and scientific acceptance remain
-separate. All original numerical report/spec artifacts remain unchanged.
+CF-C1/C3/C4 are implemented and synthetically qualified. CF-C2 now also has actual
+consumer proof against the recovered **Prophet-owned** screenshot archive: all
+23,065 original SCREEN IDs are retained, with 22,860 prior-session date-proxy joins
+and 205 explicit incomplete-context rows. The original primary partition remains
+21,773 = 14,441 ANY + 7,332 A4; the other 1,292 remain unclassified. This does not
+mint native EntryEvent IDs or establish original live first-seen receipts.
+Source contracts, exact original registrations and actual aggregate receipts are in
+[prophet_screen_2026_11_14/README.md](prophet_screen_2026_11_14/README.md).
+CF-C5 has actual input-consumer proof; the added same-entry development attribution
+remains explicitly post-hoc, not a new primary test. CF-C6 requires source
+publication/readback and the existing programme's intake. GitHub delivery never means
+T3 pickup or an accepted holdout release. Hosted CI, merge, installed consumer and
+scientific acceptance remain separate. All original numerical report/spec artifacts
+remain unchanged.
 
 ## The three questions must have different comparisons
 
@@ -176,3 +182,28 @@ prior-only trait estimation before per-name fitting. Current screenshots, this a
 seen pilot and any reread development history are not clean new confirmation samples.
 Preserve the existing sealed releases and all negative constructions without inventing
 an extra approval ceremony or weakening a genuine data/estimability boundary.
+
+
+## Recovered original registration and current experiment boundary
+
+The source recovery now binds the native engine e999086d3fb1d627ff4eda4a2206c59884389b37,
+original G3 event/guard/gate artifacts, real63@1.0 ATR_c definition, known-date
+prefix proof and DOT-GATE-1 registration. Fifteen original registry records include
+the pre-run hash approvals, G1a cluster/fallback ruling, completion and leader
+acceptance. The original negative verdict remains intact; no screenshot study was
+rebuilt and no new outcome comparison was run.
+
+The new metadata-only bridge is tested in the incumbent prophet-lab CODE job and
+has a separate actual source-to-context receipt. It reads no outcome column and
+materializes no post-2019 event row. Its projection retains native coverage grades,
+missing context and absent primary classifications. Full-SCREEN80 gates remain
+retrospective development calibrations. Prefix visibility is not original first-seen
+evidence, and the original archive is not silently upgraded by the later W1 split/
+issuer-seam quarantine.
+
+The recovered W1 brief fixes m=44 and excludes day-constant VIX columns from its
+within-day screen. The [narrow context proposal](prophet_screen_2026_11_14/CONTEXT_TEST_PROPOSAL.md)
+makes the missing implied-VVIX question concrete but is unregistered and unexecuted.
+Reconcile any existing view-2/VOL owner, the native family budget and current
+split/label qualification before a new label join. Preserve the active W1 writer,
+the original holdouts and #11242's separate armed carrier.
