@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PTON-BULL-20261013",
-  "asof": "2026-11-09",
+  "asof": "2026-11-13",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 60.0,
-  "raw_confidence": 60.9,
-  "delta_vs_base": 0.0,
+  "management_confidence": 59.1,
+  "raw_confidence": 58.0,
+  "delta_vs_base": -0.9,
   "recommended_action": "hold",
   "human_state": "On Track",
   "components": {
     "validity": 100.0,
-    "progress": 37.7,
-    "pace": 47.5,
+    "progress": 31.8,
+    "pace": 36.3,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.684,
-    "dist_to_t1_r": 0.816,
-    "dist_to_t2_r": 2.316,
-    "horizon_pct_used": 57.8,
-    "p1": 0.4561,
-    "p2": 0.2281,
+    "dist_to_stop_r": 1.544,
+    "dist_to_t1_r": 0.956,
+    "dist_to_t2_r": 2.456,
+    "horizon_pct_used": 66.7,
+    "p1": 0.3626,
+    "p2": 0.1813,
     "p3": null,
-    "move_r": 0.684,
+    "move_r": 0.544,
     "mfe_r": 0.772,
     "mae_r": -0.281
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-10-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 26,
-  "tau": 0.5778
+  "days_elapsed": 30,
+  "tau": 0.6667
 }
