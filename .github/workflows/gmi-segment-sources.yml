@@ -5,6 +5,8 @@ name: gmi-segment-sources
 # opens a PR, or moves the shared fundamental_forensics/sec-source/v1 latest
 # pointer (pin syncs with publish_latest=False). Inputs reach the script through
 # env and are regex-validated before use; no input is interpolated into run:.
+# The `if: github.ref == 'refs/heads/main'` job guard is an accident guard, not a
+# security boundary: GitHub runs this file from the dispatched ref (COO ruling 111).
 on:
   workflow_dispatch:
     inputs:
