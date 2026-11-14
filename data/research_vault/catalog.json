@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T06:55:56.729040+00:00",
-  "count": 3349,
+  "generated_at": "2026-11-14T07:26:02.470912+00:00",
+  "count": 3350,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -881,6 +881,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-ymvmt7ccb2l-893b2d",
+      "title": "Global daily no retreat no add vance",
+      "institution": "Rabobank",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T11:32:36Z",
+      "summary_points": [
+        "Ukraine conflict escalation risk: US/Europe deadlock on peace terms; Russia rejects NATO peacekeepers and demands unacceptable security architecture (NATO limits, exercise restrictions), heightening military conflict risk with Moscow.",
+        "Middle East tensions: Houthi attacks on oil infrastructure, Iran’s NPT exit threat and nuclear weapon development, plus US-Israel military prep, signal escalating regional instability with regime-change and nuclear escalation risks.",
+        "US-China Tech Tensions Escalation: Nvidia CEO resignation signals tighter US AI chip export controls; cyber attack claims (Iran/China link) and geopolitical friction (e.g., Japan defense shifts, US oil sales in Venezuela) amplify trade/tech risks.",
+        "Critical Data & Regional Flows: Today’s Eurozone Q3 GDP (second read) and US October PPI; US-Venezuela oil sales, France’s agricultural sovereignty push, and Mercedes halting German investments highlight immediate trade/industrial policy shifts impacting supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 6,
       "language": "en",
       "needs_metadata": false
     },
