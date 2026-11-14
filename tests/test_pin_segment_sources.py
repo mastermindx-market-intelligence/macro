@@ -207,7 +207,7 @@ def test_workflow_every_job_main_guard_timeout_and_pinned_checkout():
     wf = _workflow()
     assert wf["jobs"], "workflow has no jobs"
     for job in wf["jobs"].values():
-        assert "github.ref == 'refs/heads/main'" in job["if"]
+        assert job["if"] == "github.ref == 'refs/heads/main'"
         assert job["timeout-minutes"] <= 60
         checkout = job["steps"][0]
         assert checkout["uses"] == "actions/checkout@v4"
@@ -223,6 +223,39 @@ def test_workflow_no_input_interpolation_inside_run():
             assert "${{ github.event." not in run
             assert "set -x" not in run
             assert "git push" not in run and "gh pr" not in run
+
+
+def _input_check_script():
+    """The workflow's own input-check prelude (regex vars + valid_input), verbatim."""
+    run = next(s["run"] for job in _workflow()["jobs"].values() for s in job["steps"]
+               if "valid_input()" in s.get("run", ""))
+    lines = run.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.strip().startswith("SNAPSHOT_RE="))
+    end = next(i for i, line in enumerate(lines) if i > start and line.strip() == "}")
+    return "\n".join(lines[start:end + 1])
+
+
+def test_workflow_input_checks_are_whole_string_and_refuse_line_breaks():
+    import subprocess
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+    assert "grep -Eq" not in text
+    prelude = _input_check_script()
+    snap = "ffsecsrc_" + "a" * 64
+    path = "research/theme_graph/sec_segment_20261114/request.json"
+    cases = [
+        (snap, "SNAPSHOT_RE", True),
+        (path, "PATH_RE", True),
+        (snap + "\n" + snap, "SNAPSHOT_RE", False),
+        ("x\n" + snap, "SNAPSHOT_RE", False),
+        (path + "\nresearch/theme_graph/sec_segment_20261114/b.json", "PATH_RE", False),
+        (path + "\r", "PATH_RE", False),
+        ("../" + path, "PATH_RE", False),
+        (snap + "0", "SNAPSHOT_RE", False),
+    ]
+    for value, var, ok in cases:
+        script = prelude + f'\nvalid_input "$VALUE" "${var}"'
+        proc = subprocess.run(["bash", "-c", script], env={"VALUE": value, "PATH": "/usr/bin:/bin"})
+        assert (proc.returncode == 0) is ok, (value, var)
 
 
 def test_workflow_secrets_only_four_names_and_only_in_env():
@@ -302,6 +335,30 @@ def test_pin_writes_report_snapshot_and_never_creates_latest_pointer(tmp_path):
     # The shared filing-forensics latest pointer is NEVER published by this lane.
     latest = pin.store / "fundamental_forensics" / "sec-source" / "v1" / "latest.json"
     assert not latest.exists() and not latest.is_symlink()
+
+
+def test_pin_leaves_an_existing_latest_pointer_byte_identical(tmp_path):
+    latest = tmp_path / "store" / "fundamental_forensics" / "sec-source" / "v1" / "latest.json"
+    latest.parent.mkdir(parents=True)
+    seeded = b'{"snapshot_id": "ffsecsrc_' + b"0" * 64 + b'", "owner": "filing-forensics"}'
+    latest.write_bytes(seeded)
+    pin = _pin(tmp_path, SEG_BODY)
+    assert "refusal" not in pin.row
+    assert latest.read_bytes() == seeded
+
+
+def test_pin_over_cap_streamed_body_without_content_length_is_refused(tmp_path):
+    body = b"x" * (n.MAX_SEC_SOURCE_BYTES + 1)
+    pin = _pin(tmp_path, body, primary_headers={"ETag": '"synthetic"'})
+    row = pin.row
+    assert row["refusal"] == "DOCUMENT_OVER_CAP"
+    assert "manifest_key" not in row
+    assert pin.session.calls.count(pin.primary_url) == 1
+    assert (pin.out / "pin_report.json").exists()
+
+
+def test_pin_row_carries_an_empty_later_amendments_list_when_none_exist(tmp_path):
+    assert _pin(tmp_path, SEG_BODY).row["later_amendments"] == []
 
 
 def test_pin_over_cap_document_is_typed_refusal_skipped_without_retry(tmp_path):
@@ -399,6 +456,105 @@ def test_choose_filing_takes_latest_original_and_falls_back_to_amendment():
     assert m.choose_filing([old, new]) is new
     only_amendment = _manifest("10-K/A", "2026-10-01", "0000000003-26-000001")
     assert m.choose_filing([only_amendment]) is only_amendment
+
+
+def test_later_amendments_lists_only_later_slash_a_filings():
+    original = _manifest("10-K", "2026-08-01", "0000000001-26-000001")
+    earlier_a = _manifest("10-K/A", "2026-03-01", "0000000001-26-000000")
+    later_a = _manifest("10-K/A", "2026-10-01", "0000000001-26-000002")
+    later_a2 = _manifest("10-K/A", "2026-11-01", "0000000001-26-000003")
+    eligible = [original, earlier_a, later_a, later_a2]
+    chosen = m.choose_filing(eligible)
+    assert chosen is original
+    assert m.later_amendments(eligible, chosen) == [
+        "0000000001-26-000002", "0000000001-26-000003"]
+    assert m.later_amendments([original], original) == []
+
+
+def _propose_row(**overrides):
+    row = {
+        "ticker": "ALPHA", "issuer": "ISS:US-XNAS-ALPHA", "theme": "theme:hbm_packaging",
+        "role": "component_supplier", "knowledge_cutoff": "2026-11-14",
+        "created": "2026-11-14T00:00:00Z",
+        "spec_path": "research/theme_graph/sec_segment_20261114/A_SPEC.json",
+        "policy_path": "research/theme_graph/sec_segment_20261114/A_POLICY.json",
+        "exposure_role": "primary", "profit_driver": True,
+    }
+    row.update(overrides)
+    return row
+
+
+def _write_manifest(tmp_path, rows):
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps({"rows": rows}), encoding="utf-8")
+    return path
+
+
+class _Proc:
+    returncode = 0
+    stdout = '{"proposal_id": "actprop_x", "status": "proposed"}\n'
+    stderr = ""
+
+
+def test_run_propose_builds_the_unchanged_cli_argument_list(tmp_path):
+    calls = []
+
+    def runner(cmd, **kwargs):
+        calls.append((cmd, kwargs))
+        return _Proc()
+
+    rows = [_propose_row(), _propose_row(ticker="BETA", profit_driver=False)]
+    out = tmp_path / "out"
+    report = m.run_propose(_write_manifest(tmp_path, rows), out, python="PY", runner=runner)
+    ledger = str(out / "activity_proposals.jsonl")
+    assert calls[0][0] == [
+        "PY", str(m.ROOT / "scripts" / "propose_activity_membership.py"), "propose",
+        "--issuer", "ISS:US-XNAS-ALPHA", "--theme", "theme:hbm_packaging",
+        "--role", "component_supplier", "--knowledge-cutoff", "2026-11-14",
+        "--created", "2026-11-14T00:00:00Z", "--segment-packet",
+        "research/theme_graph/sec_segment_20261114/A_SPEC.json",
+        "research/theme_graph/sec_segment_20261114/A_POLICY.json", "config/theme_sources.yml",
+        "--ledger", ledger, "--exposure-role", "primary", "--profit-driver",
+    ]
+    assert calls[1][0][-1] == "--no-profit-driver"
+    assert calls[0][1]["cwd"] == m.ROOT and "shell" not in calls[0][1]
+    assert [r["exit_code"] for r in report["rows"]] == [0, 0]
+    assert (out / "propose_report.json").exists()
+
+
+@pytest.mark.parametrize("bad, code", [
+    ({"profit_driver": "false"}, "PROFIT_DRIVER_NOT_BOOLEAN"),
+    ({"theme": ""}, "INVALID_THEME"),
+    ({"spec_path": None}, "INVALID_SPEC_PATH"),
+])
+def test_run_propose_refuses_a_bad_row_before_any_subprocess(tmp_path, bad, code):
+    calls = []
+    rows = [_propose_row(), _propose_row(ticker="BETA", **bad), _propose_row(ticker="GAMMA")]
+    out = tmp_path / "out"
+    with pytest.raises(m.ManifestRowRefused) as info:
+        m.run_propose(_write_manifest(tmp_path, rows), out, runner=lambda *a, **k: calls.append(a))
+    assert info.value.index == 1 and info.value.code == code
+    assert calls == []
+    assert not (out / "activity_proposals.jsonl").exists()
+    assert not (out / "propose_report.json").exists()
+
+
+def test_run_propose_refuses_a_row_missing_a_key(tmp_path):
+    row = _propose_row()
+    del row["exposure_role"]
+    with pytest.raises(m.ManifestRowRefused) as info:
+        m.run_propose(_write_manifest(tmp_path, [_propose_row(), row]), tmp_path / "out",
+                      runner=lambda *a, **k: pytest.fail("subprocess started"))
+    assert (info.value.index, info.value.code) == (1, "MISSING_EXPOSURE_ROLE")
+
+
+def test_main_names_the_refused_row_without_writing(tmp_path, capsys):
+    rows = [_propose_row(), _propose_row(profit_driver="yes")]
+    out = tmp_path / "out"
+    code = m.main(["propose", "--manifest", str(_write_manifest(tmp_path, rows)), "--out", str(out)])
+    assert code == 2
+    assert "PROPOSE_MANIFEST_ROW_1_PROFIT_DRIVER_NOT_BOOLEAN" in capsys.readouterr().err
+    assert not out.exists() or not any(out.iterdir())
 
 
 def test_profit_driver_flag_accepts_only_json_booleans():

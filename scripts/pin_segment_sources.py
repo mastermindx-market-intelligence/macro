@@ -32,6 +32,7 @@ from hashlib import sha256
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from collectors import edgar_forensics
 from collectors.edgar_forensics import SecForensicsCollector, _user_agent
@@ -144,7 +145,19 @@ def choose_filing(eligible: list[dict]) -> dict:
     """
     originals = [m for m in eligible if not m["filing"]["form"].endswith("/A")]
     pool = originals or eligible
-    return max(pool, key=lambda m: (m["clocks"]["filed_on"], m["filing"]["accession"]))
+    return max(pool, key=_filing_order)
+
+
+def _filing_order(manifest: dict):
+    return (manifest["clocks"]["filed_on"], manifest["filing"]["accession"])
+
+
+def later_amendments(eligible: list[dict], chosen: dict) -> list[str]:
+    """Accessions of eligible "/A" filings later than the chosen one (possible restatements)."""
+    return sorted(
+        m["filing"]["accession"] for m in eligible
+        if m["filing"]["form"].endswith("/A") and _filing_order(m) > _filing_order(chosen)
+    )
 
 
 def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
@@ -161,6 +174,7 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
         if not eligible:
             return {"ticker": ticker, "cik": cik, "accession": None, "refusal": "NO_ELIGIBLE_FILING"}
         manifest = choose_filing(eligible)
+        amendments = later_amendments(eligible, manifest)
         accession = manifest["filing"]["accession"]
         index_document = archive_index_document(manifest)
         index_receipt = archive.fetch_document(index_document, retrieved_at=now)
@@ -182,6 +196,9 @@ def _pin_one(target, forensics, archive, raw_root, archive_root, now) -> dict:
             "archive_url": primary["archive_url"], "document_id": primary["document_id"],
             "manifest_key": manifest_key, "raw_sha256": primary["content_sha256"],
             "byte_length": primary["byte_length"],
+            # Later amendments the choice rule passed over: a reader must check
+            # whether one restates the segment note before this row is used.
+            "later_amendments": amendments,
         }
     except ArchiveResponseTooLarge:
         return {"ticker": ticker, "cik": cik, "accession": accession, "refusal": "DOCUMENT_OVER_CAP"}
@@ -459,26 +476,62 @@ def profit_driver_flag(value) -> str:
     raise ValueError("PROFIT_DRIVER_NOT_BOOLEAN")
 
 
-def run_propose(manifest_path, out, *, python=None) -> dict:
+PROPOSE_REQUIRED_KEYS = (
+    "issuer", "theme", "role", "knowledge_cutoff", "created",
+    "spec_path", "policy_path", "exposure_role", "profit_driver",
+)
+
+
+class ManifestRowRefused(ValueError):
+    """A manifest row failed validation; carries only the row index and a fixed code."""
+
+    def __init__(self, index: int, code: str):
+        super().__init__(f"PROPOSE_MANIFEST_ROW_{index}_{code}")
+        self.index = index
+        self.code = code
+
+
+def propose_command(row: dict, ledger: Path, interpreter: str) -> list[str]:
+    """The unchanged membership CLI's argument list for one validated manifest row."""
+    return [
+        interpreter, str(ROOT / "scripts" / "propose_activity_membership.py"), "propose",
+        "--issuer", row["issuer"], "--theme", row["theme"], "--role", row["role"],
+        "--knowledge-cutoff", row["knowledge_cutoff"], "--created", row["created"],
+        "--segment-packet", row["spec_path"], row["policy_path"], "config/theme_sources.yml",
+        "--ledger", str(ledger), "--exposure-role", row["exposure_role"],
+        profit_driver_flag(row["profit_driver"]),
+    ]
+
+
+def _validate_manifest_rows(rows: list) -> None:
+    """Check EVERY row before any subprocess runs, so a bad row writes nothing."""
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            raise ManifestRowRefused(index, "NOT_AN_OBJECT")
+        for key in PROPOSE_REQUIRED_KEYS:
+            if key not in row:
+                raise ManifestRowRefused(index, f"MISSING_{key.upper()}")
+            if key != "profit_driver" and not (isinstance(row[key], str) and row[key]):
+                raise ManifestRowRefused(index, f"INVALID_{key.upper()}")
+        if not isinstance(row["profit_driver"], bool):
+            raise ManifestRowRefused(index, "PROFIT_DRIVER_NOT_BOOLEAN")
+
+
+def run_propose(manifest_path, out, *, python=None, runner=None) -> dict:
     manifest = _load_json(Path(manifest_path))
     rows = manifest.get("rows") if isinstance(manifest, dict) else manifest
     if not isinstance(rows, list):
         raise ValueError("PROPOSE_MANIFEST_INVALID")
+    _validate_manifest_rows(rows)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     ledger = out / "activity_proposals.jsonl"
     interpreter = python or sys.executable
+    run = runner or subprocess.run
     results = []
     for row in rows:
-        cmd = [
-            interpreter, str(ROOT / "scripts" / "propose_activity_membership.py"), "propose",
-            "--issuer", row["issuer"], "--theme", row["theme"], "--role", row["role"],
-            "--knowledge-cutoff", row["knowledge_cutoff"], "--created", row["created"],
-            "--segment-packet", row["spec_path"], row["policy_path"], "config/theme_sources.yml",
-            "--ledger", str(ledger), "--exposure-role", row["exposure_role"],
-            profit_driver_flag(row["profit_driver"]),
-        ]
-        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT)
+        cmd = propose_command(row, ledger, interpreter)
+        proc = run(cmd, capture_output=True, text=True, cwd=ROOT)
         stdout_lines = [line for line in proc.stdout.splitlines() if line.strip()]
         refused_lines = [line for line in proc.stderr.splitlines() if line.startswith("REFUSED:")]
         results.append({
@@ -530,6 +583,10 @@ def main(argv=None) -> int:
             report = run_propose(args.manifest, args.out)
             refused = sum(1 for r in report["rows"] if r["exit_code"] != 0)
             print(f"propose: {len(report['rows'])} rows, {refused} refused")
+    except ManifestRowRefused as exc:
+        # Names the row and a fixed code only; nothing was written.
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
     except Exception as exc:
         # Whole-run failure: a typed code, never a traceback or a secret value.
         print(f"REFUSED: {type(exc).__name__}", file=sys.stderr)
