@@ -342,6 +342,9 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -2530,6 +2533,9 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -3624,6 +3630,9 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8308,6 +8317,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -12631,6 +12643,9 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -15182,6 +15197,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "lib/macro_dashboard_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -17333,6 +17349,9 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -19836,6 +19855,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24786,6 +24806,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -28492,8 +28513,8 @@ jobs:
         run: pip install pytest fastapi httpx pypdf reportlab pyyaml requests jinja2 jsonschema==4.26.0
       - name: research vault serving-API security tests
         run: python -m pytest tests/test_research_api.py tests/test_research_revision_read.py -q
-      - name: Macro Command registered-user serving API
-        run: python -m pytest tests/test_macro_command_api.py -q
+      - name: Macro registered-user serving APIs
+        run: python -m pytest tests/test_macro_command_api.py tests/test_macro_dashboard.py -q
       - name: source-bound report evidence — corpus selector
         run: python -m pytest tests/test_research_evidence_passages.py -q
 
@@ -31821,6 +31842,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -36526,6 +36550,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -41778,6 +41803,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -45225,6 +45253,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -46520,6 +46551,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
+      - "lib/numeric.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51978,6 +52012,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/macro_dashboard.py"
+      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

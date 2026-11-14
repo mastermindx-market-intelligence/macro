@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+from app import macro_dashboard as endpoint
 from lib.macro_dashboard_view import MAX_BYTES, build_dashboard, write_dashboard
 
 
@@ -55,7 +56,6 @@ def test_empty_optional_sources_remain_absent():
 def api(tmp_path, monkeypatch):
     from fastapi import FastAPI
     from fastapi.testclient import TestClient
-    from app import macro_dashboard as endpoint
     app = FastAPI(); app.include_router(endpoint.router)
     app.dependency_overrides[endpoint.require_user] = lambda: {"id": "registered-test-member"}
     root = tmp_path / "served"; root.mkdir()
