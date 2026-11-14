@@ -24806,8 +24806,8 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
-      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
+      - "lib/macro_dashboard_view.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36550,8 +36550,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
-      - "lib/macro_dashboard_view.py"
       - "engine/us_board_snapshots.py"
+      - "lib/macro_dashboard_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
