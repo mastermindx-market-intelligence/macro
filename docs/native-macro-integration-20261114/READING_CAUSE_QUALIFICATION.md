@@ -64,3 +64,21 @@ This repair supports the native Macro consumer work in [Terminal #1533](https://
 
 The parent mission remains open: protected source integration, route/registry activation with the correct custody, remaining original-masterplan scope and authenticated deployed consumer proof are still required. This patch and its CI are not production acceptance. Preserve the existing controller, live writers and release holds; consume this exact head's binding CI before any release opt-in.
 
+
+## Binding CI repair — exact frozen-copy registration, 2026-11-14
+
+The original exact-head CI run 43624816924 at 57b3650375746bfd7edfdf181b6ecb1fdea3b27b failed pack 1 / job 132538991230. Its semantic artifact 14128867004 recorded one failed proof, 351 passed and two downstream proofs not run. The failure was `test_11_thirteen_other_suite_pages_byte_identical` in the rates-and-curves proof: the intended bilingual LATE_WITHIN_TOLERANCE note differed from the paired frozen hub golden. This was an owned copy change, not an inherited infrastructure failure.
+
+Register only the exact rendered bilingual span in `tests/fixtures/macro_suite_t11/collapses/reading_cause_copy_11279.json`. The incumbent collapse mechanism maps that exact approved copy to the frozen comparison text. The new span is “within the allowed reporting lag” / “发布滞后仍在容忍范围内”; the frozen span is “arriving late” / “延迟送达”. The why field records this bounded intent. No golden page, input snapshot, test implementation, workflow, freshness token or model value is changed.
+
+Qualification used the original immutable 57b365 source plus this one registration. The source checkout includes the real templates/theme.js (21a1fb1627ac34badc6078cff486f98486e9b773), templates/data_base.js, all frozen paired pages and inputs, the published site/macro_monetary.html, and the 18 actual site/macrodata inputs from that same commit. Missing local theme.js initially suppressed the existing Analyst link attributes; restoring its exact bytes resolved the qualification closure without another collapse. The mutable-data build test likewise used the actual published source, not copies of the frozen fixture inputs.
+
+Executed command:
+
+```text
+PYTHONPATH=<qualification dependencies>:<exact source root> python -m pytest -q tests/test_macro_rates_curves_route.py tests/test_macro_command_read_strip.py
+```
+
+Result: **151 passed**, 8 warnings, 12.22 seconds. This includes the frozen-page identity test, all existing collapse/mutation guards, stamp preservation, the read-strip cases, and the full-checkout published-source cases. Warnings are the installed pytest plugin deprecation and unregistered marker notices in this sparse qualification root; no tests skipped or deselected. The prior 148-pass/3-fail local result was incomplete source hydration and is superseded by this result.
+
+This recovery adds only the exact collapse fixture and this appended qualification record to the existing 57b365 branch. New natural exact-head binding CI remains required. This record does not claim merge, publication, release or deployed consumer acceptance.

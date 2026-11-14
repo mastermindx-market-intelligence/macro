@@ -1,0 +1,9 @@
+{
+  "why": "#11279 corrects the LATE_WITHIN_TOLERANCE reading note without changing the freshness token, source data, or market reading. For T11 preservation only, map this exact bilingual rendered note to the text in the frozen paired hub golden.",
+  "pairs": [
+    [
+      "<span class=\"l-en\">within the allowed reporting lag</span><span class=\"l-zh\">发布滞后仍在容忍范围内</span>",
+      "<span class=\"l-en\">arriving late</span><span class=\"l-zh\">延迟送达</span>"
+    ]
+  ]
+}
