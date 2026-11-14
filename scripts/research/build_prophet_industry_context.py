@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Build an industry-context research sidecar from existing native source artifacts.
+"""Build an industry research read from immutable native source artifacts.
 
-This is an explicit foreground research command, not a collector or scheduler.
-Source mode reads one immutable public repository revision, verifies Git blob
-identities, and keeps raw vendor bytes in memory. It never overwrites live board,
-K3E sources, rank, trading policy or site outputs. Optional full enriched board
-stays in the supplied private output directory; only aggregate proof is intended
-for source publication.
+Explicit foreground research command, not a collector or scheduler. Raw source
+bytes remain in memory. Never overwrite live boards, K3E sources or trading policy.
+Only aggregate proof is intended for source publication; the optional enriched
+board and context stay in the supplied research output directory.
 """
 from __future__ import annotations
 
 import argparse
 from collections import Counter
+from datetime import datetime, timezone
 import hashlib
 import io
 import json
@@ -40,10 +39,9 @@ PATHS = {
 
 def read_source(session: requests.Session, revision: str, key: str) -> tuple[bytes, dict]:
     path = PATHS[key]
-    meta = session.get(f"https://api.github.com/repos/{REPOSITORY}/contents/{path}",
-                       params={"ref": revision}, timeout=30)
-    meta.raise_for_status()
-    descriptor = meta.json()
+    response = session.get(f"https://api.github.com/repos/{REPOSITORY}/contents/{path}", params={"ref": revision}, timeout=30)
+    response.raise_for_status()
+    descriptor = response.json()
     if descriptor.get("type") != "file" or descriptor.get("size", 0) > 100_000_000:
         raise ValueError("unsupported source shape or size")
     response = session.get(f"https://raw.githubusercontent.com/{REPOSITORY}/{revision}/{path}", timeout=60)
@@ -57,10 +55,8 @@ def read_source(session: requests.Session, revision: str, key: str) -> tuple[byt
 
 
 def parquet(raw: bytes, *, filters=None, columns=None) -> pd.DataFrame:
-    # Match the native inspection CLI's synchronous nullable decoding.
-    frame = pd.read_parquet(io.BytesIO(raw), engine="pyarrow", use_threads=False,
-                            pre_buffer=False, filters=filters, columns=columns)
-    return frame
+    return pd.read_parquet(io.BytesIO(raw), engine="pyarrow", use_threads=False,
+                           pre_buffer=False, filters=filters, columns=columns)
 
 
 def run(revision: str, output: Path, *, native_k3e_limit: int = 5, write_enriched_board: bool = False) -> dict:
@@ -68,20 +64,19 @@ def run(revision: str, output: Path, *, native_k3e_limit: int = 5, write_enriche
         raise ValueError("full immutable source revision required")
     if not 0 <= native_k3e_limit <= 20:
         raise ValueError("bounded native inspection limit required")
-    session = requests.Session()
-    raw, provenance = {}, {}
+    composed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    session, raw, provenance = requests.Session(), {}, {}
     for key in ("board", "industry_ranks", "taxonomy", "revisions"):
         raw[key], provenance[key] = read_source(session, revision, key)
     board, industry = json.loads(raw["board"]), json.loads(raw["industry_ranks"])
     taxonomy = parquet(raw["taxonomy"], columns=["ticker", "region", "gics_industry"])
     revisions = parquet(raw["revisions"])
     as_of = board["as_of"]
-    # A date-tagged snapshot is not granted an invented historical publication clock.
+    # Explicit end-of-UTC-date research read, not a claim of market-close availability.
     cutoff = as_of + "T23:59:59Z"
     candidates = sorted({row["ticker"] for lane in LANES for row in board.get(lane, [])
                          if isinstance(row, dict) and isinstance(row.get("ticker"), str)})
-    native = {}
-    native_summary = {}
+    native, native_summary = {}, {}
     selected = candidates[:native_k3e_limit]
     if selected:
         for key in ("observations", "attempts", "aliases"):
@@ -89,7 +84,8 @@ def run(revision: str, output: Path, *, native_k3e_limit: int = 5, write_enriche
         observations = parquet(raw["observations"], filters=[("ticker_compat", "in", selected)])
         attempts = parquet(raw["attempts"], filters=[("ticker_compat", "in", selected)])
         aliases = parquet(raw["aliases"])
-        records = lambda frame: frame.astype(object).where(pd.notna(frame), None).to_dict("records")
+        def records(frame):
+            return frame.astype(object).where(pd.notna(frame), None).to_dict("records")
         obs_records, att_records, alias_records = records(observations), records(attempts), records(aliases)
         native_provenance = {"source_revision": revision, "inputs": {
             PATHS[key]: {k: provenance[key][k] for k in ("git_blob_id", "sha256")}
@@ -97,7 +93,7 @@ def run(revision: str, output: Path, *, native_k3e_limit: int = 5, write_enriche
         for ticker in selected:
             result = inspect_expectation_surface(obs_records, att_records,
                 source_provenance=native_provenance, ticker=ticker, metric="EPS", horizon="+1y",
-                as_of=cutoff, composed_at=cutoff, identity_aliases=alias_records)
+                as_of=cutoff, composed_at=composed_at, identity_aliases=alias_records)
             native[ticker] = {"expectation": result}
             payload = result.get("semantic_payload", {})
             native_summary[ticker] = {
@@ -112,37 +108,36 @@ def run(revision: str, output: Path, *, native_k3e_limit: int = 5, write_enriche
             for key in ("board", "industry_ranks", "taxonomy", "revisions")}
     result = build_board_context(board, industry, taxonomy, revisions, source_refs=refs, k3e_inputs=native)
     groups = result["context"]["groups"]
-    diagnostics = Counter()
-    coupling = Counter()
+    diagnostics, coupling = Counter(), Counter()
     for group in groups.values():
         expectations = group["expectations"]
         diagnostics.update(x["status"] for x in expectations.get("diagnostics", []))
         coupling.update(expectations.get("k3e_component_states", {}))
     covered = sum(group["expectations"].get("status") == "OBSERVED_RESEARCH_CONTEXT" for group in groups.values())
     proof = {"schema": "prophet.industry_context_consumer_proof.v1", "as_of": as_of,
+             "composed_at": composed_at, "query_cutoff": cutoff,
              "source_revision": revision, "source_inputs": provenance,
-             "source_board_definition": board.get("board_definition"),
-             "coverage": result["coverage"], "industry_groups": len(groups),
-             "groups_with_at_least_half_eps_drift_coverage": covered,
+             "source_board_definition": board.get("board_definition"), "coverage": result["coverage"],
+             "industry_groups": len(groups), "groups_with_at_least_half_eps_drift_coverage": covered,
              "membership": result["identity"], "member_observation_states": dict(diagnostics),
-             "native_k3e_inspections": native_summary, "coupling_states_in_eligible_members": dict(coupling),
+             "native_k3e_inspections": native_summary, "coupling_states_in_members": dict(coupling),
              "native_board_fields_preserved": result["preserved_native_board"],
              "financial_influence": False, "forecast_probabilities_emitted": False,
              "publication": "LOCAL_RESEARCH_CONSUMER_NOT_PRODUCTION_DEPLOYMENT",
              "limitations": ["Current reconstructed taxonomy; issuer identity and historical membership are not certified.",
-                             "Latest revision snapshots may postdate the board cutoff and are then excluded.",
-                             "Legacy estimate drifts are observed context, not normalized K3E admission.",
-                             "Native GICS coordinates are not passed into a French49 historical forecast model.",
-                             "A source artifact read does not establish current production-page freshness."]}
+                 "Latest snapshots after the board cutoff are excluded, not backdated.",
+                 "Legacy drifts are observed context, not normalized K3E admission.",
+                 "Native K3E evidence is retained even when the legacy snapshot is unavailable.",
+                 "Native GICS coordinates are not passed to the French49 forecast model.",
+                 "Date-end research inspection is not an executable market-close decision or current production freshness proof."]}
     output.mkdir(parents=True, exist_ok=True)
     (output / "industry_context_consumer_proof.json").write_text(json.dumps(proof, indent=2, allow_nan=False) + "\n")
     (output / "industry_context_read.json").write_text(json.dumps(result["context"], indent=2, allow_nan=False) + "\n")
     if write_enriched_board:
         (output / "industry_context_enriched_board.json").write_text(json.dumps(result["board"], indent=2, allow_nan=False) + "\n")
-    print("CONSUMER_PROOF", json.dumps({"as_of": as_of, "coverage": proof["coverage"],
-              "groups": len(groups), "covered_groups": covered, "member_states": dict(diagnostics),
-              "native_k3e_queries": len(native_summary), "coupling_states": dict(coupling),
-              "native_fields_preserved": True}), flush=True)
+    print("CONSUMER_PROOF", json.dumps({"as_of": as_of, "coverage": proof["coverage"], "groups": len(groups),
+        "covered_groups": covered, "member_states": dict(diagnostics), "native_k3e_queries": len(native_summary),
+        "coupling_states": dict(coupling), "native_fields_preserved": True}), flush=True)
     return proof
 
 
