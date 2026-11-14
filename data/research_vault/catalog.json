@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T18:27:12.661321+00:00",
-  "count": 3377,
+  "generated_at": "2026-11-14T18:41:54.567742+00:00",
+  "count": 3378,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,23 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-yd7c1f34bud-4aa384",
+      "title": "GS Pasquariello markets macro 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:16Z",
+      "summary_points": [
+        "2026 Risk/Reward Framework: Technicals (post-position cleansing, supportive flows), seasonals (69% up weeks, 2.1% avg rally), AI demand (TSMC/CRWV), nominal US GDP above trend accelerating H2 - US Political/Inflation Risks: Infrastructure political disruption (geopolitics), broadening CPI (data release), regulatory/tax risks (policy); NDX uptrend clashes with 2027 supply surge (fundamentals) - Extreme Market Flows: Largest AI stock sale since 2020 (flows), significant risk liquidation since October (flows), net exposure at 3rd percentile (positioning)"
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-sfdsd4mp4qx-0beb0f",
       "title": "GS Crook Connecting You to GS Thoughts from the Floor 14 Nov 2026",
