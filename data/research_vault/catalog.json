@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T03:10:27.156918+00:00",
-  "count": 3338,
+  "generated_at": "2026-11-14T03:40:29.606815+00:00",
+  "count": 3339,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,26 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-eythpwrrvv4-237ea5",
+      "title": "Portfolio Intelligence report July 2026",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-14T03:17:22Z",
+      "summary_points": [
+        "International Outperformance Gap: MSCI ACWI ex USA returned 28% (12-mo to June 2026) vs. 22% for U.S.",
+        "stocks, yet portfolios remain persistently underweight international equities with strong U.S.",
+        "bias.",
+        "AI Exposure Discrepancy: U.S."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-e2x1lkcmtfh-c96667",
       "title": "WEEKLY MARKET GUIDE",
