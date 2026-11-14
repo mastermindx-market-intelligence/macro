@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T17:56:49.646633+00:00",
-  "count": 3376,
+  "generated_at": "2026-11-14T18:27:12.661321+00:00",
+  "count": 3377,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,27 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-sfdsd4mp4qx-0beb0f",
+      "title": "GS Crook Connecting You to GS Thoughts from the Floor 14 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T18:07:09Z",
+      "summary_points": [
+        "Fed Policy Pivot: CPI data solidifies 2027 hike pricing (Jan/Mar as % of total), with terminal rate at ~4.75% vs Fed’s 4.25-4.5% range; 2 hikes then pause, Dec hike likely but 50bp unlikely.",
+        "Data Center Policy Risks: Democratic-led states (TX, GA, MI) may impose moratoria; Texas accounts for 25% of US data center capacity, with incremental costs marginal vs development, but voter focus on cost of living (not AI) reduces long-term risk.",
+        "Inflation Dynamics: Shelter inflation (Rent/OER) key driver; hotter prints risk 30bps MoM run rate vs 20bps, potentially triggering 2027 price resets; broad-based inflation surprises challenge transitory outlook.",
+        "EM Flow Pressures: EWZ US Equity down 23.83% post-election; $1.5bn redemption overhang ($150mn/day) indicates sustained outflow pressure until mid-December; post-election volumes collapsed to $5bn/day from $15bn.",
+        "Geopolitical & Oil: Gulf escalation probability reduced; oil market remains $85-105 range with downside bias; US growth robust (6% Q3 Nominal GDP) fuels dollar strength amid policy divergence."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 18,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-pwtuyigxwzl-4d6845",
       "title": "Next week",
