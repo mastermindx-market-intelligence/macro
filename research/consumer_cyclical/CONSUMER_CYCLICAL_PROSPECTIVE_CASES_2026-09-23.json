@@ -1,0 +1,318 @@
+{
+  "artifact_kind": "prospective_research_counterexamples",
+  "sector": "Consumer Cyclical",
+  "operation_key": "gmi-consumer-cyclical-research-20260923-sol-001",
+  "as_of": "2026-09-23",
+  "status": "NOT_EXECUTED",
+  "production_schema": false,
+  "grants_trading_authority": false,
+  "cases": [
+    {
+      "id": "CC-R01",
+      "topic": "Sector labels",
+      "scenario": "Two providers use Consumer Cyclical and Consumer Discretionary with different rosters.",
+      "required_interpretation": "Preserve provider namespace and roster dates; do not assume identical membership.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R02",
+      "topic": "New locations versus mature demand",
+      "scenario": "Revenue rises in a geography while comparable sales fall.",
+      "required_interpretation": "Show total growth and mature-location demand separately; investigate space, cohort, FX and acquisitions.",
+      "source_ids": [
+        "S09"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R03",
+      "topic": "Scoped transaction denominator",
+      "scenario": "Home Depot consolidated sales include businesses excluded from transaction/ticket metrics.",
+      "required_interpretation": "Do not label a scoped transaction-times-ticket calculation a full-company revenue bridge.",
+      "source_ids": [
+        "S05"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R04",
+      "topic": "Volume versus profit capture",
+      "scenario": "Home closings rise while homebuilding pretax income falls.",
+      "required_interpretation": "Preserve positive activity and negative profit dimensions; test incentives, mix and cost.",
+      "source_ids": [
+        "S06"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R05",
+      "topic": "Average check versus price",
+      "scenario": "Restaurant average check rises without an item-level price/mix decomposition.",
+      "required_interpretation": "Do not call the whole change menu-price inflation or pricing power.",
+      "source_ids": [
+        "S10"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R06",
+      "topic": "Sell-in versus sell-through",
+      "scenario": "Wholesale brand revenue improves while direct-channel sales decline.",
+      "required_interpretation": "Do not promote shipments to evidence of end-customer demand or improved total channel economics.",
+      "source_ids": [
+        "S07"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R07",
+      "topic": "Inventory value versus units",
+      "scenario": "Inventory dollars remain flat while units rise and mix shifts.",
+      "required_interpretation": "Retain quantity/mix differences and unknown aging; do not call inventory cleared.",
+      "source_ids": [
+        "S07"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R08",
+      "topic": "Unusual margin benefit",
+      "scenario": "Reported gross-margin improvement includes a large recovery accrual.",
+      "required_interpretation": "Keep the reported result and an explicitly reconciled interpretation; do not assign the item to recurring brand demand.",
+      "source_ids": [
+        "S07",
+        "S09"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R09",
+      "topic": "Linked costs of adjustments",
+      "scenario": "A refund is accompanied by related incremental compensation.",
+      "required_interpretation": "Reconcile both income and linked expense; do not subtract the gross benefit alone.",
+      "source_ids": [
+        "S08"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R10",
+      "topic": "Fiscal calendar identity",
+      "scenario": "Nearby August quarters are labeled FY2026 and FY2027 by different issuers.",
+      "required_interpretation": "Join on actual start/end dates and fiscal definitions, not year labels alone.",
+      "source_ids": [
+        "S08",
+        "S09"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R11",
+      "topic": "Currency basis",
+      "scenario": "A global brand reports different current- and constant-currency growth.",
+      "required_interpretation": "Retain both bases and avoid treating currency translation as unit demand.",
+      "source_ids": [
+        "S14"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R12",
+      "topic": "Gross versus net",
+      "scenario": "A marketplace reports fees alongside first-party gross retail revenue.",
+      "required_interpretation": "Do not infer comparable merchandise activity or take rates from unlike recognized-revenue lines.",
+      "source_ids": [
+        "S15",
+        "S16"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R13",
+      "topic": "Booking versus consumption",
+      "scenario": "Bookings in one quarter relate to stays or refunds in later quarters.",
+      "required_interpretation": "Require matched cohorts or label any revenue/bookings ratio a limited accounting proxy.",
+      "source_ids": [
+        "S12"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R14",
+      "topic": "Occupancy convention",
+      "scenario": "Cruise occupancy exceeds 100% under a two-berth convention.",
+      "required_interpretation": "Apply the issuer metric definition; do not cap, reject or call the value a data error merely because it exceeds 100%.",
+      "source_ids": [
+        "S13"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R15",
+      "topic": "Credit reclassification",
+      "scenario": "A loan allowance is released when loans move to held for sale.",
+      "required_interpretation": "Do not interpret the release alone as improved borrower credit performance.",
+      "source_ids": [
+        "S17"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R16",
+      "topic": "Future results",
+      "scenario": "The next scheduled quarterly earnings release occurs after the research cutoff.",
+      "required_interpretation": "Keep its numbers unknown; do not use prior-year similarly named results as the new quarter.",
+      "source_ids": [
+        "S17"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R17",
+      "topic": "Changed reporting segments",
+      "scenario": "An issuer introduces new segment reporting and recasts history.",
+      "required_interpretation": "Retain original first-known definitions and recast lineage; do not backdate the new view.",
+      "source_ids": [
+        "S16"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R18",
+      "topic": "Nominal versus real demand",
+      "scenario": "Retail spending increases in dollars but the source is not price adjusted.",
+      "required_interpretation": "Do not label the nominal growth a unit-volume increase; preserve product/geographic deflator limits.",
+      "source_ids": [
+        "S01",
+        "S04"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R19",
+      "topic": "Loan affordability",
+      "scenario": "Rates fall but principal, term, fees or approval constraints differ.",
+      "required_interpretation": "Compute only explicitly specified scenarios and separate payment arithmetic from actual purchasing ability.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R20",
+      "topic": "Population scope",
+      "scenario": "Aggregate household debt or saving data is used to explain one brand.",
+      "required_interpretation": "Require customer-cohort evidence; do not infer issuer demand from a national mean.",
+      "source_ids": [
+        "S02",
+        "S03"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R21",
+      "topic": "Recognition versus cash",
+      "scenario": "Expected recovery is recognized before all associated cash is received.",
+      "required_interpretation": "Maintain recognition and cash timestamps separately; no automatic cash-flow equivalence.",
+      "source_ids": [
+        "S07"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R22",
+      "topic": "Deposits and cancellations",
+      "scenario": "Travel customer cash is collected before service and can be refundable.",
+      "required_interpretation": "Separate working capital and refund obligations from earned revenue and durable free cash.",
+      "source_ids": [
+        "S12",
+        "S13"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R23",
+      "topic": "Operating cash versus free cash",
+      "scenario": "Operating cash rises while investment leaves free cash negative.",
+      "required_interpretation": "Preserve capital spending and definition boundaries; do not claim an equity-cash inflection from operating cash alone.",
+      "source_ids": [
+        "S15",
+        "S16"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R24",
+      "topic": "Franchise economic ownership",
+      "scenario": "Systemwide restaurant turnover grows.",
+      "required_interpretation": "Do not consolidate all franchisee turnover into the listed parent or assume franchisee returns improve.",
+      "source_ids": [
+        "S11"
+      ],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R25",
+      "topic": "Lease and financing consistency",
+      "scenario": "An enterprise-value ratio adds lease liabilities but uses an inconsistent earnings basis.",
+      "required_interpretation": "Flag the mismatch; reconcile financing businesses, leases and minority claims before comparison.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R26",
+      "topic": "Loss-making valuation",
+      "scenario": "An earnings denominator is zero or negative.",
+      "required_interpretation": "Do not generate a standard positive P/E conclusion; require a documented alternative model or abstain.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R27",
+      "topic": "Multiple listings",
+      "scenario": "ADR, ordinary shares and local listings represent the same underlying issuer economics.",
+      "required_interpretation": "Use existing issuer/security and corporate-action ownership; do not double-count company exposure.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R28",
+      "topic": "Overlapping baskets",
+      "scenario": "Several thematic baskets hold the same large issuer.",
+      "required_interpretation": "Show overlap/concentration; do not count correlated memberships as independent confirming evidence.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R29",
+      "topic": "Survivorship",
+      "scenario": "A historical cyclicals study includes only currently surviving listed companies.",
+      "required_interpretation": "Require historical delisted/acquired populations or label the bias and withhold an unqualified result.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R30",
+      "topic": "Expectations vintage",
+      "scenario": "A revised estimate or final release repeats information already public.",
+      "required_interpretation": "Preserve first-known and correction lineage; no backfilled surprise or duplicate independent event.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R31",
+      "topic": "Substitution/constraint assertion",
+      "scenario": "A category is labeled a trade-down beneficiary or supplier bottleneck from narrative alone.",
+      "required_interpretation": "Require affected cohort/resource, contract, dated quantity/quality evidence, substitute, lag and falsifier.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    },
+    {
+      "id": "CC-R32",
+      "topic": "Research authority",
+      "scenario": "A persuasive theme explanation or prospective case appears in the research artifact.",
+      "required_interpretation": "Keep all rank, gate, sizing and trade authority off until separately accepted validation and promotion.",
+      "source_ids": [],
+      "execution_status": "NOT_EXECUTED"
+    }
+  ]
+}
