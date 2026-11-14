@@ -359,6 +359,19 @@ def test_frozen_census_watchdog_never_breaks_the_publish(tmp_path, monkeypatch, 
     assert "::warning" not in capsys.readouterr().out
 
 
+def test_native_desk_serialization_preserves_the_filing_coverage_and_missing_values():
+    desk = {
+        "filing_transition": {"active_count": 50, "filed_count": 15, "pending_count": 35},
+        "wire": [{"ticker": float("nan"), "magnitude": 0}],
+        "initiations": [{"funds": [{"shares_change_pct": float("nan")}, {"shares_change_pct": 0.0}]}],
+    }
+    out = json.loads(desk_builder._serialize_desk(desk), parse_constant=desk_builder._reject_non_json_constant)
+    assert out["filing_transition"] == desk["filing_transition"]
+    assert out["wire"] == [{"ticker": None, "magnitude": 0}]
+    assert out["initiations"][0]["funds"] == [{"shares_change_pct": None}, {"shares_change_pct": 0.0}]
+    assert math.isnan(desk["wire"][0]["ticker"])
+
+
 def test_census_render_only_replaces_just_desk_census_and_page(tmp_path, monkeypatch):
     shutil.copytree(ROOT / "templates", tmp_path / "templates")
     factordata = tmp_path / "site" / "factordata"
@@ -409,7 +422,7 @@ def test_census_render_only_replaces_just_desk_census_and_page(tmp_path, monkeyp
     assert desk_builder.render_institutional_census_only() == 0
 
     rendered_desk = json.loads(desk_path.read_text())
-    assert math.isnan(rendered_desk.pop("legacy_nan"))
+    assert rendered_desk.pop("legacy_nan") is None
     expected_unchanged = dict(original_desk)
     expected_unchanged.pop("legacy_nan")
     expected_unchanged.pop("institutional_census")
