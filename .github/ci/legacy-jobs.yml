@@ -12150,6 +12150,12 @@ jobs:
       - "scripts/prophet_fusion_cohort_diagnostics.py"
       - "scripts/prophet_fusion_cohort_census.py"
       - "scripts/prophet_fusion_screen_source.py"
+      - "scripts/tech_lab_entry_evidence.py"
+      - "scripts/build_tech_lab.py"
+      - "templates/tech_lab.html.j2"
+      - "templates/partials/entry_regime_evidence.html.j2"
+      - "tests/test_tech_lab_entry_evidence.py"
+      - "tests/test_tech_lab_entry_evidence_browser.py"
       - "tests/test_prophet_fusion_screen_source.py"
       - "scripts/prophet_fusion_horizon_diagnostic.py"
       - "tests/test_prophet_fusion_cohort_diagnostics.py"
@@ -12261,7 +12267,7 @@ jobs:
         # the real boto3 import is never reached.
         # W2's frozen estimator imports scipy.stats at collection time; the
         # isolated prophet-lab CI environment must include scipy explicitly.
-        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright
+        run: pip install pytest pandas numpy scipy pyarrow fastapi httpx pyyaml requests jinja2 playwright beautifulsoup4
       - name: Prophet Operator Lab — projection, real-reader chain, transport, timeparse, commissioning-prep
         run: >
           python -m pytest
@@ -12293,7 +12299,7 @@ jobs:
       # used by this projection. Keep their existing proof in the PR code gate;
       # the context-and-grades data job only runs after merge.
       - name: Entry-regime mechanism research - causal prefixes, frozen inputs, negative controls and report consumer
-        run: python -m pytest tests/test_prophet_fusion_mechanisms.py tests/test_prophet_fusion_input_readiness.py tests/test_prophet_fusion_mechanism_verify.py tests/test_prophet_fusion_timing_attribution.py tests/test_prophet_fusion_cohort_diagnostics.py tests/test_prophet_fusion_screen_source.py -q
+        run: python -m pytest tests/test_prophet_fusion_mechanisms.py tests/test_prophet_fusion_input_readiness.py tests/test_prophet_fusion_mechanism_verify.py tests/test_prophet_fusion_timing_attribution.py tests/test_prophet_fusion_cohort_diagnostics.py tests/test_prophet_fusion_screen_source.py tests/test_tech_lab_entry_evidence.py -q
       - name: entry-timing W2 estimator (conservative-of-two block bounds)
         run: python -m pytest tests/test_entry_timing_w2_estimator.py tests/test_entry_timing_w2_freeze.py -q
       - name: US B1 canonical candidate episodes (contract + intake + reconciler + wiring)
@@ -12326,7 +12332,7 @@ jobs:
             || { echo "::warning::apt/--with-deps failed or stalled; installing the browser only"; \
                  timeout --signal=TERM --kill-after=15s 60s python -m playwright install chromium; }
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
-        run: python -m pytest tests/test_prophet_observations_browser.py -q
+        run: python -m pytest tests/test_prophet_observations_browser.py tests/test_tech_lab_entry_evidence_browser.py -q
 
   attested-history-guards:
     if: ${{ false }}

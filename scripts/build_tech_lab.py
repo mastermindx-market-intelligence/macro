@@ -60,6 +60,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from lib import config
 from lib.pages import write_page
+from scripts.tech_lab_entry_evidence import load_entry_evidence
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s")
 log = logging.getLogger("build_tech_lab")
@@ -291,6 +292,7 @@ def main() -> int:
         try:
             html = env.get_template("tech_lab.html.j2").render(
                 generated_utc=built,
+                entry_evidence=load_entry_evidence(config.ROOT),
                 is_sample=is_sample,
                 signal_groups=signal_groups,
                 universe_caveat=lab.get("universe_caveat", ""),
@@ -311,6 +313,8 @@ def main() -> int:
                   f"({type(e).__name__}: {e})", flush=True)
             return 0
 
+        # Discard indentation left on otherwise empty Jinja block lines.
+        html = "\n".join(line if line.strip() else "" for line in html.splitlines()) + "\n"
         site.mkdir(exist_ok=True)
         write_page(site / "tech_lab.html", html)
         log.info(
