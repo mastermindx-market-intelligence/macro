@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -78,6 +79,65 @@ def test_id_is_stable_as_the_episode_extends():
         assert evs, f"no event at cut {cut}"
         ids.add(evs[0]["id"])
     assert ids == {"tw-2026-06-30-tga-release"}
+
+
+@pytest.mark.parametrize("anchor,latest,elapsed", [
+    ("2026-08-07", "2026-08-10", 3),  # weekend
+    ("2026-11-25", "2026-11-30", 5),  # holiday + weekend
+    ("2024-02-28", "2024-03-01", 2),  # leap day
+    ("2025-12-31", "2026-01-02", 2),  # year boundary
+    ("2026-05-12", "2026-07-09", 58),  # sparse acceptance shape
+])
+@pytest.mark.parametrize("levels,kind", [((950.0, 800.0), "tga_release"),
+                                        ((800.0, 950.0), "tga_build")])
+def test_episode_elapsed_time_uses_dates_not_observation_count(anchor, latest, elapsed,
+                                                              levels, kind):
+    pairs = [(anchor, levels[0]), (latest, levels[1])]
+    ep = tw._episode(_bn_series(pairs), tw._cfg())
+    assert ep["kind"] == kind
+    assert ep["days"] == 1  # existing observation-step/path-slicing contract
+    assert ep["elapsed_calendar_days"] == elapsed
+    snapshot = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    impulse = snapshot["tga_impulse"]
+    assert impulse["days"] == 1
+    assert impulse["elapsed_calendar_days"] == elapsed
+    assert f"over {elapsed} calendar day(s)" in impulse["summary_en"]
+    assert f"在{elapsed}个日历日内" in impulse["summary_zh"]
+    assert "business day" not in impulse["summary_en"]
+    assert "交易日" not in impulse["summary_zh"]
+    event, = tw.detect_events(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    assert event["id"] == f"tw-{anchor}-{kind.replace('_', '-')}"
+    assert f"over {elapsed} calendar day(s)" in event["body"]
+    assert "business day" not in event["body"]
+    assert f"{anchor}: ${levels[0]:.1f}bn" in event["body"]
+    assert f"{latest}: ${levels[1]:.1f}bn" in event["body"]
+
+
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_elapsed_duration_is_invariant_to_interior_observation_gaps(direction):
+    dates = pd.bdate_range("2026-08-03", "2026-08-20")
+    pairs = [(day.strftime("%Y-%m-%d"), 800.0 + direction * 150.0 * i / (len(dates)-1))
+             for i, day in enumerate(dates)]
+    full = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})["tga_impulse"]
+    sparse = tw.snapshot(_tga=_mn_frame([pairs[0], pairs[-1]]),
+                         _plumbing={}, _regime={})["tga_impulse"]
+    assert full["days"] == len(dates)-1
+    assert sparse["days"] == 1
+    assert full["elapsed_calendar_days"] == sparse["elapsed_calendar_days"] == 17
+    assert full["summary_en"] == sparse["summary_en"]
+    assert full["summary_zh"] == sparse["summary_zh"]
+
+
+def test_quarter_end_duration_preserves_original_episode_and_path():
+    ep = tw._episode(_bn_series(_ACCEPT), tw._cfg())
+    assert ep["days"] == 7
+    assert ep["elapsed_calendar_days"] == 9
+    assert ep["source"] == "quarter_end"
+    event, = tw.detect_events(_tga=_mn_frame(_ACCEPT), _plumbing={}, _regime={})
+    assert event["id"] == "tw-2026-06-30-tga-release"
+    assert "over 9 calendar day(s)" in event["body"]
+    assert "anchored on a calendar quarter-end" in event["body"]
+    assert all(f"{day}: ${level:.1f}bn" in event["body"] for day, level in _ACCEPT[-8:])
 
 
 # --------------------------------------------------------------------------- #
@@ -173,3 +233,193 @@ def test_accepts_bn_series_seam():
     # the injectable seam also accepts a Series already in $bn
     evs = tw.detect_events(_tga=_bn_series(_ACCEPT))
     assert evs and evs[0]["id"] == "tw-2026-06-30-tga-release"
+
+
+@pytest.mark.parametrize("anchor,quarter_end,latest", [
+    ("2026-05-12", "2026-06-30", "2026-07-09"),
+    ("2026-02-02", "2026-03-31", "2026-04-09"),
+    ("2026-08-03", "2026-09-30", "2026-10-09"),
+    ("2025-11-03", "2025-12-31", "2026-01-09"),
+])
+@pytest.mark.parametrize("missing", [False, True])
+def test_old_reference_preserves_observation_identity(anchor, quarter_end, latest, missing):
+    pairs = [(anchor, 950.0), (latest, 800.0)]
+    if missing:
+        pairs.insert(1, (quarter_end, float("nan")))
+    frame = _mn_frame(pairs)
+    snap = tw.snapshot(_tga=frame, _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    assert qe["date"] == quarter_end  # retained nominal-reference field
+    assert qe["observed_date"] == anchor
+    assert qe["observation_lag_calendar_days"] == (pd.Timestamp(quarter_end) - pd.Timestamp(anchor)).days
+    assert qe["level_bn"] == 950.0 and qe["chg_since_bn"] == -150.0
+    imp = snap["tga_impulse"]
+    assert imp["since"] == anchor and imp["magnitude_bn"] == -150.0
+    assert imp["quarter_end_adjacent"] is False
+    assert "quarter-end" not in imp["summary_en"] and "季末" not in imp["summary_zh"]
+    event, = tw.detect_events(_tga=frame, _plumbing={}, _regime={})
+    assert event["id"] == f"tw-{anchor}-tga-release"
+    assert "quarter-end" not in event["title"] + event["body"]
+    assert f"{anchor}: $950.0bn" in event["body"]
+
+
+@pytest.mark.parametrize("anchor,quarter_end,latest", [
+    ("2026-06-30", "2026-06-30", "2026-07-09"),
+    ("2023-09-29", "2023-09-30", "2023-10-09"),
+    ("2024-03-28", "2024-03-31", "2024-04-08"),
+    ("2026-06-26", "2026-06-30", "2026-07-09"),
+    ("2025-12-31", "2025-12-31", "2026-01-09"),
+])
+def test_quarter_end_date_is_calendar_reference_not_observation(anchor, quarter_end, latest):
+    frame = _mn_frame([(anchor, 950.0), (latest, 800.0)])
+    ep = tw._episode(tw._load_tga_bn(frame), tw._cfg())
+    assert ep["quarter_end_adjacent"] is True
+    assert ep["quarter_end_date"] == quarter_end
+    snap = tw.snapshot(_tga=frame, _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    assert qe["observed_date"] == anchor and qe["date"] == quarter_end
+    event, = tw.detect_events(_tga=frame, _plumbing={}, _regime={})
+    if anchor == quarter_end:
+        assert " (quarter-end)" in snap["tga_impulse"]["summary_en"]
+        assert "（季末）" in snap["tga_impulse"]["summary_zh"]
+        assert "anchored on a calendar quarter-end" in event["body"]
+    else:
+        assert " (near quarter-end)" in snap["tga_impulse"]["summary_en"]
+        assert "（季末附近）" in snap["tga_impulse"]["summary_zh"]
+        assert "anchored on a calendar quarter-end" not in event["body"]
+        assert f"near calendar quarter-end {quarter_end}" in event["body"]
+        assert "holidays not modeled" in event["body"]
+
+
+def _render_treasury_for_reference(snap, lang):
+    from jinja2 import Environment, StrictUndefined
+    source = (Path(__file__).resolve().parents[1] / "templates/whitehouse.html.j2").read_text()
+    start = source.index("{% if treasury %}")
+    end = source.index("</section>\n{% endif %}", start) + len("</section>\n{% endif %}")
+    template = Environment(autoescape=True, undefined=StrictUndefined).from_string(source[start:end])
+    return template.render(treasury=snap, t=lambda en, zh: zh if lang == "zh" else en)
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("anchor", ["2026-05-12", "2026-06-26", "2026-06-30"])
+def test_reference_fragment_uses_actual_date(anchor, lang):
+    snap = tw.snapshot(_tga=_mn_frame([(anchor, 950.0), ("2026-07-09", 800.0)]),
+                       _plumbing={}, _regime={})
+    html = _render_treasury_for_reference(snap, lang)
+    if anchor == "2026-06-30":
+        assert ("Δ since quarter-end" if lang == "en" else "较季末") + " (06-30)" in html
+    else:
+        assert ("Δ since observation" if lang == "en" else "较观测日") + f" ({anchor[5:]})" in html
+        assert "2026-06-30" in html and anchor in html
+        assert ("Δ since quarter-end" if lang == "en" else "较季末") not in html
+    assert '-150<span class="u">bn</span>' in html
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("nominal", ["2026-06-30", None])
+def test_legacy_reference_does_not_invent_observation_date(lang, nominal):
+    snap = tw.snapshot(_tga=_mn_frame(_ACCEPT), _plumbing={}, _regime={})
+    qe = snap["tga"]["quarter_end"]
+    qe.pop("observed_date", None)
+    qe.pop("observation_lag_calendar_days", None)
+    qe["date"] = nominal
+    html = _render_treasury_for_reference(snap, lang)
+    assert ("Δ from stored reference" if lang == "en" else "较存储参考值") in html
+    assert ("Observation date unavailable" if lang == "en" else "观测日期不可用") in html
+    assert ("Δ since quarter-end" if lang == "en" else "较季末") not in html
+
+
+@pytest.mark.parametrize("back", [1, 5, 20])
+@pytest.mark.parametrize("frequency", ["D", "B", "4D"])
+def test_tga_change_windows_disclose_retained_observation_endpoints(back, frequency):
+    dates = pd.date_range(end="2026-08-31", periods=25, freq=frequency)
+    pairs = [(d, 700.0 + i * 3.25) for i, d in enumerate(dates)]
+    snap = tw.snapshot(_tga=_mn_frame(pairs), _plumbing={}, _regime={})
+    window = snap["tga"]["change_windows"][str(back)]
+    assert window == {
+        "start_date": dates[-back-1].date().isoformat(),
+        "end_date": "2026-08-31",
+        "observation_steps": back,
+        "elapsed_calendar_days": (dates[-1].date() - dates[-back-1].date()).days,
+    }
+    assert snap["tga"][f"chg_{back}d_bn"] == round(3.25 * back, 3)
+
+
+@pytest.mark.parametrize("count", [0, 1, 5, 20, 21])
+def test_tga_change_windows_require_both_endpoints(count):
+    dates = pd.date_range(end="2026-08-31", periods=count, freq="D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 800.0) for d in dates]),
+                       _plumbing={}, _regime={})
+    if not count:
+        assert snap["tga"] is None
+        return
+    for back in (1, 5, 20):
+        window = snap["tga"]["change_windows"][str(back)]
+        if count <= back:
+            assert window is None and snap["tga"][f"chg_{back}d_bn"] is None
+        else:
+            assert window["observation_steps"] == back
+            assert window["elapsed_calendar_days"] == back
+            assert snap["tga"][f"chg_{back}d_bn"] == 0.0
+
+
+@pytest.mark.parametrize("back", [1, 5, 20])
+def test_missing_rows_and_nulls_disclose_identical_change_windows(back):
+    dates = pd.bdate_range(end="2026-08-31", periods=65)
+    frame = _mn_frame([(d, 800.0 + i) for i, d in enumerate(dates)])
+    missing = list(range(42, 64))
+    absent = frame.drop(frame.index[missing])
+    null = frame.copy()
+    null.iloc[missing, 0] = float("nan")
+    a = tw.snapshot(_tga=absent, _plumbing={}, _regime={})
+    b = tw.snapshot(_tga=null, _plumbing={}, _regime={})
+    assert a == b
+    window = a["tga"]["change_windows"][str(back)]
+    assert window["start_date"] == absent.index[-back-1].date().isoformat()
+    assert window["elapsed_calendar_days"] > back
+
+
+def test_change_window_uses_same_sorted_deduplicated_grid_as_delta():
+    frame = _mn_frame([("2026-08-31", 850), ("2026-08-03", 700),
+                       ("2026-08-03", 750), ("2026-08-20", float("nan"))])
+    tg = tw.snapshot(_tga=frame, _plumbing={}, _regime={})["tga"]
+    assert tg["chg_1d_bn"] == 100.0
+    assert tg["change_windows"]["1"] == {
+        "start_date": "2026-08-03", "end_date": "2026-08-31",
+        "observation_steps": 1, "elapsed_calendar_days": 28,
+    }
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("sparse", [False, True])
+def test_tga_fragment_labels_observations_and_actual_intervals(lang, sparse):
+    dates = pd.date_range(end="2026-08-31", periods=21, freq="4D" if sparse else "D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 700.0 + i) for i, d in enumerate(dates)]),
+                       _plumbing={}, _regime={})
+    html = _render_treasury_for_reference(snap, lang)
+    for back in (1, 5, 20):
+        w = snap["tga"]["change_windows"][str(back)]
+        assert f'{w["start_date"]} → {w["end_date"]}' in html
+        assert f'{w["elapsed_calendar_days"]} ' + ("calendar days" if lang == "en" else "个日历日") in html
+    for label in (("vs prior observation", "vs 5 observations earlier", "vs 20 observations earlier")
+                  if lang == "en" else ("较上次观测", "较前5次观测", "较前20次观测")):
+        assert label in html
+    assert "1d</div>" not in html and "20d</div>" not in html
+    assert "Δ 5 sessions" not in html and "5日变动" not in html
+
+
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("metadata", ["absent", "null", "empty"])
+def test_legacy_delta_payload_never_invents_elapsed_interval(lang, metadata):
+    dates = pd.date_range(end="2026-08-31", periods=21, freq="4D")
+    snap = tw.snapshot(_tga=_mn_frame([(d, 800.0) for d in dates]),
+                       _plumbing={}, _regime={})
+    if metadata == "absent":
+        snap["tga"].pop("change_windows", None)
+    else:
+        snap["tga"]["change_windows"] = None if metadata == "null" else {}
+    html = _render_treasury_for_reference(snap, lang)
+    assert html.count("Observation interval unavailable" if lang == "en" else "观测区间不可用") == 3
+    assert "vs prior observation" in html if lang == "en" else "较上次观测" in html
+    assert "1d</div>" not in html and "20d</div>" not in html
+    assert "Δ 5 sessions" not in html and "5日变动" not in html
