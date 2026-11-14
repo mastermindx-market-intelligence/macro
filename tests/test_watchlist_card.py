@@ -264,17 +264,93 @@ def test_sparkline_renders_with_data(monkeypatch):
     )
     svg = cr.render_watchlist_card("theme", _rows(3), logo_root="/x")
     assert "<polyline" in svg, "Sparkline polyline not drawn when closes available"
+    assert svg.count('data-wl-trend="10d-closes"') == 3
+    assert 'data-wl-trend="1d-move"' not in svg
+    # The 10-day series rises even though the one-day pills are red: the line
+    # must describe its actual period, not copy the pill's sign.
+    assert re.search(r'data-wl-trend="10d-closes".*?stroke="#4CAF50"', svg)
 
 
-def test_sparkline_absent_without_data(monkeypatch):
-    """A ticker with no price history must degrade to no sparkline — never a
-    broken glyph or an empty <polyline>."""
+def test_sparkline_missing_history_uses_labeled_one_day_move(monkeypatch):
+    """Missing local parquet must not strand a blank ticker row: draw only the
+    two real close-to-close endpoints authorized by the 1D percentage."""
     import engine.marketing.chart_render as cr
     monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
     monkeypatch.setattr(cr, "load_closes", lambda *a, **k: None)
-    svg = cr.render_watchlist_card("theme", _rows(3), logo_root="/x")
-    # No row sparklines (the only polylines in this card come from sparklines).
-    assert "<polyline" not in svg
+    rows = [
+        {"ticker": "OPAL", "price": None, "pct_change": -11.2},
+        {"ticker": "SEDG", "price": None, "pct_change": -8.9},
+        {"ticker": "BLDP", "price": None, "pct_change": -7.3},
+    ]
+    svg = cr.render_watchlist_card("Energy Renewable", rows, logo_root="/x")
+    assert svg.count('data-wl-trend="1d-move"') == 3
+    assert svg.count("<polyline") == 3
+    assert svg.count(">1D</text>") == 3
+    assert 'data-wl-trend="10d-closes"' not in svg
+    assert "historical price series unavailable" in svg
+    assert ">TREND</text>" in svg
+    assert ">LAST</text>" not in svg  # no empty-price column for theme cards
+
+
+def test_sparkline_mixed_history_and_fallback(monkeypatch):
+    """The reported OPAL/SEDG/BLDP shape: one genuine chart, two 1D moves."""
+    import engine.marketing.chart_render as cr
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "load_closes", lambda ticker, root, n=10: (
+        (["d1", "d2", "d3", "d4"], [7.0, 7.2, 7.1, 7.4])
+        if ticker == "OPAL" else None
+    ))
+    rows = [
+        {"ticker": "OPAL", "price": None, "pct_change": -11.2},
+        {"ticker": "SEDG", "price": None, "pct_change": -8.9},
+        {"ticker": "BLDP", "price": None, "pct_change": -7.3},
+    ]
+    svg = cr.render_watchlist_card("Energy Renewable", rows, logo_root="/x")
+    assert svg.count('data-wl-trend="10d-closes"') == 1
+    assert svg.count('data-wl-trend="1d-move"') == 2
+    assert svg.count("<polyline") == 3
+    assert svg.count(">10D</text>") == 1
+    assert svg.count(">1D</text>") == 2
+
+
+def test_sparkline_insufficient_or_corrupt_closes_uses_move(monkeypatch):
+    import engine.marketing.chart_render as cr
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "load_closes", lambda ticker, root, n=10: (
+        ["d1", "d2", "d3", "d4"], [None, float("nan"), float("inf"), 11.0]
+    ))
+    svg = cr.render_watchlist_card(
+        "theme", [{"ticker": "SEDG", "price": None, "pct_change": -8.9}],
+        logo_root="/x",
+    )
+    assert 'data-wl-trend="1d-move"' in svg
+    assert 'data-wl-trend="10d-closes"' not in svg
+    assert "nan" not in svg.lower() and "inf" not in svg.lower()
+
+
+@pytest.mark.parametrize("pct", [None, float("nan"), float("inf"), -101.0])
+def test_sparkline_no_valid_history_or_change_is_explicit(monkeypatch, pct):
+    import engine.marketing.chart_render as cr
+    monkeypatch.setattr(cr, "resolve_color_logo", lambda *a, **k: None)
+    monkeypatch.setattr(cr, "load_closes", lambda *a, **k: None)
+    svg = cr.render_watchlist_card(
+        "theme", [{"ticker": "BLDP", "price": None, "pct_change": pct}],
+        logo_root="/x",
+    )
+    assert 'data-wl-trend="unavailable"' in svg
+    assert "NO TREND DATA" in svg
+    assert '<polyline' not in svg  # no invented bars or endpoints
+    assert 'data-wl-trend="1d-move"' not in svg
+
+
+def test_one_day_move_has_only_two_endpoints():
+    """An observed 1D change is not an invented multi-session price path."""
+    from engine.marketing.chart_render import _wl_one_day_move
+    svg = _wl_one_day_move(-8.9, 400, 500, 150, 36, "#E23B3B")
+    points = re.search(r'<polyline points="([^"]+)"', svg).group(1)
+    assert len(points.split()) == 2
+    assert svg.count("<circle") == 2
+    assert ">1D</text>" in svg
 
 
 def test_sparkline_helper_empty_on_short_series():
