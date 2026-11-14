@@ -2869,6 +2869,7 @@ def _lock_lane(state_dir: Path, lane: str):
 
 
 def main() -> int:
+    entered_monotonic = time.monotonic()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--lane", choices=("fast", "snapshot", "bars"), required=True)
@@ -2902,7 +2903,9 @@ def main() -> int:
             now = now.replace(tzinfo=timezone.utc)
         started_at = datetime.now(timezone.utc)
         orchestrator = Orchestrator(
-            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now
+            live_dir=live_dir, state_dir=state_dir, data_dir=data_dir, now=now,
+            deadline_monotonic=(entered_monotonic + SNAPSHOT_WORK_SECONDS
+                                if args.lane == "snapshot" else None),
         )
         getattr(orchestrator, args.lane)()
         orchestrator.write_status(args.lane, started_at)

@@ -179,6 +179,45 @@ def test_weekends_use_the_existing_lane_only_for_private_calendar(tmp_path):
     assert "public" not in str(calls[0][3]["outputs"][0][1])
 
 
+def test_snapshot_entry_finishes_with_status_before_the_service_ceiling(tmp_path, monkeypatch):
+    import json
+    import subprocess
+    from scripts import vps_live_orchestrator as live
+
+    clock = [1000.0]
+    allowances = []
+    monkeypatch.setattr(live.time, "monotonic", lambda: clock[0])
+    monkeypatch.setattr(live.sys, "argv", ["vps_live_orchestrator", "--lane", "snapshot",
+        "--live-dir", str(tmp_path / "public" / "live"),
+        "--state-dir", str(tmp_path / "state"), "--data-dir", str(tmp_path / "data")])
+
+    def slow_runner(args, **kwargs):
+        cost, allowed = float(args[-1]), kwargs["timeout"]
+        allowances.append(allowed)
+        clock[0] += min(cost, allowed)
+        if allowed < cost:
+            raise subprocess.TimeoutExpired(args, allowed)
+        return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+
+    def slow_snapshot(owner):
+        # Exercise the entry point's real command budgeting and status writer
+        # with the calendar plus existing weekday task ceilings; no processes.
+        for name, cost in [("market_calendar", 45), ("full_quotes", 230),
+                           ("intraday_quotes", 30), ("basket_us", 90), ("basket_hk", 90)]:
+            owner.command(name, ["budget-fixture", name, str(cost)], timeout=cost)
+
+    monkeypatch.setattr(live, "_run_command_group", slow_runner)
+    monkeypatch.setattr(live.subprocess, "run", slow_runner)
+    monkeypatch.setattr(live.Orchestrator, "snapshot", slow_snapshot)
+    assert live.main() == 1
+    assert allowances[:4] == [45, 230, 30, 90]
+    assert 0 < allowances[-1] < 90
+    assert clock[0] - 1000 + live.COMMAND_CLEANUP_SECONDS <= live.SNAPSHOT_WORK_SECONDS
+    status = json.loads((tmp_path / "state" / "status-snapshot.json").read_text())
+    assert status["finished_at"] and status["ok"] is False
+    assert [task["status"] for task in status["tasks"]] == ["ok"] * 4 + ["timeout"]
+
+
 def test_yahoo_timeout_retains_pages_and_resumes_beyond_the_prefix():
     calls = []
     fail = [True]
