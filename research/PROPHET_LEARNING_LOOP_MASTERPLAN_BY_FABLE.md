@@ -128,3 +128,88 @@ rules, separate n/summary), template renders both with era labels. Parquet is un
 No score-weight changes from forensics findings; no new vetoes; no pooling of eras; no
 "validated" language; no LLM classification; no admin rebuild (link + table only); no HK/CA
 extension yet. Each candidate fix graduating from the loop gets its own prereg + verdict.
+
+---
+
+## 2026-11-12 on-demand review — re-admission hindsight cluster (2026-07-31 artifact)
+
+**Adjudication: DESCRIPTIVE ONLY; no live veto, score change, or validated edge.**
+Source of truth: data/prophet_postmortem/summary.json (as_of 2026-07-31,
+blob be2a3bf09566037636492611b81188626dd7bfb1), its companion
+reports/prophet_postmortem_2026-07-31.md and the standing protocol
+docs/PROPHET_POSTMORTEM_PROTOCOL.md. This is a review of that historical
+window, **not** a fresh November backtest or current-production acceptance.
+
+### Observation and what it does NOT prove
+
+- There were 808 buy-board episodes across 24 board dates, 610 matured across
+  18 dates, 194 in flight and 4 unscored. Matured cohorts: 132 losers,
+  91 winners, 387 neutral. Fixed H=10, hypothetical next-session-close fills,
+  no simulated stop; board appearances are **not executed trades**.
+- The re_admission:prior_episode_loss **HINDSIGHT** row flagged 8 matured
+  episodes across **7 distinct entry dates**: DCH (2026-06-18, -15.91%),
+  ADNT (06-22, -9.61%), SONO (06-22, -2.40%, **neutral**),
+  HWKN (06-24, -19.18%), P (07-06, -5.02%), CVSA (07-09, -11.50%),
+  IPGP (07-15, -17.86%) and ODFL (07-21, -7.45%).
+  Seven meet the combined loser gate (absolute <= -8% **or** SPY-excess
+  <= -5%), none the winner gate. The displayed **+86.53pp** is arithmetic
+  saved over the **seven loser tails only**, not a portfolio return: it
+  excludes SONO's -2.40% neutral outcome, sizing, overlap and trade costs.
+  Do not interpret this as executable alpha.
+- Earlier position's mark **on the re-admission date**: DCH -4.54%,
+  ADNT -4.63%, SONO -3.50%, HWKN +2.05%, P +0.76%, CVSA +1.36%,
+  IPGP +3.04%, ODFL +1.31%. The prior episodes' 10-session outcomes
+  were not resolved on their respective re-admission dates.
+  The buildable sibling, re_admission:open_drawdown_at_readmit, fired
+  **0/610**. An empty executable-signal sample cannot establish veto value.
+- All 87 matured episodes with a recent prior averaged +0.86% (19 losers,
+  11 winners), versus +1.29% for 523 other matured episodes (113 losers,
+  80 winners). This unadjusted -0.43pp difference is exploratory and
+  cannot isolate repeat-admission causality. A same-entry-date cluster
+  bootstrap (12,000 exploratory resamples of 18 matured board dates)
+  gave approximate 95% bounds **[-1.73, +0.90]pp**, including zero;
+  this is NOT a promotion-grade confidence interval.
+- Four of eight July flagged re-admissions had sector_basket.reco=avoid;
+  earlier June cases lacked comparable recorded sector recommendation.
+  Across **all** repeat-admission rows with avoid/trim sector status
+  there were **13** episodes, four losers, **two winners**, seven neutral.
+  A blanket veto would discard winners and requires symmetric evaluation.
+- None of the eight carried entry_plan.status=buy_now: two buy_soon;
+  six hold, wait_pullback, await_confluence or bounce_wait. The study
+  measures buy-board appearances and simulated forced entries, not
+  whether actual execution-eligible trades violated a gate.
+
+### Hypothesis, falsifiers and owned next actions
+
+**Unproven hypothesis:** a ticker may remain on or reappear on the board
+while its sector thesis or entry readiness weakens. The four July cases
+motivate investigation, not a conclusion about cause or a trading rule.
+
+1. **Refresh evidence:** establish the latest actual ledger and artifact
+   vintage, run the existing read-only/dry-run integrity/postmortem paths
+   where applicable and separate authentically stamped board-definition
+   eras. The Observatory displays a **July 31 historical artifact**;
+   the weekly review protocol does not prove that this artifact refreshed.
+2. **Verify PIT feature availability:** a re-admission candidate must use
+   only prior membership, price marks and sector/entry state available
+   by the decision clock. Audit scripts/prophet_postmortem.py::_mark_at:
+   searchsorted with side="left" might select a later close if the board
+   date is missing from the price index. Test exact-date/as-of behavior.
+   This is an **audit question**, NOT a finding that these eight leaked.
+3. **Test the right unit:** distinguish repeated board membership, explicit
+   actionable admissions and executed positions. Compare eligible
+   episodes with unflagged cases within each genuine board-definition
+   era, date-blocked and out-of-sample, pricing losers, winners **and
+   neutral return exposure**. Pre-register thresholds before any new
+   confirmatory data, not after reading these eight rows.
+4. **Clarify the observatory:** admin/prophet.py::_learning_loop already
+   forwards variant, leg and visible_at_entry. Ensure the UI visibly
+   labels the +86.53pp row "HINDSIGHT ONLY — NOT ACTIONABLE", distinguishes
+   the separate buildable 0/610 row, and shows artifact vintage and
+   the hypothetical board-signal measurement basis. Verify real-browser
+   display if a later UI correction is made.
+
+**Verdict:** a recurring retrospective cluster worth PIT investigation,
+**not a measured buildable rule**. No changes here to classification,
+scoring, weights, live gates or execution. Normal G6 accrual,
+pre-registration and symmetric evidence requirements stay in force.

@@ -184,6 +184,48 @@ def _track_record(repo: Path) -> dict | None:
     }
 
 
+def _reentry_case_rows(doc: dict) -> list[dict]:
+    """Forward the historical hindsight cases, not a second classifier.
+
+    The labels and prior comparisons are owned by the versioned postmortem
+    artifact.  We only project already-classified *matured* rows into a
+    bounded, read-only Observatory table; never infer a live veto from them.
+    """
+    out: list[dict] = []
+    for row in (doc.get("episodes") or []):
+        if not isinstance(row, dict) or row.get("maturity") != "matured":
+            continue
+        labels = row.get("labels") or []
+        if not isinstance(labels, list):
+            continue
+        if not any(
+            isinstance(label, dict)
+            and label.get("label") == "re_admission"
+            and isinstance(label.get("trigger"), dict)
+            and label["trigger"].get("leg") == "prior_episode_loss"
+            for label in labels
+        ):
+            continue
+        prior = row.get("prior_episode") or {}
+        ctx = row.get("entry_context") or {}
+        if not isinstance(prior, dict) or not isinstance(ctx, dict):
+            continue
+        out.append({
+            "ticker": row.get("ticker"),
+            "entry_date": row.get("entry_date"),
+            "cohort": row.get("cohort"),
+            "outcome_pct": row.get("outcome_pct"),
+            "prior_entry_date": prior.get("entry_date"),
+            "prior_mark_at_readmit_pct": prior.get("mark_at_readmit_pct"),
+            "prior_mark_observation_date": prior.get("mark_observation_date"),
+            "prior_resolved_outcome_pct": prior.get("outcome_pct"),
+            "sector_reco_at_entry": (ctx.get("sector_basket") or {}).get("reco"),
+            "entry_status_at_entry": (ctx.get("entry_plan") or {}).get("status"),
+            "evidence": "hindsight_upper_bound",
+        })
+    return sorted(out, key=lambda r: (str(r["entry_date"]), str(r["ticker"])))[:64]
+
+
 def _learning_loop(repo: Path) -> dict | None:
     """Digest of the Prophet Learning Loop postmortem artifact.
 
@@ -225,6 +267,14 @@ def _learning_loop(repo: Path) -> dict | None:
         "n_board_dates": summary.get("n_board_dates"),
         "n_losers":     cohorts.get("n_losers"),
         "n_winners":    cohorts.get("n_winners"),
+        # Historical examples only; no recomputation or live policy.
+        "reentry_cases": _reentry_case_rows(data),
+        "measurement_basis": {
+            "entry": (data.get("method") or {}).get("fill"),
+            "horizon": (data.get("method") or {}).get("horizon"),
+            "exit_rule": (data.get("method") or {}).get("exit_rule"),
+            "authority": "measurement_only",
+        },
         "labels": [
             {
                 "label":            f.get("label"),

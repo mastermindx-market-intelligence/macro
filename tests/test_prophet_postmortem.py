@@ -909,7 +909,10 @@ def _series(dips: dict[str, float] | None = None) -> pd.Series:
 def _item(ticker: str, entry: str, exit_: str | None, *, pnl: float | None = None,
           matured: bool = True, series: "pd.Series | None" = None) -> dict:
     sc = None if pnl is None else {"pnl": pnl, "mark": pnl, "matured": matured,
-                                   "entry": 100.0}
+                                   "entry": 100.0,
+                                   # Synthetic fixture fills the NEXT business session.
+                                   "entry_date": str((pd.Timestamp(entry) +
+                                                      pd.offsets.BDay(1)).date())}
     return {"ep": {"ticker": ticker, "entry_date": entry, "exit_date": exit_},
             "sc": sc, "series": _series() if series is None and pnl is not None
             else series}
@@ -949,6 +952,7 @@ class TestPriorEpisodeScan:
         assert prior["selected_by"] == pm.READMIT_LEG_OPEN_DRAWDOWN
         assert prior["entry_date"] == "2026-06-18"
         assert prior["mark_at_readmit_pct"] == pytest.approx(-12.0)
+        assert prior["mark_observation_date"] == "2026-06-22"
 
     def test_an_unpriceable_prior_makes_the_row_UNDECIDABLE_not_clean(self):
         # The prior run has no series at all, so nobody can say what it did. Reporting

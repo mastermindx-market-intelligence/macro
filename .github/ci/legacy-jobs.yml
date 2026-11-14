@@ -37578,6 +37578,15 @@ jobs:
       - "tests/test_prophet_plan_clock.py"
       - "tests/test_prophet_plan_relation.py"
       - "tests/test_prophet_postmortem.py"
+      - "admin/__init__.py"
+      - "admin/config_store.py"
+      - "admin/paths.py"
+      - "admin/prophet.py"
+      - "admin/static/app.js"
+      - "scripts/prophet_readmission_pit_study.py"
+      - "site/factordata/us_track_history.json"
+      - "tests/test_prophet_readmission_observatory.py"
+      - "tests/test_prophet_readmission_pit_study.py"
       - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
       - "tests/test_prophet_whynot_receipts.py"
@@ -37722,6 +37731,12 @@ jobs:
         run: >-
           python -m pytest tests/test_prophet_postmortem.py -q
           -k "not TestLoserCohortFixture and not TestLadderOnTheCommittedLedgers"
+       # Prophet re-admission PIT decision-clock and historical Observatory guards:
+       # exercise the real source renderer, date-as-of comparator and symmetrical
+       # research-only cohort study in the EXISTING Prophet code gate. These are
+       # hermetic source contracts, not ledger-dependent fixtures or live-trade tests.
+      - name: Prophet repeat-admission PIT and Observatory evidence contracts
+        run: python -m pytest tests/test_prophet_readmission_observatory.py tests/test_prophet_readmission_pit_study.py -q
         # The TURN WATCH desk consumes the group-turn organ's artifact and R4's organ, so
         # all three ride one lane. test_us_basket_turn.py was named by NO run: step in any
         # workflow before this — the same unrun-suite hole this job's header records for

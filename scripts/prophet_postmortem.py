@@ -948,22 +948,40 @@ def _sessions_between(calendar: pd.DatetimeIndex, a: str, b: str) -> int | None:
     return int(ib - ia)
 
 
-def _mark_at(prev: dict, when: str) -> float | None:
-    """The prior position's open P/L, in %, on the night the name came back.
+def _mark_with_observation_date(
+    prev: dict, when: str,
+) -> tuple[float | None, str | None]:
+    """Prior's last available close at the board cutoff, with provenance date.
 
-    None when the prior episode has no series or no fill price — the input the
-    BUILDABLE `open_drawdown_at_readmit` leg is made of. The engine nulls that leg
-    rather than reading the absence as "was not under water".
+    The fill's actual date is a hard lower bound. A close before that date is
+    not a position mark; a close after 'when' is future information. The
+    observation date is retained for explicit PIT validation on future artifacts.
     """
     sc, series = prev["sc"], prev["series"]
     entry_px = (sc or {}).get("entry")
-    if series is None or not entry_px:
-        return None
-    j = series.index.searchsorted(pd.Timestamp(when), side="left")
-    if j >= len(series):
-        return None
-    return (float(series.iloc[j]) / float(entry_px) - 1.0) * 100.0
+    fill_day = (sc or {}).get("entry_date")
+    if series is None or not entry_px or not fill_day:
+        return None, None
+    try:
+        cutoff = pd.Timestamp(when)
+        fill = pd.Timestamp(fill_day)
+    except (TypeError, ValueError):
+        return None, None
+    if fill > cutoff:
+        return None, None
+    j = int(series.index.searchsorted(cutoff, side="right")) - 1
+    if j < 0 or series.index[j] < fill:
+        return None, None
+    px = series.iloc[j]
+    if pd.isna(px) or float(px) <= 0:
+        return None, None
+    return ((float(px) / float(entry_px) - 1.0) * 100.0,
+            str(series.index[j].date()))
 
+
+def _mark_at(prev: dict, when: str) -> float | None:
+    """Backward-compatible, no-future prior mark helper."""
+    return _mark_with_observation_date(prev, when)[0]
 
 def _rev(date: Any) -> str:
     """Sort key that puts the LATEST date first inside an ascending `min()`.
@@ -1024,12 +1042,14 @@ def prior_episodes(scored: list[dict], calendar: "pd.DatetimeIndex"
                     continue
                 psc = prev["sc"]
                 matured = bool(psc.get("matured"))
+                mark_pct, observed_date = _mark_with_observation_date(prev, cs)
                 cands.append({
                     "entry_date": prev["ep"]["entry_date"],
                     "outcome_pct": psc.get("pnl") if matured else psc.get("mark"),
                     "prior_matured": matured,
                     "sessions_since_prior_exit": gap,
-                    "mark_at_readmit_pct": _mark_at(prev, cs),
+                    "mark_at_readmit_pct": mark_pct,
+                    "mark_observation_date": observed_date,
                 })
             n_window = len(cands) + n_unscoreable
             if not n_window:
