@@ -45,10 +45,12 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import re
 from datetime import date, datetime, timezone
 
 from lib import config
+from lib import fabric_client
 
 log = logging.getLogger(__name__)
 
@@ -388,8 +390,124 @@ def _client(cfg: dict):
         return None
 
 
-def _call_model(source_text: str, context: str, cfg: dict) -> tuple[str | None, str | None]:
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the DIGEST writer (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+#: operator kill-switch; "0" forces the legacy llm_auth ladder even when the
+#: router is configured.
+_FABRIC_KILL_ENV = "MACRO_CATALYST_TONE_FABRIC"
+#: the router lane for the digest: one bounded extraction call per document.
+_FABRIC_LANE = "fast"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+_FABRIC_SESSION_ID = "macro-catalyst-tone"
+
+
+def _fabric_enabled() -> bool:
+    """True when the digest writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_CATALYST_TONE_FABRIC=0
+    is the operator kill-switch. No token -> the legacy ladder, unchanged.
+    """
+    if os.environ.get(_FABRIC_KILL_ENV, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _user_prompt(source_text: str, context: str) -> str:
+    """The one user message both the fabric and legacy paths send."""
+    return (f"Document context: {context}\n\n"
+            f"Document text follows between <doc> tags.\n<doc>\n{source_text}\n</doc>")
+
+
+def _fabric_call(source_text: str, context: str, cfg: dict,
+                 served: dict | None = None) -> tuple[str | None, str | None]:
+    """ONE digest call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades this document exactly
+    as a legacy ladder failure would, and a second attempt here would double-serve
+    a call the router already resolved.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _call_model catches it and runs the legacy
+    ladder — blanking a digest that a healthy legacy path could still produce
+    would be a regression, not a degradation.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": _user_prompt(source_text, context)}],
+            system=CATALYST_SYSTEM,
+            lane=_FABRIC_LANE,
+            max_tokens=int(cfg.get("max_tokens", 1500)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=_FABRIC_SESSION_ID,
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("catalyst_tone: fabric call failed (%s)", e)
+        return None, "llm_error"
+    # Refusal wins over text: a partial/refusing answer is not a digest.
+    raw_stop = getattr(getattr(comp, "raw", None), "stop_reason", None)
+    if raw_stop == "refusal":
+        return None, "refusal"
+    # Truncation parity with the legacy ladder. Legacy rejects a max_tokens reply
+    # without ever looking at its text, and that matters here more than anywhere:
+    # _extract_json deliberately REPAIRS a truncated object, so 3 of 4 truncation
+    # shapes parse into a partial record. Grading that would publish a digest
+    # whose evidence array was cut mid-write — against this module's own doctrine
+    # that abstaining is the correct answer when the document was not fully read.
+    # Mirror legacy's reason string exactly so `degraded_reason` is stable across
+    # both paths.
+    if raw_stop == "max_tokens":
+        return None, f"stop_{raw_stop}"
+    if not comp.text:
+        return None, "empty_reply"
+    if served is not None:
+        # Provenance, not telemetry: digest_document publishes rec["model"], and
+        # under the router that is NOT _extraction_model(cfg) — the router picks
+        # the served member of the lane. Reporting the config model would make
+        # every fabric-produced digest claim a model that did not produce it,
+        # breaking the audit trail the W7 determinism kit exists to protect.
+        try:
+            served["provider"] = "fabric"
+            if comp.model_served:
+                served["model"] = comp.model_served
+        except Exception as e:  # noqa: BLE001 — never break a served call
+            log.debug("catalyst_tone: served-by provenance failed (%s)", e)
+    try:  # cost ledger — never let telemetry break a call that otherwise worked
+        from lib import ai_costs  # noqa: PLC0415 — lazy, matches llm_auth's idiom
+        # LANE is the ledger's attribution key, not the router lane. The legacy
+        # path books this writer under usage_lane "catalyst-tone", which
+        # lib/ai_costs.lobe_for_lane maps to the News lobe; recording the ROUTER
+        # lane ("fast") here would fall through to "Other" and silently move
+        # catalyst spend off the News row on the AI Cost page (ai_costs.py:58).
+        # So the existing lane is kept, "fabric" is the stage drill-down inside
+        # it, and the router lane is carried in the note.
+        ai_costs.record_usage(
+            lane="catalyst-tone",
+            provider="fabric",
+            model=comp.model_served,
+            stage="fabric",
+            note=f"router_lane={_FABRIC_LANE}",
+        )
+    except Exception as e:  # noqa: BLE001
+        log.debug("catalyst_tone: fabric usage telemetry failed (%s)", e)
+    return comp.text, "fabric"
+
+
+def _call_model(source_text: str, context: str, cfg: dict,
+                served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
+
+    served: OPTIONAL out-parameter (master_brain._call_model's idiom, and for the
+    same reason: engine/catalyst_tone.py itself and several tests stub this with a
+    2-tuple lambda, so the RETURN type must not grow). On a fabric-served call
+    this receives {"provider": "fabric", "model": <what the router actually ran>};
+    it is left untouched on a cache hit, on the legacy ladder, and on failure.
+    Population is wrapped so a defect in it can never break a call that worked.
 
     Determinism kit (W7 #33): temperature=0 + seed=0 so the provider samples as
     deterministically as it can. Content-hash cache: the SHA-256 of (model, system,
@@ -397,14 +515,34 @@ def _call_model(source_text: str, context: str, cfg: dict) -> tuple[str | None, 
     requires an API key and the same document always yields the SAME graded record.
     """
     model = _extraction_model(cfg)
-    user = (f"Document context: {context}\n\n"
-            f"Document text follows between <doc> tags.\n<doc>\n{source_text}\n</doc>")
+    user = _user_prompt(source_text, context)
     # content-hash cache check — BEFORE the client/key check (no key needed on hit)
     phash = _prompt_hash(model, CATALYST_SYSTEM, user)
     cached = _reply_cache_get(phash, cfg)
     if cached is not None:
         log.debug("catalyst_tone: reply cache HIT (%s)", phash[:12])
         return cached, None
+    # Capacity Fabric cutover (Chairman order 2026-11-12): the DIGEST writer goes
+    # through the router when it is configured. When it is not — no token, or
+    # MACRO_CATALYST_TONE_FABRIC=0 — the legacy ladder below runs unchanged. A
+    # router that cannot be reached at all (FabricUnavailable: no token after all,
+    # or the SDK will not import) also falls through here rather than blanking the
+    # digest.
+    if _fabric_enabled():
+        try:
+            text, reason = _fabric_call(source_text, context, cfg, served)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "catalyst_tone: fabric router unavailable (%s); using the legacy ladder", e)
+        else:
+            # W7 #33 determinism: the reply cache is keyed on the PROMPT, and both
+            # paths send the same bytes (_user_prompt), so a fabric reply must be
+            # cached exactly like a legacy one. Returning early without this would
+            # re-call the model for the same document on the same day and could
+            # yield a DIFFERENT graded record — the very drift the cache prevents.
+            if text:
+                _reply_cache_put(phash, text, cfg)
+            return text, reason
     client = _client(cfg)
     if client is None:
         return None, "no_client_or_key"
@@ -481,7 +619,14 @@ def digest_document(source_text: str, kind: str = "macro", doc_id: str | None = 
         rec["degraded_reason"] = "empty_source"
         return rec
 
-    reply, reason = _call_model(source_text, context, cfg)
+    served: dict = {}
+    reply, reason = _call_model(source_text, context, cfg, served)
+    if served.get("model"):
+        # Honest provenance: name the model the router ACTUALLY served. Left as
+        # the configured extraction model when this digest came from the reply
+        # cache or the legacy ladder, where _extraction_model(cfg) is the truth.
+        rec["model"] = served["model"]
+        rec["served_by"] = served.get("provider")
     if reply is None:
         rec["degraded_reason"] = reason
         return rec
