@@ -15,6 +15,13 @@ Fail-open: if `gh` is missing, errors, or rate-limits the script prints a clear
 warning to stderr and exits 0 WITHOUT touching existing output files.  The
 nightly must never go red because of this script.
 
+PR listings are fetched with bounded pagination (100 per page, hard ceiling of
+3,000 PRs per listing) because the REST bucket is shared with
+``ship_loop_guard.py``, which fails closed when it is exhausted.  If a ceiling
+is reached, or a page fails after the first, the corresponding
+``open_prs_truncated`` / ``merged_truncated`` flag is set — a clipped set is
+never presented as complete.
+
 Usage::
 
     python -m scripts.build_active_build_map
@@ -245,7 +252,10 @@ def render_markdown(payload: dict) -> str:
     merged_days = payload.get("merged_days", 14)
     merged_section_header = f"## Recently Merged (last {merged_days} days)"
     if merged_truncated:
-        merged_section_header += " (showing most recent 500; window truncated)"
+        merged_section_header += (
+            f" (bounded fetch hit its {_MERGED_PR_CEILING}-PR ceiling or lost a page; "
+            "window truncated)"
+        )
     lines.append(merged_section_header)
     lines.append("")
     if recent_merged:
@@ -309,43 +319,92 @@ def _run_gh(args: list[str], timeout: int = 30) -> Any | None:
         return None
 
 
-_OPEN_PR_FETCH_LIMIT = 100
+# Bounded pagination.  The REST bucket (5,000 requests/hour) is shared with
+# ship_loop_guard.py, which fails CLOSED when it is exhausted — so every listing
+# below is page-bounded and never asks GitHub for an unbounded result set.
+_PR_PAGE_SIZE = 100
+#: Hard ceiling per listing (30 pages x 100).  Hitting it sets ``truncated=True``:
+#: a clipped PR set must never be presented as complete.
+_OPEN_PR_CEILING = 3000
+_MERGED_PR_CEILING = 3000
+
+
+def _pull_list_page_path(state: str, page: int) -> str:
+    """Return the ``gh api`` path for one page of pulls sorted by recency.
+
+    ``{owner}`` / ``{repo}`` are resolved by ``gh`` from the current repository.
+    """
+    return (
+        f"repos/{{owner}}/{{repo}}/pulls?state={state}"
+        f"&per_page={_PR_PAGE_SIZE}&page={page}"
+        f"&sort=updated&direction=desc"
+    )
+
+
+def _rest_pull_merge_state(item: dict) -> str:
+    """Map REST ``mergeable_state`` onto the list-level mergeStateStatus shape."""
+    raw = item.get("mergeable_state")
+    if isinstance(raw, str) and raw:
+        return raw.upper()
+    return ""
 
 
 def _collect_open_prs() -> tuple[list[dict] | None, bool]:
-    """Fetch open PRs via gh CLI.
+    """Fetch every open PR, one bounded page at a time.
 
-    Returns ``(prs, truncated)``; ``(None, False)`` on failure.  ``truncated`` matters:
-    the fetch is capped, main takes roughly 35 merges a day, and an unflagged cap makes
-    a missing PR indistinguishable from a PR that does not exist — so every consumer of
-    ``active_builds.v1`` silently under-reports open work with no way to detect it.  The
-    merged-window fetch has carried this flag since it shipped; the open-PR fetch did not.
+    Returns ``(prs, truncated)``; ``(None, False)`` when the first page fails.
+    Pagination walks ``page=1.._OPEN_PR_CEILING/_PR_PAGE_SIZE`` and stops on the
+    first short page.  ``truncated`` is True when the ceiling is reached (the
+    final page was still full, so more open PRs may exist) or when a page after
+    the first fails (the returned list is a partial view).  ``truncated``
+    matters: main takes roughly 35 merges a day, and an unflagged clip makes a
+    missing PR indistinguishable from a PR that does not exist — every consumer
+    of ``active_builds.v1`` would silently under-report open work.  Fail-open:
+    a page failure degrades loudly via the flag instead of aborting the map.
     """
-    data = _run_gh([
-        "pr", "list",
-        "--state", "open",
-        "--limit", str(_OPEN_PR_FETCH_LIMIT),
-        "--json", "number,title,headRefName,updatedAt,isDraft,mergeStateStatus",
-    ])
-    if data is None:
-        return None, False
-    truncated = len(data) >= _OPEN_PR_FETCH_LIMIT
+    prs: list[dict] = []
+    seen: set[int] = set()
+    truncated = False
+    max_pages = _OPEN_PR_CEILING // _PR_PAGE_SIZE
+    for page in range(1, max_pages + 1):
+        data = _run_gh(["api", _pull_list_page_path("open", page)])
+        if data is None or not isinstance(data, list):
+            if page == 1:
+                return None, False
+            log.warning(
+                "open PR page %d failed — returning partial list (%d PRs) with "
+                "truncated=True", page, len(prs),
+            )
+            truncated = True
+            break
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            number = item.get("number")
+            if isinstance(number, int):
+                if number in seen:
+                    continue
+                seen.add(number)
+            prs.append({
+                "number": number,
+                "title": item.get("title") or "",
+                "head_ref": ((item.get("head") or {}).get("ref") or ""),
+                "updated_at": item.get("updated_at") or "",
+                "is_draft": bool(item.get("draft", False)),
+                "merge_state": _rest_pull_merge_state(item),
+            })
+        if len(data) < _PR_PAGE_SIZE:
+            break
+    else:
+        # Every page in the budget was full — the listing may continue past it.
+        truncated = True
     if truncated:
         print(
-            f"::warning title=active-build-map::open PR list hit the "
-            f"{_OPEN_PR_FETCH_LIMIT} fetch cap — active_builds.v1 under-reports open work",
+            f"::warning title=active-build-map::open PR listing hit its "
+            f"{_OPEN_PR_CEILING}-PR bounded ceiling or lost a page — "
+            f"active_builds.v1 may under-report open work",
             flush=True,
         )
-    prs: list[dict] = []
-    for item in data:
-        prs.append({
-            "number": item.get("number"),
-            "title": item.get("title", ""),
-            "head_ref": item.get("headRefName", ""),
-            "updated_at": item.get("updatedAt", ""),
-            "is_draft": bool(item.get("isDraft", False)),
-            "merge_state": item.get("mergeStateStatus", ""),
-        })
     return prs, truncated
 
 
@@ -374,46 +433,84 @@ def _collect_pr_files(pr_number: int) -> tuple[list[str], bool, bool, str | None
     return files, truncated, False, resolved_merge_state
 
 
-_MERGED_FETCH_LIMIT = 500
-
-
 def _collect_recent_merged(merged_days: int) -> tuple[list[dict], bool] | tuple[None, bool]:
-    """Fetch recently merged PRs filtered to the last *merged_days* days.
+    """Fetch PRs merged in the last *merged_days* days, one bounded page at a time.
 
-    Returns (list_of_prs, truncated_flag).  Returns (None, False) on gh failure.
+    Returns ``(list_of_prs, truncated_flag)``; ``(None, False)`` when the first
+    page fails.  Pages come from the REST closed-PR listing sorted by
+    ``updated_at`` descending, so the walk stops as soon as a full page's oldest
+    ``updated_at`` falls before the cutoff — everything after it was updated
+    (and therefore merged) before the cutoff.  The window is also filtered
+    client-side on ``merged_at`` (belt-and-suspenders, exactly as before).
 
-    Uses a server-side date filter (``merged:>=<ISO-date>``) so the fetch window
-    matches the requested window even for very busy repos.  If the API returns
-    exactly _MERGED_FETCH_LIMIT entries the window may still be truncated; the
-    flag is set in that case so callers can annotate honestly.
+    ``truncated`` is True when the ``_MERGED_PR_CEILING`` ceiling is reached
+    (the last page was still full and still inside the window) or when a page
+    after the first fails; callers annotate honestly rather than presenting a
+    clipped window as complete.
     """
     cutoff = datetime.now(timezone.utc) - timedelta(days=merged_days)
-    # Server-side date filter: ISO date only (YYYY-MM-DD) as required by gh search
-    cutoff_date_str = cutoff.strftime("%Y-%m-%d")
-    data = _run_gh([
-        "pr", "list",
-        "--state", "merged",
-        "--search", f"merged:>={cutoff_date_str}",
-        "--limit", str(_MERGED_FETCH_LIMIT),
-        "--json", "number,title,mergedAt",
-    ])
-    if data is None:
-        return None, False
-    truncated = len(data) >= _MERGED_FETCH_LIMIT
-    # Belt-and-suspenders: also filter client-side by exact datetime cutoff
     recent: list[dict] = []
-    for item in data:
-        merged_at_str = item.get("mergedAt", "") or ""
-        try:
-            merged_dt = datetime.fromisoformat(merged_at_str.replace("Z", "+00:00"))
-        except ValueError:
-            continue
-        if merged_dt >= cutoff:
+    seen: set[int] = set()
+    truncated = False
+    max_pages = _MERGED_PR_CEILING // _PR_PAGE_SIZE
+    for page in range(1, max_pages + 1):
+        data = _run_gh(["api", _pull_list_page_path("closed", page)])
+        if data is None or not isinstance(data, list):
+            if page == 1:
+                return None, False
+            log.warning(
+                "merged PR page %d failed — returning partial window (%d PRs) with "
+                "truncated=True", page, len(recent),
+            )
+            truncated = True
+            break
+        oldest_updated: datetime | None = None
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            updated_at_str = item.get("updated_at") or ""
+            try:
+                updated_dt = datetime.fromisoformat(updated_at_str.replace("Z", "+00:00"))
+            except ValueError:
+                updated_dt = None
+            if updated_dt is not None and (oldest_updated is None or updated_dt < oldest_updated):
+                oldest_updated = updated_dt
+
+            merged_at_str = item.get("merged_at") or ""
+            if not merged_at_str:
+                continue  # closed without merging
+            try:
+                merged_dt = datetime.fromisoformat(merged_at_str.replace("Z", "+00:00"))
+            except ValueError:
+                continue
+            if merged_dt < cutoff:
+                continue
+            number = item.get("number")
+            if isinstance(number, int):
+                if number in seen:
+                    continue
+                seen.add(number)
             recent.append({
-                "number": item.get("number"),
-                "title": item.get("title", ""),
+                "number": number,
+                "title": item.get("title") or "",
                 "merged_at": merged_at_str,
             })
+        if len(data) < _PR_PAGE_SIZE:
+            break
+        # Sorted updated-desc: once the oldest row on the page predates the
+        # window, no later page can contain a PR merged inside it.
+        if oldest_updated is not None and oldest_updated < cutoff:
+            break
+    else:
+        # Every page in the budget was full and still inside the window.
+        truncated = True
+    if truncated:
+        print(
+            f"::warning title=active-build-map::merged PR listing hit its "
+            f"{_MERGED_PR_CEILING}-PR bounded ceiling or lost a page — "
+            f"active_builds.v1 merged window may be incomplete",
+            flush=True,
+        )
     return recent, truncated
 
 

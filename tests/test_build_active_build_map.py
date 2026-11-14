@@ -23,10 +23,20 @@ Tests
 19. render_unknown_mergeability     — UNKNOWN annotation line rendered when PRs remain UNKNOWN.
 20. render_no_unknown_annotation    — UNKNOWN line absent when all PRs resolved.
 21. collect_null_files_typed_error  — explicit GitHub files:null degrades one PR without crashing.
+22. open_prs_paginate_past_first_page — second page fetched when page 1 is full.
+23. open_prs_stop_on_short_first_page — short page ends the walk in one call.
+24. open_prs_ceiling_sets_truncated  — full final page at the ceiling → truncated=True.
+25. open_prs_gh_failure_fail_open    — first-page failure keeps (None, False).
+26. open_prs_mid_pagination_failure  — later page failure returns partials + truncated=True.
+27. merged_prs_paginate_past_first_page — merged window walks page 2.
+28. merged_prs_stop_when_page_crosses_cutoff — sorted walk stops at the date boundary.
+29. merged_prs_skip_closed_unmerged_and_fail_open — unmerged rows skipped; failure fail-open.
+30. merged_prs_ceiling_sets_truncated — full final page at the merged ceiling → truncated=True.
 """
 from __future__ import annotations
 
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
@@ -36,7 +46,9 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from scripts.build_active_build_map import (
+    _collect_open_prs,
     _collect_pr_files,
+    _collect_recent_merged,
     compute_collisions,
     is_protected_path,
     protected_paths_for_pr,
@@ -260,7 +272,7 @@ def test_render_merged_truncated_note():
     )
     md = render_markdown(payload)
     assert "window truncated" in md
-    assert "showing most recent 500" in md
+    assert "3000-PR ceiling" in md
 
 
 def test_render_no_merged_truncated_note_when_false():
@@ -271,7 +283,7 @@ def test_render_no_merged_truncated_note_when_false():
     )
     md = render_markdown(payload)
     assert "window truncated" not in md
-    assert "showing most recent 500" not in md
+    assert "3000-PR ceiling" not in md
 
 
 def test_render_files_error_flag():
@@ -335,3 +347,187 @@ def test_collect_pr_files_treats_null_files_as_typed_error():
         result = _collect_pr_files(123)
 
     assert result == ([], False, True, "UNKNOWN")
+
+
+# ---------------------------------------------------------------------------
+# 22-29: Bounded pagination for the PR listings (card t_b58cc63c)
+# ---------------------------------------------------------------------------
+
+def _rest_pull(
+    number: int,
+    *,
+    merged_at: str | None = None,
+    updated_at: str | None = None,
+    state: str = "open",
+) -> dict:
+    """Minimal REST pull-object shape as returned by ``gh api .../pulls``."""
+    now = datetime.now(timezone.utc)
+    return {
+        "number": number,
+        "title": f"PR {number}",
+        "state": state,
+        "head": {"ref": f"branch-{number}"},
+        "updated_at": updated_at
+        or (now - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "draft": False,
+        "mergeable_state": "clean",
+        "merged_at": merged_at,
+    }
+
+
+def _rest_page(start: int, count: int, **kwargs) -> list[dict]:
+    return [_rest_pull(start + i, **kwargs) for i in range(count)]
+
+
+def test_open_prs_paginate_past_first_page():
+    """A full first page does not stop the walk; the short page does."""
+    page1 = _rest_page(1, 100)
+    page2 = _rest_page(101, 5)
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page1, page2]
+    ) as gh:
+        prs, truncated = _collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 105
+    assert truncated is False
+    assert gh.call_count == 2
+    second_args = gh.call_args_list[1].args[0]
+    assert second_args[0] == "api"
+    assert "page=2" in second_args[1]
+    assert prs[0]["head_ref"] == "branch-1"
+    assert prs[0]["merge_state"] == "CLEAN"
+
+
+def test_open_prs_stop_on_short_first_page():
+    """A short first page means the listing is complete in one call."""
+    page1 = _rest_page(1, 3)
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page1]
+    ) as gh:
+        prs, truncated = _collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 3
+    assert truncated is False
+    assert gh.call_count == 1
+
+
+def test_open_prs_ceiling_sets_truncated():
+    """A full final page at the ceiling must fail loud via truncated=True."""
+    with mock.patch("scripts.build_active_build_map._PR_PAGE_SIZE", 100), \
+         mock.patch("scripts.build_active_build_map._OPEN_PR_CEILING", 300):
+        pages = [_rest_page(1, 100), _rest_page(101, 100), _rest_page(201, 100)]
+        with mock.patch(
+            "scripts.build_active_build_map._run_gh", side_effect=pages
+        ) as gh:
+            prs, truncated = _collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 300
+    assert truncated is True
+    assert gh.call_count == 3
+
+
+def test_open_prs_gh_failure_fail_open():
+    """First-page failure keeps the documented (None, False) fail-open contract."""
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", return_value=None
+    ):
+        prs, truncated = _collect_open_prs()
+
+    assert prs is None
+    assert truncated is False
+
+
+def test_open_prs_mid_pagination_failure_returns_partial_and_truncated():
+    """A later page failure degrades loudly instead of dropping the whole map."""
+    page1 = _rest_page(1, 100)
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page1, None]
+    ):
+        prs, truncated = _collect_open_prs()
+
+    assert prs is not None
+    assert len(prs) == 100
+    assert truncated is True
+
+
+def test_merged_prs_paginate_past_first_page():
+    """Merged window walks past page 1 until a short page is returned."""
+    recent = (datetime.now(timezone.utc) - timedelta(days=1)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    page1 = _rest_page(1, 100, merged_at=recent, state="closed")
+    page2 = _rest_page(101, 5, merged_at=recent, state="closed")
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page1, page2]
+    ) as gh:
+        merged, truncated = _collect_recent_merged(14)
+
+    assert merged is not None
+    assert len(merged) == 105
+    assert truncated is False
+    assert gh.call_count == 2
+    assert "state=closed" in gh.call_args_list[0].args[0][1]
+
+
+def test_merged_prs_stop_when_page_crosses_cutoff():
+    """Sorted updated-desc: crossing the cutoff ends the walk without truncation."""
+    recent = (datetime.now(timezone.utc) - timedelta(days=1)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    old = (datetime.now(timezone.utc) - timedelta(days=40)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    page1 = _rest_page(1, 60, merged_at=recent, state="closed")
+    page1 += _rest_page(1000, 40, merged_at=old, updated_at=old, state="closed")
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page1]
+    ) as gh:
+        merged, truncated = _collect_recent_merged(14)
+
+    assert merged is not None
+    assert len(merged) == 60
+    assert truncated is False
+    assert gh.call_count == 1
+
+
+def test_merged_prs_skip_closed_unmerged_and_fail_open():
+    """Closed-without-merge rows are skipped; first-page failure is (None, False)."""
+    page = _rest_page(1, 2, merged_at=None, state="closed")
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", side_effect=[page]
+    ):
+        merged, truncated = _collect_recent_merged(14)
+    assert merged == []
+    assert truncated is False
+
+    with mock.patch(
+        "scripts.build_active_build_map._run_gh", return_value=None
+    ):
+        merged, truncated = _collect_recent_merged(14)
+    assert merged is None
+    assert truncated is False
+
+
+def test_merged_prs_ceiling_sets_truncated():
+    """A full final page at the merged ceiling must fail loud."""
+    recent = (datetime.now(timezone.utc) - timedelta(days=1)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+    with mock.patch("scripts.build_active_build_map._PR_PAGE_SIZE", 100), \
+         mock.patch("scripts.build_active_build_map._MERGED_PR_CEILING", 200):
+        pages = [
+            _rest_page(1, 100, merged_at=recent, state="closed"),
+            _rest_page(101, 100, merged_at=recent, state="closed"),
+        ]
+        with mock.patch(
+            "scripts.build_active_build_map._run_gh", side_effect=pages
+        ) as gh:
+            merged, truncated = _collect_recent_merged(14)
+
+    assert merged is not None
+    assert len(merged) == 200
+    assert truncated is True
+    assert gh.call_count == 2
