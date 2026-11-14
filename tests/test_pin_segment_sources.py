@@ -684,6 +684,41 @@ def test_run_propose_report_says_partial_when_the_writer_refuses_partway(tmp_pat
                            runner=lambda cmd, **kwargs: next(procs))
     assert [r["exit_code"] for r in report["rows"]] == [0, 2]
     assert report["outcome"] == "partial"
+    assert report["rows"][1]["refusal_codes"] == ["SEGMENT_SHARE_INVALID"]
+    assert report["rows"][1]["proposal"] is None
+
+
+class _ChattyProc:
+    returncode = 2
+    stdout = ('warning: something from a document\n'
+              '{"proposal_id": "actprop_abc123", "status": "proposed", "appended": 1, '
+              '"unchanged": 0, "ledger": "/home/runner/secret/path/activity_proposals.jsonl"}\n')
+    stderr = ("REFUSED: FACT_KIND_INVALID: unexpected kind 'Revenue from DRAM products'\n"
+              "REFUSED: oddly shaped line\nnoise\n")
+
+
+def test_run_propose_report_carries_only_fixed_shape_fields(tmp_path):
+    out = tmp_path / "out"
+    report = m.run_propose(_write_manifest(tmp_path, [_propose_row()]), out, python="PY",
+                           runner=lambda cmd, **kwargs: _ChattyProc())
+    row = report["rows"][0]
+    assert set(row) == {"ticker", "exit_code", "proposal", "refusal_codes"}
+    assert row["proposal"] == {"proposal_id": "actprop_abc123", "status": "proposed",
+                               "appended": 1, "unchanged": 0}
+    assert row["refusal_codes"] == ["FACT_KIND_INVALID", "UNPARSED_REFUSAL"]
+    raw = (out / "propose_report.json").read_text(encoding="utf-8")
+    for leaked in ("DRAM", "warning", "/home/runner", "ledger", "oddly"):
+        assert leaked not in raw
+
+
+def test_packet_request_with_an_over_long_disclosed_line_is_refused_before_any_write(tmp_path):
+    rows = [{"ticker": "AAA", "accession": "0000000000-26-000001",
+             "disclosed_line": "x" * (m.MAX_DISCLOSED_LINE_CHARS + 1)}]
+    with pytest.raises(m.PacketRequestRefused, match="PACKET_REQUEST_ROW_0_INVALID"):
+        m._validate_packet_rows(rows)
+    ok = [{"ticker": "AAA", "accession": "0000000000-26-000001",
+           "disclosed_line": "x" * m.MAX_DISCLOSED_LINE_CHARS}]
+    assert len(m._validate_packet_rows(ok)) == 1
 
 
 @pytest.mark.parametrize("bad, code", [

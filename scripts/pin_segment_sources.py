@@ -111,6 +111,47 @@ def packet_output_stem(row: dict) -> str:
     return f"{row['ticker']}_{row['accession']}_{slug}_{digest}"
 
 
+# disclosed_line is a segment label copied from the filing and is echoed in the
+# packet report, so its length is bounded: a longer value is refused, not cut.
+MAX_DISCLOSED_LINE_CHARS = 160
+
+_REFUSAL_CODE_RE = re.compile(r"REFUSED: ([A-Z0-9_]{1,80})(?::|$)")
+_PROPOSAL_ID_RE = re.compile(r"actprop_[A-Za-z0-9_]{1,128}")
+_PROPOSAL_STATUS_RE = re.compile(r"[a-z_]{1,40}")
+
+
+def _refusal_codes(stderr: str) -> list[str]:
+    """Only the fixed code token of each REFUSED line; the detail text is dropped."""
+    codes = []
+    for line in stderr.splitlines():
+        match = _REFUSAL_CODE_RE.match(line)
+        if line.startswith("REFUSED:"):
+            codes.append(match.group(1) if match else "UNPARSED_REFUSAL")
+    return codes
+
+
+def _proposal_result(stdout: str) -> dict | None:
+    """The writer's fixed result fields; the ledger path and any other output are dropped."""
+    for line in stdout.splitlines():
+        try:
+            parsed = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(parsed, dict):
+            continue
+        pid, status = parsed.get("proposal_id"), parsed.get("status")
+        if not (isinstance(pid, str) and _PROPOSAL_ID_RE.fullmatch(pid)
+                and isinstance(status, str) and _PROPOSAL_STATUS_RE.fullmatch(status)):
+            continue
+        result = {"proposal_id": pid, "status": status}
+        for key in ("appended", "unchanged"):
+            value = parsed.get(key)
+            if type(value) is int and value >= 0:
+                result[key] = value
+        return result
+    return None
+
+
 def _validate_packet_rows(rows: list) -> list[str]:
     """Check every row's naming fields and refuse colliding output names, before any write."""
     stems = []
@@ -118,7 +159,8 @@ def _validate_packet_rows(rows: list) -> list[str]:
         if not (isinstance(row, dict)
                 and isinstance(row.get("ticker"), str) and _TICKER_RE.fullmatch(row["ticker"])
                 and isinstance(row.get("accession"), str) and _ACCESSION_RE.fullmatch(row["accession"])
-                and isinstance(row.get("disclosed_line"), str) and row["disclosed_line"].strip()):
+                and isinstance(row.get("disclosed_line"), str) and row["disclosed_line"].strip()
+                and len(row["disclosed_line"]) <= MAX_DISCLOSED_LINE_CHARS):
             raise PacketRequestRefused(f"PACKET_REQUEST_ROW_{index}_INVALID")
         stem = packet_output_stem(row)
         if stem in stems:
@@ -655,11 +697,11 @@ def run_propose(manifest_path, out, *, python=None, runner=None) -> dict:
     for row in rows:
         cmd = propose_command(row, ledger, interpreter)
         proc = run(cmd, capture_output=True, text=True, cwd=ROOT)
-        stdout_lines = [line for line in proc.stdout.splitlines() if line.strip()]
-        refused_lines = [line for line in proc.stderr.splitlines() if line.startswith("REFUSED:")]
+        # Fixed-shape fields only: no writer free text, detail strings or paths.
         results.append({
             "ticker": row.get("ticker"), "exit_code": proc.returncode,
-            "stdout": stdout_lines, "refused": refused_lines,
+            "proposal": _proposal_result(proc.stdout or ""),
+            "refusal_codes": _refusal_codes(proc.stderr or ""),
         })
     report = {"schema": PROPOSE_REPORT_SCHEMA,
               "outcome": _outcome(sum(1 for r in results if r["exit_code"] != 0), len(results)),
@@ -709,7 +751,9 @@ def main(argv=None) -> int:
             refused = sum(1 for r in report["rows"] if r["exit_code"] != 0)
             print(f"propose: {report['outcome']}: {len(report['rows'])} rows, {refused} refused")
     except (ManifestRowRefused, PacketRequestRefused, ReportRefused) as exc:
-        # Names the row and a fixed code only; nothing was written.
+        # A fixed code only. Row and request refusals precede every write; a report
+        # refusal from pin precedes the store sync, while packet/propose may already
+        # have written their per-row output files.
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 2
     except Exception as exc:
