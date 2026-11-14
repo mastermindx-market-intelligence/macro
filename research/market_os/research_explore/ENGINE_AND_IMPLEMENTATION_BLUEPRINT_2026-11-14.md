@@ -55,13 +55,13 @@ A Terminal read adapter should preserve, rather than replace, the owner envelope
 |---|---|
 | Owner and schema | Existing producer, contract version and source route |
 | Record identity | Canonical entity and domain case/trial/policy/award ID |
-| Request identity | Entity, mode, cutoff, clock, basis/universe, scenario and focus where applicable |
+| Request identity | Entity, mode, cutoff, clock, basis/universe and scenario; preserve each domain's exact request key |
 | Evidence clocks | Event/effective date, publication/filing date, first observation, revision and snapshot cutoff |
 | Source lineage | Exact original record, source version, derived-from relationship and correction/supersession chain |
 | Coverage | Covered, partial, unsupported, unavailable, stale, conflicting, withheld or not yet observed |
 | Values | Typed unit, currency, basis, date precision and null reason |
 | Capabilities | Which actions exist and are permitted for this user and record |
-| Navigation | Exact source desk destination and reversible return context |
+| Navigation | Exact source desk destination, focus/selection and reversible return context |
 
 These are adapter requirements, not permission to rename existing fields without compatibility. Domain-specific types are mandatory. A generic “score/value/status” object is insufficient for legal policy stage, registered dollars, obligations, trial dates and cycle position.
 
@@ -219,7 +219,7 @@ Each route opens its operands, binding constraint, rule and exact permitted evid
 
 ### On a date
 
-The complete request identity includes issuer, mode, cutoff, clock, scenario and focus. The default historical clock is system availability at New York end of day, converted to UTC. A later-observed filing cannot appear in the answer merely because the document's nominal filing date is earlier. Later corrections are a separate comparison with their own availability time.
+The calculation request identity is (issuer_id, mode, cutoff, clock, scenario_id). The URL also preserves focus as navigation state; moving between drilldowns updates focus through replaceState without changing the calculation request or invalidating its response. The default historical clock is system availability at New York end of day, converted to UTC. A later-observed filing cannot appear in the answer merely because the document's nominal filing date is earlier. Later corrections are a separate comparison with their own availability time.
 
 The fixture deliberately places an Oct 28 filing first observed Nov 2 outside the Oct 31 historical snapshot. It shows $10m of registered room from then-known operands, while retaining unknown authorization. “What came later” is clearly excluded from the historical answer.
 
