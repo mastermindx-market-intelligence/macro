@@ -56,7 +56,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=0.0)
         d3 = _make_d3_map(ticker, k=21.0)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 1
         assert art["matches"][0]["ticker"] == ticker
         assert art["matches"][0]["d3_k"] == pytest.approx(21.0, abs=0.001)
@@ -67,7 +67,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=0.0)
         d3 = _make_d3_map(ticker, k=T0_D3K_MAX)  # exactly 30.0
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 0
 
     def test_included_at_29_99(self):
@@ -76,7 +76,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=0.0)
         d3 = _make_d3_map(ticker, k=29.99)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 1
 
     def test_excluded_when_xup_is_1(self):
@@ -85,7 +85,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=1.0)
         d3 = _make_d3_map(ticker, k=21.0)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 0
 
     def test_excluded_when_xup_is_none(self):
@@ -94,7 +94,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=None)
         d3 = _make_d3_map(ticker, k=21.0)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 0
 
     def test_excluded_when_xup_is_nan(self):
@@ -103,7 +103,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=float("nan"))
         d3 = _make_d3_map(ticker, k=21.0)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 0
 
     def test_excluded_when_d3k_is_none(self):
@@ -112,7 +112,7 @@ class TestBuildArtifactGates:
         d1 = _make_d1_grid(ticker, xup_bars=0.0)
         d3 = _make_d3_map(ticker, k=None)
         closes = _make_closes([ticker])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert len(art["matches"]) == 0
 
     def test_empty_d1_grid_zero_matches(self):
@@ -120,7 +120,7 @@ class TestBuildArtifactGates:
         d1 = pd.DataFrame()  # empty
         d3 = _make_d3_map("XYZ", k=15.0)
         closes = _make_closes(["XYZ"])
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02")
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()))
         assert isinstance(art, dict)
         assert art["matches"] == []
         assert art["universe_n"] == 1
@@ -142,7 +142,7 @@ class TestBuildArtifactGates:
             "C": {"adv_dollar_20d_median": None},
             "D": {"adv_dollar_20d_median": 2_000_000.0},
         }
-        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-01-02",
+        art = build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()),
                              liq_map=liq)
         result_tickers = [m["ticker"] for m in art["matches"]]
         # B=5M, D=2M, A=1M, C=None
@@ -161,7 +161,7 @@ class TestArtifactSchema:
         d1 = _make_d1_grid(ticker, xup_bars=0.0)
         d3 = _make_d3_map(ticker, k=20.0)
         closes = _make_closes([ticker])
-        return build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof="2024-06-01",
+        return build_artifact(d1_grid=d1, d3_map=d3, closes=closes, asof=str(closes.index[-1].date()),
                               sector_map={"SPY": "ETF"},
                               liq_map={"SPY": {"adv_dollar_20d_median": 9e9}})
 
@@ -213,7 +213,7 @@ class TestArtifactSchema:
 
     def test_as_of_passed_through(self):
         art = self._sample_artifact()
-        assert art["as_of"] == "2024-06-01"
+        assert art["as_of"] == str(_make_closes(["SPY"]).index[-1].date())
 
     def test_disclosure_en_no_buy_verb(self):
         art = self._sample_artifact()
@@ -328,7 +328,7 @@ class TestIntegrationWithRealEngines:
             d1_grid=d1_grid,
             d3_map=d3_map,
             closes=close_panel,
-            asof="2024-06-01",
+            asof=str(close_panel.index[-1].date()),
         )
         assert isinstance(art, dict)
         assert art["schema"] == "t0_indicator.v1"
@@ -351,7 +351,7 @@ class TestIntegrationWithRealEngines:
             d1_grid=d1_grid,
             d3_map=d3_map,
             closes=close_panel,
-            asof="2024-06-01",
+            asof=str(close_panel.index[-1].date()),
         )
 
         matched = [m for m in art["matches"] if m["ticker"] == ticker]
@@ -381,7 +381,7 @@ class TestIntegrationWithRealEngines:
             d1_grid=d1_grid,
             d3_map=d3_map,
             closes=close_panel,
-            asof="2024-06-01",
+            asof=str(close_panel.index[-1].date()),
         )
         out_path = write_artifact(art, tmp_path)
         assert out_path.exists()
@@ -389,3 +389,46 @@ class TestIntegrationWithRealEngines:
         assert loaded["schema"] == "t0_indicator.v1"
         assert "matches" in loaded
         assert loaded["universe_n"] == art["universe_n"]
+
+
+
+@pytest.mark.parametrize("gap", [1, 2, 3, 5, 20, 60, 252])
+def test_missing_tail_cannot_be_today(gap, tmp_path):
+    import json
+    closes = _make_closes(["OLD", "CURRENT"], n=400)
+    closes.loc[closes.index[-gap:], "OLD"] = np.nan
+    d1 = pd.concat([_make_d1_grid(t, 0.) for t in closes])
+    d3 = {t: {"d3_k": 21., "d3_d": 25.} for t in closes}
+    out = build_artifact(d1, d3, closes, str(closes.index[-1].date()))
+    assert [r["ticker"] for r in out["matches"]] == ["CURRENT"]
+    assert out["universe_n"] == 2
+    assert out["params"]["cross_age_bars"] == 0
+    assert out["params"]["d3_k_max"] == 30.
+    assert json.loads(write_artifact(out, tmp_path).read_text()) == out
+
+
+@pytest.mark.parametrize("clock", [None, "", "not-a-date", "2024-01-02T12:00:00"])
+def test_unqualified_board_clock_withholds(clock):
+    closes = _make_closes(["A"])
+    out = build_artifact(_make_d1_grid("A", 0.), _make_d3_map("A", 21.), closes, clock)
+    assert out["matches"] == []
+
+
+def test_same_day_and_resumed_data_keep_current_sibling():
+    closes = _make_closes(["A", "B"])
+    d1 = pd.concat([_make_d1_grid(t, 0.) for t in closes])
+    d3 = {t: {"d3_k": 21., "d3_d": 25.} for t in closes}
+    clock = str(closes.index[-1].date())
+    closes.loc[closes.index[-5:-1], "A"] = np.nan
+    assert [r["ticker"] for r in build_artifact(d1, d3, closes, clock)["matches"]] == ["A", "B"]
+
+def test_native_cross_is_not_rebased_by_missing_later_observations(integration_synth_data):
+    from engine.pick_lab import signals_1d
+    ticker, closes, _, d3 = integration_synth_data
+    future = closes.index[-1] + pd.Timedelta(days=7)
+    stale_panel = closes.reindex(closes.index.append(pd.DatetimeIndex([future])))
+    stale_grid = signals_1d.compute_grids(stale_panel)
+    assert stale_grid.loc[ticker, "d1_kd_xup_bars"] == 0.
+    assert d3[ticker]["d3_k"] < 30.
+    out = build_artifact(stale_grid, d3, stale_panel, str(future.date()))
+    assert out["matches"] == []

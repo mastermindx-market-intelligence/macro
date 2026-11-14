@@ -21,7 +21,7 @@ import json
 import logging
 import os
 import tempfile
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -96,12 +96,23 @@ def build_artifact(
 
     matches: list[dict] = []
 
+    # A zero cross age is relative to the last OBSERVED stock bar, not the
+    # caller's board clock. Admit a same-day flag only when those dates agree.
+    try:
+        board_date = date.fromisoformat(asof) if isinstance(asof, str) else None
+    except ValueError:
+        board_date = None
+
     # Compute last non-NaN close per ticker upfront for matched tickers
     def _last_close(ticker: str) -> float | None:
         if closes is None or closes.empty or ticker not in closes.columns:
             return None
         s = closes[ticker].dropna()
-        if s.empty:
+        if (s.empty or board_date is None
+                or not isinstance(s.index, pd.DatetimeIndex)
+                or s.index.hasnans or s.index.has_duplicates
+                or not s.index.is_monotonic_increasing
+                or s.index[-1].date() != board_date):
             return None
         return float(s.iloc[-1])
 
@@ -133,6 +144,11 @@ def build_artifact(
         if xup_bars_f != 0.0:
             continue
 
+        # Do not relabel an older observation as today's cross.
+        last_close = _last_close(ticker)
+        if last_close is None:
+            continue
+
         # Match — collect fields
         d3_d = d3.get("d3_d")
         d1_k_val = row.get("d1_k") if hasattr(row, "get") else row["d1_k"]
@@ -157,7 +173,7 @@ def build_artifact(
             "d3_d": _opt_float(d3_d),
             "d1_k": _opt_float(d1_k_val),
             "d1_d": _opt_float(d1_d_val),
-            "close": _last_close(ticker),
+            "close": last_close,
             "sector": sector_map.get(ticker) or None,
             "dollar_adv_20d": adv_f,
         })
@@ -228,3 +244,4 @@ def write_artifact(artifact: dict, site_dir: Path) -> Path:
 
     log.info("t0_indicator: wrote %s (%d matches)", out_path, len(artifact.get("matches", [])))
     return out_path
+
