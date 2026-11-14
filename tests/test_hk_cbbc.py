@@ -1308,3 +1308,129 @@ class TestSldStaleness:
         before = tmp_path / "before"   # pre-#4177 coverage shape: no such key
         self._write_store(before, [today_str], coverage={"call_levels_in_store": 1})
         assert eng.run(data_root=before)["sld_pdftotext_available"] is None
+
+
+
+class TestOptionalCallEvidence:
+    """Coverage is outstanding quantity, independent of optional spot evidence."""
+
+    @staticmethod
+    def frames(call=95.0, unknown=None, known=990, missing=10):
+        rows = pd.DataFrame([
+            dict(stock_code="50000", underlying_code="HSI", bull_bear="bull", outstanding=known),
+            dict(stock_code="50001", underlying_code="HSI", bull_bear="bear", outstanding=missing),
+        ])
+        calls = pd.DataFrame({"stock_code": ["50000", "50001"], "call_price": [call, unknown]})
+        return rows, calls
+
+    @pytest.mark.parametrize("spot", [None, 0.0, -1.0, float("nan"), float("inf"), -float("inf")])
+    @pytest.mark.parametrize("known,missing", [(990,10), (10,990), (500,500), (0,0)])
+    def test_missing_or_invalid_spot_preserves_quantity_coverage(self, spot, known, missing):
+        from engine.hk_cbbc import _aggregate_for_ticker
+        rows, calls = self.frames(known=known, missing=missing)
+        observed = _aggregate_for_ticker(rows, "^HSI", calls, 100.0)
+        result = _aggregate_for_ticker(rows, "^HSI", calls, spot)
+        for key in ("call_level_coverage", "total_outstanding_with_call", "total_outstanding_without_call",
+                    "bull_outstanding", "bear_outstanding", "total_outstanding", "bull_bear_ratio",
+                    "leverage_state", "data_note"):
+            assert result[key] == observed[key], key
+        assert result["call_level_coverage"] == (round(known/(known+missing),4) if known+missing else 0.0)
+        assert result["total_outstanding_with_call"] == known
+        assert result["total_outstanding_without_call"] == missing
+        assert result["nearest_magnet_pct"] is None
+        assert result["magnet_clusters"] == []
+        assert result["magnet_below"] is result["magnet_above"] is False
+
+    @pytest.mark.parametrize("unknown", [None, 0.0, -1.0, float("nan"), float("inf"), -float("inf"), "bad", "1e309"])
+    @pytest.mark.parametrize("spot", [None, 100.0])
+    def test_same_predicate_partitions_quantity(self, unknown, spot):
+        from engine.hk_cbbc import _aggregate_for_ticker
+        rows, calls = self.frames(unknown=unknown)
+        before_rows, before_calls = rows.copy(deep=True), calls.copy(deep=True)
+        result = _aggregate_for_ticker(rows, "^HSI", calls, spot)
+        assert result["call_level_coverage"] == 0.99
+        assert result["total_outstanding_with_call"] == 990
+        assert result["total_outstanding_without_call"] == 10
+        assert result["total_outstanding_with_call"]+result["total_outstanding_without_call"] == 1000
+        json.dumps(result, allow_nan=False)
+        pd.testing.assert_frame_equal(rows, before_rows)
+        pd.testing.assert_frame_equal(calls, before_calls)
+
+    @pytest.mark.parametrize("bad", [float("inf"), -float("inf"), "bad", "1e309"])
+    @pytest.mark.parametrize("spot", [None, 100.0])
+    def test_all_invalid_calls_withhold_magnets_not_outstanding(self, bad, spot):
+        from engine.hk_cbbc import _aggregate_for_ticker
+        rows, calls = self.frames(call=bad)
+        result = _aggregate_for_ticker(rows, "^HSI", calls, spot)
+        assert result["total_outstanding"] == 1000
+        assert result["call_level_coverage"] == 0.0
+        assert result["total_outstanding_with_call"] == 0
+        assert result["total_outstanding_without_call"] == 1000
+        assert result["nearest_magnet_pct"] is None and not result["magnet_clusters"]
+        json.dumps(result, allow_nan=False)
+
+    @pytest.mark.parametrize("spot", [None, 0.0, float("nan"), float("inf"), 100.0])
+    def test_direct_cluster_api_has_identical_coverage(self, spot):
+        from engine.hk_cbbc import _compute_magnet_clusters
+        rows, calls = self.frames(unknown=0.0)
+        joined = rows.merge(calls, on="stock_code")
+        result = _compute_magnet_clusters(joined, spot)
+        assert result["call_level_coverage"] == 0.99
+        assert result["total_outstanding_with_call"] == 990
+        assert result["total_outstanding_without_call"] == 10
+        json.dumps(result, allow_nan=False)
+
+    @pytest.mark.parametrize("spot,call", [(1e-308, 1e308), (1.0, 1e308), (5e-324, 1.0)])
+    def test_unrepresentable_far_distance_cannot_abort_optional_geometry(self, spot, call):
+        from engine.hk_cbbc import _aggregate_for_ticker
+        rows, calls = self.frames(call=call)
+        result = _aggregate_for_ticker(rows, "^HSI", calls, spot)
+        assert result["total_outstanding"] == 1000
+        assert result["call_level_coverage"] == 0.99
+        assert result["magnet_clusters"] == []
+        assert result["nearest_magnet_pct"] is None
+        json.dumps(result, allow_nan=False)
+
+    @pytest.mark.parametrize("call,spot,coverage", [
+        (95.0, None, 0.99), (float("inf"), 100.0, 0.0),
+        (95.0, float("inf"), 0.99), (1e308, 1e-308, 0.99),
+    ])
+    def test_native_store_run_preserves_healthy_siblings(self, tmp_path, monkeypatch, call, spot, coverage):
+        import engine.hk_cbbc as eng
+        monkeypatch.setenv("CN_LANE", "")
+        monkeypatch.setattr(eng.config, "data_dir", lambda: tmp_path)
+        class FixedDate(date):
+            @classmethod
+            def today(cls):
+                return cls(2026, 11, 12)
+        monkeypatch.setattr(eng, "date", FixedDate)
+        rows, calls = self.frames(call=call)
+        sibling = rows.copy()
+        sibling["stock_code"] = ["50100", "50101"]
+        sibling["underlying_code"] = "HSTE"
+        sibling_calls = pd.DataFrame({"stock_code": ["50100", "50101"], "call_price": [95.0, None]})
+        calls = pd.concat([calls, sibling_calls], ignore_index=True)
+        calls["issue_date"] = "20261112"
+        d = tmp_path / "hk_cbbc"
+        d.mkdir()
+        pd.concat([rows, sibling], ignore_index=True).to_parquet(d / "cbbc_latest.parquet", index=False)
+        calls.to_parquet(d / "call_levels.parquet", index=False)
+        (d / "coverage.json").write_text(json.dumps({"cbbc_rows": 4, "dw_rows": 0, "latest_trade_date": "12112026"}))
+        prices = tmp_path / "hk"
+        prices.mkdir()
+        for ticker, value in [("^HSI", spot), ("^HSTECH", 100.0)]:
+            if value is not None:
+                pd.DataFrame({"close": [value]}).to_parquet(prices / (ticker + ".parquet"))
+        snap = eng.run(tmp_path)
+        assert snap["freshness"] == "fresh"
+        assert len(snap["bellwethers"]) == 11
+        hsi, tech = snap["bellwethers"][:2]
+        assert hsi["total_outstanding"] == 1000
+        assert hsi["call_level_coverage"] == coverage
+        assert hsi["nearest_magnet_pct"] is None
+        assert tech["total_outstanding"] == 1000
+        assert tech["call_level_coverage"] == 0.99
+        assert tech["magnet_below"] is True
+        assert snap["display_only"] is True
+        assert not (tmp_path / "hk_impulse").exists()
+        json.dumps(snap, allow_nan=False)

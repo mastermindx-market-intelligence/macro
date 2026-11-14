@@ -21128,6 +21128,17 @@ jobs:
   china-native-w2:
     if: ${{ false }}
     gate: code
+    # Declare named suites and their indirectly read binary parser fixtures.
+    paths:
+      - "tests/test_china_funding_collector.py"
+      - "tests/test_china_cb_collector.py"
+      - "tests/test_hk_cbbc.py"
+      - "tests/test_china_fund_issuance_collector.py"
+      - "tests/test_china_flows_etf_universe.py"
+      - "tests/fixtures/hk_cbbc/sample_cbbc_dts.xlsx"
+      - "tests/fixtures/hk_cbbc/sample_dw_dts.xlsx"
+      - "tests/fixtures/hk_cbbc/sample_sld_equity.pdf"
+      - "tests/fixtures/hk_cbbc/sample_sld_index.pdf"
     # china_native_data W2 (funding curve / CB plane / fund issuance / full-universe
     # ETF shares): pure parse + aggregate fixture tests, no network. Executed via
     # the ci-pack matrix like every other legacy job.
@@ -21139,10 +21150,15 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests openpyxl
+      - name: HK CBBC PDF fixture extractor
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends poppler-utils
+          pdftotext -v
       - name: china_funding collector tests
         run: python -m pytest tests/test_china_funding_collector.py -q
       - name: china_cb collector tests
-        run: python -m pytest tests/test_china_cb_collector.py -q
+        run: python -m pytest tests/test_china_cb_collector.py tests/test_hk_cbbc.py -q
       - name: china_fund_issuance collector tests
         run: python -m pytest tests/test_china_fund_issuance_collector.py -q
       - name: china_flows full-universe ETF shares tests

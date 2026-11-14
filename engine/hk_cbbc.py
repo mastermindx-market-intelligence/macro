@@ -193,7 +193,7 @@ _MAGNET_PROXIMITY_PCT = 0.10  # 10% band around spot
 
 def _compute_magnet_clusters(
         cbbc_with_calls: pd.DataFrame,
-        spot: float,
+        spot: float | None,
 ) -> dict:
     """Compute call-level magnet clusters for one underlying given spot price.
 
@@ -218,7 +218,7 @@ def _compute_magnet_clusters(
         Bull CBBC call < spot → distance_pct < 0  → magnet BELOW spot (forced sell)
         Bear CBBC call > spot → distance_pct > 0  → magnet ABOVE spot (forced buy)
 
-    Fail-open: empty DataFrame or spot=0 → returns null/empty cluster dict.
+    Optional spot affects geometry only, never the quantity-based coverage.
     """
     null_result: dict = {
         "magnet_below": False,
@@ -230,7 +230,7 @@ def _compute_magnet_clusters(
         "total_outstanding_without_call": 0,
     }
 
-    if cbbc_with_calls.empty or spot is None or spot <= 0:
+    if cbbc_with_calls.empty:
         return null_result
 
     # Normalise column types defensively
@@ -238,19 +238,20 @@ def _compute_magnet_clusters(
     df["call_price"] = pd.to_numeric(df["call_price"], errors="coerce")
     df["outstanding"] = pd.to_numeric(df["outstanding"], errors="coerce").fillna(0).astype(int)
 
-    with_call   = df[df["call_price"].notna() & (df["call_price"] > 0)]
-    without_call = df[df["call_price"].isna() | (df["call_price"] <= 0)]
+    valid_call = df["call_price"].map(math.isfinite) & (df["call_price"] > 0)
+    with_call = df[valid_call]
+    without_call = df[~valid_call]
 
     n_with    = int(with_call["outstanding"].sum())
     n_without = int(without_call["outstanding"].sum())
     total     = n_with + n_without
     coverage  = round(n_with / total, 4) if total > 0 else 0.0
 
-    if with_call.empty:
-        result = dict(null_result)
-        result["call_level_coverage"] = coverage
-        result["total_outstanding_with_call"] = n_with
-        result["total_outstanding_without_call"] = n_without
+    result = dict(null_result)
+    result["call_level_coverage"] = coverage
+    result["total_outstanding_with_call"] = n_with
+    result["total_outstanding_without_call"] = n_without
+    if with_call.empty or spot is None or not math.isfinite(spot) or spot <= 0:
         return result
 
     # Compute signed distance_pct for each CBBC with a known call price
@@ -265,6 +266,12 @@ def _compute_magnet_clusters(
     # math.floor toward -inf for negative values — correct: a call at -0.01 of spot
     # lands in bucket -1 (i.e. the band [-0.02, 0.00]), not bucket 0.
     bw = _CLUSTER_BUCKET_PCT
+    # A finite quote divided by a tiny finite spot can still overflow. Such
+    # distances are outside every displayed proximity band; retain their
+    # coverage/density denominator but never send infinity to math.floor.
+    with_call = with_call[(with_call["distance_pct"] / bw).map(math.isfinite)].copy()
+    if with_call.empty:
+        return result
     with_call["bucket"] = with_call["distance_pct"].apply(
         lambda x: math.floor(x / bw))
 
@@ -516,21 +523,11 @@ def _aggregate_for_ticker(cbbc_df: pd.DataFrame,
         sub_joined["stock_code"] = sub_joined["stock_code"].astype(str)
         merged = sub_joined.merge(cl, on="stock_code", how="left")
 
-        n_with_call = int((merged["call_price"].notna() & (merged["call_price"] > 0)).sum())
-        if n_with_call > 0:
-            call_level_sourced = True
-            if spot is not None and spot > 0:
-                magnet_data = _compute_magnet_clusters(merged, spot)
-            else:
-                # No spot — can still report coverage but not magnet %
-                n_without = int(
-                    (merged["call_price"].isna() | (merged["call_price"] <= 0)).sum())
-                t = n_with_call + n_without
-                magnet_data["call_level_coverage"] = round(n_with_call / t, 4) if t > 0 else 0.0
-                magnet_data["total_outstanding_with_call"] = int(
-                    merged.loc[merged["call_price"].notna(), "outstanding"].sum())
-                magnet_data["total_outstanding_without_call"] = int(
-                    merged.loc[merged["call_price"].isna(), "outstanding"].sum())
+        calls = pd.to_numeric(merged["call_price"], errors="coerce")
+        call_level_sourced = bool((calls.map(math.isfinite) & (calls > 0)).any())
+        # One computation owns both quantity partitions, with or without spot.
+        # Optional malformed call prices must not abort the W1/sibling output.
+        magnet_data = _compute_magnet_clusters(merged, spot)
 
     # Build honest data_note
     if call_level_sourced:
