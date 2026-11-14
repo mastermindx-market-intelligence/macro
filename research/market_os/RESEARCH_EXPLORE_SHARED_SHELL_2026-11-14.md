@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C9 below. Earlier C4–C8 sections and continuation boundaries are historical; C9 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C10 below. Earlier C4–C9 sections and continuation boundaries are historical; C10 and the linked native Paper inventory supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -358,3 +358,36 @@ Continue **D1-SPECIAL** in existing file 01M3NSZGE8JWN2EZCSF0DT05RM, using new o
 The review found that SC 13D/A is currently classified as escalation without proving objective change; filer normalization is not durable identity; filing counts are not campaign counts; the historical activist return is descriptive absolute 60-trading-row return, not alpha. International lane discovery is UK/Canada scoped, can be aggregated news, drops clocks/provenance and conflates coverage states. Current arb arithmetic does not support exchange ratios/collars/elections; date precision and currency/quote units need explicit refusal. Transaction identity can conflate CIK/category or ticker/category; production failure is not claimed reproduced. Root has begun reading the incumbent files at the same product pin.
 
 No product source change, collector, account action, message, trade, watch, merge or deployment was performed. M1 remains the canvas carrier; M2 remains fenced. Continue the safe design frontier; C9 is a recoverable milestone, not parent completion.
+
+
+## Milestone C10 — Special Situations R2
+
+Disposition: **MORE_WORK_EXISTS**. Seven additional native Paper pages bring the set to 83: 65 product/responsive/theme/locale views, thirteen Build boards and five state sheets; fourteen mobile and three intermediate compositions. C7–C10 added 33 reviewed pages in this resumed turn. Original design-phase and production acceptance remain open.
+
+### Delivered and verified design delta
+
+Existing Terminal file 01M3NSZGE8JWN2EZCSF0DT05RM now contains activist amendment (p-2J-1/2MZS-1), international announcement (p-2K-1/2N6M-1), agreement comparison (p-2L-1/2NCV-1), cash-plus-shares calculation (p-2M-1/2NIY-1), mobile amendment (p-2N-1/2NPE-1), identity/coverage/calculation states (p-2O-1/2NR6-1) and Build contract (p-2P-1/2NTH-1). All are synthetic fixtures. Accepted R1, foreign and held Options/Terminal pages were preserved.
+
+An activist amendment changes aggregate ownership from 5.2% to 6.1% while Item 4 remains unchanged. The UK chronology distinguishes possible offer, firm intention, required conditions and unannounced completion. An agreement comparison preserves original/amended outside dates separately from guidance and vote. The calculator exposes the full ratio denominator, quote units/times and mechanical scenario assumptions. Unsupported terms, unknown units and imprecise dates withhold unsupported calculations. Mobile retains the same date meanings.
+
+A bounded source/fixture review accepted the arithmetic and meanings and required fee payer/recipient/trigger in expanded detail. A bounded visual reviewer accepted final international, calculation and amendment compositions after corrections. Principal inspected activist, mobile, states and Build. Redundant labels/details were removed; panel spacing and shell height were repaired. All seven roots received observed guarded finish receipts. Inventory screenshot names and digests match final captures.
+
+### Engine obligations
+
+Source inspection confirmed CIK/category or ticker/category case conflation risk, unconditional SC 13D/A escalation, noncanonical filer normalization, filing-row rather than campaign evaluation, UK/Canada discovery scope, lost international provenance/coverage, unsupported mixed-consideration economics and month-end precision fallback. These are static source findings; no production failure is claimed reproduced. Existing premium refusals, source ownership, no-refresh/thin-store protection and incumbent collection/entitlement lanes must be preserved.
+
+The R2 contract binds exact transaction/campaign/reporting-person identity, retained document terms, source and analysis clocks, typed coverage, supported calculation models, source-linked fee conditions and meaningful real-path proof. No new collector, ledger, resolver, scheduler, global route or access owner is introduced.
+
+### Durable C10 evidence
+
+- Special R2 contract: commit 43272d166dbc9e4255d436f84dc27aea36839fa5; blob 0ca7c44a10255a1666a0f5b4a3388e978bc4edf8; exact byte readback matched.
+- 83-frame inventory: commit a7ee5377fe6106a37aaa43be98b621be82758962; blob 5602b0148699d0f22ba8978c9c01603a3935e2b0.
+- Index: commit f31067b7b1c3f1b2878125213e6bd038779f3c2e; blob c5a457a65e7c0db3dd61507e122c250141ddd005.
+- Blueprint: commit aca150dd057675761e4f1b39f7c1c2c71b0c07e9; blob fbcb534f652f89f223aba40e6e9f095bbfdcd7e7.
+- Inventory/index/blueprint readback verified byte-for-byte at aca150dd057675761e4f1b39f7c1c2c71b0c07e9. This parent update follows on the same owned branch and Draft PR #11271; pre-C10 head was reconciled at 74b50056e2b2c384cdf983696552c7147e22154a, OPEN/DRAFT.
+
+### Next active design unit and custody
+
+Start **D1-POLICY** world/regional source investigation and People & relationships in existing file 01M6Y2X53ABR4MME4ATS15B8SH. Retain accepted R6 pages and inspect exact legacy capability sources. A bounded read-only review is complete; root source integration is underway. Source-specific coverage, source-versus-model availability, dated editorial substrate, role validity and documented relationship type must remain explicit. Read adapters may not invoke acquisition/model work during rendering.
+
+Protected INDEX and ACTIVE_EXECUTION were re-read at the same protected SHA; no pin invalidation was observed. Current source binding, one-carrier discipline and design-first scope remain intact. M1 is the sole qualified canvas carrier; M2 remains fenced. Async read/preflight receipts were reconciled on their original calls. No modifying effect is pending or unknown. No product implementation, collector execution, message, watch enrollment, trade, merge, deployment or daemon occurred. Continue the next safe design phase; this milestone is not a stopping gate.
