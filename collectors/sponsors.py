@@ -20,6 +20,7 @@ the sector-SPDR parquets so ``engine/etf_flows.rebuild_broad()`` can reuse
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date
 
 import pandas as pd
@@ -109,31 +110,43 @@ def sector_flow_periods(
     trailing N trading days that exist (so wider windows hold fewer days until
     history matures). Returns ``{asof, depth, labels, rows, net}`` where ``rows``
     is one ``{ticker, vals: {label: $mn|None}}`` per fund and ``net`` is the
-    across-complex sum per window. None until at least two daily snapshots exist.
+    across-complex sum per window. Every fund uses the same dated window; a
+    missing or nonfinite observation makes that fund and the net unavailable
+    for the window, rather than substituting an older observation. Only leading
+    all-null diff rows are excluded. None until at least two daily snapshots exist.
     """
     ft = flows_table()
-    if ft is None:
+    if ft is None or ft.empty:
         return None
-    ft = ft.dropna(how="all")
-    if ft.empty:
+    ft = ft.sort_index().apply(pd.to_numeric, errors="coerce")
+    ft = ft.replace([float("inf"), float("-inf")], float("nan"))
+    # Discard the leading diff-only rows, not later missing observations.
+    first = ft.notna().any(axis=1)
+    if not first.any():
         return None
+    ft = ft.loc[first[first].index[0]:]
     labels = [lbl for lbl, _ in periods]
     rows: list[dict] = []
-    net = {lbl: 0.0 for lbl in labels}
-    depth = 0
+    depth = len(ft)
     for col in ft.columns:
-        ticker = col.replace("_flow_mn", "")
-        s = ft[col].dropna()
-        depth = max(depth, len(s))
         vals: dict[str, float | None] = {}
         for lbl, n in periods:
-            if len(s):
-                v = float(s.tail(n).sum())
-                vals[lbl] = v
-                net[lbl] += v
-            else:
-                vals[lbl] = None
-        rows.append({"ticker": ticker, "vals": vals})
+            window = ft[col].tail(n)
+            # Every fund uses the same dated window. Missing observations are
+            # unknown, never older replacement rows or a partial subtotal.
+            total = window.sum(min_count=len(window))
+            vals[lbl] = float(total) if pd.notna(total) and math.isfinite(total) else None
+        rows.append({"ticker": col.replace("_flow_mn", ""), "vals": vals})
+    net = {}
+    for lbl in labels:
+        values = [r["vals"][lbl] for r in rows]
+        total = 0.0
+        for value in values:
+            if value is None:
+                total = None
+                break
+            total += value
+        net[lbl] = total if total is not None and math.isfinite(total) else None
     return {
         "asof": str(ft.index.max().date()),
         "depth": int(depth),
