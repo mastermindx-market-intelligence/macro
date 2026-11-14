@@ -475,6 +475,13 @@ def _check_basis(implied: ImpliedLeg, physical: PhysicalLeg, acknowledge_session
     return f"same session close {a.session_close}"
 
 
+def _variance_difference(left: float, right: float) -> float:
+    """Subtract integral legs without fixed-width wrapping or float promotion."""
+    if isinstance(left, (int, np.integer)) and isinstance(right, (int, np.integer)):
+        return float(int(left) - int(right))
+    return float(left - right)
+
+
 def build_premium(implied: ImpliedLeg, physical: PhysicalLeg, *,
                   acknowledge_session_offset: bool = False) -> PremiumRecord:
     """Ex-ante premium estimate IV2_h - F_h. Refuses a forward label or a forecast that
@@ -489,7 +496,7 @@ def build_premium(implied: ImpliedLeg, physical: PhysicalLeg, *,
     return PremiumRecord(
         asof=implied.asof, implied_variance=float(implied.value),
         physical_variance=float(physical.value),
-        premium_variance=float(implied.value - physical.value),
+        premium_variance=_variance_difference(implied.value, physical.value),
         horizon_calendar_days=implied.basis.horizon_calendar_days,
         day_count=implied.basis.day_count, units=implied.basis.units,
         measure_kind=implied.measure_kind, physical_kind="forecast", timing="ex_ante",
@@ -511,7 +518,7 @@ def ex_post_premium(implied: ImpliedLeg, label: PhysicalLeg, *,
     return PremiumRecord(
         asof=implied.asof, implied_variance=float(implied.value),
         physical_variance=float(label.value),
-        premium_variance=float(implied.value - label.value),
+        premium_variance=_variance_difference(implied.value, label.value),
         horizon_calendar_days=implied.basis.horizon_calendar_days,
         day_count=implied.basis.day_count, units=implied.basis.units,
         measure_kind=implied.measure_kind, physical_kind="forward_label", timing="ex_post",
