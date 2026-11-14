@@ -436,3 +436,55 @@ def test_subsector_detail_adapts_visible_identity_without_builder_fork():
     assert 'L("Theme Intelligence", "主题情报")' in html
     assert 'L("Sector Intelligence", "板块情报")' in html
     assert 'L("Subsector Intelligence", "子行业情报")' in html
+
+
+def test_china_sector_detail_discloses_selected_etf_observation(monkeypatch, tmp_path):
+    """The decision's price date must come from its ETF, not a different clock."""
+    import copy
+    import pandas as pd
+    from engine import china_inputs, cycles, i18n
+    from scripts import build_china as builder
+
+    dates = pd.bdate_range(end="2026-11-06", periods=300)
+    panel = pd.DataFrame({"159928.SZ": range(300), "OTHER.ETF": range(300)}, index=dates)
+    panel.loc[dates[-2:], "159928.SZ"] = float("nan")
+    members = pd.DataFrame({"600887.SS": range(300)}, index=dates)
+    settings = {"storage": {"site_dir": str(tmp_path)}, "china": {
+        "yahoo": {"sector_etfs": {"159928.SZ": ["Consumer Staples"]}},
+        "constituents": {"Consumer Staples": ["600887.SS"]},
+    }}
+    analysis = {"mtf": [], "cycle": {"dc_day": 5, "dc_band": [10, 30]}, "ladder": {
+        "dir": "up", "label": "BUY ZONE", "entry": {"urgency": "low", "tag": "Watch",
+            "text": "Fixture entry", "text_zh": "示例入场"},
+        "age_line": "Signal crossed approximately 2026-11-02",
+        "age_line_zh": "信号约在2026-11-02穿越",
+        "cycle_plain": {"daily_line": "Daily cycle day 5", "daily_line_zh": "日线周期第5天",
+                        "daily_phase": "Fixture phase", "daily_phase_zh": "示例阶段"},
+    }}
+    analyzed = []
+
+    def analyze(series, **kwargs):
+        analyzed.append(series.copy())
+        return copy.deepcopy(analysis)
+
+    monkeypatch.setattr(builder.config, "load", lambda: settings)
+    monkeypatch.setattr(china_inputs, "china_closes", lambda: panel)
+    monkeypatch.setattr(builder, "_drilldown_closes", lambda: (members, "fixture"))
+    monkeypatch.setattr(cycles, "analyze", analyze)
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES)), autoescape=False)
+    env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t, t_pctile=i18n.t_pctile)
+    assert builder._build_sector_pages(env) == 1
+    pd.testing.assert_series_equal(analyzed[0], panel["159928.SZ"].dropna())
+    assert analyzed[0].index[-1].strftime("%Y-%m-%d") == "2026-11-04"
+    assert analyzed[1].index[-1].strftime("%Y-%m-%d") == "2026-11-06"
+    html = (tmp_path / "sectors/159928.SZ.html").read_text()
+    date_line = re.search(r'<p[^>]*data-etf-last-close[^>]*>(.*?)</p>', html, re.S)
+    assert date_line, "the ETF observation date must be disclosed beside its decision"
+    assert "ETF last close" in date_line.group(1)
+    assert "ETF 最近收盘日期" in date_line.group(1)
+    assert '<time datetime="2026-11-04">2026-11-04</time>' in date_line.group(1)
+    assert "2026-11-06" not in date_line.group(1)
+    assert "2026-11-02" not in date_line.group(1)
+    assert "Signal crossed approximately 2026-11-02" in html
+    assert 'href="../china_lookup.html#600887.SS"' in html
+    assert '"symbol":"SZSE:159928"' in html

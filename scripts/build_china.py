@@ -667,6 +667,7 @@ def _build_sector_pages(env) -> int:
             log.warning("china sector page %s analyze failed: %s", fund, e)
             continue
         s = {"fund": fund, "name": meta[0], "tv": tv_symbol(fund),
+             "last_close_date": close.index[-1].strftime("%Y-%m-%d"),
              "mtf_json": json.dumps(a["mtf"]), "ladder": a["ladder"], "cycle": a["cycle"],
              "holdings": []}
         for tick in constituents.get(meta[0], []):
