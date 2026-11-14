@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SLG-BULL-20261103",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 63.3,
-  "raw_confidence": 62.6,
-  "delta_vs_base": 3.3,
+  "management_confidence": 55.5,
+  "raw_confidence": 54.4,
+  "delta_vs_base": -4.5,
   "recommended_action": "wait",
-  "human_state": "Awaiting Trigger",
+  "human_state": "Approaching Trigger",
   "components": {
-    "validity": 87.1,
+    "validity": 59.1,
     "progress": 0.0,
-    "pace": 98.5,
+    "pace": 81.1,
     "retention": 50.0,
-    "overlay": 27.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.903,
+    "dist_to_stop_r": 0.677,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 8.9,
-    "p1": -0.065,
-    "p2": -0.0325,
+    "horizon_pct_used": 20.0,
+    "p1": -0.2152,
+    "p2": -0.1076,
     "p3": null,
-    "move_r": -0.097,
+    "move_r": -0.323,
     "mfe_r": 0.0,
-    "mae_r": -0.097
+    "mae_r": -0.356
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -0.7700012207031222,
+  "_mae": -2.8099983215332003,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 4,
-  "tau": 0.0889
+  "days_elapsed": 9,
+  "tau": 0.2
 }
