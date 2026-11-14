@@ -1710,6 +1710,50 @@ def _build_view_model(
     }
 
 
+def _native_weather_publication(vm: dict, built: str) -> dict:
+    """Expose only the display fields already published in the weather board and timeline."""
+    from engine.i18n import LEX, tr
+
+    def label(en, zh):
+        return {"en": en, "zh": zh}
+
+    def display(value):
+        if value in ("", "—", None):
+            return None
+        return label(value if value in LEX else prettify(value), tr(value))
+
+    domains = []
+    for domain in vm["weather_board"]:
+        special = domain["card_type"] == "intl_risk"
+        observed = None if special else domain.get("asof") or None
+        fields = []
+        if special and not domain["null_state"]:
+            for key, en, zh in (("state", "State", "状态"), ("em_text", "EM stress", "新兴市场"),
+                                ("dollar_text", "Dollar", "美元"), ("stance", "Stance", "立场")):
+                fields.append({"id": key, "label": label(en, zh),
+                               "value": label(domain[key + "_en"], domain[key + "_zh"])})
+        for chip in domain["chips"]:
+            fields.append({"id": chip["field"], "label": label(chip["field_en"], chip["field_zh"]),
+                           "value": display(chip["val"])})
+        domains.append({"id": domain["domain"], "label": label(domain["domain_en"], domain["domain_zh"]),
+                        "observed": observed, "fields": fields})
+
+    changes = [
+        {"date": group["asof"], "domain": row["domain"], "field": row["field"],
+         "label": label(row["field_label_en"], row["field_label_zh"]),
+         "before": display(row["from_val"]), "after": display(row["to_val"])}
+        for group in vm["transitions_vm"]["date_groups"] for row in group["rows"]
+    ]
+    hero = vm["hero"]
+    headline = None
+    if hero.get("quad"):
+        headline = label(f"{hero['quad']} {hero.get('quad_name', '')}".strip(),
+                         f"{hero['quad']} {hero.get('quad_name_zh', '')}".strip())
+    return {"schema": "macro-weather/publication/v1", "published": built, "headline": headline,
+            "snapshot": vm["asof"] if vm["snapshot_present"] else None,
+            "domains": domains, "changes": changes}
+
+
 def main() -> int:
     root = config.ROOT
     data_dir = config.data_dir()
@@ -1735,6 +1779,7 @@ def main() -> int:
     env.globals.update(tr=tr, td=td, ASSET_NAMES=ASSET_NAMES)
     html = env.get_template("macro_context.html.j2").render(
         vm=vm,
+        native_weather=_native_weather_publication(vm, built),
         built=built,
         today=today,
     )
