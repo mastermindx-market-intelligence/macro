@@ -66,6 +66,8 @@ jobs:
             --research-bench-output "$RESEARCH_BENCH_PATH" "${extra[@]}"
 
       - name: Assert bounded public contract
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         run: |
           python - <<'PY'
           import json
@@ -90,6 +92,8 @@ jobs:
           PY
 
       - name: Assert private research-bench durability
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         env:
           INSTITUTIONAL_13F_RESEARCH_R2_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
           INSTITUTIONAL_13F_RESEARCH_R2_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}

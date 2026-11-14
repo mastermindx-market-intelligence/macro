@@ -278,6 +278,8 @@ jobs:
       # The stamp lives in the commit message AND this JSON so any consumer can detect
       # that this state was produced by the early-close lane (not the nightly).
       - name: write provisional earlyclose stamp (site/live/earlyclose_stamp.json)
+        # Avoid the macstudio Homebrew Bash large-heredoc deadlock.
+        shell: /bin/bash -e {0}
         if: steps.mutex.outputs.skip != 'true' && steps.guard.outputs.skip != 'true'
         run: |
           python3 - <<'PYEOF'
