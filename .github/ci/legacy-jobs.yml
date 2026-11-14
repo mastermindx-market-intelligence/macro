@@ -12477,6 +12477,14 @@ jobs:
       # files; templates are covered by "templates/**" (#3488).
       - name: theme deep-link contract + sector-intelligence consolidation invariants
         run: python -m pytest tests/test_theme_hash_deeplink.py tests/test_sector_intelligence_page.py -q
+      # SI rotation read v1, data half (COO ruling 101): builds the read from the
+      # committed basket breadth history and membership and checks the 49-group shape,
+      # the vintage rule and the freshness coherence rule. Its own step so a red here
+      # cannot mask the consolidation invariants above. Skips only on a sparse tree;
+      # deps (pandas/pyarrow) are on this lane's line. The synthetic half runs in the
+      # code-gate unrun-scoring-engine job.
+      - name: SI rotation read on the committed inputs — shape, vintage, freshness coherence
+        run: python -m pytest tests/test_rotation_read_data.py -q
       # Wired 2026-08-05: tests/test_flow_velocity.py was named by NO job in ANY
       # workflow (`grep -rn test_flow_velocity .github/` returned nothing), so the
       # suite written specifically to catch a pinned-by-construction flow readout
@@ -40542,6 +40550,12 @@ jobs:
       # not_supplied relationships) — receivers bind without guessing.
       - name: sector_central research handoff — B09 subject/snapshot/return-context per row
         run: python -m pytest tests/test_sector_research_handoff.py -q
+      # SI rotation read v1 (COO rulings 57/69/75/101): the builder's schema, as_of
+      # vintage rule, stale/unavailable rows, family ranks, companies map and the
+      # freshness checker's coherence rule. Synthetic fixtures under tmp_path only; no
+      # data/ or site/ read. Needs pandas/numpy/pyarrow, all on this job's line.
+      - name: SI rotation read — schema, vintage, stale rule, family ranks, freshness coherence
+        run: python -m pytest tests/test_rotation_read.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -47870,6 +47884,9 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      # Inflation publication proof calls the canonical owner and its basis helper.
+      - "engine/inflation_intelligence.py"
+      - "engine/rates_command_basis.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47927,7 +47944,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2 pandas pyarrow
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest

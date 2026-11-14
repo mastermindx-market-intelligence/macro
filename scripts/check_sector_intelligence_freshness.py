@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import sys
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
 
@@ -343,6 +343,192 @@ def evaluate(
     }
 
 
+ROTATION_READ_SCHEMA = "si.rotation_read/v1"
+
+
+def _as_date(value) -> date:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return date.fromisoformat(str(value)[:10])
+
+
+def is_completed_weekly_close(d: date) -> bool:
+    """True iff no NYSE session exists on any day after ``d`` up to and including
+    the Sunday of ``d``'s Mon-Sun week. Calendar only — no wall clock.
+
+    A normal Friday close is complete (the weekend carries no session); a
+    midweek date is not while later sessions remain in its week. A holiday
+    Friday with no later session that week is complete by the same rule.
+    """
+    d = _as_date(d)
+    sunday = d + timedelta(days=6 - d.weekday())
+    day = d + timedelta(days=1)
+    while day <= sunday:
+        if market_session.is_session_date("US", day):
+            return False
+        day += timedelta(days=1)
+    return True
+
+
+def last_completed_weekly_close(dates) -> date | None:
+    """The latest input date that is a completed weekly close; None if none."""
+    completed = [
+        d for d in {_as_date(value) for value in dates}
+        if is_completed_weekly_close(d)
+    ]
+    return max(completed) if completed else None
+
+
+def _last_session_of_week(monday: date) -> date | None:
+    day = monday + timedelta(days=6)
+    while day >= monday:
+        if market_session.is_session_date("US", day):
+            return day
+        day -= timedelta(days=1)
+    return None
+
+
+def completed_weekly_closes_between(as_of: date, latest: date) -> int:
+    """Number of calendar weeks whose last NYSE session ``s`` satisfies
+    ``as_of < s <= latest``.
+
+    Weeks are counted by their LAST session; a week whose last session falls
+    after ``latest`` does not count (a week still in progress is not a
+    completed close behind the read).
+    """
+    as_of, latest = _as_date(as_of), _as_date(latest)
+    if latest <= as_of:
+        return 0
+    monday = as_of - timedelta(days=as_of.weekday())
+    last_monday = latest - timedelta(days=latest.weekday())
+    count = 0
+    while monday <= last_monday:
+        s = _last_session_of_week(monday)
+        if s is not None and as_of < s <= latest:
+            count += 1
+        monday += timedelta(days=7)
+    return count
+
+
+# The rotation read's two possible inputs (ruling 108 one-file rule). Both carry the
+# same engine columns (engine/group_breadth_history.weekly_fixed_set).
+ROTATION_ARCHIVE_RELPATH = "data/breadth/history/basket_breadth_weekly_current.parquet"
+ROTATION_NIGHTLY_RELPATH = "data/breadth/history/basket_breadth_weekly_current_live.parquet"
+ROTATION_HIST_COLUMNS = (
+    "date", "group", "n_has_200", "pct_above_200",
+    "fix_chg_pct_above_200_13w", "state_fix_chg_pct_above_200_13w",
+    "run_fix_chg_pct_above_200_13w", "fix_chg_pct_above_200_26w",
+)
+
+
+def _read_rotation_history(path: Path):
+    """(frame with normalised dates, its last completed weekly close), or None.
+
+    None when the file is absent, unreadable, lacks an engine column, or has no
+    completed weekly close — the file then does not pass its schema check.
+    """
+    import pandas as pd
+
+    if not path.exists():
+        return None
+    try:
+        hist = pd.read_parquet(path)
+        if not set(ROTATION_HIST_COLUMNS) <= set(hist.columns) or not len(hist):
+            return None
+        hist = hist.assign(date=pd.to_datetime(hist["date"]).dt.normalize())
+        close = last_completed_weekly_close(hist["date"].unique())
+    except Exception:  # noqa: BLE001 - an unreadable file is simply not selected
+        return None
+    if close is None:
+        return None
+    return hist, close
+
+
+def select_rotation_input(root: Path):
+    """ONE input file per build (ruling 108). Returns (name, frame) or (None, None).
+
+    The nightly file is used only when it is present, readable, passes its
+    column check and its last completed weekly close is LATER than the
+    archive's; otherwise the archive. Never a splice, join or back-fill of the
+    two. ``name`` is ``"nightly"`` or ``"archive"``.
+    """
+    root = Path(root)
+    archive = _read_rotation_history(root / ROTATION_ARCHIVE_RELPATH)
+    nightly = _read_rotation_history(root / ROTATION_NIGHTLY_RELPATH)
+    if nightly is not None and (archive is None or nightly[1] > archive[1]):
+        return "nightly", nightly[0]
+    if archive is not None:
+        return "archive", archive[0]
+    return None, None
+
+
+def check_rotation_read(root: Path) -> list[str]:
+    """Vintage coherence of the rotation read against its own input history.
+
+    The written as_of must equal the last completed weekly close of the input
+    the one-file rule selects, and the file must name that input — never a
+    wall-clock comparison. Called only from main(); evaluate() and
+    ARTIFACT_PATHS are untouched. The calendar helpers and the input rule above
+    are the builder's own (scripts/build_rotation_read.py imports them from
+    here), so this module imports nothing from the builder.
+    """
+    import pandas as pd
+
+    root = Path(root)
+    hist_path = root / ROTATION_ARCHIVE_RELPATH
+    json_path = root / "site/sectordata/rotation_read.json"
+    nightly_path = root / ROTATION_NIGHTLY_RELPATH
+    if not hist_path.exists() and not nightly_path.exists():
+        return []
+    name, selected = select_rotation_input(root)
+    if name is not None:
+        expected = last_completed_weekly_close(selected["date"].unique())
+    else:
+        # Neither file passes. With no archive, the nightly file alone failed:
+        # it is named when unreadable, else treated like the archive's absence
+        # (nothing to check). An unreadable archive is named; a readable one
+        # with no completed close falls through to the branch below.
+        if not hist_path.exists():
+            try:
+                pd.read_parquet(nightly_path)
+            except Exception as exc:  # noqa: BLE001 - named, not raised
+                return [f"rotation_read: cannot read input history {nightly_path.name}: {exc}"]
+            return []
+        try:
+            hist = pd.read_parquet(hist_path)
+            expected = last_completed_weekly_close(
+                pd.to_datetime(hist["date"]).dt.normalize().unique()
+            )
+        except Exception as exc:  # noqa: BLE001 - an unreadable history is named, not raised
+            return [f"rotation_read: cannot read input history {hist_path.name}: {exc}"]
+    if expected is None:
+        if json_path.exists():
+            return ["rotation_read.json written with no completed weekly close in its history"]
+        return []
+    if not json_path.exists():
+        return ["site/sectordata/rotation_read.json is missing although its history exists"]
+    try:
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        return [f"site/sectordata/rotation_read.json is unreadable: {exc}"]
+    if not isinstance(payload, dict) or payload.get("schema") != ROTATION_READ_SCHEMA:
+        return [f"site/sectordata/rotation_read.json schema is not {ROTATION_READ_SCHEMA}"]
+    as_of = payload.get("as_of")
+    if as_of != expected.isoformat():
+        return [
+            "ROTATION READ VINTAGE SPLIT: as_of="
+            f"{as_of}, input history last completed weekly close={expected.isoformat()}"
+        ]
+    if name is not None and payload.get("input") != name:
+        return [
+            "ROTATION READ INPUT SPLIT: file names input="
+            f"{payload.get('input')}, the one-file rule selects {name}"
+        ]
+    return []
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--root", type=Path, default=ROOT)
@@ -355,10 +541,11 @@ def main(argv: list[str] | None = None) -> int:
         now=datetime.now(timezone.utc),
         max_sessions_behind=max(0, args.max_sessions_behind),
     )
+    rotation_errors = check_rotation_read(args.root)
     if not args.quiet:
         for warning in report["warnings"]:
             print(f"::warning title=sector-intelligence-freshness::{warning}")
-        for error in report["errors"]:
+        for error in report["errors"] + rotation_errors:
             print(f"::error title=sector-intelligence-freshness::{error}")
         facts = report["facts"]
         print(
@@ -366,7 +553,7 @@ def main(argv: list[str] | None = None) -> int:
                 facts.get("as_of"), facts.get("sessions_behind"), report["ok"]
             )
         )
-    return 0 if report["ok"] else 1
+    return 0 if report["ok"] and not rotation_errors else 1
 
 
 if __name__ == "__main__":

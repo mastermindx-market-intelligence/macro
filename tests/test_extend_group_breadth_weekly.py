@@ -18,6 +18,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import scripts.extend_group_breadth_weekly as ext
 
@@ -139,3 +140,123 @@ def test_truncated_archive_sample_skips_common_comparison(tmp_path):
     meta = tmp_path / "m.json"
     meta.write_text(json.dumps({"coverage": {"members_unpriced": 30, "unpriced_sample": ["X"]}}))
     assert ext.archive_unpriced(meta) is None
+
+
+
+# --- house-basket live file (ruling 108) -------------------------------------------------------
+
+def _roster(tmp: Path, baskets: dict[str, list[str]], removed: tuple[str, ...] = ()) -> Path:
+    p = tmp / "membership.json"
+    p.write_text(json.dumps({"baskets": {
+        b: {"name": b, "members": [{"ticker": t, "removed": ("2026-01-01" if t in removed else None)}
+                                    for t in ts]}
+        for b, ts in baskets.items()}}))
+    return p
+
+
+def _two_call_fake(end: str, fail_second: bool = False, drop: int = 0, lose: int = 0, n: int = 320):
+    """First call (sectors) succeeds; the second (basket extras) can raise, miss the last
+    session for ``drop`` names, or return no data at all for ``lose`` names."""
+    base = _fake(end, n=n)
+    calls: list[list[str]] = []
+
+    def dl(tickers, period):
+        calls.append(list(tickers))
+        if len(calls) > 1:
+            if fail_second:
+                raise RuntimeError("rate limited")
+            df = base(tickers, period)
+            if drop:
+                df.loc[df.index[-1], list(df.columns[:drop])] = float("nan")
+            if lose:
+                df.loc[:, list(df.columns[:lose])] = float("nan")
+            return df
+        return base(tickers, period)
+    dl.calls = calls
+    return dl
+
+
+def _baskets():
+    return {"hb_alpha": [f"A{i:02d}" for i in range(6)] + [f"X{i:02d}" for i in range(6)],
+            "hb_new": [f"X{i:02d}" for i in range(12)]}
+
+
+def test_basket_file_written_with_counts_and_start(tmp_path):
+    bd, out = _members(tmp_path, _groups()), tmp_path / "out"
+    mp = _roster(tmp_path, _baskets(), removed=("X11",))
+    dl = _two_call_fake("2026-11-06")
+    r = ext.build(bd, out, downloader=dl, scratch=tmp_path / "s", now=NOW, membership_path=mp)
+    assert r["baskets"]["status"] == "written"
+    # the second call asks only for names the sector download did not already hold
+    assert sorted(dl.calls[1]) == [f"X{i:02d}" for i in range(11)]
+    w = pd.read_parquet(out / f"{ext.BASKET_LIVE_NAME}.parquet")
+    assert set(w["group"]) == {"hb_alpha", "hb_new"}
+    assert list(w.columns) == list(pd.read_parquet(out / f"{ext.LIVE_NAME}.parquet").columns)
+    meta = json.loads((out / f"{ext.BASKET_LIVE_NAME}.meta.json").read_text())
+    assert meta["counts"]["by_basket"]["hb_alpha"] == {"listed": 12, "priced": 12, "absent": 0}
+    assert meta["counts"]["by_basket"]["hb_new"] == {"listed": 11, "priced": 11, "absent": 0}
+    assert meta["history_start"] == meta["span"]["closes_start"]
+    assert meta["coverage_floor"]["value"] == ext.BASKET_COVERAGE_FLOOR == 0.90
+    # the source is described neutrally: the field is exactly the generic wording
+    assert meta["price_source"].startswith("full-window download (period ")
+    assert meta["price_source"].endswith("auto-adjusted closes; never the collector's cache (#11124)")
+    assert not list(out.glob("*.tmp"))
+
+
+def _boom(*_a, **_k):
+    raise RuntimeError("failure after the download")
+
+
+@pytest.mark.parametrize("mode", ["second_call_raises", "below_floor", "raises_after_download"])
+def test_sector_file_unchanged_when_basket_names_fail(tmp_path, monkeypatch, mode):
+    bd = _members(tmp_path, _groups())
+    mp = _roster(tmp_path, _baskets())
+    ext.build(bd, tmp_path / "plain", downloader=_fake("2026-11-06"), scratch=tmp_path / "s0", now=NOW)
+    dl = {"second_call_raises": _two_call_fake("2026-11-06", fail_second=True),
+          "below_floor": _two_call_fake("2026-11-06", lose=6),
+          "raises_after_download": _two_call_fake("2026-11-06")}[mode]
+    if mode == "raises_after_download":
+        monkeypatch.setattr(ext, "expand_multi", _boom)
+    r = ext.build(bd, tmp_path / "fail", downloader=dl, scratch=tmp_path / "s1", now=NOW, membership_path=mp)
+    assert r["status"] == "written" and r["baskets"]["status"] == "not_written"
+    for name in (f"{ext.LIVE_NAME}.parquet", f"{ext.LIVE_NAME}.meta.json"):
+        assert (tmp_path / "plain" / name).read_bytes() == (tmp_path / "fail" / name).read_bytes()
+    assert not (tmp_path / "fail" / f"{ext.BASKET_LIVE_NAME}.parquet").exists()
+    assert not (tmp_path / "fail" / f"{ext.BASKET_LIVE_NAME}.meta.json").exists()
+
+
+def test_bad_night_keeps_previous_basket_file(tmp_path):
+    bd, out = _members(tmp_path, _groups()), tmp_path / "out"
+    mp = _roster(tmp_path, _baskets())
+    ext.build(bd, out, downloader=_two_call_fake("2026-10-30"), scratch=tmp_path / "s0", now=NOW,
+              membership_path=mp)
+    pq = out / f"{ext.BASKET_LIVE_NAME}.parquet"
+    mj = out / f"{ext.BASKET_LIVE_NAME}.meta.json"
+    before, before_meta = pq.read_bytes(), mj.read_bytes()
+    for dl in (_two_call_fake("2026-11-06", fail_second=True),
+               _two_call_fake("2026-11-06", lose=6)):  # 6 of 18 names absent: below the floor
+        r = ext.build(bd, out, downloader=dl, scratch=tmp_path / "s1", now=NOW, membership_path=mp)
+        assert r["baskets"]["status"] == "not_written"
+        assert pq.read_bytes() == before
+        assert mj.read_bytes() == before_meta
+        assert not list(out.glob("*.tmp"))
+
+
+def test_coverage_floor_is_data_quality_only(tmp_path):
+    """At the floor the file is written; a basket under MIN_MEMBERS still reads missing (unchanged rule)."""
+    bd, out = _members(tmp_path, _groups()), tmp_path / "out"
+    mp = _roster(tmp_path, {"hb_big": [f"X{i:02d}" for i in range(18)] + [f"A{i:02d}" for i in range(2)],
+                            "hb_small": ["A00", "A01", "A02"]})
+    # 2 of 20 distinct names absent = 0.90 coverage: exactly at the floor -> written
+    r = ext.build(bd, out, downloader=_two_call_fake("2026-11-06", drop=2), scratch=tmp_path / "s",
+                  now=NOW, membership_path=mp)
+    assert r["baskets"]["status"] == "written"
+    w = pd.read_parquet(out / f"{ext.BASKET_LIVE_NAME}.parquet")
+    assert w[w["group"] == "hb_small"]["pct_above_200"].isna().all()
+
+
+def test_without_roster_only_the_sector_file_is_built(tmp_path):
+    bd, out = _members(tmp_path, _groups()), tmp_path / "out"
+    r = ext.build(bd, out, downloader=_fake("2026-11-06"), scratch=tmp_path / "s", now=NOW)
+    assert "baskets" not in r
+    assert not (out / f"{ext.BASKET_LIVE_NAME}.parquet").exists()
