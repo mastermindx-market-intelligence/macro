@@ -46,8 +46,8 @@ def ingest(source: Path, root: Path, *, commit: bool = False) -> dict:
         rows.append(normalize_consensus(candidate))
     out = root / CONSENSUS_PATH
 
-    def novel_rows():
-        existing, existing_meta = read_jsonl(out)
+    def novel_rows(*, fd: int | None = None):
+        existing, existing_meta = read_jsonl(out, fd=fd)
         if existing_meta["status"] not in {"ready", "empty", "missing"}:
             raise EvidenceError("consensus_ledger_" + existing_meta["status"])
         known = {_snapshot_identity(normalize_consensus(row)) for row in existing}
@@ -63,10 +63,10 @@ def ingest(source: Path, root: Path, *, commit: bool = False) -> dict:
         out.parent.mkdir(parents=True, exist_ok=True)
         # One owner file lock, not a separate queue or lock registry. Nonblocking:
         # contention is explicit; the caller never starts an automatic retry loop.
-        fd = os.open(out, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+        fd = os.open(out, os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, 0o600)
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            novel, previous = novel_rows()
+            novel, previous = novel_rows(fd=fd)
             bound = os.fstat(fd)
             live = out.stat(follow_symlinks=False)
             if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
@@ -75,14 +75,18 @@ def ingest(source: Path, root: Path, *, commit: bool = False) -> dict:
                 # Creation mode does not narrow a pre-existing archive. Keep
                 # private evidence private even after an older manual import.
                 os.fchmod(fd, 0o600)
-                appended = append_receipts(out, novel)
+                with os.fdopen(fd, "a", encoding="utf-8", closefd=False) as handle:
+                    appended = append_receipts(out, novel, handle=handle)
                 live = out.stat(follow_symlinks=False)
                 if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
                     raise EvidenceError("consensus_target_binding_changed_after_append")
-                readback, after = read_jsonl(out)
+                readback, after = read_jsonl(out, fd=fd)
                 ids = {row["receipt_id"] for row in readback}
                 if after["status"] not in {"ready", "empty"} or any(row["receipt_id"] not in ids for row in novel):
                     raise EvidenceError("consensus_append_readback_unqualified")
+                live = out.stat(follow_symlinks=False)
+                if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
+                    raise EvidenceError("consensus_target_binding_changed_after_readback")
             except (OSError, ValueError, TypeError, KeyError) as exc:
                 raise ConsensusAppendUncertain("Inspect original " + CONSENSUS_PATH + " before any replay") from exc
         finally:

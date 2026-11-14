@@ -86,6 +86,7 @@ def test_first_print_poll_join_is_continuous_and_neutral_is_separate(tmp_path):
 @pytest.mark.parametrize("field,value", [
     ("baseline_kind", "model_forecast"), ("baseline_kind", "prediction_market"),
     ("value", True), ("value", float("nan")), ("value", float("inf")),
+    ("value", 10**400), ("value", -(10**400)),
     ("recorded_at", "2026-11-10T12:02:00"), ("source_sha256", "not-a-hash"),
     ("source_url", "http://example.test"), ("rights", "licensed"),
 ])
@@ -305,3 +306,47 @@ def test_nonobject_consumer_artifact_is_unavailable_not_a_consumer_crash(tmp_pat
     path.write_text("[]")
     result = read_consumer_context(tmp_path, consumer="prophet", asof=ASOF)
     assert result["status"] == "unavailable" and result["reason_codes"] == ["release_forecast_invalid"]
+
+
+def publish_overflow_context(root, value, *, asof=ASOF, field="cpi_surprise"):
+    """Reseal a real synthetic artifact so numeric semantics, not its hash, fail."""
+    actuals = actual_fixture() + actual_fixture("PPI", day="2026-11-13")
+    write_inputs(root, actuals, [poll_fixture(a) for a in actuals])
+    artifact = build_confirmation_artifact(root, asof=asof)
+    assert artifact["latest_pairs"]
+    artifact["latest_pairs"][0][field] = value
+    publish(root, seal(artifact))
+
+
+@pytest.mark.parametrize("value", [10**400, -(10**400)])
+@pytest.mark.parametrize("field", ["cpi_surprise", "ppi_surprise"])
+def test_sealed_numeric_overflow_is_unavailable_to_every_consumer(tmp_path, value, field):
+    publish_overflow_context(tmp_path, value, field=field)
+    for consumer in ("prophet", "sector_intelligence", "event_windows", "release_radar"):
+        result = read_consumer_context(tmp_path, consumer=consumer, asof=ASOF)
+        assert result["status"] == "unavailable"
+        assert result["reason_codes"] == ["finite_number_required"]
+        assert not result["latest_pairs"]
+        assert result["authority"] == authority()
+
+
+@pytest.mark.parametrize("body", [b"", b'{"x":1}\n', b"corrupt\n", b"\xff\n", b"x" * 9])
+def test_jsonl_descriptor_uses_same_bounded_parser_and_original_generation(tmp_path, monkeypatch, body):
+    import os
+    from engine import release_surprise_confirmation as owner
+
+    monkeypatch.setattr(owner, "MAX_INPUT_BYTES", 8)
+    path = tmp_path / "ledger.jsonl"
+    path.write_bytes(body)
+    expected = read_jsonl(path)
+    fd = os.open(path, os.O_RDONLY)
+    try:
+        assert read_jsonl(path, fd=fd) == expected
+        assert os.lseek(fd, 0, os.SEEK_CUR) == 0
+        path.rename(tmp_path / "original.jsonl")
+        path.write_bytes(b'{"y":2}\n')
+        assert read_jsonl(path, fd=fd) == expected
+        assert read_jsonl(path) != expected
+        assert os.lseek(fd, 0, os.SEEK_CUR) == 0
+    finally:
+        os.close(fd)

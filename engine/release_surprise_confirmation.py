@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
@@ -83,9 +84,15 @@ def iso(value: datetime) -> str:
 
 
 def finite(value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise EvidenceError("finite_number_required")
-    return float(value)
+    try:
+        number = float(value)
+    except (OverflowError, ValueError, TypeError) as exc:
+        raise EvidenceError("finite_number_required") from exc
+    if not math.isfinite(number):
+        raise EvidenceError("finite_number_required")
+    return number
 
 
 def digest(value: Any) -> str:
@@ -390,11 +397,18 @@ def build_confirmation_pairs(events: Iterable[dict]) -> list[dict]:
     return sorted(pairs, key=lambda row: (instant(row["known_at"]), row["pair_id"]))
 
 
-def read_jsonl(path: Path) -> tuple[list[dict], dict]:
-    """Missing, empty, malformed and oversized are different observed states."""
+def read_jsonl(path: Path, *, fd: int | None = None) -> tuple[list[dict], dict]:
+    """Read bounded JSONL, optionally from a caller-owned locked generation.
+
+    A supplied descriptor is neither reopened by pathname, moved nor closed.
+    Missing, empty, malformed and oversized remain distinct observed states.
+    """
     try:
-        with path.open("rb") as handle:
-            raw = handle.read(MAX_INPUT_BYTES + 1)
+        if fd is None:
+            with path.open("rb") as handle:
+                raw = handle.read(MAX_INPUT_BYTES + 1)
+        else:
+            raw = os.pread(fd, MAX_INPUT_BYTES + 1, 0)
     except FileNotFoundError:
         return [], {"status": "missing", "sha256": None, "rows": 0}
     except OSError:

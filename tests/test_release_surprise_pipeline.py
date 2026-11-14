@@ -155,9 +155,9 @@ def test_partial_append_reports_uncertainty_without_replay(tmp_path, monkeypatch
     source.write_text(json.dumps(poll_fixture(actual_fixture()[0])) + "\n")
     original = ingestion.append_receipts
     calls = []
-    def interrupted(path, rows):
+    def interrupted(path, rows, *, handle=None):
         calls.append(path)
-        original(path, rows)
+        original(path, rows, handle=handle)
         raise OSError("injected failure after durable append")
     monkeypatch.setattr(ingestion, "append_receipts", interrupted)
     with pytest.raises(ingestion.ConsensusAppendUncertain):
@@ -256,3 +256,141 @@ def test_cross_run_trial_multiplier_exposes_monte_carlo_resolution(tmp_path):
     assert resolution["cross_run_supports_005_first_rejection"] is False
     assert resolution["cross_run_minimum_draws_below_005"] == 20 * matrix["declared_hypotheses"] * matrix["configuration_trials_seen"]
     assert second["prospective_validation_claim"] is False
+
+
+@pytest.mark.parametrize("value", [10**400, -(10**400)])
+def test_prophet_optional_numeric_overflow_preserves_healthy_candidate_source(tmp_path, monkeypatch, value):
+    from tests import test_prophet_today_provenance as native
+    from tests.test_release_surprise_confirmation import publish_overflow_context
+
+    source, _ = native._native_today_multi(tmp_path, monkeypatch)
+    original = source.read_bytes()
+    default = native._read_today(tmp_path, source)
+    publish_overflow_context(tmp_path, value, asof=default["generated_at"])
+    enriched = native._read_today(tmp_path, source, include_macro_context=True)
+    context = enriched["macro_surprise_context"]
+    assert context["status"] == "unavailable"
+    assert context["reason_codes"] == ["finite_number_required"]
+    assert context["authority"] == authority()
+    for key in ("status", "candidates", "source_binding", "candidate_generation_id"):
+        assert enriched[key] == default[key]
+    assert "macro_surprise_context" not in native._read_today(tmp_path, source, include_macro_context=False)
+    assert "macro_surprise_context" not in native._read_today(tmp_path, source)
+    assert source.read_bytes() == original
+
+
+def _consensus_input_with_optional_prefix(tmp_path, monkeypatch, populated):
+    monkeypatch.setattr(ingestion, "datetime", CaptureClock)
+    source = tmp_path / "input.jsonl"
+    if populated:
+        source.write_text(json.dumps(poll_fixture(actual_fixture()[0], value=0.5)) + "\n")
+        assert ingestion.ingest(source, tmp_path, commit=True)["appended"] == 1
+    source.write_text(json.dumps(poll_fixture(actual_fixture()[0])) + "\n")
+    target = tmp_path / CONSENSUS_PATH
+    prefix = target.read_bytes() if target.exists() else b""
+    return source, target, prefix
+
+
+@pytest.mark.parametrize("populated", [False, True])
+@pytest.mark.parametrize("stage", ["before_append", "after_append", "after_readback"])
+def test_consensus_replacement_never_receives_locked_generation_append(tmp_path, monkeypatch, populated, stage):
+    source, target, prefix = _consensus_input_with_optional_prefix(tmp_path, monkeypatch, populated)
+    retired = tmp_path / "original-generation.jsonl"
+    replacement = b"other owner's replacement generation\n"
+    original_append, original_read = ingestion.append_receipts, ingestion.read_jsonl
+    calls, reads = [], []
+
+    def replace_target():
+        target.rename(retired)
+        target.write_bytes(replacement)
+
+    def append(path, rows, *, handle=None):
+        assert handle is not None
+        calls.append(path)
+        if stage == "before_append":
+            replace_target()
+        result = original_append(path, rows, handle=handle)
+        if stage == "after_append":
+            replace_target()
+        return result
+
+    def read(path, *, fd=None):
+        result = original_read(path, fd=fd)
+        if path == target and fd is not None:
+            reads.append(fd)
+            if stage == "after_readback" and len(reads) == 2:
+                replace_target()
+        return result
+
+    monkeypatch.setattr(ingestion, "append_receipts", append)
+    monkeypatch.setattr(ingestion, "read_jsonl", read)
+    with pytest.raises(ingestion.ConsensusAppendUncertain):
+        ingestion.ingest(source, tmp_path, commit=True)
+    assert calls == [target]
+    assert target.read_bytes() == replacement
+    assert retired.read_bytes().startswith(prefix)
+    assert read_jsonl(retired)[1]["rows"] == int(populated) + 1
+
+
+@pytest.mark.parametrize("populated", [False, True])
+def test_consensus_replacement_before_binding_check_refuses_without_append(tmp_path, monkeypatch, populated):
+    source, target, prefix = _consensus_input_with_optional_prefix(tmp_path, monkeypatch, populated)
+    retired = tmp_path / "original-generation.jsonl"
+    replacement = b"replacement must remain untouched\n"
+    original_read = ingestion.read_jsonl
+    changed = False
+
+    def read(path, *, fd=None):
+        nonlocal changed
+        if path == target and fd is not None and not changed:
+            target.rename(retired)
+            target.write_bytes(replacement)
+            changed = True
+        return original_read(path, fd=fd)
+
+    def unexpected_append(*args, **kwargs):
+        pytest.fail("no append is admitted after a pre-write binding mismatch")
+
+    monkeypatch.setattr(ingestion, "read_jsonl", read)
+    monkeypatch.setattr(ingestion, "append_receipts", unexpected_append)
+    with pytest.raises(EvidenceError, match="binding_changed_before_append"):
+        ingestion.ingest(source, tmp_path, commit=True)
+    assert target.read_bytes() == replacement
+    assert retired.read_bytes() == prefix
+
+
+def test_consensus_existing_lock_refuses_without_a_new_row(tmp_path, monkeypatch):
+    import os
+    import fcntl
+
+    source, target, prefix = _consensus_input_with_optional_prefix(tmp_path, monkeypatch, True)
+    fd = os.open(target, os.O_RDWR)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(BlockingIOError):
+            ingestion.ingest(source, tmp_path, commit=True)
+        assert target.read_bytes() == prefix
+    finally:
+        os.close(fd)
+
+
+def test_consensus_populated_append_keeps_prefix_and_borrowed_handle_open(tmp_path, monkeypatch):
+    source, target, prefix = _consensus_input_with_optional_prefix(tmp_path, monkeypatch, True)
+    original_append = ingestion.append_receipts
+    calls = []
+
+    def append(path, rows, *, handle=None):
+        assert handle is not None and not handle.closed
+        result = original_append(path, rows, handle=handle)
+        assert not handle.closed
+        calls.append(path)
+        return result
+
+    monkeypatch.setattr(ingestion, "append_receipts", append)
+    result = ingestion.ingest(source, tmp_path, commit=True)
+    assert result["appended"] == 1
+    assert target.read_bytes().startswith(prefix)
+    assert read_jsonl(target)[1]["rows"] == 2
+    assert calls == [target]
+    assert ingestion.ingest(source, tmp_path, commit=True)["appended"] == 0
+    assert read_jsonl(target)[1]["rows"] == 2
