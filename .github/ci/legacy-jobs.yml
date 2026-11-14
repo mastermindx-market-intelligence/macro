@@ -23473,6 +23473,10 @@ jobs:
       - "engine/inputs.py"
       - "engine/leadership_receipt.py"
       - "engine/leadership_rotation_context.py"
+      # Breadth Intelligence: actual qualifier -> default-counter consumer tests.
+      - "engine/breadth_intelligence_projection.py"
+      - "engine/live_breadth.py"
+      - "tests/test_breadth_intelligence_projection.py"
       - "engine/market_state.py"
       - "engine/name_score_grader.py"
       - "engine/narrative_rotation.py"
@@ -23544,7 +23548,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml scipy requests jinja2
       - name: leadership measured group read contract
-        run: TZ=UTC python -m pytest tests/test_leadership_measured_read.py -q -p no:cacheprovider
+        run: TZ=UTC python -m pytest tests/test_leadership_measured_read.py tests/test_breadth_intelligence_projection.py -q -p no:cacheprovider
 
   hk-confirming-turn:
     if: ${{ false }}
