@@ -211,3 +211,26 @@ not claim the original Cell-D species/analogue mission complete or acquire its
 unimplemented routing scope. Any projection comment points to this source; existing
 Linear status and assignment remain unchanged. The prior per-family reliability
 kill is expressly retained in the first-principles memo, not silently reopened.
+
+## Independent readback and attribution frontier
+
+A separate arithmetic implementation now checks every price ratio, next-close fill,
+benchmark, cost sensitivity, close-path excursion, context, date-weighted summary
+and primary point contrast without calling the original grader/summary builder.
+It also checks the native engine/library source against the pinned specification,
+Git blobs, observation hashes, environment and report/code identity. This is the
+assigned principal's independent implementation, not a distinct reviewer or new
+market dataset. The owned suite now passes 71 tests, including fault injection and
+the full synthetic report-to-verifier path. The replay core/runner bytes were not
+changed while their original process was active. See `ENTRY_REGIME_REPRODUCTION.md`.
+
+After the primary report is complete, one useful attribution diagnostic is fixed
+here: compare each event's net excess with the mean same-symbol, same-calendar-month,
+same-horizon net excess across all common-qualified decision dates. Use the same
+next-close fill and registered primary cost; group residuals equally by event date.
+This tests whether good assets/periods alone explain favorable-looking timing.
+It is an auxiliary descriptive control added after the primary protocol freeze,
+not an additional primary test, trained feature, live forecast or way to rescue a
+failed primary contrast. No p-values or promotion follow from it. Month means may
+include later dates because they are retrospective outcome controls, never inputs
+to a historical decision. Preserve the original 11 primary contrasts unchanged.

@@ -291,6 +291,12 @@ def test_complete_synthetic_consumer_and_equal_asset_benchmark_negative_control(
     study.write_json(out / "collection_receipt.json", {
         "complete": True, "spec_sha256": spec["_sha256"], "assets": [receipt]})
     report = study.evaluate(spec, out, manifest)
+    from scripts import prophet_fusion_mechanism_verify as verifier
+    rows = pd.read_parquet(out / "graded_research_events.parquet")
+    verified_rows = verifier.verify_rows(rows, {"AAPL": prices}, prices, spec)
+    verified_summaries = verifier.verify_summaries(rows, report, spec)
+    assert verified_rows["events_verified"] == len(rows)
+    assert verified_summaries["arm_summaries_verified"] == 24
     assert len(report["arm_summaries"]) == 24
     assert len(report["primary_comparisons"]) == 11
     assert report["promotion_eligible"] is False
