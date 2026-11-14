@@ -552,8 +552,8 @@ jobs:
     name: diagnostic-persistent-workspace-contamination
     # A matrix dependency can carry skipped-state propagation even when its
     # aggregate result is success. Evaluate after dependencies settle, but
-    # still refuse unless both required producers actually succeeded.
-    if: ${{ always() && inputs.slots == '1' && needs.plan.result == 'success' && needs.selfhosted-pack.result == 'success' }}
+    # do not survive workflow cancellation; still require both producers.
+    if: ${{ !cancelled() && inputs.slots == '1' && needs.plan.result == 'success' && needs.selfhosted-pack.result == 'success' }}
     needs: [plan, selfhosted-pack]
     runs-on: [self-hosted, ci-linux-canary]
     timeout-minutes: 20
