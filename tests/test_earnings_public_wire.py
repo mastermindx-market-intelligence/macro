@@ -38,6 +38,7 @@ from engine.neuralweb.earnings_context_reader import read_earnings_evidence
 from engine.earnings_narrative.story_store import write_story_packet_generation
 from engine.earnings_transcript_intake import canonical_body_sha256
 from scripts import build_earnings_public_wire as wire_builder
+from scripts.earnings_route_shards import SHARD_COUNT, SHARD_DIRNAME, SHARD_SCHEMA, shard_filename
 from scripts.build_earnings_public_wire import (
     DEFAULT_SOURCE_BASE,
     MAX_MANIFEST_BYTES,
@@ -1320,6 +1321,23 @@ def test_wire_builder_verifies_immutable_generation_aligns_and_persists_only_red
         "transcript_id": "2026Q1", "dossier_available": True,
     }
     assert public_routes["routes"]["AAPL"]["latest"] == event
+    # The canonical v2 state is unchanged. The exact published consumer
+    # projection contains only the href/period/id proof for one hash bucket.
+    shard_dir = out_dir / SHARD_DIRNAME
+    assert len(list(shard_dir.glob("part-*.json"))) == SHARD_COUNT
+    shard = json.loads((shard_dir / shard_filename("AAPL")).read_text(encoding="utf-8"))
+    assert shard["schema"] == SHARD_SCHEMA
+    assert set(shard) == {"schema", "shard", "routes"}
+    assert shard["shard"] == shard_filename("AAPL")[5:7]
+    assert list(shard["routes"]) == ["AAPL"]
+    assert shard["routes"]["AAPL"] == {
+        "events": {"2026Q1": {
+            "href": event["href"], "period": event["period"], "transcript_id": event["transcript_id"],
+        }},
+        "latest": {
+            "href": event["href"], "period": event["period"], "transcript_id": event["transcript_id"],
+        },
+    }
     public_route_bytes = (out_dir / ROUTE_CATALOG_FILENAME).read_bytes()
     for private_token in (b"facts", b"receipt", b"object_key", b"source_sha256", b"/data/tx/"):
         assert private_token not in public_route_bytes
@@ -1467,6 +1485,20 @@ def test_company_alignment_requires_latest_event_not_only_history(tmp_path: Path
     row = alignment[article["article_id"]]
     assert row["alignment_status"] == "historical_only"
     assert row["dossier_available"] is False
+
+
+def test_unchanged_route_shard_preserves_file_identity(tmp_path: Path) -> None:
+    path = tmp_path / "route-shards" / "part-1c.json"
+    write = wire_builder._atomic_write_if_changed
+    first = b'{"shard":"1c","routes":{}}\\n'
+    write(path, first)
+    before = path.stat()
+    write(path, first)
+    same = path.stat()
+    assert path.read_bytes() == first
+    assert (same.st_ino, same.st_mtime_ns) == (before.st_ino, before.st_mtime_ns)
+    write(path, b'{"shard":"1c","routes":{"AAPL":{}}}\\n')
+    assert path.read_bytes() != first
 
 
 def test_publish_removes_stale_article_named_by_prior_redacted_routes(tmp_path: Path) -> None:
