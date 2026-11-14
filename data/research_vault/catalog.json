@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T07:29:31.528915+00:00",
-  "count": 3350,
+  "generated_at": "2026-11-14T07:41:13.704497+00:00",
+  "count": 3351,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1163,6 +1163,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-2mh12h7gd17-516737",
+      "title": "DeskTalk USDJPY meets resistance at 160",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T23:00:29Z",
+      "summary_points": [
+        "USDJPY resistance at 160 with intervention risk: $3.1bn volume surge near 160, support at 100dma (158.99)/200dma (158.72); BoJ official warns against \"too fast\" moves, heightening intervention fears.",
+        "Macro divergence drives USDJPY: Rising US yields (10y UST +11bps) and hawkish Fed vs.",
+        "BoJ’s cautious tightening stance (Dec hike base case), creating fundamental support for USD.",
+        "BoJ prioritizes absolute USDJPY level: Japanese officials emphasize absolute rate over pace of moves, signaling potential intervention if 160 breached, not just speed.",
+        "G10 flow confirms USDJPY bias: Spot traders short AUDUSD/AUDJPY, aligning with USD strength and reinforcing technical resistance at 160."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 2,
       "language": "en",
       "needs_metadata": false
     },
