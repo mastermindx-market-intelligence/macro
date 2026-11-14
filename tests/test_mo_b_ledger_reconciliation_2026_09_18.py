@@ -46,7 +46,10 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # MO-PAID-081 notes only. Prior digest: 83e3ab7a6270691b87a87f68b6ba3838f8cb8e97dcc0d3855a6b4ff6d1bd7951.
 # P18.T1 / #10206: only PAID024 notes changed outside the union. The dedicated
 # F04 guard below also pins all 128 unrelated rows and both rows' protected fields.
-OUTSIDE_UNION_SHA256 = "0da50ef2d42a8aa7c0ce85c19d704ae3d50549958eff9abe0637c795dd8d5551"
+# 2026-11-09 Sol continuation (macro#6819 comment6743461316): re-pin only
+# MO-PAID-031 next_bounded_child/adjudication_notes; retain the 81/49 partition,
+# all state/disposition pins and the other 48 outside-union rows byte-for-byte.
+OUTSIDE_UNION_SHA256 = "119164dcfd4b60a0068b4ce687f9000a8037d0b25127bd070ad97a89f8a893c0"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
 UNION_ROWS = set([
@@ -531,7 +534,37 @@ def test_f04_two_row_reconciliation_preserves_unrelated_bytes_and_protected_fiel
         line for line in CSV_PATH.read_bytes().splitlines(keepends=True)
         if line.split(b",", 1)[0].decode() not in expected
     )
-    assert hashlib.sha256(untouched).hexdigest() == "9747f48a13ce3ef0093757f47cae659eabb154a19bd2ffa2b2dada226586375c"
+    # 2026-11-09: only reviewed PAID-031/085 text changed among these 128 rows;
+    # the continuation guard below pins their fields and all other raw rows.
+    assert hashlib.sha256(untouched).hexdigest() == "0a6f7473d6e7f601a66353ea237026c96128a31959239a125329706fad0ab48d"
+
+
+def test_surviving_f00c_text_corrections_preserve_frozen_fields_and_other_rows():
+    # Sol continuation: macro#6819 comment6743461316, after accepted #10206.
+    # Protected fields and untouched bytes derive from the pre-edit main b84bd66a
+    # ledger blob a5da6b77f5283699169b2d4a4e9d40f7305f4cbd, never the changed CSV.
+    allowed = {
+        "MO-PAID-085": {
+            "real_producer", "real_consumer", "missing_contract_or_proof",
+            "next_bounded_child", "state_delta", "adjudication_notes",
+        },
+        "MO-PAID-031": {"next_bounded_child", "adjudication_notes"},
+    }
+    expected = {'MO-PAID-085': '47e1d6f932c23a32efcceb45e5e1511f2b98713c4fb73a4b1052e3acb2a58ad0', 'MO-PAID-031': '5724fe3d63e550ccfc0785951dc47ba6e64c97644ee7ca7450219f35f6226266'}
+    # Exact reviewed text rejects contradictory appends even if caveats remain.
+    reviewed_notes = {'MO-PAID-085': '339b450d9f29281695ae4681f8a9a7d3bba1a967c5f8e70111195d4203623403', 'MO-PAID-031': 'd7d941f5f31ec28c592d4a097794b59a6b0e4342d83727159b8497c4777242ea'}
+    rows = _rows()
+    for row_id, fields in allowed.items():
+        protected = {key: value for key, value in rows[row_id].items()
+                     if key not in fields}
+        assert hashlib.sha256(json.dumps(protected, sort_keys=True).encode()).hexdigest() == expected[row_id], row_id
+        notes = {key: value for key, value in rows[row_id].items() if key in fields}
+        assert hashlib.sha256(json.dumps(notes, sort_keys=True).encode()).hexdigest() == reviewed_notes[row_id], row_id
+    untouched = b"".join(
+        line for line in CSV_PATH.read_bytes().splitlines(keepends=True)
+        if line.split(b",", 1)[0].decode() not in allowed
+    )
+    assert hashlib.sha256(untouched).hexdigest() == "4aada53db88c7fc7220e83f904551f4d1ba134db0dd9530efcd485dd56a2ac72"
 
 
 def test_sol_adjudicated_closure_fields_are_not_stale():
