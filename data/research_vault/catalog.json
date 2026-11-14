@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T12:41:57.735210+00:00",
-  "count": 3365,
+  "generated_at": "2026-11-14T12:56:31.999679+00:00",
+  "count": 3366,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1184,6 +1184,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 6,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-yjmef0cxnru-aa50d5",
+      "title": "Artificial intelligence managing concentration risk",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T03:39:53Z",
+      "summary_points": [
+        "AI Equity Concentration Risk: Hyperscalers (17.79%) + AI-adjacent firms (28.08%) constitute 45.88% of S&P 500 market cap, creating severe single-asset vulnerability despite outperformance (Hyperscalers Index: 186 vs S&P 500: 150).",
+        "Infrastructure Capex & Systemic Risk: $9T US AI infrastructure capex (3.2% of GDP) over 6 years drives growth but risks overcapacity, delayed productivity gains (Stage 3), and geopolitical competition, demanding active exposure monitoring.",
+        "Private Market & Credit Concentration: AI represents 16% of $4.5T global private equity assets and 25% of direct lending; $32B AI high-yield issuance (40% of H1 2026 new supply) signals nascent debt concentration risk (only 4% of total high-yield debt).",
+        "Mitigation Imperative: Portfolio managers must deploy equal-weight equity strategies, target AI-downstream beneficiaries, and integrate Total Portfolio Approach (TPA) to address liquidity needs and overlapping exposures (e.g., semiconductor dependencies).",
+        "Financing Cost Threat: Rising risk premiums and rate hikes erode AI investment returns; highly leveraged AI borrowers face sharp financing cost spikes, while creditworthy issuers see modest spread widening."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
