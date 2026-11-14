@@ -127,6 +127,8 @@ rules below still apply to separately justified native Claude children.
 
 **Assigned Codex Meta-CEO selective-read rule:** `AGENTS.md` is the Codex entrypoint. An assigned Codex principal reads only the relevant `CLAUDE.md` guide sections plus necessary current laws rather than duplicating the full Claude context. Ordinary Codex workers and Claude-native sessions retain their scoped source and tool rules; this never waives admission, permissions, custody or acceptance.
 
+**Operating deputy (Chairman 2026-11-11).** An assigned Fable principal running a mission with more than a handful of expected worker returns hands the control loop (worker briefs, worker returns, local repair, CI and merge follow-through) to ONE long-lived deputy thread (Opus when it must solve problems; shape and model by the table in the guide), and keeps mission framing, reserved decisions, cross-programme agreements and acceptance. Read [Operating deputy](docs/CODEX_META_CEO_FABRIC.md#operating-deputy-run-the-control-loop-one-tier-below-the-principal) before the first worker spawn of such a mission. This moves where work happens; it grants no authority and waives no gate.
+
 ## Model routing (STANDING — token economy)
 
 Read [Model routing (STANDING — token economy)](docs/agent_guides/CLAUDE_MODEL_ROUTING.md) before the relevant action.
