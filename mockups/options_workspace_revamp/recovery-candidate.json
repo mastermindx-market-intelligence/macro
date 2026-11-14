@@ -1,0 +1,46 @@
+{
+  "fixture": "synthetic",
+  "template_sha256": "8545c03d63f1a8f6507f3b713c75b3413d02391724bb6e27ae1a100a724e6eb0",
+  "checks": [
+    {
+      "name": "bare_ticker_history_restores_default",
+      "pass": true,
+      "ticker": "SPY",
+      "url": "http://127.0.0.1:8768/mockups/options_workspace_revamp/fixtures/workspace-current.html#ticker"
+    },
+    {
+      "name": "arrow_down_reopens_typeahead",
+      "pass": true
+    },
+    {
+      "name": "keyboard_drilldown_moves_focus",
+      "pass": true
+    },
+    {
+      "name": "history_preserves_research_origin_and_focus",
+      "pass": true,
+      "destination": "scanner",
+      "focus_restored": true
+    },
+    {
+      "name": "failed_ticker_keeps_selected_symbol",
+      "pass": true,
+      "selected": "QQQ"
+    },
+    {
+      "name": "retry_refetches_invalid_cached_payload",
+      "pass": true,
+      "requests": 2,
+      "rows": 4
+    },
+    {
+      "name": "optional_retry_preserves_primary_evidence",
+      "pass": true,
+      "primary_requests": 1,
+      "support_requests": 2,
+      "panels_retained": true
+    }
+  ],
+  "passed": 7,
+  "failed": []
+}

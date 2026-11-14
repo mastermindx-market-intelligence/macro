@@ -1,0 +1,1 @@
+{"outcome": "failed", "report": "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/early_navigation_report_r2.json", "cases": []}

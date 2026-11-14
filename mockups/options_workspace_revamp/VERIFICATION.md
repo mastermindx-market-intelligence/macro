@@ -1,0 +1,128 @@
+# Verification record — options workspace reference
+
+Status: supporting source reference, NOT_APPLIED_TO_PAPER. No production replacement accepted.
+
+## Reproducible baseline
+
+Source candidate before implementation: macro@20b3599ba79bd635f49d3dac6a2efb81a2f64f8b (production template still unchanged from initial base).
+
+Focused Python baseline:
+`python3 -m pytest tests/test_build_options_command.py tests/test_options_intel_brief_ui.py tests/test_render_options_workspace_scope.py -q`
+Result: 189 passed, 3 skipped in 18.49s. See baseline_pytest.txt.
+
+Isolated source-native Chromium tests use a new ephemeral browser context, a loopback-only HTTP server, synthetic repository test fixtures, and blocked external egress. They do not attach to a user browser/profile and do not use data: navigation. Fixture output is under this directory, never site/data. These checks are synthetic behavior evidence, not evidence of current market records or production service health.
+
+Run render_acceptance_fixture.py, serve the repository through the owned localhost fixture server, then run verify_workspace.py --label baseline.
+
+| Baseline check | Result |
+|---|---|
+| Filtered Scanner CSV contains the filtered row | Pass |
+| Scanner clear restores all fixture rows | Pass |
+| Flow, Leaders and Ticker load meaningful content | Pass |
+| ArrowRight selects the next task tab | Fail: remains Brief |
+| Latest ticker response owns displayed values | Fail: URL QQQ, stale SPY result displayed |
+| Reentering pending Scanner deduplicates requests | Fail: 2 requests |
+| Hanging Scanner request offers usable timeout/retry | Fail: no recovery action |
+| Leaders research stamp uses its market session | Fail: November build date replaces August source date |
+
+The five failures reproduce existing defects; they are not candidate regressions. Candidate acceptance must turn these green without weakening the assertions or hiding errors.
+
+## Reference visual review
+
+verify_reference.py produced 12 main-content captures, including Brief at 1440/390 x light/dark x EN/ZH and desktop light EN previews of the other four tasks. reference-report.json recorded no page-wide horizontal overflow or page errors in these captures.
+
+The principal visually inspected V4 desktop light EN, mobile dark EN and mobile light ZH. The compact unavailable notice, genuine source dates, readable two-line mobile level legend, one-day move horizon, five visible task labels, and corrected disclosure row were inspected. These are content-area reference observations, not shared-shell or complete-workflow acceptance. Reference Flow/Scanner/Ticker/Leaders previews demonstrate composition only; all production capabilities must be preserved in implementation.
+
+Initial risk: the actual shared assistant orb can overlap mobile right-column content at some scroll positions. Integrated full-page checks must establish readable/reachable controls and evidence. Do not hide the assistant or crop away the issue merely to manufacture acceptance.
+
+## Independent principal risk review
+
+After candidate integration, prioritize:
+1. Slow prior ticker success AND failure cannot overwrite or clear a newer successful selection, heading, chart, loading or error state.
+2. Leaving/reentering a pending task does not duplicate requests or listeners; recovery cannot be overwritten by the original late response.
+3. Current Brief -> dated history -> Ticker -> Back/Forward/reload retains honest source/session context. A recent render/fetch never promotes old data.
+4. Every supported task deep link and ticker query initializes and restores meaningful state without redundant history or transient default-SPY claims.
+5. Arrow keys, Home/End, tab focus, hidden panels, typeahead, and disclosure destination focus work in a pointer-free journey.
+6. Full 390px page in both themes/locales keeps all tasks, source receipts, critical evidence and retry controls readable/reachable with the real assistant present.
+
+## Remaining gates
+
+- Paper exact catalog qualification and actual editable artboards/screenshot/JSX proof.
+- Integrated source implementation, candidate behavior and full visual matrix.
+- Independent non-author source/reference review, required CI, release receipts and real production journey proof.
+
+## Follow-up verification
+
+The separate clock-baseline check fails as expected: three Leaders research stamps show the fixture build date November 2 instead of its session_date August 12. See runtime-clock-baseline.json. Source provenance is in SOURCE_AUDIT.md.
+
+prepare_published_fixture.py recovered all 17 inputs at e4009c94d75770739844240b22f5fc915668aa9b into the ignored QA fixture tree. capture_published_workspace.py records full viewports including the shared navigation and assistant; its baseline three views pass overflow/page-error checks. The helper can run the full five-task x two-width x two-theme x two-language matrix against the integrated candidate. No production data writes or provider requests occur.
+
+The supporting reference also now has two true initial-viewport captures (scroll reset to zero) with the shared navigation. Independent principal visual review finds all five mobile tasks discoverable and the first current index closes within the initial viewport. This still does not accept other task layouts, expanded states, Paper or the eventual integrated build.
+
+Reference reachability check: 1440 light EN and 390 dark ZH both expose every SPY price/regime/level/move item after normal scroll placement; Source details takes keyboard focus, opens with Enter, and has an unobstructed activation point. The first probe sampled a smooth scroll before it settled; deterministic scroll placement corrected the harness timing, without changing the page or hiding the assistant. See visual/reference-reachability.json and reachable-spy images. No global assistant change is warranted by this reference evidence. Repeat the boundary on the integrated candidate.
+
+## Navigation and fixture integrity — 2026-11-02
+
+verify_navigation.py exercises the actual search controls, direct links/reload, scoped slash shortcut, Back/Forward, hash changes, and both slow-success and slow-failure ticker races. Original source: 4 pass / 5 fail. The failures are missing active-descendant exposure in typeahead, collapsed task history, no visible-task update after a hash change, and both older SPY outcomes overwriting a newer QQQ choice. See navigation-baseline.json. These are acceptance targets, not candidate regressions.
+
+The QA fixture previously inserted a document-wide base element for source-tree assets. That also redirected relative history URLs to /templates/. fixture_assets.py now rebinds only script/link/image asset attributes, preserving each fixture document's real URL semantics. The navigation failures were reproduced again after this correction. The current three-view published fixture capture still has no overflow or page errors; no production source was altered.
+
+Source boundary reviewed: build_indexes takes each index interpretation from its own gex summary.regime and meta.asof, not the separate market_structure posture. All four published index records are Oct30 short-regime model estimates, with regime_passport basis=assumption and verdict=display-only. The Oct20 market-wide posture must keep its own date; the current index interpretation may remain beside its own Oct30 levels with model-estimate context.
+
+
+## Candidate implementation acceptance — 2026-11-02 06:20 UTC
+
+The principal implementation now passes **199 tests, 3 environment/data skips** across test_build_options_command, test_options_intel_brief_ui, and test_render_options_workspace_scope. Existing scientific, ranking, enum, bilingual and full-capability protections remain. Old literal layout pins were replaced by semantic source-receipt, main-landmark, current-vs-historical Brief, and preserved-lazy-workspace checks. Ten additional cases cover independent dates, missing/nonfinite diagram values, source clocks, and complete retained Brief behavior.
+
+Real isolated Chromium: runtime-candidate-final.json **10/10**, navigation-candidate-final.json **9/9**, recovery-candidate.json **7/7**. Coverage includes hung-request retry, invalid successful-JSON retry, supporting-data retry preserving primary evidence, duplicate in-flight suppression, old success and old failure races, history and bare-ticker routes, research-origin/focus restoration, aria-activedescendant, Escape and ArrowDown reopening, filtered/sorted CSV and clear, and Leaders session clock distinct from rebuild time.
+
+visual-candidate-final/report.json records **40 views** at 1440×1000 and 390×844, light/dark, EN/ZH, all five tasks. No document overflow or JS errors. The real shared shell is included. Exact published-data source is e4009c94d75770739844240b22f5fc915668aa9b (17 immutable JSON blobs; no producer/site-data writes). Fixture manifest records source/template/builder fingerprints; no data dates are substituted. The working source received an EOF/trailing-blank cleanup after the final behavior proof; semantic source is unchanged. CI/reviewer will qualify the committed source independently.
+
+Parent visually reviewed desktop Brief/Scanner/Flow/Ticker/Leaders and mobile Brief/Scanner/Ticker across themes and locales, then tightened mobile header and corrected Ticker search localization. The two dated clocks inside the payoff fold remain visible. Component error/partial-recovery captures are in visual-candidate-states.
+
+**Remaining release gates:** actual editable Paper implementation with screenshot/JSX proof; independent committed-candidate review; exact-head hosted checks; normal narrow Macro publication; production URL interaction/layout proof. These receipts do not claim deployment or upstream data freshness.
+
+## Expanded production-candidate review — 2026-11-02 06:42 UTC
+
+verify_expanded_views.py now records **74/74** checks in visual-candidate-expanded/report.json at desktop light EN and mobile dark ZH / light EN. This checks actual published-data states: source/history keyboard disclosures and focus, dual-date payoff details, full-row mobile payoff layout, index evidence reachability with the shared assistant, real history versus unavailable intraday record, all 21 advanced numeric controls, each of three horizontally scrollable Scanner views, lazy raw-structure SVG rendering, exact selected-symbol Terminal return route, Leaders expansion, document containment and page errors. The report fingerprints the exact template/builder working bytes on d633 plus the final refinement; it is not falsely represented as the untouched d633 tree.
+
+A fresh focused source run after those refinements passed **199 tests, 3 skips** in 31.99s. Five warnings came from pytest cleanup of a pre-existing unrelated temporary-directory tree; the session did not alter that tree.
+
+The principal visually inspected the expanded mobile payoff in Chinese after widening the card and increasing essential numeric/footnote text. Original full-matrix evidence remains as historical proof of the unchanged workspaces; the expanded report proves the subsequently adjusted layout and copy.
+
+extract_paper_samples.py captures actual dated panel text, the first eight visible Scanner rows and four Ticker SVGs from the same 17 exact published JSON blobs. paper_actual_samples.json is design input with provenance, not a new market dataset or a claim that Paper is already applied.
+
+## Recovered candidate and current authority — 2026-11-05
+
+This cumulative checkpoint supersedes the earlier remaining-gate descriptions where they required a blanket independent source review. The current Chairman instruction and ChatGPT Web review waiver authorize principal self-check and continued implementation; a separate reviewer is required only where an actual repository rule demands formal nonauthor approval. The two recorded thermal-admission refusals remain terminal failed attempts, not approvals. Required hosted checks, existing scientific/data holds and truthful release/live receipts remain distinct.
+
+The original managed operation and branch were recovered at `ba7947223ae58f436d4cfadbedc28454b10483fc`; its previously unpublished changes and evidence were preserved. The candidate fixes the payoff-card test parser's obsolete markup assumptions, replaces new literal styling with scoped shared tokens, retains each near-flip row's own source date, separates historical and intraday Flow clocks, sorts Scanner row lag by calendar days with invalid/future dates last, preserves keyboard focus during sorting, and boots shared navigation before the Options workspace. The built minified navigation bundle and CSS mirrors accompany the source. No market-data producer or model was changed.
+
+Recovered evidence, not newly rerun in this recovery:
+
+- `final_r7_pytest.txt`: 259 passed and 7 subtests passed in 31.50s; 12 pre-existing temporary-directory cleanup warnings.
+- `final_r7_design_gate.txt`: 0 blocking findings with the existing checker and allowlist.
+- `final_r7_canonical_capture.txt` and `canonical/manifest.json`: 24/24 canonical states captured. The empty `final_r7_visual_gate.txt` alone is not treated as an exit-code receipt.
+- `visual-candidate-final-nav/report.json`: 40 five-task/width/theme/locale views, with no document overflow or recorded page errors.
+- `early_navigation_report_r3.json`: six passing cases; `early_navigation_production_report.json`: one passing case using the built minified bundle. Both record unchanged source fingerprints during execution. The latter is a fixture-based compiled-bundle smoke check, not a production-URL check.
+
+The recovered browser reports fingerprint `templates/options.html.j2` SHA256 `6ace5251abef24cc80973425df6b16dd310cad7afdd5c799a7cb3b2db4ef1c8a`, `templates/theme.js` `11df39d743c64287b6f9b9f926f748ce84d2faad0b45c0b91ec296ee0998a53b`, `site/theme.js` `4139fe657fbec6dcb5707ea9bb8bf5d8a71390250997ebe2d5b699d212e19680`, both CSS mirrors `259f5be3a138bbb2f01a2ca6c8fda2a94cd0b53ec985c404ac325029a8511054`, and the builder `a2af9b55e0c6c83d574ba7b1c3288fcb2798ebc3dca4cced69e40f3b2dc89afe`. Recovery readback matched those source files. These fingerprints preserve attribution even if subsequent base integration changes shared files.
+
+Published-head CI run 41402720711 had three failed packs: four payoff-fold parser tests (pack3), nineteen added-line design findings (pack9), and a 488050-byte shared daily workflow above its 487000-byte cap (pack6, also failing on the old base). The local candidate repairs the first two; current-base integration and fresh hosted CI must qualify their publication. The inherited shared-workflow failure is being checked against current main instead of creating a competing workflow repair.
+
+Paper proof is partially complete in the original file `01M2WGNCX9475G79JRKJTCM08P`, page `p-25-0`: seven completed boards have screenshot/JSX evidence. Flow mobile light is partial; Scanner mobile dark, Ticker mobile light and both Leaders boards remain. See `paper/paper-progress-checkpoint.json` and the terminal reconciliation in `paper/paper-effect-reconciliation-20261103.json`. Historical Paper exports retain their original source attribution. No full Paper-completion, merge, deployment or production acceptance is claimed here.
+
+Next delivery work: publish this recovered candidate through the original owner/branch, reconcile current main and required CI, complete feasible remaining Paper work, then follow the normal release path and inspect the actual production journeys. Optional checks that remain infeasible may be explicitly deferred under the current Chairman instruction; a deferred check is never described as passed.
+
+
+## Published recovery, integration and Paper disposition — 2026-11-05
+
+Recovered source is published at **3e00d90243298bfbf718af540e2c4d83e1ebd401** in the original PR #10494. The first local commit attempt returned a precheck refusal without changing HEAD/index; an isolated private-index diagnostic completed the original staging command in 5.726 seconds and confirmed the real index unchanged. The same typed publisher then committed successfully. Its push returned PUSH_RESULT_UNCERTAIN; the original publication owner subsequently read equal local/remote 3e00 head, clean=true and publication_state=APPLIED, and GitHub PR metadata independently read the same head. No push was replayed.
+
+Current base was fetched and pinned at **80136935b4d28caeda6c6a50eb385797190fdc32**. Core Options template/builder, payoff test input, nav partial and asset optimizer are unchanged from the original base; shared CSS/JS have advanced. A no-worktree/no-branch-change projected merge of the corrected 3e00 head with this main returned exit 0, no conflicts and tree **3d9d60380a8ceca6b16eab959f50e1b9356375e4**. Therefore no ancestry-only branch refresh is warranted. Current main's daily.yml is 482604 bytes (blob fe33f08e942adef0ecb8065a1ae9a30714794b7d), below the unchanged 487000-byte budget. The inherited old CI size failure is already repaired upstream; no Options edit to shared workflows is needed. Paid audit options-main-ci-audit-20261105-01 returned terminal rc0, complete 4839-byte result SHA256 24bfe468e4ca4e1d936441046016cdd07c8321a562797ea6de441f5f4836f352; the parent checked the file size, budget and new corrected-head merge independently and accepted this bounded audit. This is not a current hosted CI pass. CI run 41992206303 and fences 41992206236 were created for 3e00; they were pending/running at the checkpoint.
+
+The live original-carrier Paper read found mobile Flow **71QK-0** complete beyond the saved step-3 checkpoint. Its JSX includes the text of all 39 planned fragments; the principal visually inspected the full 390px light board, including all 12 sector-premium rows, 11 ETF cards, unavailable theme/tide states and independent dates. The recovered export and image are paper/flow-mobile-light.jsx (SHA256 2d1be6ba50b545a1fa7d5e8e70ab18ba49b700f7360849b139121a670156eb56) and paper/flow-mobile-light.jpg (8496ca88c472e202f91dd2869a1995ae91246e7085fa3dbd1e8f7b5694886b29). Eight of twelve boards now have screenshot/JSX proof. No new Paper content edit was performed, and missing historical import-call receipts were not invented.
+
+The vendor returned an explicit warning on the exact original file: further changes will result in data loss because the file is too large. Under the Chairman's current authorization to defer completion requirements when circumstances prevent them, **the remaining four Paper boards are deferred from this implementation's release gate**: Scanner mobile dark, Ticker mobile light and both Leaders boards. Existing boards and the complete twelve-board source blueprint are preserved. No file migration, cloning, deletion or capacity-bypassing write was attempted. This disposition does not turn those four boards into completed work, and it does not waive actual CI, independent formal Macro approval/release controls or production verification.
+
+The candidate is source-qualified and reviewable. The historical blanket technical-review and full-Paper-before-readiness conditions no longer block Ready status under the current waiver/disposition. Required hosted CI and the Macro-specific exact-head nonauthor formal approval/release operator remain the release gates; production acceptance remains outstanding after normal deployment.

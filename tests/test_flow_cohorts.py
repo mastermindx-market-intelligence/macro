@@ -966,14 +966,14 @@ class TestZeroCoverageRendersNoStanceWord:
     also makes the check stronger than the Jinja one it replaces: it exercises
     the real coverage predicate, not a template branch.
 
-    The wording and class names travelled with it:
+    The class name travelled with it; the workspace copy names the source session:
         coh-tile                -> oew-fl-tile
         "No theme-group data yet"
-                                -> "No theme-group data for this close."
+                                -> "Theme-group data is unavailable for this source session."
     """
 
-    _NULL_EN = "No theme-group data for this close."
-    _NULL_ZH = "本次收盘没有主题组合数据。"
+    _NULL_EN = "Theme-group data is unavailable for this source session."
+    _NULL_ZH = "本数据场次的主题组合数据不可用。"
 
     @staticmethod
     def _panel(cohorts: list[dict]) -> str:

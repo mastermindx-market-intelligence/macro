@@ -19255,8 +19255,10 @@ jobs:
       - "lib/exchange_holidays.py"
       - "tests/test_options_payoff_lab_consumer.py"
       - "tests/test_options_skew_source_note.py"
+      - "tests/test_options_early_nav.py"
       - "tests/test_build_options_command.py"
       - "templates/options.html.j2"
+      - "templates/theme.js"
       - ".github/workflows/engine-render.yml"
       - "scripts/build_options_command.py"
       - "config/site_access.yml"
@@ -19282,7 +19284,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: options-payoff-lab consumer tests
-        run: python -m pytest tests/test_options_payoff_lab_consumer.py tests/test_options_skew_source_note.py -q
+        run: python -m pytest tests/test_options_payoff_lab_consumer.py tests/test_options_skew_source_note.py tests/test_options_early_nav.py -q
   options-signal-campaign-v2:
     if: ${{ false }}
     gate: code

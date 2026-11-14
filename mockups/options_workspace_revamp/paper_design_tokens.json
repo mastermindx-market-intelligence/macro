@@ -1,0 +1,492 @@
+[
+  {
+    "name": "--mx-dark-bg",
+    "type": "color",
+    "value": "#0F1115",
+    "description": "Dark command-center canvas. Projection of production --bg."
+  },
+  {
+    "name": "--mx-dark-panel",
+    "type": "color",
+    "value": "#181B21"
+  },
+  {
+    "name": "--mx-dark-panel2",
+    "type": "color",
+    "value": "#1E222A"
+  },
+  {
+    "name": "--mx-dark-text",
+    "type": "color",
+    "value": "#D7DCE3"
+  },
+  {
+    "name": "--mx-dark-muted",
+    "type": "color",
+    "value": "#8B93A1"
+  },
+  {
+    "name": "--mx-dark-line",
+    "type": "color",
+    "value": "#3A4150"
+  },
+  {
+    "name": "--mx-dark-up",
+    "type": "color",
+    "value": "#45B873"
+  },
+  {
+    "name": "--mx-dark-down",
+    "type": "color",
+    "value": "#E06464"
+  },
+  {
+    "name": "--mx-dark-warn",
+    "type": "color",
+    "value": "#E0A030"
+  },
+  {
+    "name": "--mx-dark-act",
+    "type": "color",
+    "value": "#E05555"
+  },
+  {
+    "name": "--mx-dark-ok",
+    "type": "color",
+    "value": "#3DA564"
+  },
+  {
+    "name": "--mx-dark-info",
+    "type": "color",
+    "value": "#5B9BF0"
+  },
+  {
+    "name": "--mx-dark-link",
+    "type": "color",
+    "value": "#7AA7E0"
+  },
+  {
+    "name": "--mx-dark-orange",
+    "type": "color",
+    "value": "#E08B45"
+  },
+  {
+    "name": "--mx-light-bg",
+    "type": "color",
+    "value": "#F7F8FA",
+    "description": "Light research-workspace canvas. Projection of production --bg."
+  },
+  {
+    "name": "--mx-light-panel",
+    "type": "color",
+    "value": "#FFFFFF"
+  },
+  {
+    "name": "--mx-light-panel2",
+    "type": "color",
+    "value": "#EEF1F6"
+  },
+  {
+    "name": "--mx-light-text",
+    "type": "color",
+    "value": "#1C2430"
+  },
+  {
+    "name": "--mx-light-muted",
+    "type": "color",
+    "value": "#5D6B7E"
+  },
+  {
+    "name": "--mx-light-line",
+    "type": "color",
+    "value": "#C9CCD1"
+  },
+  {
+    "name": "--mx-light-up",
+    "type": "color",
+    "value": "#1F9A55"
+  },
+  {
+    "name": "--mx-light-down",
+    "type": "color",
+    "value": "#CF4040"
+  },
+  {
+    "name": "--mx-light-warn",
+    "type": "color",
+    "value": "#B9791A"
+  },
+  {
+    "name": "--mx-light-act",
+    "type": "color",
+    "value": "#C43D3D"
+  },
+  {
+    "name": "--mx-light-ok",
+    "type": "color",
+    "value": "#2F8A52"
+  },
+  {
+    "name": "--mx-light-info",
+    "type": "color",
+    "value": "#285FFF"
+  },
+  {
+    "name": "--mx-light-link",
+    "type": "color",
+    "value": "#285FFF"
+  },
+  {
+    "name": "--mx-light-orange",
+    "type": "color",
+    "value": "#C4781F"
+  },
+  {
+    "name": "--mx-dark-prov",
+    "type": "color",
+    "value": "#62A0E8",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-prov-ink",
+    "type": "color",
+    "value": "#62A0E8",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-tier-accent",
+    "type": "color",
+    "value": "#7C5CFF",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-tier-fill",
+    "type": "color",
+    "value": "#6340D8",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-tier-ink",
+    "type": "color",
+    "value": "#9B86FF",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-ser-1",
+    "type": "color",
+    "value": "#5B9BF0",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-ser-2",
+    "type": "color",
+    "value": "#D4A017",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-ser-3",
+    "type": "color",
+    "value": "#0EA5E9",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-dark-ser-4",
+    "type": "color",
+    "value": "#E08B45",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-prov",
+    "type": "color",
+    "value": "#2F6FD0",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-prov-ink",
+    "type": "color",
+    "value": "#2C62B3",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-tier-accent",
+    "type": "color",
+    "value": "#7C5CFF",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-tier-fill",
+    "type": "color",
+    "value": "#6340D8",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-tier-ink",
+    "type": "color",
+    "value": "#5B3FC4",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-ser-1",
+    "type": "color",
+    "value": "#2F63C4",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-ser-2",
+    "type": "color",
+    "value": "#8F6A04",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-ser-3",
+    "type": "color",
+    "value": "#0284C7",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-ser-4",
+    "type": "color",
+    "value": "#B06A25",
+    "description": "Repository-derived Mastermind semantic/chart projection; Paper is not token authority."
+  },
+  {
+    "name": "--mx-light-ink-up",
+    "type": "color",
+    "value": "#1E6D47",
+    "description": "Resolved projection of canonical macro theme.css --ink-up: light EN green 62% + --text; pin a240da85. ZH up uses red ink-down. No new production token."
+  },
+  {
+    "name": "--mx-light-ink-down",
+    "type": "color",
+    "value": "#B23C3D",
+    "description": "Resolved projection of canonical macro theme.css --ink-down: light EN red 84% + --text; pin a240da85. ZH down uses green ink-up."
+  },
+  {
+    "name": "--mx-light-ink-warn",
+    "type": "color",
+    "value": "#7D5922",
+    "description": "Resolved canonical light --ink-warn: warn 62% + text. Language-invariant severity. Paper color-mix with variables returned black; this matches source formula."
+  },
+  {
+    "name": "--mx-light-ink-link",
+    "type": "color",
+    "value": "#2758E6",
+    "description": "Resolved canonical light --ink-link / --ink-info: link 88% + text. Source macro theme.css a240da85."
+  },
+  {
+    "name": "--noir-canvas",
+    "type": "color",
+    "value": "#080808",
+    "description": "Canonical NOIR foundation from Mastermind Product Design System, Foundations 3XJ-1. Command profile; use Market material tokens for consumer surface layers."
+  },
+  {
+    "name": "--noir-sidebar",
+    "type": "color",
+    "value": "#0C0C0C"
+  },
+  {
+    "name": "--noir-panel",
+    "type": "color",
+    "value": "#121212"
+  },
+  {
+    "name": "--noir-raised",
+    "type": "color",
+    "value": "#191919"
+  },
+  {
+    "name": "--noir-hover",
+    "type": "color",
+    "value": "#222222"
+  },
+  {
+    "name": "--noir-selected",
+    "type": "color",
+    "value": "#292929"
+  },
+  {
+    "name": "--noir-text-primary",
+    "type": "color",
+    "value": "#F3F3F3"
+  },
+  {
+    "name": "--noir-text-secondary",
+    "type": "color",
+    "value": "#B8B8B8"
+  },
+  {
+    "name": "--noir-text-tertiary",
+    "type": "color",
+    "value": "#949494"
+  },
+  {
+    "name": "--noir-champagne",
+    "type": "color",
+    "value": "#C9B99B"
+  },
+  {
+    "name": "--noir-sage",
+    "type": "color",
+    "value": "#A8C2AD"
+  },
+  {
+    "name": "--noir-rose",
+    "type": "color",
+    "value": "#DEA4A5"
+  },
+  {
+    "name": "--noir-steel",
+    "type": "color",
+    "value": "#A7B4C2"
+  },
+  {
+    "name": "--noir-lilac",
+    "type": "color",
+    "value": "#BDB2CE"
+  },
+  {
+    "name": "--market-canvas",
+    "type": "color",
+    "value": "#0A0B0D",
+    "description": "Canonical NOIR / Market consumer foundation. Preserve market semantics and existing density; graphite atmosphere, not a blue page."
+  },
+  {
+    "name": "--market-panel",
+    "type": "color",
+    "value": "#111318"
+  },
+  {
+    "name": "--market-raised",
+    "type": "color",
+    "value": "#181B20"
+  },
+  {
+    "name": "--market-line",
+    "type": "color",
+    "value": "#2B3038"
+  },
+  {
+    "name": "--mx-dark-up-soft",
+    "type": "color",
+    "value": "rgb(69 184 115 / 12%)",
+    "description": "Subdued positive fill derived from canonical --mx-dark-up at 12% alpha. Local semantic component extension; foreground meaning remains explicitly labeled."
+  },
+  {
+    "name": "--mx-dark-down-soft",
+    "type": "color",
+    "value": "rgb(224 100 100 / 12%)",
+    "description": "Subdued negative fill derived from canonical --mx-dark-down at 12% alpha. Local semantic component extension."
+  },
+  {
+    "name": "--mx-dark-warn-soft",
+    "type": "color",
+    "value": "rgb(224 160 48 / 12%)",
+    "description": "Subdued warning fill derived from canonical --mx-dark-warn at 12% alpha. Local semantic component extension."
+  },
+  {
+    "name": "--mx-dark-info-soft",
+    "type": "color",
+    "value": "rgb(91 155 240 / 12%)",
+    "description": "Subdued information fill derived from canonical --mx-dark-info at 12% alpha. Local semantic component extension; use for informational, not positive, meaning."
+  },
+  {
+    "name": "--mx-light-up-soft",
+    "type": "color",
+    "value": "#EAF7EF",
+    "description": "News light semantic component extension: existing approved positive chip surface; pair with canonical --mx-light-ink-up."
+  },
+  {
+    "name": "--mx-light-down-soft",
+    "type": "color",
+    "value": "#FCECED",
+    "description": "News light semantic component extension: existing negative chip surface; pair with canonical --mx-light-ink-down."
+  },
+  {
+    "name": "--mx-light-warn-soft",
+    "type": "color",
+    "value": "#FFF4E2",
+    "description": "News light semantic component extension: existing warning chip surface; pair with canonical --mx-light-ink-warn."
+  },
+  {
+    "name": "--mx-light-info-soft",
+    "type": "color",
+    "value": "#EAF2FC",
+    "description": "News light semantic component extension: existing information chip surface; pair with canonical --mx-light-ink-link."
+  },
+  {
+    "name": "--mx-light-scrim",
+    "type": "color",
+    "value": "#1C243029",
+    "description": "Light overlay scrim: existing canonical light text color at 41/255 opacity. Preserve modal context without changing overlay behavior."
+  },
+  {
+    "name": "--font-ui",
+    "type": "fontFamily",
+    "value": "\"Inter\""
+  },
+  {
+    "name": "--sp-1",
+    "type": "spacing",
+    "value": "4px"
+  },
+  {
+    "name": "--sp-2",
+    "type": "spacing",
+    "value": "8px"
+  },
+  {
+    "name": "--sp-3",
+    "type": "spacing",
+    "value": "12px"
+  },
+  {
+    "name": "--sp-4",
+    "type": "spacing",
+    "value": "16px"
+  },
+  {
+    "name": "--sp-5",
+    "type": "spacing",
+    "value": "20px"
+  },
+  {
+    "name": "--sp-6",
+    "type": "spacing",
+    "value": "24px"
+  },
+  {
+    "name": "--sp-7",
+    "type": "spacing",
+    "value": "32px"
+  },
+  {
+    "name": "--sp-8",
+    "type": "spacing",
+    "value": "44px"
+  },
+  {
+    "name": "--r-ctl",
+    "type": "radius",
+    "value": "8px"
+  },
+  {
+    "name": "--r-btn",
+    "type": "radius",
+    "value": "10px"
+  },
+  {
+    "name": "--r-card",
+    "type": "radius",
+    "value": "12px"
+  },
+  {
+    "name": "--r-panel",
+    "type": "radius",
+    "value": "14px"
+  },
+  {
+    "name": "--r-pill",
+    "type": "radius",
+    "value": "999px"
+  }
+]

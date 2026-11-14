@@ -1036,7 +1036,7 @@ _DOCTRINE_ZH_ORIGIN = {
     "watch":     ("templates/stage_analysis.html.j2", 1497),
     "protect":   ("templates/stage_analysis.html.j2", 1499),
     "aside":     ("templates/stage_analysis.html.j2", 1500),
-    "ignore":    ("templates/options.html.j2", 3630),
+    "ignore":    ("templates/options.html.j2", 3742),
 }
 
 

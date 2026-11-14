@@ -1,0 +1,1 @@
+{"outcome": "passed", "report": "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/early_navigation_production_report.json", "cases": [{"id": "1440-en-light-cold", "outcome": "passed", "raw_cls": 2.4066773298182444e-06, "failed_checks": []}]}

@@ -1,0 +1,316 @@
+{
+  "label": "baseline",
+  "fixture_html_sha256": "b2497a8c378f0164427dec2d9e2c110ed9ea7f981cb82f0cd194fa9dff6f2832",
+  "fixture_manifest": {
+    "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+    "template_head": "d633db51742aed46928d2847bdc5f06acf3235e5",
+    "reads": [
+      {
+        "path": "site/flow_desk.json",
+        "state": "READ",
+        "bytes": 14922,
+        "sha256": "920a87bba60f90cc21347b0f93b802f3a26d15ba778034483b1180146837ccbf"
+      },
+      {
+        "path": "site/screenerdata/rows.json",
+        "state": "READ",
+        "bytes": 250876,
+        "sha256": "d32e3c115fa4bb988b6043605cfa21f0819aab0911ad5958d751e9e75ba7f41b"
+      },
+      {
+        "path": "site/flowleaders/leaders.json",
+        "state": "READ",
+        "bytes": 550063,
+        "sha256": "9f9bc52f23536e738016e3e60eb076580109364d5722b8eee3a4414d848585c1"
+      },
+      {
+        "path": "data/market_structure/latest.json",
+        "state": "READ",
+        "bytes": 153370,
+        "sha256": "1ef7585a35c42f5b93b099f7b3bec56027a8f3d13520a7483d25141a04e5d3a0"
+      },
+      {
+        "path": "site/vol/regime.json",
+        "state": "READ",
+        "bytes": 5732,
+        "sha256": "2ed52051b83a5447538f25474cee16b8d29a614a1af7b8f1ee7c44c71172c82b"
+      },
+      {
+        "path": "site/gex/index.json",
+        "state": "READ",
+        "bytes": 326497,
+        "sha256": "318069700b0383600a9dfa80049e33745c6c90e8286f3939977eaef9894d1c16"
+      },
+      {
+        "path": "site/options_intel_brief.json",
+        "state": "READ",
+        "bytes": 29845,
+        "sha256": "4ed3b846482c7740cb751d88329d5a62cf741437c652c5ff95329fbc93d1b9cf"
+      },
+      {
+        "path": "site/options_payoff_lab/latest.json",
+        "state": "READ",
+        "bytes": 425907,
+        "sha256": "22699f9c6b24da8d081a10933668343e34c204d11d6212e5affdc6e5f0c9b858"
+      },
+      {
+        "path": "site/options_skew/latest.json",
+        "state": "READ",
+        "bytes": 110931,
+        "sha256": "7b002900c1f281c5f8936f8f2557e6d0cf24768943905421c0f5f7cd2cd46853"
+      },
+      {
+        "path": "site/options_catalyst_links/latest.json",
+        "state": "READ",
+        "bytes": 1367,
+        "sha256": "4abd5819220ecfed0ee6af66c01b7c10bcaf11354b7e650dc428458318314175"
+      },
+      {
+        "path": "site/flowdata/cohorts.json",
+        "state": "READ",
+        "bytes": 2331,
+        "sha256": "78ac0e385563eb4cf99001d077ca7e01937d8a0e1f37f431dfd2dbe23574f500"
+      },
+      {
+        "path": "site/gex/SPX.json",
+        "state": "READ",
+        "bytes": 24474,
+        "sha256": "8f88392ab2caba44b47b3240bc34670b5684ee001b58e45f58a5fd9c57b711d6"
+      },
+      {
+        "path": "site/gex/SPY.json",
+        "state": "READ",
+        "bytes": 27039,
+        "sha256": "d7f2a4b8855c90bac017247c7ceb50be7646a3ebfcd6760327809d4e5f35c5d7"
+      },
+      {
+        "path": "site/gex/QQQ.json",
+        "state": "READ",
+        "bytes": 26787,
+        "sha256": "8a7ef90fa235fe985b8756d60ef39e3a78a945fe831a06363a3a9e8e25c5962d"
+      },
+      {
+        "path": "site/gex/IWM.json",
+        "state": "READ",
+        "bytes": 25502,
+        "sha256": "b5b99153fd957a82ca29ed251a0083ed30372861ce368c9c24af004d517d4c6e"
+      },
+      {
+        "path": "site/flow/SPY.json",
+        "state": "READ",
+        "bytes": 5213,
+        "sha256": "d3c194a589eac04f8fa89c104b0534c7e80fc8e53b3716c1c9937bf10e4751b7"
+      },
+      {
+        "path": "site/session/SPY.json",
+        "state": "READ",
+        "bytes": 6978,
+        "sha256": "66b2b3d5379fef75a50b3d7d9abb088d6476b6f756d8bd6287435cb08166b726"
+      }
+    ],
+    "template_sha256": "43dc7e1dd396ff16ab7c017581218eb8efb7064a33d2deb81866764ebe2bc638",
+    "builder_sha256": "6184ebe6ad6fc9249a555e65b402b168131bb54b88ef04ac41561161e6e33b3d"
+  },
+  "working_source_sha256": {
+    "templates/options.html.j2": "4fbb248a6fc088cb2fd79d433e60dcad706d39366e51a3a13371241dd7df3bf0",
+    "scripts/build_options_command.py": "a2af9b55e0c6c83d574ba7b1c3288fcb2798ebc3dca4cced69e40f3b2dc89afe"
+  },
+  "checks": [
+    {
+      "name": "row_lag_values_and_unknowns",
+      "passed": true,
+      "rows": [
+        {
+          "symbol": "OLD",
+          "lag": "2d"
+        },
+        {
+          "symbol": "NEW",
+          "lag": "0d"
+        },
+        {
+          "symbol": "MID",
+          "lag": "1d"
+        },
+        {
+          "symbol": "BAD",
+          "lag": "Unknown"
+        },
+        {
+          "symbol": "MISSING",
+          "lag": "Unknown"
+        }
+      ]
+    },
+    {
+      "name": "lag_sort_1",
+      "passed": false,
+      "key": "Enter",
+      "order": [
+        "OLD",
+        "NEW",
+        "MID",
+        "BAD",
+        "MISSING"
+      ],
+      "expected": [
+        "OLD",
+        "MID",
+        "NEW",
+        "BAD",
+        "MISSING"
+      ]
+    },
+    {
+      "name": "sort_keeps_keyboard_focus_1",
+      "passed": false,
+      "key": "Enter"
+    },
+    {
+      "name": "sort_aria_1",
+      "passed": true,
+      "state": "descending"
+    },
+    {
+      "name": "lag_sort_2",
+      "passed": false,
+      "key": "Space",
+      "order": [
+        "OLD",
+        "NEW",
+        "MID",
+        "BAD",
+        "MISSING"
+      ],
+      "expected": [
+        "NEW",
+        "MID",
+        "OLD",
+        "BAD",
+        "MISSING"
+      ]
+    },
+    {
+      "name": "sort_keeps_keyboard_focus_2",
+      "passed": false,
+      "key": "Space"
+    },
+    {
+      "name": "sort_aria_2",
+      "passed": true,
+      "state": "ascending"
+    },
+    {
+      "name": "lag_sort_3",
+      "passed": false,
+      "key": "Enter",
+      "order": [
+        "OLD",
+        "NEW",
+        "MID",
+        "BAD",
+        "MISSING"
+      ],
+      "expected": [
+        "OLD",
+        "MID",
+        "NEW",
+        "BAD",
+        "MISSING"
+      ]
+    },
+    {
+      "name": "sort_keeps_keyboard_focus_3",
+      "passed": false,
+      "key": "Enter"
+    },
+    {
+      "name": "sort_aria_3",
+      "passed": true,
+      "state": "descending"
+    },
+    {
+      "name": "lag_sort_4",
+      "passed": false,
+      "key": "Space",
+      "order": [
+        "OLD",
+        "NEW",
+        "MID",
+        "BAD",
+        "MISSING"
+      ],
+      "expected": [
+        "NEW",
+        "MID",
+        "OLD",
+        "BAD",
+        "MISSING"
+      ]
+    },
+    {
+      "name": "sort_keeps_keyboard_focus_4",
+      "passed": false,
+      "key": "Space"
+    },
+    {
+      "name": "sort_aria_4",
+      "passed": true,
+      "state": "ascending"
+    },
+    {
+      "name": "reduced_motion_history_disclosure",
+      "passed": false,
+      "requests": [
+        {
+          "kind": "element",
+          "id": "oew-history",
+          "options": {
+            "behavior": "smooth",
+            "block": "start"
+          }
+        }
+      ]
+    },
+    {
+      "name": "reduced_motion_ticker_drilldown",
+      "passed": false,
+      "requests": [
+        {
+          "kind": "window",
+          "options": {
+            "top": 0,
+            "behavior": "smooth"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ticker_drilldown_finishes",
+      "passed": true
+    },
+    {
+      "name": "no_page_errors",
+      "passed": true,
+      "errors": []
+    },
+    {
+      "name": "fixture_fixed_during_run",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "passed": 8,
+  "failed": [
+    "lag_sort_1",
+    "sort_keeps_keyboard_focus_1",
+    "lag_sort_2",
+    "sort_keeps_keyboard_focus_2",
+    "lag_sort_3",
+    "sort_keeps_keyboard_focus_3",
+    "lag_sort_4",
+    "sort_keeps_keyboard_focus_4",
+    "reduced_motion_history_disclosure",
+    "reduced_motion_ticker_drilldown"
+  ]
+}

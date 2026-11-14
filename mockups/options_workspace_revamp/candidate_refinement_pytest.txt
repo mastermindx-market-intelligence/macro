@@ -1,0 +1,48 @@
+[Reading 45 new lines (total: 45 lines)]
+
+........................................................................ [ 35%]
+..s..s.............................................................s.... [ 71%]
+..........................................................               [100%]
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit/native-code-releases/efe2ad91d700f6650b33d4d4a56936b1c3c680619b955aa3b779b4d8158eff40
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit/native-code-releases/efe2ad91d700f6650b33d4d4a56936b1c3c680619b955aa3b779b4d8158eff40'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit/native-code-releases
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit/native-code-releases'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0/kit'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef/delegation-immutable0'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-38ee231c-f554-4e7d-ad57-f64e3e3ea4ef'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+199 passed, 3 skipped, 5 warnings in 31.99s
+{
+  "source_pin": "e4009c94d75770739844240b22f5fc915668aa9b",
+  "template_head": "d633db51742aed46928d2847bdc5f06acf3235e5",
+  "read_count": 17,
+  "unavailable": [],
+  "output": "/Volumes/Mastermind/agent-workspaces/macro/web/options-workspace-revamp-20261101-sol-001/mockups/options_workspace_revamp/fixtures/published/workspace.html",
+  "production_writes": false
+}
+{
+  "checks": 74,
+  "passed": 74,
+  "failed": []
+}
+
+✅ Process completed with exit code 0 (runtime: 59.73s)
