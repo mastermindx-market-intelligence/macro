@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T03:55:31.400314+00:00",
-  "count": 3340,
+  "generated_at": "2026-11-14T05:55:50.098053+00:00",
+  "count": 3346,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -124,6 +124,66 @@
     "Zero Hedge"
   ],
   "items": [
+    {
+      "id": "marketdesk-vjeyidjjgwq-8838a8",
+      "title": "US Equities Weekly Rundown 11 13 26",
+      "institution": "Prime",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T04:21:16Z",
+      "summary_points": [
+        "S&P 500 Resilience Amid CPI: S&P 500 +2.5% despite hot CPI, AI volatility, and earnings debate; Prime HFs net sold US equities for 2nd straight week (5 of last 6), driven by single-stock shorts offset by meme longs.",
+        "Elevated Leverage Risk: US Fundamental L/S Gross leverage at 209.1% (34th percentile), Net leverage at 45.4% (4th percentile), signaling high risk exposure with net leverage near historical lows.",
+        "Brent Crude Geopolitical Volatility: Brent tumbled -20% MTD (Nov 10) but rebounded +4.7% amid escalation fears; speculative length retreated (-$8bn CFTC), yet desk flows (+$3bn oil) indicate fresh upside demand.",
+        "VIX Put Surge Signals Fear: VIX put volume peaked sharply (10-day high), total US put volumes hit all-time high (Nov 5), with Panic Index at 6.5/10 and NVDA-driven SPX volatility at March 2020 levels.",
+        "Sector Rotation Conflicts: TMT broke 4-week losing streak but Financials underperformed (S&P 500 -200bps); Financials show conflicting flows (weekly buying vs."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 25,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-x7e6qifvat9-a5f976",
+      "title": "Q3 earnings",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-14T04:06:01Z",
+      "summary_points": [
+        "S&P 500 Q3 Fundamentals: Underlying earnings growth at 29.9% YoY (adjusted for Alphabet/Amazon one-offs), sales growth at 14.5% YoY, with robust beat rates and resilient top-line demand (sales surprise above average vs. normalized EPS surprise).",
+        "AI-Driven Earnings Dominance: Semiconductors and AI-linked sectors (Hardware/Software) drive ~66% of S&P 500 net income growth; AI adoption broadens beyond Tech/Mag-7, with tariff mentions declining.",
+        "Earnings Breadth & Sector Resilience: 75% of S&P 500 companies report positive YoY EPS growth; all 11 sectors show positive sales growth (cyclical outpacing defensive), with Tech/Healthcare/Industrials leading FY2026 guidance raises (91%/80%/77%).",
+        "Magnificent 7 Earnings Gap Narrowing: Mag-7 Q3 earnings growth (28.4%) still outpaces S&P 493 (23.8%), but gap is narrowing, signaling broader market participation beyond mega-caps."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 23,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-mzpe4qwbnrh-91ec5d",
+      "title": "PNC Economics Research Claims 12 November 2026",
+      "institution": "PNC",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-14T03:50:43Z",
+      "summary_points": [
+        "Fed Rate Hike Confirmation: FOMC to raise fed funds rate by 25bps in December due to strong nonfarm payrolls and hotter-than-expected CPI, with PNC forecasting another 25bps hike in March targeting 4.25%-4.50% range.",
+        "Labor Market Fragmentation: Long-term unemployment (≥27 weeks) at 27.6% (highest since Dec 2021) signals persistent job market weakness despite low initial claims (<200k for 9 consecutive weeks).",
+        "Policy-Driven Rate Trajectory: Fed’s December hike and March forecast reflect tightening bias, directly impacting bond yields, equity valuations, and portfolio duration positioning."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
+      "language": "en",
+      "needs_metadata": false
+    },
     {
       "id": "marketdesk-eythpwrrvv4-237ea5",
       "title": "Portfolio Intelligence report July 2026",
@@ -608,6 +668,27 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-6shqyxtvmsk-04d469",
+      "title": "BofA European Equity Strategy Will European equities continue to outperform",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T12:04:23Z",
+      "summary_points": [
+        "European Equity Reversal vs Strategy: EPS expectations outpacing US for 3 years (AI capex boom) reversed YTD underperformance (-6% to +6% vs global), yet strategy remains negative due to fading outperformance, 10% underperformance vs global by Q2 (Stoxx 600 15% downside risk).",
+        "AI Capex vs Profitability Deterioration: US hyperscalers' capex to exceed $1tn by 2025 (250%+ growth), but ROIC dropped to 15.5% (from 21%) with rising cost of capital, signaling declining profitability and critical earnings pressure.",
+        "Oracle CDS Spike as Sector Risk: Oracle's 5-year CDS spread surged to 2008-levels (Exhibit 23), highlighting severe credit risk for AI infrastructure and sector-wide stability implications.",
+        "US Real Yields Dominate Equity Discount: Stoxx 600 limited rally despite EPS growth due to sharp US 10yr real yield rise (Exhibit 38), confirming US real yields as critical risk factor for global equities.",
+        "Hormuz Supply Disruption Geopolitical Risk: US-Iran MOU triggered near-zero tanker transits through Strait of Hormuz (Exhibit 40), signaling acute oil supply chain disruption and price volatility risk."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 74,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-iwdogou0urt-6495ac",
       "title": "GS Johnstone GS TMT SPEC SALES MSFT outage; Nvidia investor debate; Wise settles in Belgium; AMAT solid; Cisco beats; CTS Eventim mixed 13 Nov 2026",
       "institution": "S&T",
@@ -1085,6 +1166,26 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-lnv9hyyiipl-d9ff8e",
+      "title": "GS Blaze GS Commods Aluminium Record spread strength (Spot deficit vs forward surplus) 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:45:23Z",
+      "summary_points": [
+        "Aluminium Spread Dynamics: Record spread strength signals severe physical supply constraints (spot deficit vs forward surplus), indicating potential price upside.",
+        "Chinese Inventory Drawdown & Spot Deficit Resolution: Chinese inventories down 30k MT (-13% y/y) via higher billet/semis exports, lower ingot imports, and off-warrant metal reduction, resolving supply disruptions.",
+        "SHFE/LME Spread Inversion & Supply Competition: SHFE/LME spread inverted ($350b Nov/Dec) due to China’s local demand, with open import ARB for Russian metal; China-LME supply competition unlikely to ease.",
+        "Regional Premium Pressure: Spreads incentivizing deliveries (e.g., MJP merchants offering LME +$100/mt) drive short positioning across regional premiums amid Asia/Middle East supply dynamics and Europe’s deficit debate."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-g0sbemctjhi-2000a8",
       "title": "Macro Markets Outlook 2027 Growing Pains [PRESENTATION]",
       "institution": "2027 Outlook",
@@ -1439,6 +1540,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-1iphdpxtmrr-6b823c",
+      "title": "GS Blekos GS Focus Idea Danone (15% Upside) 11 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T13:29:29Z",
+      "summary_points": [
+        "US Operational Reset & Growth Catalysts: 8 projects across 4 factories, service levels troughed at 85% Q3, new leadership driving 4% organic growth (FY27/28E); Specialized Nutrition +12.4%/+7.9% Q3 LFL growth (Americas/APAC), Kate Farms medical nutrition doubling to ~€500m.",
+        "Specialized Nutrition Margin Leadership: Most margin-accretive category (55% EBIT vs EDP’s 31% EBIT); sustained growth in Medical Nutrition/China IMF critical for valuation.",
+        "US EDP Recovery as Key Valuation Trigger: €76 PT target contingent on US EDP growth/margins inflection and input-cost inflation mitigation; neutral rating pending clearer recovery.",
+        "Valuation Discount to Peers: Trades at 19% discount to Goldman Sachs Consumer Staples peers; expected Net Debt/EBITDA reduction to 1.2x by 2027."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },

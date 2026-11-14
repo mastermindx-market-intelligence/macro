@@ -290,7 +290,24 @@ EXPECTED_CIKS = {
     "STX": "0001137789", "NTAP": "0001002047", "NTNX": "0001618732",
     "RMBS": "0000917273", "SIMO": "0001329394", "MRAM": "0001438423",
     "PENG": "0001616533", "AMKR": "0001047127",
+    # Ruling 118: semicap, AI-semis and the remaining memory companies.
+    "ACLS": "0001113232", "ACMR": "0001680062", "ALAB": "0001736297",
+    "AMAT": "0000006951", "AMD": "0000002488", "ARM": "0001973239",
+    "ASX": "0001122411", "AVGO": "0001730168", "CAMT": "0001109138",
+    "CDNS": "0000813672", "COHR": "0000820318", "COHU": "0000021535",
+    "CRDO": "0001807794", "DELL": "0001571996", "ENTG": "0001101302",
+    "FN": "0001408710", "FORM": "0001039399", "GFS": "0001709048",
+    "ICHR": "0001652535", "INTC": "0000050863", "KLAC": "0000319201",
+    "KLIC": "0000056978", "LITE": "0001633978", "LRCX": "0000707549",
+    "MKSI": "0001049502", "MPWR": "0001280452", "MTSI": "0001493594",
+    "NVDA": "0001045810", "NVMI": "0001109345", "ONTO": "0000704532",
+    "PDFS": "0001120914", "PLAB": "0000810136", "QCOM": "0000804328",
+    "SMCI": "0001375365", "SNPS": "0000883241", "TER": "0000097210",
+    "TSM": "0001046179", "UCTT": "0001275014", "VECO": "0000103145",
+    "VICR": "0000751978",
 }
+# Foreign private issuers file 20-F; everyone else 10-K. Amendments of the same family only.
+EXPECTED_20F = {"ARM", "ASX", "CAMT", "GFS", "NVMI", "TSM"}
 
 
 def test_target_list_schema_shape_and_initial_content():
@@ -307,7 +324,8 @@ def test_target_list_schema_shape_and_initial_content():
     assert set(by_ticker) == set(EXPECTED_CIKS)
     for ticker, cik in EXPECTED_CIKS.items():
         assert by_ticker[ticker]["cik"] == cik
-        expected_forms = ["20-F", "20-F/A"] if ticker == "SIMO" else ["10-K", "10-K/A"]
+        expected_forms = (["20-F", "20-F/A"] if ticker == "SIMO" or ticker in EXPECTED_20F
+                          else ["10-K", "10-K/A"])
         assert by_ticker[ticker]["forms"] == expected_forms
     # The script's own loader accepts the committed list.
     assert len(m._load_targets(TARGETS_PATH)) == len(EXPECTED_CIKS)
