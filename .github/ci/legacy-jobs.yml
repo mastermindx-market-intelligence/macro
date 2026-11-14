@@ -30289,7 +30289,7 @@ jobs:
         # tails, the register v5 retired, not the gates under test. It drives
         # scripts/marketing_publisher.py end to end, so it lives with the
         # publisher lane it exercises.
-        run: python -m pytest tests/test_marketing_social_publisher.py tests/test_marketing_outbox.py tests/test_marketing_outbox_single_composition.py tests/test_marketing_publisher_autoapprove.py tests/test_marketing_live_verify.py tests/test_marketing_publish_time_content.py tests/test_marketing_publish_time_read.py tests/test_marketing_outbox_garbage.py tests/test_marketing_metrics_poll.py tests/test_marketing_metrics_poll_quota.py tests/test_marketing_weekend_levels.py tests/test_marketing_market_clock.py -q
+        run: python -m pytest tests/test_marketing_social_publisher.py tests/test_marketing_number_lexer.py tests/test_marketing_outbox.py tests/test_marketing_outbox_single_composition.py tests/test_marketing_publisher_autoapprove.py tests/test_marketing_live_verify.py tests/test_marketing_publish_time_content.py tests/test_marketing_publish_time_read.py tests/test_marketing_outbox_garbage.py tests/test_marketing_metrics_poll.py tests/test_marketing_metrics_poll_quota.py tests/test_marketing_weekend_levels.py tests/test_marketing_market_clock.py -q
       - name: stale backlog quarantine + optional publish-time phrase fallback
         run: python -m pytest tests/test_marketing_stale_purge.py tests/test_publish_time_llm_phrase.py -q
       - name: liveness tripwire rule engine (the green-and-dark alarm)
