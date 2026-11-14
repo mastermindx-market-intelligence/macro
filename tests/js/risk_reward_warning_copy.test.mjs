@@ -64,7 +64,7 @@ ${anchor}`);
     'entry', 'stop', 'target', 'winrate',
     'out-main', 'out-plain', 'out-breakeven',
     'out-reward', 'out-risk', 'out-exp',
-    'copy-result', 'copied',
+    'copy-result', 'copied', 'copy-fail', 'copy-manual', 'copy-manual-text', 'copy-manual-select',
   ];
   const nodes = Object.fromEntries(ids.map(id => [id, {
     value: '',
@@ -103,6 +103,8 @@ ${anchor}`);
       assert.equal(tag, 'textarea', 'unsupported element');
       const ta = Object.seal({
         value: '',
+        style: {},
+        setAttribute(name,value) { assert.equal(name,'readonly'); assert.equal(value,''); },
         select() {
           assert.ok(attached.has(this), 'select requires an attached textarea');
           selected = this;
@@ -162,6 +164,7 @@ ${anchor}`);
       timers.push(fn);
       return timers.length; // Virtual timers, not real elapsed-time proof.
     },
+    clearTimeout() {},
     document: {
       ...documentTransport,
       getElementById(id) {
@@ -380,3 +383,28 @@ for (const path of SOURCES) {
   }
 }
 
+// Whole-controller copy feedback lifecycle; synthetic DOM, not native clipboard.
+function app(path, mode='modern'){
+ const src=readFileSync(new URL('../../'+path,import.meta.url),'utf8');
+ const scripts=[...src.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(x=>x.includes('function compute(inp)')&&x.includes('function copyLine()'));
+ assert.equal(scripts.length,1);
+ const nodes={};const classes=new Set();const writes=[];const pending=[];const timers=new Map();const oldTimers=[];const attached=new Set();let ready,legacyCount=0,sequence=0;
+ function node(id){return nodes[id] ||= {value:'',hidden:true,textContent:'',className:'',listeners:{},style:{},addEventListener(k,f){this.listeners[k]=f},classList:{add(x){classes.add(x)},remove(x){classes.delete(x)}},setAttribute(){},select(){this.selected=true},focus(){this.focused=true}};}
+ for(const [id,value] of Object.entries({entry:'100',stop:'95',target:'115',winrate:'40'}))node(id).value=value;
+ const document={getElementById:node,addEventListener(k,f){ready=f},createElement(){return {value:'',style:{},setAttribute(){},select(){}}},body:{appendChild(x){attached.add(x)},removeChild(x){assert.ok(attached.delete(x))}},execCommand(){legacyCount++;if(mode==='legacy-throw')throw Error('denied');return mode==='legacy-ok'}};
+ const navigator=mode.startsWith('legacy')?{}:{clipboard:{writeText(text){writes.push(text);if(mode==='throw')throw Error('denied');return new Promise((resolve,reject)=>pending.push({resolve,reject}));}}};
+ vm.runInNewContext(scripts[0],{document,navigator,console,setTimeout(fn){const id=++sequence;timers.set(id,fn);oldTimers.push(fn);return id},clearTimeout(id){timers.delete(id)}},{timeout:1000});ready();
+ return {nodes,node,classes,writes,pending,timers,oldTimers,attached,get legacyCount(){return legacyCount},click(){node('copy-result').listeners.click()},input(id,value){node(id).value=value;node(id).listeners.input()},manual(){node('copy-manual-select').listeners.click()}};
+}
+const flush=async()=>{await Promise.resolve();await Promise.resolve()};
+for(const [name,file] of [['template',SOURCES[0]],['page',SOURCES[1]]]){
+ test(`${name} modern success only after acknowledgement`,async()=>{let a=app(file);a.click();assert.ok(!a.classes.has('show'));assert.match(a.writes[0],/expectancy \+0.60 R/);a.pending[0].resolve();await flush();assert.ok(a.classes.has('show'));});
+ test(`${name} modern rejection offers manual text, no fallback`,async()=>{let a=app(file);a.click();a.pending[0].reject(Error('denied'));await flush();assert.ok(!a.classes.has('show'));assert.equal(a.node('copy-manual').hidden,false);assert.equal(a.node('copy-manual-text').value,a.writes[0]);assert.equal(a.legacyCount,0);a.manual();assert.ok(a.node('copy-manual-text').focused&&a.node('copy-manual-text').selected);});
+ test(`${name} synchronous modern failure`,()=>{let a=app(file,'throw');assert.doesNotThrow(()=>a.click());assert.equal(a.node('copy-fail').hidden,false);assert.ok(!a.classes.has('show'));});
+ for(const mode of ['legacy-ok','legacy-false','legacy-throw'])test(`${name} ${mode}`,()=>{let a=app(file,mode);a.click();assert.equal(a.classes.has('show'),mode==='legacy-ok');assert.equal(a.attached.size,0);assert.equal(a.node('copy-manual').hidden,mode==='legacy-ok');});
+ for(const outcome of ['resolve','reject'])test(`${name} input invalidates delayed ${outcome}`,async()=>{let a=app(file);a.click();a.input('target','120');a.pending[0][outcome]();await flush();assert.ok(!a.classes.has('show'));assert.equal(a.node('copy-manual').hidden,true);assert.equal(a.node('copy-manual-text').value,'');});
+ test(`${name} older receipt cannot overwrite newer failure`,async()=>{let a=app(file);a.click();a.click();a.pending[1].reject();await flush();a.pending[0].resolve();await flush();assert.ok(!a.classes.has('show'));assert.equal(a.node('copy-manual').hidden,false);});
+ test(`${name} stale timer cannot erase newer success`,async()=>{let a=app(file);a.click();a.pending[0].resolve();await flush();let stale=a.oldTimers[0];a.click();a.pending[1].resolve();await flush();stale();assert.ok(a.classes.has('show'));assert.equal(a.timers.size,1);});
+ test(`${name} input clears success and invalid copy makes no write`,async()=>{let a=app(file);a.click();a.pending[0].resolve();await flush();a.input('entry','');assert.ok(!a.classes.has('show'));a.click();assert.equal(a.writes.length,1);assert.equal(a.node('copy-manual').hidden,true);});
+ test(`${name} same-side warning and recovery preserved`,async()=>{let a=app(file);a.input('target','85');a.click();assert.match(a.writes[0],/^Note:.*same side/);a.pending[0].reject();await flush();assert.equal(a.node('copy-manual-text').value,a.writes[0]);a.input('target','115');a.click();assert.match(a.writes[1],/^Risk-to-Reward:/);a.pending[1].resolve();await flush();assert.ok(a.classes.has('show'));assert.equal(a.node('copy-manual').hidden,true);});
+}
