@@ -1,7 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
-Current design frontier: Milestone C12 below. Earlier C4–C11 sections and continuation boundaries are historical; C12 and the linked native Paper inventory supersede their pending actions and counts.
+Current design frontier: Milestone C13 below. Earlier C4–C12 sections and continuation boundaries are historical; C13 and the linked native Paper inventory/parity matrix supersede their pending actions and counts.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -100,14 +100,14 @@ Preserve existing owner-issued discovery/cohort/ranking semantics without new fu
 ## Phases
 
 - P1 source and design inventory: source contracts and twelve destination routes recovered. Current dedicated design homes inspected; existing Terminal and Intelligence Hub files provide isolated new pages for destinations without a located dedicated home. This bounded inventory does not claim account-wide absence.
-- P2 Paper composition: ACTIVE. All twelve destinations now have primary shared-shell compositions. Ninety-nine native pages include 77 product/responsive/theme/locale compositions, fifteen Build boards and seven state sheets. Seventeen mobile and five intermediate-width compositions are recorded. Continue the scoped family/interaction and parity gaps in the current design index; Global Cycles remains five distinct destinations.
+- P2 Paper composition: ACTIVE. All twelve destinations now have primary shared-shell compositions. 105 native pages include 81 product/responsive/theme/locale compositions, sixteen Build boards and eight state sheets. Twenty mobile and six intermediate-width compositions are recorded. Continue the scoped family/interaction and parity gaps in the current design index; Global Cycles remains five distinct destinations.
 - P3 interaction/responsive/theme/locale and Build closure: follows each product; no static-frame-only completion.
 - P4 Terminal frontend and engine upgrade packets: after full Paper design completion, with fresh carrier/hold/running-writer reconciliation.
 - P5 implementation, protected release and real consumer acceptance: not started.
 
 ## Next action and truthful boundary
 
-Continue the source-qualified design sequence. Current next work: China Sectors Chinese dark mobile investigation and source/basis return flow, using accepted R1 as a preserved reference. C7–C12 domain additions have final visual readback. Preserve all original/held nodes. Remaining family designs and production implementation are not complete.
+Continue the source-qualified design sequence. Current next work: Government Revenue program-version comparison at 1024px in English dark, following the exact unit in research_explore/DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md. C7–C13 domain additions have final visual readback. Preserve all original/held nodes. Remaining family designs and production implementation are not complete.
 
 MISSION_COMPLETE: false. Paper work, implementation, production proof and acceptance are distinct. No source engine release, merge, deployment, trade, subscription purchase or background execution is implied by this design packet.
 
@@ -463,3 +463,47 @@ A bounded read-only assessment of all twelve destinations found only six Global 
 Start **D1-CYCLES / China Sectors R2**: Chinese dark mobile investigation → source/basis detail → preserved selection/chart-window return. Preserve accepted p-26-1/2HUA-1. Bind measured-history identity, observation cutoff and typical timing separately; no extrapolated oscillator or unsupported probability. Exact incumbent source review is underway read-only. Follow with the remaining family-specific layout and return contracts; do not demand an arbitrary Cartesian set of duplicate pages. Capital's explicit eventual U0 mode/theme/locale/viewport evidence matrix remains binding.
 
 M1 remains the sole qualified Paper carrier; M2 remains fenced. All modifying effects are reconciled. Native children performed bounded reasoning/review only; no labor runner or background wake was created. No product implementation, collector execution, account mutation, message, watch enrollment, trade, merge, deployment or daemon occurred. Save/readback is complete for this phase; continue the next safe design unit in the same authorized session.
+
+
+## Milestone C13 — China Sector Cycles R2 and parity/return map
+
+Disposition: **CHECKPOINTED_CONTINUATION**. **MISSION_COMPLETE: false.** The cumulative Paper set is **105 unique pages/roots**: **81 product/responsive/theme/locale compositions, sixteen Build boards and eight state sheets**. Product layouts comprise 55 desktop, twenty mobile and six intermediate compositions. C7–C13 added **55 reviewed pages in this resumed turn**. Original twelve-destination design acceptance, frontend/backend implementation and production proof remain open.
+
+### Reviewed design delta and source corrections
+
+China additions in Terminal Paper file 01M3NSZGE8JWN2EZCSF0DT05RM are Chinese dark mobile investigation (p-2X-1/2PQY-1), source/basis (p-2Y-1/2PTI-1), historical-rhythm evidence (p-2Z-1/2PW1-1), 1024px dark history recovery (p-30-1/2PZE-1), independent states (p-31-1/2Q34-1) and Build (p-32-1/2Q5L-1). The prior R1 and all foreign/held scopes remain preserved. The final source body is 2Q6K-1 after a guarded wording refinement; current root/module/screenshot registries were reconciled for C12 and C13.
+
+The main specimen is Electronics 801080 with a single legacy historical oscillator. Its 62.4 is not a canonical phase, probability or valuation percentile. Source closes, basket member levels and ETF proxies retain different identities. Generic tr does not establish total-return metadata, and the cycle-page benchmark is Shanghai Composite. Selected-series actual observation, page edge and period label stay distinct; their precise provenance fields are proposed owner extensions.
+
+Historical rhythm uses an ordered confirmed-turn set. Eight intervals require nine turns; 0.66 years is twice the 0.33-year median interval, not an independently measured full-cycle median. The exact incumbent formatter emits Dec 2026–Feb 2027 with Jan 2027 central; no exact day is invented. Low/high are historical interquartile durations, not calibrated confidence. A pivot's date is not confirmation knowledge time, and an elapsed range remains anchored.
+
+Electronics has no conditional pathway. The mapped consumption study has a broader population than selected Food & Beverage; matured monthly counts, effective overlap-adjusted count and bootstrap interval on conditional-minus-base rate remain distinct. The current setup mask does not ensure all required legs remain present later. Historical chart cutoff does not bind current pathway or membership inputs. Current hazard qualification cannot be supplied by cosmetic epoch/basis relabeling; all unavailable horizon and numeric prior values stay withheld.
+
+The intermediate recovery page preserves compatible core while retrying only failed historical series. Review caught the standalone hash reader's basket→sector family-restoration gap; the contract now requires the shell to resolve family/entity together. This is a static source finding, not a claimed reproduced production incident. All six compositions were visually accepted, with Chinese source wording refined. All six roots have observed guarded finish receipts; fixture month arithmetic was independently checked.
+
+### Durable C13 evidence
+
+- China R2 detailed contract: commit bda60e37d7a0603bb3fbd2b565a9cdaa9a3dfd5b; blob 374a7bd9d9e2703847e9e8484a16b13def4a590e.
+- Twelve-destination parity/return matrix: commit c88498e7df75ac33f7f8bcdb64fe84c9c768b514; blob 5f76d5c965b97ddee63e86c5ad836ff980c331f9. Both new files read back byte-for-byte at c88498e7df75ac33f7f8bcdb64fe84c9c768b514.
+- 105-page inventory: commit 2e1a2bb6f66f62c3bf43cbeea8886287cb1b84d0; blob 591dff8cda8620c4de3357b1d6b249f8110efa3d.
+- Blueprint: commit f7ad76f0df747acaa2678ad62651415a9660d97e; blob 751b5d23dcaca66bb304c469a94b8e2400ac3205. Inventory/blueprint read back byte-for-byte at that head.
+- Final index: commit 73e424cb2e666342751a39b3fab1e3e5e14db7f4; blob c2b7a8de7df433ed87050bb3dbccf6ce337742b5. Exact readback matched after repairing two literal newline escapes in Markdown. All 105 inventory URLs and current roots are present in the index; 105 native page identities are unique; 55 additions match the resumed-turn milestone keys.
+- Draft PR #11271 remains OPEN/DRAFT on sol/research-explore-paper-20261114-c4. Pre-C13 head was 6a6bc309f325a986c3f72eebb2091f55b01b70ca. Its body was updated and read back through the normalized API at 73e424cb2e666342751a39b3fab1e3e5e14db7f4 to reflect 105 compositions, thirteen documentation/evidence files, the remaining matrix and design-only limits. This parent checkpoint follows on that same owned branch.
+
+### Current capability frontier and DO_NOT_REDO
+
+The source-sensitive depth units completed in this resumed turn are Bio trial screening/First-seen, Government programs/calendar/connections, Alternative Data relationships/source/research states, Hub cohort/evaluator/source states, Special Situations campaign/announcement/terms/economics, Policy world/roles/dated evidence, Capital conflict/restore/save, and China measurement/rhythm/recovery. Do not reauthor or reopen their accepted compositions without new evidence or an observed defect.
+
+The parity matrix keeps all twelve destinations visible. Global Cycles now has ten product specimens across five destinations; China R2 does not close Markets, Countries, U.S. Sectors or Long Cycles. Government intermediate comparison, Bio Chinese mobile peer comparison, Alt correction lineage, Special dark intermediate calculation and Hub population/exclusions remain distinct design work. Policy and Capital still owe the listed source/selection/focus return states and required parity. Build/state boards are not product-layout or runtime proof.
+
+No product implementation began. Later engine work must extend existing producers/read projections, source/version retention, typed availability, request identities, authorization and supported persistence. Existing Capital U0/W3/W4/#8673, security, CODEOWNERS and release holds remain preserved; their current release status was not requalified. No source gap is considered repaired by these design notes.
+
+### Qualified continuation boundary and exact resume
+
+The protected ACTIVE_EXECUTION Step 8 incomplete-mission rule is applied here. This is a material continuity boundary after a broad source/design pass across eight domain units, not a page-count target or ordinary phase completion. The next Government program-version unit opens a substantial additional fiscal-stage, retained-version and company-allocation source contract, followed by further distinct Cycles producers. Expanding that frontier now would consume the landing reserve needed to keep the current multi-domain effects and source distinctions recoverable. There is no claimed platform failure, hidden token budget, fixed time limit, approval gate or required mode change.
+
+Cumulative design, source decisions, accepted/rejected interpretations, roots, final screenshots, custody and remaining obligations are durably recorded here and in the linked inventory/contracts/matrix. Finalization requires exact readback of this parent at its resulting immutable commit before the user-facing report. Same-chat continuation is intended; no fresh-chat admission or autonomous wake is created.
+
+**Exact next action:** on the next attended continuation, read this C13 frontier and the parity matrix, reconcile the owned Draft PR head, and obtain a fresh exact-file snapshot on the existing qualified M1 carrier. Inspect Government Programs at [p-C-0](https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-C-0), root 4ZV-0, and its source contract. At the preserved product pin, use app/government_revenue.py and research/GOVERNMENT_REVENUE_FORESIGHT_MASTERPLAN_FOR_FABLE.md to locate the actual program/version owners. Establish two retained compatible request-stage versions for one fiscal period before drawing a delta. Author an additive 1024px English dark comparison and its source/return state; keep enacted evidence separate and company allocation unresolved unless supported. Preserve the existing R14 pages and all nine legacy workbench capabilities.
+
+**Custody/effects:** M1 m1studio device 37db60bd-f84d-4521-ae9e-47c575d9ba86 remains the sole qualified Paper carrier. M2 stays fenced from its earlier unresolved preparation timeout; no content edit was dispatched there and no focus/restart replay is authorized by this checkpoint. All M1 modifying effects are reconciled through original receipts and final identity readback. Native reasoning reviewers finished their bounded tasks; no child writer, pending review operation, labor runner, account effect or daemon is active. No external message, collection, watch enrollment, trade, merge or deployment occurred. A checkpoint transfers no writer lease or execution grant.
