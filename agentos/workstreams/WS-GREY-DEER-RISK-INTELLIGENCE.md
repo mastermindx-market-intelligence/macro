@@ -624,3 +624,12 @@ gates (freeze §10) or an explicit `temporary_operator_safety` Chairman grant
 and Prophet eligibility sidecars; Prophet owns raw rank/admission; Terminal
 mirrors; Mastermind Portfolio consumes the envelope and owns book-specific
 sizing/settlement/execution; LLMs explain and de-escalate only.
+
+
+## 2026-11-13: additive gamma-fragility observation
+
+Chris assigned the VolSignals research-to-implementation follow-through in ChatGPT Web. The bounded source plan is `research/market_fragility/IMPLEMENTATION_PLAN_2026-11-13.md`; the scientific contract and falsifiers are `research/market_fragility/RESEARCH_AND_VALIDATION_PROTOCOL.md`. This adds a descriptive observation to the incumbent gamma, market-structure and regime publishers, with a paired Mastermind `get_regime` read-time adapter. It is not a takeover of the rest of this workstream or a replacement risk/policy engine.
+
+Verification: `python3 -m pytest tests/test_market_fragility*.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_market_structure.py tests/test_options_session_guards.py tests/test_validate_gex.py -q` exercises the owned observer and legacy consumers. `python3 -m scripts.audit_market_fragility --input <retained-production-SPX-summary> --run-existing-gex-diagnostic` produced `research/market_fragility/PRODUCTION_SOURCE_AUDIT_2026-11-13.json`, with the exact input digest and explicit missingness/availability limitations. Publication and consumer release proof are separate remaining acceptance in the source plan, not implied by these tests.
+
+Do not redo: no duplicate gamma model, calendar, VVIX collector, risk score, ledger or promotion gate. Preserve assumption-signed inventory, distinguish SPX from SPY reconstruction, re-age published observations at consumption, and never convert a missing flip or stale source into a directional or sizing rule. Existing `scripts/validate_gex.py` owns GEX promotion; no predictive gate is opened by this addition.

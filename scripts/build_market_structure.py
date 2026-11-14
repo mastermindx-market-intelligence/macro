@@ -52,6 +52,7 @@ _COR1M_PCTILE_LO  = 20     # ≤20th pctile → dispersion
 _COR1M_PCTILE_HI  = 80     # ≥80th pctile → elevated
 _HISTORY_ROWS     = 500    # max rows in history sections
 _COVERAGE_WINDOW  = 20     # sessions the gamma block audits for missing chain snapshots
+_GEX_NOT_READ = object()  # preserve one coherent source read for both projections
 
 
 # ---------------------------------------------------------------------------
@@ -97,7 +98,7 @@ def _spx_closes(data_dir: Path) -> pd.Series | None:
     return s if not s.empty else None
 
 
-def _read_gex_spx(data_dir: Path) -> pd.DataFrame | None:
+def _read_gex_spx(data_dir: Path, *, frame=_GEX_NOT_READ) -> pd.DataFrame | None:
     """gex_SPX.parquet, restricted to real NYSE sessions (#F3-11/#F3-12).
 
     The store carries weekend/holiday rows that RECOMPUTE net GEX off a stale,
@@ -110,7 +111,7 @@ def _read_gex_spx(data_dir: Path) -> pd.DataFrame | None:
     frame if filtering would empty it out — a calendar-arithmetic surprise must
     degrade to the old behaviour, never to a blank gamma block.
     """
-    df = _read_parquet(data_dir / "cboe" / "gex_SPX.parquet")
+    df = _read_parquet(data_dir / "cboe" / "gex_SPX.parquet") if frame is _GEX_NOT_READ else frame
     if df is None or df.empty:
         return df
     try:
@@ -129,16 +130,23 @@ def _read_gex_spx(data_dir: Path) -> pd.DataFrame | None:
 # Gamma block
 # ---------------------------------------------------------------------------
 
-def _build_gamma_block(data_dir: Path) -> dict:
-    """Read gex_SPX.parquet → gamma context block.  Fail-open → nulls."""
+def _build_gamma_block(data_dir: Path, *, now: datetime | None = None) -> dict:
+    """Read SPX once; preserve legacy fields and append strict descriptive context."""
+    raw_frame = _read_parquet(data_dir / "cboe" / "gex_SPX.parquet")
+    try:
+        from engine.market_fragility import observe
+        fragility = observe(raw_frame, now=now)
+    except Exception as exc:  # noqa: BLE001 - preserve legacy producer on optional failure
+        log.warning("market_structure: fragility observation failed: %s", exc)
+        fragility = None
     null = {
         "regime": None, "net_gex_bn": None, "net_gex_pctile": None,
         "gamma_flip": None, "spot": None, "dist_to_flip_pct": None,
         "days_in_regime": None, "series_start": None, "history": [],
-        "coverage": None,
+        "coverage": None, "fragility": fragility,
     }
     try:
-        df = _read_gex_spx(data_dir)
+        df = _read_gex_spx(data_dir, frame=raw_frame)
         if df is None or df.empty:
             return null
         if "net_gex_bn" not in df.columns:
@@ -242,6 +250,7 @@ def _build_gamma_block(data_dir: Path) -> dict:
             "series_start": series_start,
             "history": history,
             "coverage": coverage,
+            "fragility": fragility,
         }
     except Exception as exc:  # noqa: BLE001
         log.warning("market_structure: gamma block failed: %s", exc)

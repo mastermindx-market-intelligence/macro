@@ -1,0 +1,126 @@
+{
+  "schema": "market_fragility_audit/v1",
+  "audit_kind": "snapshot_diagnostic_not_pit_backtest",
+  "source_snapshot": {
+    "name": "production-gex-SPX-20261113.parquet",
+    "sha256": "39a0ea3a33dabde22aefa65bcb5aa465e916bcdc95898773aea3410b46edda1c",
+    "bytes": 18528,
+    "rows": 95,
+    "read_error": null
+  },
+  "implementation_sha256": "4e6bc2032f1712cac839af4dc5d9e4813d2c529e51644392f0713bcc4ee5038c",
+  "observation": {
+    "schema": "market_fragility/v1",
+    "scope": "gamma_structure_observation",
+    "state": "amplifying",
+    "data_status": "partial",
+    "source": {
+      "id": "cboe/gex_SPX",
+      "instrument": "SPX",
+      "regime_field": "gamma_regime",
+      "methodology": "engine.gex_engine",
+      "position_basis": "assumption",
+      "expiry_scope": "upstream_chain_filter",
+      "actual_dealer_inventory_observed": false
+    },
+    "clocks": {
+      "computed_at": "2026-11-13T16:07:31.570821Z",
+      "source_session": "2026-11-12",
+      "source_observed_at": null,
+      "source_available_at": null,
+      "expected_completed_session": "2026-11-12",
+      "age_sessions": 0,
+      "source_session_complete": true
+    },
+    "current": {
+      "usable": true,
+      "reported_gamma_regime": "short",
+      "source_tier": "full",
+      "gamma_flip": 7617.758521955055,
+      "spot": 7592.3999,
+      "dist_to_flip_pct": -0.33,
+      "reported_net_gex_bn": -19.905241017093665,
+      "net_gex_unit": "USD_bn_per_1pct_underlying_move",
+      "regime_basis": "engine_direct_sign",
+      "hedge_response": "with_price",
+      "directional_forecast": null
+    },
+    "history": {
+      "source": "cboe/gex_SPX",
+      "window_sessions": 20,
+      "window_start": "2026-10-16",
+      "window_end": "2026-11-12",
+      "observed_sessions": 15,
+      "short_sessions": 12,
+      "long_sessions": 3,
+      "unknown_sessions": 5,
+      "short_share_observed": 0.8,
+      "coverage_fraction": 0.75,
+      "adjacent_pairs_observed": 13,
+      "sign_changes": 6,
+      "terminal_regime": "short",
+      "terminal_run_sessions": 1,
+      "terminal_run_left_censored": false,
+      "max_long_run_sessions": 1,
+      "observed_regime_runs": 8,
+      "missing_sessions": [
+        "2026-10-16",
+        "2026-10-19",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29"
+      ],
+      "invalid_sessions": [],
+      "counts_are_independent_trials": false
+    },
+    "quality": {
+      "reasons": [],
+      "excluded_row_counts": {
+        "non_session": 13
+      },
+      "freshness_sla_sessions": 0,
+      "point_in_time_qualified": false,
+      "predictive_validation": "not_established",
+      "limitations": [
+        "dealer_inventory_is_assumed_not_observed",
+        "gamma_sign_does_not_predict_price_direction",
+        "snapshot_history_is_not_point_in_time_validated",
+        "gamma_is_not_a_complete_liquidity_or_volatility_model",
+        "no_intraday_inventory_or_cross_product_netting",
+        "source_availability_clock_absent",
+        "incomplete_history_window"
+      ]
+    },
+    "authority": {
+      "display_only": true,
+      "directional_signal": false,
+      "ranking": false,
+      "position_sizing": false,
+      "risk_override": false,
+      "trade_execution": false
+    },
+    "summary": {
+      "en": "The assumed dealer-gamma sign can amplify both rises and falls; this is not a bearish forecast.",
+      "zh": "假设的做市商Gamma符号可能放大涨跌；这不是看空预测。"
+    }
+  },
+  "research_readiness": {
+    "availability_clock_rows": 0,
+    "availability_clock_fraction": 0.0,
+    "historical_vintages_verified": false,
+    "predictive_validation": "NOT_ESTABLISHED",
+    "promotion_authorized": false,
+    "existing_validation_owner": "scripts/validate_gex.py",
+    "existing_diagnostic": [
+      "[cboe] SPX h=5d: building history (long n=50, short n=26; need 30/bucket)",
+      "[cboe] SPX h=10d: building history (long n=50, short n=22; need 30/bucket)"
+    ],
+    "diagnostic_is_promotion": false,
+    "remaining_proof": [
+      "immutable_available_at_vintages_and_source_revision_lineage",
+      "pre_registered_chronological_holdout_and_overlap_purge",
+      "incremental_value_over_volatility_baseline_with_episode_honest_uncertainty",
+      "prospective_consumer_and_policy_specific_admission"
+    ]
+  }
+}

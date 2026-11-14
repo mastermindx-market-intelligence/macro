@@ -16696,7 +16696,7 @@ jobs:
       # carry @pytest.mark.data_gate and run in engine-render-guards; the ones here are
       # fixture-built. The same split applies to the seams and dead-asset suites.
       - name: options readers must session-filter dated stores
-        run: python -m pytest tests/test_options_session_guards.py -q -m "not data_gate"
+        run: python -m pytest tests/test_options_session_guards.py tests/test_market_fragility.py tests/test_market_fragility_context.py tests/test_market_fragility_integration.py tests/test_market_fragility_audit.py -q -m "not data_gate"
       # The ×100 class, hit twice. Both incidents survived tests whose FIXTURES encoded
       # the bug, so this suite asserts against fixture-shaped AND prod-shaped inputs and
       # simulates a newest-vintage-only flip.
@@ -20276,6 +20276,7 @@ jobs:
       - engine/manager_trades.py
       - engine/marker_integrity.py
       - engine/market_gamma.py
+      - engine/market_fragility.py
       - engine/market_heatmap.py
       - engine/market_os/macro_workspaces/__init__.py
       - engine/market_os/macro_workspaces/contract.py
@@ -25427,6 +25428,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - engine/market_fragility.py
       - "engine/market_heatmap.py"
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
@@ -28842,6 +28844,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - engine/market_fragility.py
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/market_state.py"
@@ -36944,6 +36947,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - engine/market_fragility.py
       - "engine/market_heatmap.py"
       - "engine/market_ontology/theme_research_mounts.py"
       - "engine/market_ontology/__init__.py"
@@ -38532,6 +38536,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - engine/market_fragility.py
       - "engine/china_heatmap_observations.py"
       - "engine/market_heatmap.py"
       - "engine/market_state.py"
@@ -52665,6 +52670,7 @@ jobs:
       - "engine/manager_trades.py"
       - "engine/marker_integrity.py"
       - "engine/market_gamma.py"
+      - engine/market_fragility.py
       - "engine/market_heatmap.py"
       - "engine/market_os/macro_workspaces/__init__.py"
       - "engine/market_os/macro_workspaces/contract.py"
