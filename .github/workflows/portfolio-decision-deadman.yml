@@ -1,0 +1,82 @@
+name: portfolio-decision-deadman
+
+on:
+  schedule:
+    # US Brain fires after the US close. The evaluator derives the exact due
+    # clock from APScheduler's live next_run_time rather than duplicating env config.
+    - cron: "55 0 * * 2-6"
+    # China/HK Brains fire after their venue closes; check after both completion budgets.
+    - cron: "45 10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-decision-deadman
+  cancel-in-progress: false
+
+jobs:
+  trust-gate:
+    name: refuse-non-main-workflow-definition
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: require the protected-main workflow definition
+        env:
+          TRUSTED_REF: ${{ github.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$TRUSTED_REF" = refs/heads/main || {
+            echo "::error title=portfolio-deadman-trust::secret-bearing check requires refs/heads/main"
+            exit 1
+          }
+
+  check:
+    needs: trust-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/__init__.py
+            /scripts/check_portfolio_decision_deadman.py
+
+      - name: collect sanitized authoritative state and evaluate due cycles
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ -n "${SSH_KEY:-}" ] || {
+            echo '{"schema":"mastermind.portfolio_decision_deadman.result.v1","status":"error","failures":["vps_deploy_key_unavailable"]}'
+            exit 1
+          }
+
+          umask 077
+          keyfile="$RUNNER_TEMP/vps_key"
+          snapshot="$RUNNER_TEMP/portfolio-decision-snapshot.json"
+          printf '%s\n' "$SSH_KEY" > "$keyfile"
+          chmod 600 "$keyfile"
+          trap 'rm -f "$keyfile" "$snapshot"' EXIT
+
+          # One read-only SSH carrier. The streamed script issues GETs only and emits
+          # a closed field allowlist; no holdings, prompts, provider errors, account
+          # values, target weights, credentials, or fills cross the VPS boundary.
+          ssh -i "$keyfile" \
+            -o BatchMode=yes \
+            -o ConnectTimeout=20 \
+            -o ServerAliveInterval=15 \
+            -o ServerAliveCountMax=2 \
+            -o StrictHostKeyChecking=accept-new \
+            root@146.190.142.17 \
+            '/opt/mastermind/.venv/bin/python - --collect' \
+            < scripts/check_portfolio_decision_deadman.py \
+            > "$snapshot"
+
+          python scripts/check_portfolio_decision_deadman.py --file "$snapshot"
