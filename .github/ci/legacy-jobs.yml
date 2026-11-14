@@ -47881,6 +47881,9 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      # Inflation publication proof calls the canonical owner and its basis helper.
+      - "engine/inflation_intelligence.py"
+      - "engine/rates_command_basis.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "contracts/market_os/macro_workspace_snapshot.v1.schema.json"
@@ -47938,7 +47941,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install workspace-producer test dependencies
-        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2
+        run: pip install pytest pyyaml jsonschema==4.26.0 jinja2 pandas pyarrow
       - name: Market OS macro workspaces — contract, composer, publisher, consumer
         run: >-
           python -m pytest
