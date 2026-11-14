@@ -819,6 +819,145 @@ def test_consumer_chain_does_not_compensate_for_inverted_read(tmp_path):
     assert "read" not in block and "read_zh" not in block
 
 
+# Conditional correlations are native producer evidence. An undefined bucket
+# must not become a NaN payload or a measured zero, while other evidence survives.
+def _conditional_transmission_returns(n=360, calm_count=None, seed=31):
+    idx = _idx(n)
+    rng = np.random.default_rng(seed)
+    usd = pd.Series(rng.normal(0, .004, n), index=idx)
+    asset = -.7 * usd + pd.Series(rng.normal(0, .002, n), index=idx)
+    flags = (np.arange(n) % 2 == 0) if calm_count is None else (np.arange(n) < calm_count)
+    risk = pd.Series(np.where(flags, -1., 1.), index=idx)
+    return asset, usd, risk
+
+
+def _conditional_pearson_oracle(asset, usd):
+    a = asset.to_numpy() - asset.mean()
+    u = usd.to_numpy() - usd.mean()
+    return round(float(np.dot(a, u) / np.sqrt(np.dot(a, a) * np.dot(u, u))), 2)
+
+
+@pytest.mark.parametrize("bucket", ["calm", "stress"])
+@pytest.mark.parametrize("leg", ["asset", "usd"])
+@pytest.mark.parametrize("constant", [0., .001, -.001])
+def test_transmission_regime_constant_bucket_is_unavailable(bucket, leg, constant):
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns()
+    mask = risk.le(0) if bucket == "calm" else risk.gt(0)
+    (asset if leg == "asset" else usd).loc[mask] = constant
+    other = "stress" if bucket == "calm" else "calm"
+    expected = {other: _conditional_pearson_oracle(asset.loc[~mask], usd.loc[~mask])}
+    with np.errstate(invalid="ignore", divide="ignore"):
+        got = _regime_split(asset, usd, risk)
+    assert got == expected
+    json.dumps(got, allow_nan=False)
+
+
+@pytest.mark.parametrize("bucket", ["calm", "stress"])
+@pytest.mark.parametrize("leg", ["asset", "usd"])
+@pytest.mark.parametrize("value", [np.inf, -np.inf])
+def test_transmission_regime_nonfinite_bucket_preserves_other(bucket, leg, value):
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns()
+    mask = risk.le(0) if bucket == "calm" else risk.gt(0)
+    (asset if leg == "asset" else usd).loc[risk.index[mask][0]] = value
+    other = "stress" if bucket == "calm" else "calm"
+    expected = {other: _conditional_pearson_oracle(asset.loc[~mask], usd.loc[~mask])}
+    with np.errstate(invalid="ignore", divide="ignore"):
+        assert _regime_split(asset, usd, risk) == expected
+
+
+@pytest.mark.parametrize("bucket", ["calm", "stress"])
+def test_transmission_regime_finite_overflow_is_unavailable(bucket):
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns()
+    mask = risk.le(0) if bucket == "calm" else risk.gt(0)
+    asset.loc[mask] = np.resize([1e308, -1e308], int(mask.sum()))
+    other = "stress" if bucket == "calm" else "calm"
+    expected = {other: _conditional_pearson_oracle(asset.loc[~mask], usd.loc[~mask])}
+    with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+        assert _regime_split(asset, usd, risk) == expected
+
+
+def test_transmission_regime_both_undefined_uses_existing_none_contract():
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns()
+    usd[:] = .001
+    with np.errstate(invalid="ignore", divide="ignore"):
+        assert _regime_split(asset, usd, risk) is None
+    assert _regime_split(asset, usd, None) is None
+
+
+def test_transmission_regime_measured_zero_is_retained():
+    from engine.forex_transmission import _regime_split
+    idx = _idx(360)
+    asset = pd.Series(np.tile([.003, -.006, .003], 120), index=idx)
+    usd = pd.Series(np.tile([-.004, 0., .004], 120), index=idx)
+    risk = pd.Series(np.tile([-1., 1.], 180), index=idx)
+    assert _regime_split(asset, usd, risk) == {"calm": 0., "stress": 0.}
+
+
+@pytest.mark.parametrize("n,calm_count,keys", [
+    (199, 100, set()), (200, 59, {"stress"}),
+    (200, 60, {"calm", "stress"}), (200, 140, {"calm", "stress"}),
+    (200, 141, {"calm"}),
+])
+def test_transmission_regime_count_floors_are_unchanged(n, calm_count, keys):
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns(n, calm_count)
+    got = _regime_split(asset, usd, risk)
+    assert set(got or {}) == keys
+    if not keys:
+        assert got is None
+    for key in keys:
+        mask = risk.le(0) if key == "calm" else risk.gt(0)
+        assert got[key] == _conditional_pearson_oracle(asset.loc[mask], usd.loc[mask])
+
+
+def test_transmission_regime_keeps_existing_joint_missingness_and_alignment():
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns(201, 60)
+    asset.iloc[0] = np.nan  # 200 joint rows; 59 calm observations.
+    assert set(_regime_split(asset, usd, risk)) == {"stress"}
+    asset.iloc[1] = np.nan  # 199 joint rows cannot qualify either bucket.
+    assert _regime_split(asset, usd, risk) is None
+    asset, usd, risk = _conditional_transmission_returns(201, 60)
+    assert _regime_split(asset.iloc[:-1], usd.iloc[1:], risk) is None
+
+
+@pytest.mark.parametrize("seed", [0, 7, 93])
+def test_transmission_regime_healthy_buckets_match_centered_oracle(seed):
+    from engine.forex_transmission import _regime_split
+    asset, usd, risk = _conditional_transmission_returns(seed=seed)
+    expected = {name: _conditional_pearson_oracle(asset.loc[mask], usd.loc[mask])
+                for name, mask in (("calm", risk.le(0)), ("stress", risk.gt(0)))}
+    assert _regime_split(asset, usd, risk) == expected
+
+
+@pytest.mark.parametrize("key", ["SPY", "EEM", "BTC"])
+@pytest.mark.parametrize("bucket", ["calm", "stress"])
+def test_transmission_regime_complete_producer_is_strict_json(key, bucket):
+    from engine import forex_transmission as ft
+    asset, usd, risk = _conditional_transmission_returns(seed=2)
+    mask = risk.le(0) if bucket == "calm" else risk.gt(0)
+    usd.loc[mask] = 0.
+    broad = 100 * np.exp(usd.cumsum())
+    prices = 100 * np.exp(asset.cumsum())
+    with np.errstate(invalid="ignore", divide="ignore"):
+        got = ft.transmission(broad, {key: prices}, None, risk, {})
+    assert len(got["rows"]) == 1
+    row = got["rows"][0]
+    assert np.isfinite([row["corr_fast"], row["corr_slow"]]).all()
+    assert set(row["regime_split"]) == {"stress" if bucket == "calm" else "calm"}
+    json.dumps(got, allow_nan=False)
+    # Conditional qualification must not erase or change ordinary transmission.
+    without_conditional = dict(got)
+    without_conditional["rows"] = [
+        {k: v for k, v in r.items() if k != "regime_split"} for r in got["rows"]
+    ]
+    assert without_conditional == ft.transmission(broad, {key: prices}, None, None, {})
+
+
 if __name__ == "__main__":
     fns = [
         test_desk_latest_includes_smile_decomp,
