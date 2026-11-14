@@ -32967,6 +32967,7 @@ jobs:
       - "collectors/china_news.py"
       - "collectors/china_visits.py"
       - "collectors/coinbase.py"
+      - "collectors/crypto_misc.py"
       - "collectors/deribit.py"
       - "collectors/edgar.py"
       - "collectors/edgar_13f.py"

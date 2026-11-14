@@ -34,7 +34,13 @@ class FearGreedAdapter(Adapter):
             raise ValueError("feargreed: empty data")
         df = pd.DataFrame(data)
         df["date"] = pd.to_datetime(pd.to_numeric(df["timestamp"]), unit="s").dt.normalize()
-        df["fear_greed"] = pd.to_numeric(df["value"], errors="coerce")
+        boolean = df["value"].map(lambda value: isinstance(value, bool))
+        numeric = pd.to_numeric(df["value"], errors="coerce")
+        # Reject a malformed response before it can overwrite stored evidence.
+        # Unparseable missing values retain the existing dropna behavior.
+        if (boolean | (numeric.notna() & ~numeric.between(0, 100))).any():
+            raise ValueError("feargreed: observation outside nonboolean 0..100 scale")
+        df["fear_greed"] = numeric
         return {"fear_greed": df.set_index("date")[["fear_greed"]].dropna().sort_index()}
 
 

@@ -24,6 +24,18 @@ from lib import config
 # --------------------------------------------------------------------------- #
 # small helpers
 # --------------------------------------------------------------------------- #
+def _numeric_observation(s: pd.Series, lower=None, upper=None) -> pd.Series:
+    """Validate aligned observations, not trading thresholds or fill policy."""
+    boolean = s.map(lambda value: isinstance(value, (bool, np.bool_)))
+    numeric = pd.to_numeric(s, errors="coerce")
+    valid = ~boolean & np.isfinite(numeric)
+    if lower is not None:
+        valid &= numeric >= lower
+    if upper is not None:
+        valid &= numeric <= upper
+    return numeric.where(valid)
+
+
 def _ema(s: pd.Series, n: int) -> pd.Series:
     return s.ewm(span=n, adjust=False).mean()
 
@@ -754,10 +766,11 @@ def valuation(inputs: dict, cfg: dict) -> pd.DataFrame:
     out = pd.DataFrame(index=idx)
     mcap, rcap = inputs.get("mcap"), inputs.get("realized_cap")
     if mcap is not None and rcap is not None:
-        m = mcap.reindex(idx).ffill()
-        r = rcap.reindex(idx).ffill()
+        m = _numeric_observation(mcap.reindex(idx).ffill(), lower=0).where(lambda v: v > 0)
+        r = _numeric_observation(rcap.reindex(idx).ffill(), lower=0).where(lambda v: v > 0)
         std = m.rolling(cfg["z_window_d"], min_periods=cfg["z_min_periods_d"]).std()
         z = ((m - r) / std.replace(0, np.nan)).rename("mvrv_z")
+        z = _numeric_observation(z)
         out["mvrv_z"] = z
         out["mvrv_z_pctile"] = _pctile(z, cfg["pctile_lookback_d"]) * 100
         out["valuation_state"] = _hysteresis_asym(
@@ -765,7 +778,7 @@ def valuation(inputs: dict, cfg: dict) -> pd.DataFrame:
             labels=("undervalued", "fair", "overvalued"))
     nupl = inputs.get("nupl")
     if nupl is not None:
-        out["nupl"] = nupl.reindex(idx).ffill()
+        out["nupl"] = _numeric_observation(nupl.reindex(idx).ffill(), upper=1)
     close = inputs["price"]["close"]
     out["mayer"] = close / close.rolling(cfg.get("mayer_window_d", 200)).mean()
     # Reserve Risk (checkonchain, 2010->): price vs the opportunity cost of HODLing.
@@ -1765,12 +1778,12 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         euph_f = pd.Series(False, index=idx)
         seen = pd.Series(False, index=idx)
         if nupl_s is not None:
-            n = pd.to_numeric(nupl_s.reindex(idx).ffill(), errors="coerce")
+            n = _numeric_observation(nupl_s.reindex(idx).ffill(), upper=1)
             seen = seen | n.notna()
             capit_f = capit_f | (n < cfg.get("nupl_capitulation", 0.0))
             euph_f = euph_f | (n > cfg.get("nupl_euphoria", 0.65))
         if z_s is not None:
-            z = pd.to_numeric(z_s.reindex(idx), errors="coerce")
+            z = _numeric_observation(z_s.reindex(idx))
             seen = seen | z.notna()
             capit_f = capit_f | (z < cfg.get("z_under", 0.0))
             euph_f = euph_f | (z > cfg.get("z_over", 3.5))
@@ -1778,14 +1791,14 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
         euph["mvrv_family"] = euph_f.where(seen)
     sip = inputs.get("supply_in_profit_pct")
     if sip is not None:
-        s = sip.reindex(idx).ffill(limit=5)
-        capit["sip"] = s < cfg["sip_capitulation"]
-        euph["sip"] = s > cfg["sip_euphoria"]
+        s = _numeric_observation(sip.reindex(idx).ffill(limit=5), lower=0, upper=1)
+        capit["sip"] = (s < cfg["sip_capitulation"]).where(s.notna())
+        euph["sip"] = (s > cfg["sip_euphoria"]).where(s.notna())
     fg = inputs.get("fear_greed")
     if fg is not None:
-        f = fg.reindex(idx).ffill(limit=3)
-        capit["fg"] = f < cfg["fg_capitulation"]
-        euph["fg"] = f > cfg["fg_euphoria"]
+        f = _numeric_observation(fg.reindex(idx).ffill(limit=3), lower=0, upper=100)
+        capit["fg"] = (f < cfg["fg_capitulation"]).where(f.notna())
+        euph["fg"] = (f > cfg["fg_euphoria"]).where(f.notna())
     out = pd.DataFrame(index=idx)
     if capit.empty:
         return out
@@ -1794,8 +1807,8 @@ def market_extreme(inputs: dict, val: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     navail = capit.notna().sum(axis=1).replace(0, np.nan)
     out["extreme_score"] = ((ev - cv) / navail).clip(-1, 1)  # -1 capit .. +1 euph
     mn = cfg["min_votes"]
-    out["market_extreme"] = np.where(cv >= mn, "capitulation",
-                            np.where(ev >= mn, "euphoria", "normal"))
+    out["market_extreme"] = pd.Series(np.where(cv >= mn, "capitulation",
+                            np.where(ev >= mn, "euphoria", "normal")), index=idx).where(navail.notna())
     return out
 
 
