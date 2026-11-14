@@ -657,6 +657,14 @@ public:
     # Existing Terminal ingest compatibility. Remove after the separate
     # Terminal session moves these fetches behind authenticated transport.
     - /factordata/tech_lab.json
+    # Free acquisition asset (#10936). The already-public Tools page
+    # /tools/spreadsheets/trading-journal.html promises "free, no-email-required"
+    # and links this exact workbook, but the file sat inside @reg_asset, so a
+    # signed-out click opened the sign-in wall on 2026-11-10 (401 with
+    # `x-regwall: deny`). ONE exact file, not a directory: /assets/downloads/
+    # stays default-deny and every sibling download keeps its existing gate.
+    # Any change here still needs the serving-boundary owner's review.
+    - /assets/downloads/mastermind-trading-journal.xlsx
   prefixes:
     - /assets/css/
     # Content-hashed page scripts, minted by scripts/externalize_css.py from
