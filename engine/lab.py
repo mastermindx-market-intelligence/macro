@@ -848,8 +848,10 @@ def characterize(
                 log.debug("characterize: %s indicator %s failed: %s", tkr, name, exc)
         if sig_map:
             ticker_signals[tkr] = sig_map
-            fwd = df["close"].pct_change(horizon).shift(-horizon)
-            ticker_fwd[tkr] = fwd
+            # A missing or infinite endpoint is not an observed return.
+            # Keep the original row calendar, including any interior gaps.
+            close = df["close"].where(np.isfinite(df["close"]))
+            ticker_fwd[tkr] = close.pct_change(horizon, fill_method=None).shift(-horizon)
 
     # Collect ICs per indicator, split by regime
     ic_records: dict[str, list[tuple]] = {n: [] for n in names if n in INDICATORS}
@@ -858,7 +860,8 @@ def characterize(
         # Get a common date grid from the first ticker
         first_tkr = next(iter(ticker_signals))
         ref_index = ticker_signals[first_tkr][next(iter(ticker_signals[first_tkr]))].index
-        # Sample every `horizon` bars to avoid heavily overlapping forward returns
+        # Preserve the existing half-horizon formation grid. Exact-date reads
+        # below enforce maturity per ticker, including unequal history endpoints.
         step = max(1, horizon // 2)
         sample_dates = ref_index[::step]
 
@@ -875,8 +878,13 @@ def characterize(
                     if f is None:
                         continue
                     try:
-                        sv = float(s.asof(date))  # type: ignore[arg-type]
-                        fv = float(f.asof(date))  # type: ignore[arg-type]
+                        # EXACT-DATE reads (#10996). `Series.asof(date)` returns the last
+                        # value at or before `date`, so an unobserved forward return was
+                        # answered with an older, already-counted one. Both legs are label
+                        # lookups: a date with no observation must read as NaN and be
+                        # dropped by the isfinite filter below, never backfilled.
+                        sv = float(s.get(date, np.nan))
+                        fv = float(f.get(date, np.nan))
                     except Exception:
                         continue
                     if np.isfinite(sv) and np.isfinite(fv):
@@ -955,7 +963,10 @@ def characterize(
         }
 
         out[name] = {
-            "status": "ok",
+            # Sufficiency is part of the claim (#10996): a base_rate below the IC sample
+            # floor must not be published under an unconditional "ok" status, which is
+            # what let a stale-label-inflated sample read as a sufficient characterization.
+            "status": "ok" if n_ics >= min_ics else "insufficient",
             "base_rate": base_rate,
             "persistence": persistence,
             "regime": regime,

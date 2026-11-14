@@ -42,6 +42,21 @@ def _fake_universe(n_tickers: int = 2, n_bars: int = 600) -> dict[str, pd.DataFr
     return {f"T{i}": _fake_ohlcv(n_bars, seed=i) for i in range(n_tickers)}
 
 
+@pytest.fixture
+def synthetic_store(monkeypatch):
+    """Replace only store I/O; exercise the actual load and benchmark readers."""
+    from lib import store
+
+    frame = _fake_ohlcv(seed=97)
+
+    def read(group, name):
+        assert group in {"stocks", "yahoo"}
+        return frame.copy()
+
+    monkeypatch.setattr(store, "read", read)
+    return frame
+
+
 # ---------------------------------------------------------------------------
 # 1. Import smoke test
 # ---------------------------------------------------------------------------
@@ -304,12 +319,12 @@ def test_trial_to_ledger():
 # 11. load() with shortcuts
 # ---------------------------------------------------------------------------
 
-def test_load_quick():
+def test_load_quick(synthetic_store):
     """load('quick') should return at most 8 tickers and each is a DataFrame."""
     from engine import lab
 
     result = lab.load("quick")
-    # The quick list might not all exist in the store; just check types
+    assert result, "the deterministic store must exercise the loader assertions"
     for ticker, df in result.items():
         assert isinstance(df, pd.DataFrame)
         assert "close" in df.columns
@@ -319,18 +334,19 @@ def test_load_quick():
 # 12. bench() returns a Series
 # ---------------------------------------------------------------------------
 
-def test_bench_returns_series():
+def test_bench_returns_series(synthetic_store):
     from engine import lab
 
     s = lab.bench("_GSPC")
     assert isinstance(s, pd.Series)
+    pd.testing.assert_series_equal(s, synthetic_store["close"].rename("_GSPC"))
 
 
 # ---------------------------------------------------------------------------
 # 13. characterize() returns a dict and writes indicator_characterization.json
 # ---------------------------------------------------------------------------
 
-def test_characterize_returns_dict_and_writes_json():
+def test_characterize_returns_dict_and_writes_json(synthetic_store):
     """characterize() must return a dict with per-indicator keys and write JSON."""
     import json
     import tempfile
@@ -364,7 +380,7 @@ def test_characterize_returns_dict_and_writes_json():
             )
 
 
-def test_characterize_unknown_indicator():
+def test_characterize_unknown_indicator(synthetic_store):
     """characterize() must mark unknown indicator names rather than raising."""
     import tempfile
     from pathlib import Path
@@ -381,7 +397,7 @@ def test_characterize_unknown_indicator():
     assert result["__not_a_real_indicator__"]["status"] == "unknown_indicator"
 
 
-def test_characterize_writes_json():
+def test_characterize_writes_json(synthetic_store):
     """characterize() must write data/lab/indicator_characterization.json."""
     import json
     import tempfile
@@ -449,3 +465,265 @@ def test_catalog_backtest_returns_trial():
     )
     assert trial.survivorship_biased is True
     assert isinstance(trial.stats, dict)
+
+
+# ---------------------------------------------------------------------------
+# 18. characterize() forward-return MATURITY (#10996)
+#
+# `characterize()` used to read its forward-return labels with `Series.asof(date)`.
+# `asof` returns the last value at or before the date, so a formation date whose
+# forward window had not been observed yet silently inherited the most recent
+# MATURED return instead of reading as missing. Two consequences, both tested here:
+#   (a) immature dates were counted in the IC sample and could clear `min_ics`,
+#       publishing a sufficient-looking characterization from too little evidence;
+#   (b) the same stale return vector was reused against several different later
+#       signal vectors, so repeat observations were not independent observations.
+# The fixtures use 30 names because `validation.rank_ic` returns NaN below 10
+# joint names -- the older 2-3 ticker fixtures never exercised this path at all.
+# ---------------------------------------------------------------------------
+
+_MATURITY_HORIZON = 21
+
+
+def _maturity_universe(n_tickers: int = 30, n_bars: int = 80) -> dict[str, pd.DataFrame]:
+    """30 names x 80 business days, deterministic (seeds from the #10996 fixture)."""
+    return {f"S{i:02d}": _fake_ohlcv(n_bars, seed=20261111 + i) for i in range(n_tickers)}
+
+
+def _no_bench(_name: str = "_GSPC") -> pd.Series:
+    """Regime benchmark stub: an empty series disables the SPX/VIX regime splits."""
+    return pd.Series(dtype=float)
+
+
+def _run_characterize(universe, min_ics=6, horizon=_MATURITY_HORIZON, indicator="ema"):
+    """Run characterize() with the store reads and the artifact dir stubbed out."""
+    import tempfile
+    from pathlib import Path
+    from unittest import mock
+    from engine import lab
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        fake_lab_dir = Path(tmpdir) / "lab"
+        with mock.patch.object(lab, "_LAB_DIR", fake_lab_dir), \
+                mock.patch.object(lab, "bench", _no_bench):
+            return lab.characterize([indicator], universe, horizon=horizon, min_ics=min_ics)
+
+
+def _exact_date_ic_reference(universe, indicator="ema", horizon=_MATURITY_HORIZON):
+    """Independent reference: only dates whose forward return is actually observed.
+
+    Computed straight from the raw arrays with exact-date lookups and no `asof`
+    anywhere, so it cannot inherit the producer's backfill behaviour.
+    """
+    from engine import lab
+    from engine import validation as V
+
+    signals, forwards = {}, {}
+    grid = None
+    for tkr, df in universe.items():
+        signals[tkr] = lab.INDICATORS[indicator](df)
+        close = df["close"]
+        future = close.shift(-horizon)
+        observed = np.isfinite(close) & np.isfinite(future) & close.ne(0)
+        forwards[tkr] = future[observed] / close[observed] - 1
+        if grid is None:
+            grid = signals[tkr].index
+
+    # Preserve the producer's original formation grid. Each ticker's maturity is
+    # checked independently below; a short first history cannot truncate peers.
+    dates = grid[::max(1, horizon // 2)]
+
+    ics: list[float] = []
+    for date in dates:
+        sc, fc = {}, {}
+        for tkr in universe:
+            sv = signals[tkr].get(date, np.nan)
+            fv = forwards[tkr].get(date, np.nan)
+            if np.isfinite(sv) and np.isfinite(fv):
+                sc[tkr], fc[tkr] = float(sv), float(fv)
+        if len(sc) < 5:
+            continue
+        ic = V.rank_ic(pd.Series(sc), pd.Series(fc))
+        if np.isfinite(ic):
+            ics.append(ic)
+    return len(ics), (float(np.mean(ics)) if ics else None)
+
+
+def test_characterize_ignores_immature_formation_dates():
+    """The IC sample must match an exact-date reference, not an asof-backfilled one."""
+    universe = _maturity_universe(n_tickers=30, n_bars=80)
+    result = _run_characterize(universe, min_ics=6)["ema"]
+
+    ref_n, _ref_mean = _exact_date_ic_reference(universe)
+    assert result["base_rate"]["n"] == ref_n, (
+        f"characterize() counted {result['base_rate']['n']} IC observations but only "
+        f"{ref_n} formation dates have matured forward returns"
+    )
+    assert ref_n == 5, f"fixture drifted: expected 5 matured dates, got {ref_n}"
+    # 5 matured observations cannot clear a floor of 6. Before the fix the two immature
+    # tail dates were backfilled and counted, so this same call published a summary.
+    assert result["base_rate"] == {"n": 5, "insufficient": True}
+    assert result["status"] == "insufficient"
+
+
+def test_characterize_mean_ic_matches_exact_date_reference():
+    """A published mean IC must be the exact-date mean over matured dates (#10996)."""
+    # 120 bars so the matured sample is long enough for ic_summary (which needs n >= 6);
+    # the point is the VALUE, not the floor.
+    universe = _maturity_universe(n_tickers=30, n_bars=120)
+    result = _run_characterize(universe, min_ics=6)["ema"]
+    assert result["status"] == "ok"
+
+    ref_n, ref_mean = _exact_date_ic_reference(universe)
+    assert ref_mean is not None and ref_n >= 6
+    assert result["base_rate"]["n"] == ref_n
+    # ic_summary rounds mean_ic to 4 dp.
+    assert result["base_rate"]["mean_ic"] == pytest.approx(ref_mean, abs=1e-4), (
+        "mean IC must be the exact-date mean over matured formation dates"
+    )
+    assert (result["base_rate"]["mean_ic"] > 0) == (ref_mean > 0)
+
+
+def test_characterize_never_reuses_a_forward_return_vector(monkeypatch):
+    """No two sampled formation dates may share one forward-return cross-section.
+
+    Under the asof read the last two dates both received the offset-58 return
+    vector, so this set contained fewer members than the call log.
+    """
+    from engine import validation as V
+
+    seen: list[tuple] = []
+    real_rank_ic = V.rank_ic
+
+    def spy(signal, fwd):
+        seen.append(tuple(np.round(np.asarray(pd.Series(fwd), dtype=float), 12)))
+        return real_rank_ic(signal, fwd)
+
+    monkeypatch.setattr(V, "rank_ic", spy)
+    universe = _maturity_universe(n_tickers=30, n_bars=80)
+    result = _run_characterize(universe, min_ics=6)["ema"]
+
+    assert len(seen) == result["base_rate"]["n"]
+    assert len(set(seen)) == len(seen), (
+        "a forward-return vector was reused across formation dates: "
+        f"{len(seen)} IC calls but only {len(set(seen))} distinct return vectors"
+    )
+
+
+def test_characterize_min_ics_still_rejects_matured_only_sample():
+    """A higher floor must reject the same fixture; the stale tail cannot rescue it."""
+    universe = _maturity_universe(n_tickers=30, n_bars=80)
+    result = _run_characterize(universe, min_ics=8)["ema"]
+
+    assert result["status"] == "insufficient"
+    assert result["base_rate"] == {"n": 5, "insufficient": True}
+    assert result["regime"] == {}
+
+
+def test_characterize_longer_history_does_not_leak_the_tail():
+    """100 bars: the count must track matured dates, not bar count."""
+    universe = _maturity_universe(n_tickers=30, n_bars=100)
+    result = _run_characterize(universe, min_ics=6)["ema"]
+
+    ref_n, _ref_mean = _exact_date_ic_reference(universe)
+    assert result["base_rate"]["n"] == ref_n
+    assert result["status"] == ("ok" if ref_n >= 6 else "insufficient")
+
+
+def test_characterize_ten_name_floor_is_intact():
+    """9 names cannot form a cross-sectional IC: 0 observations, not a false pass."""
+    universe = _maturity_universe(n_tickers=9, n_bars=80)
+    result = _run_characterize(universe, min_ics=6)["ema"]
+
+    assert result["base_rate"] == {"n": 0, "insufficient": True}
+    assert result["status"] == "insufficient"
+
+
+@pytest.mark.parametrize("first_bars,other_bars,expected_n", [(80, 120, 7), (400, 500, 39)])
+def test_characterize_preserves_mature_peers_with_short_first_history(
+        monkeypatch, tmp_path, first_bars, other_bars, expected_n):
+    """A short first ticker must not discard mature cross-sections from its peers."""
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=other_bars)
+    universe["S00"] = universe["S00"].iloc[:first_bars].copy()
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    persisted = json.loads((tmp_path / "indicator_characterization.json").read_text())
+    assert persisted == produced
+    result = persisted["ema"]
+    ref_n, ref_mean = _exact_date_ic_reference(universe)
+    assert ref_n == expected_n, "fixture must retain mature peers on the original grid"
+    assert result["base_rate"]["n"] == expected_n
+    assert result["status"] == "ok"
+    assert result["base_rate"]["mean_ic"] == pytest.approx(ref_mean, abs=1e-4)
+
+
+def test_characterize_missing_formation_dates_are_not_backfilled(monkeypatch, tmp_path):
+    """Missing rows cannot borrow earlier labels to pass the ten-name IC floor."""
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=80)
+    missing_date = universe["S00"].index[40]
+    # Keep the first ticker's grid intact, but leave only nine names on this date.
+    for tkr in list(universe)[1:22]:
+        universe[tkr] = universe[tkr].drop(index=missing_date)
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    persisted = json.loads((tmp_path / "indicator_characterization.json").read_text())
+    assert persisted == produced
+    ref_n, _ = _exact_date_ic_reference(universe)
+    assert ref_n == 4, "the missing formation date must remove one eligible cross-section"
+    assert persisted["ema"]["base_rate"] == {"n": 4, "insufficient": True}
+    assert persisted["ema"]["status"] == "insufficient"
+
+
+@pytest.mark.parametrize("offsets,bad_price", [
+    ([20, 30, 40], np.nan),         # missing formation
+    ([41, 51, 61], np.nan),         # missing outcome
+    ([20, 30, 40], np.inf),         # infinite formation is not a -100% return
+    ([41, 51, 61], -np.inf),        # negative infinity is not an outcome
+])
+def test_characterize_requires_observed_close_endpoints(monkeypatch, tmp_path, offsets, bad_price):
+    import json
+    from engine import lab
+
+    universe = _maturity_universe(n_tickers=30, n_bars=100)
+    for df in list(universe.values())[:21]:
+        df.loc[df.index[offsets], "close"] = bad_price
+    monkeypatch.setattr(lab, "_LAB_DIR", tmp_path)
+    monkeypatch.setattr(lab, "bench", _no_bench)
+
+    produced = lab.characterize(["ema"], universe, horizon=_MATURITY_HORIZON, min_ics=6)
+    assert json.loads((tmp_path / "indicator_characterization.json").read_text()) == produced
+    n, _ = _exact_date_ic_reference(universe)
+    assert n == 4
+    assert produced["ema"]["base_rate"] == {"n": n, "insufficient": True}
+
+
+def test_characterize_preserves_zero_outcomes_and_interior_gaps(monkeypatch):
+    from engine import validation
+
+    universe = _maturity_universe(n_tickers=12, n_bars=100)
+    # Formation row 30 has a real zero on its row-51 outcome for the first
+    # name. The second name only misses an interior close in this window.
+    universe["S00"].iloc[51, universe["S00"].columns.get_loc("close")] = 0.0
+    universe["S01"].iloc[45, universe["S01"].columns.get_loc("close")] = np.nan
+    returns = []
+    native = validation.rank_ic
+
+    def capture(signals, outcomes):
+        returns.append(outcomes.copy())
+        return native(signals, outcomes)
+
+    monkeypatch.setattr(validation, "rank_ic", capture)
+    _run_characterize(universe)
+    row = next(series for series in returns if series.get("S00") == -1.0)
+    close = universe["S01"]["close"]
+    assert row["S01"] == pytest.approx(close.iloc[51] / close.iloc[30] - 1)

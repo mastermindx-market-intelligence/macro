@@ -457,7 +457,6 @@
     "tests/test_kernel_diagnostics.py",
     "tests/test_key_pool_mm_events.py",
     "tests/test_key_pool_mm_state.py",
-    "tests/test_lab.py",
     "tests/test_lab_backtest_cli.py",
     "tests/test_landing_pricing_cta.py",
     "tests/test_lbnl_queue.py",
