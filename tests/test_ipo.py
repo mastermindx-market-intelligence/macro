@@ -1546,3 +1546,107 @@ def test_phase0_bad_json_fails_before_either_output(monkeypatch, tmp_path):
         phase.main()
     assert report.read_text() == "previous report"
     assert badge.read_text() == "previous badge"
+
+
+
+# A negative-offset window must not turn an unobserved future event into a
+# measured past event. This does not select a session-calendar policy.
+@pytest.mark.parametrize("days_after", [0.000001, 1, 365])
+@pytest.mark.parametrize("window", [(-10, -1), (-1, 3), (0, 3), (0, 1), (-5, 5)])
+def test_phase0_rejects_event_beyond_observed_anchor(days_after, window):
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=100)
+    stock = pd.Series(range(100, 200), index=idx, dtype=float)
+    spy = pd.Series(100.0, index=idx)
+    event = idx[-1] + pd.Timedelta(days=days_after)
+    assert phase._car(stock, spy, event, *window) is None
+
+
+@pytest.mark.parametrize("short_side", ["stock", "benchmark"])
+def test_phase0_rejects_event_beyond_common_observation_tail(short_side):
+    from scripts import ipo_lockup_phase0 as phase
+    idx = pd.bdate_range("2025-01-01", periods=120)
+    stock = pd.Series(range(100, 220), index=idx, dtype=float)
+    spy = pd.Series(100.0, index=idx)
+    if short_side == "stock":
+        stock = stock.iloc[:100]
+    else:
+        spy = spy.iloc[:100]
+    assert phase._car(stock, spy, idx[105], -10, -1) is None
+
+
+def test_phase0_keeps_observed_tail_and_non_session_anchor():
+    from scripts import ipo_lockup_phase0 as phase
+    import numpy as np
+    idx = pd.bdate_range("2025-01-01", periods=100)
+    stock = pd.Series(np.arange(100.0, 200.0), index=idx)
+    spy = pd.Series(100.0, index=idx)
+    # The last actual anchor may validly have a fully observed pre-runup.
+    expected = float(np.prod(stock.iloc[89:99].to_numpy()
+                             / stock.iloc[88:98].to_numpy()) - 1.0)
+    assert phase._car(stock, spy, idx[-1], -10, -1) == expected
+    monday = next(t for t in idx[30:60] if t.dayofweek == 0)
+    saturday = monday - pd.Timedelta(days=2)
+    for offsets in phase.WINDOWS.values():
+        assert phase._car(stock, spy, saturday, *offsets) == phase._car(
+            stock, spy, monday, *offsets)
+        assert phase._car(stock, spy, idx[0] - pd.Timedelta(days=1), *offsets) is None
+
+
+@pytest.mark.parametrize("future_count", [0, 1, 25])
+def test_phase0_future_anchor_counts_reach_report_and_badge(monkeypatch, tmp_path, future_count):
+    import json
+    import sys
+    import types
+    import numpy as np
+    from datetime import datetime, timezone
+    from scripts import ipo_lockup_phase0 as phase
+
+    class FixedClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return cls(2026, 11, 14, tzinfo=timezone.utc)
+
+    idx = pd.bdate_range("2025-01-01", periods=200)
+    names = [f"S{i:02d}" for i in range(25)]
+    priced = idx[100] - pd.Timedelta(days=180)
+    cal = pd.DataFrame({"ticker": names, "priced_date": priced.strftime("%Y-%m-%d"),
+                        "status": "priced", "is_spac": False, "offer_value_usd": 100e6})
+    terms = pd.DataFrame({"lockup_days": [730 if i < future_count else 180
+                                        for i in range(25)]}, index=names)
+    prices = pd.DataFrame(index=idx)
+    for i, name in enumerate(names):
+        values = np.full(len(idx), 100.0)
+        values[99:] *= 1.0 - .001 * (i + 1)
+        prices[(name, "Close")] = values
+    prices.columns = pd.MultiIndex.from_tuples(prices.columns)
+    monkeypatch.setattr(phase, "datetime", FixedClock)
+    monkeypatch.setattr(phase, "load_calendar", lambda: cal)
+    monkeypatch.setattr(phase, "load_lockups", lambda: terms)
+    monkeypatch.setattr(phase.store, "read", lambda *a: pd.DataFrame({"close": 100.0}, index=idx))
+    monkeypatch.setitem(sys.modules, "yfinance", types.SimpleNamespace(download=lambda *a, **k: prices))
+    result = phase.run(140, 50e6)
+    assert result["n_sampled"] == 25
+    assert result["n_names"] == 25 - future_count
+    assert result["n_missing"] == 0
+    assert result["n_unavailable_names"] == future_count
+    for row in result["windows"].values():
+        assert row["n"] == 25 - future_count
+        assert row["n_unavailable"] == future_count
+    assert result["verdict"].startswith("DISPLAY-ONLY")
+    if future_count:
+        assert "insufficient" in result["verdict"]
+        assert result["tier"] == "none"
+    monkeypatch.setattr(phase.config, "ROOT", tmp_path)
+    monkeypatch.setattr(phase.config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setattr(phase, "run", lambda *a: result)
+    monkeypatch.setattr(sys, "argv", ["ipo_lockup_phase0"])
+    assert phase.main() == 0
+    badge = json.loads((tmp_path / "data/ipo/lockup_phase0.json").read_text(),
+                       parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+    assert badge["n_names"] == 25 - future_count
+    assert badge["stat"] == result["windows"][phase.FOCUS]
+    report = (tmp_path / "reports/ipo-lockup-phase0.md").read_text()
+    assert f"{25 - future_count} names with at least one usable window" in report
+    assert f"{future_count} with no usable window" in report
+    assert result["verdict"] in report

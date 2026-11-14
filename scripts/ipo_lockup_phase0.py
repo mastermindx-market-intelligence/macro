@@ -80,6 +80,9 @@ def _car(stock: pd.Series, spy: pd.Series, event: pd.Timestamp,
     s = stock.reindex(idx)
     m = spy.reindex(s.index)
     pos = s.index.searchsorted(event)          # first trading day >= event
+    # A pre-event window still needs an observed on/after-event anchor.
+    if pos >= len(s):
+        return None
     lo, hi = pos + w0, pos + w1
     if lo < 1 or hi >= len(s):
         return None
