@@ -207,3 +207,94 @@ for (const path of SOURCES) {
     );
   });
 }
+
+// C2 #3268: assignment is the cap of the combined stock + short-call payoff.
+// Reuse the incumbent full-controller fixture and CI owner, not a second suite.
+for (const path of SOURCES) {
+  test(`${path}: below-basis strike can still produce an assignment gain`, () => {
+    const client = loadClient(path);
+    client.input({ c: 100, K: 90, prem: 15, d: 30 });
+    assert.equal(client.nodes['out-main'].textContent, '5.00%');
+    assert.equal(client.nodes['out-breakeven'].textContent, '$85.00');
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /locks in a loss/);
+    assert.equal(client.nodes['out-plain'].className, 'co-plain');
+  });
+
+  test(`${path}: zero capped payoff describes the full break-even plateau`, () => {
+    const client = loadClient(path);
+    client.input({ c: 100, K: 90, prem: 10, d: 30 });
+    assert.equal(client.nodes['out-main'].textContent, '0.00%');
+    assert.equal(client.nodes['out-breakeven'].textContent, '$90.00 and above');
+    assert.match(client.nodes['out-plain'].textContent, /breaks even at or above/);
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /locks in a loss/);
+    assert.match(client.copy(), /break-even \$90\.00 and above/);
+  });
+
+  test(`${path}: negative maximum payoff never advertises an unattainable break-even`, () => {
+    const client = loadClient(path);
+    client.input({ c: 100, K: 90, prem: 3, d: 30 });
+    assert.equal(client.nodes['out-main'].textContent, '-7.00%');
+    assert.equal(client.nodes['out-breakeven'].textContent, 'Not attainable');
+    assert.match(client.nodes['out-plain'].textContent, /locks in a loss/);
+    assert.match(client.nodes['out-plain'].textContent, /No nonnegative expiration price/);
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /Break-even is \$97/);
+    assert.match(client.copy(), /break-even not attainable/);
+    assert.doesNotMatch(client.copy(), /break-even \$97/);
+    assert.equal(client.nodes['out-plain'].className, 'co-plain warn');
+  });
+
+  test(`${path}: premium above basis does not invent a negative stock price`, () => {
+    const client = loadClient(path);
+    client.input({ c: 100, K: 90, prem: 101, d: 0 });
+    assert.equal(client.nodes['out-breakeven'].textContent, 'Not needed');
+    assert.match(client.nodes['out-plain'].textContent, /positive at every nonnegative expiration price/);
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /locks in a loss/);
+    assert.match(client.copy(), /break-even not needed/);
+  });
+
+  test(`${path}: premium equal to basis preserves the valid zero-price break-even`, () => {
+    const client = loadClient(path);
+    client.input({ c: 100, K: 90, prem: 100, d: 0 });
+    assert.equal(client.nodes['out-breakeven'].textContent, '$0.00');
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /locks in a loss/);
+    assert.match(client.copy(), /break-even \$0\.00/);
+  });
+
+  test(`${path}: loss, break-even, profit, invalid and recovered transitions retire old messages`, () => {
+    const client = loadClient(path);
+    for (const prem of [3, 10, 15, 3, 15]) {
+      client.input({ c: 100, K: 90, prem, d: 0 });
+      assert.equal(client.nodes['out-plain'].textContent.includes('locks in a loss'), prem < 10);
+      assert.equal(client.copy().includes('not attainable'), prem < 10);
+    }
+    client.input({ c: null, K: 90, prem: 15, d: 0 });
+    assert.equal(client.nodes['out-breakeven'].textContent, '—');
+    assert.equal(client.copy(), '');
+    client.input(ORDINARY);
+    assert.equal(client.nodes['out-breakeven'].textContent, '$97.00');
+    assert.match(client.copy(), ORDINARY_COPY);
+    assert.doesNotMatch(client.nodes['out-plain'].textContent, /No nonnegative|locks in a loss|breaks even at or above/);
+  });
+
+  test(`${path}: independent integer-cents payoff matrix agrees with the presentation`, () => {
+    const client = loadClient(path);
+    for (const C of [1000, 2500, 10000]) for (const kr of [50, 75, 90, 100, 110]) for (const pr of [1, 5, 10, 25, 50, 60, 100, 101]) {
+      const K = C * kr / 100, P = C * pr / 100;
+      const cap = Math.min(K, K) + P - C, be = C - P;
+      client.input({ c: C / 100, K: K / 100, prem: P / 100, d: 0 });
+      const plain = client.nodes['out-plain'].textContent;
+      assert.equal(plain.includes('locks in a loss'), cap < 0);
+      assert.equal(client.copy().includes('not attainable'), cap < 0);
+      if (cap < 0) {
+        assert.equal(client.nodes['out-breakeven'].textContent, 'Not attainable');
+        for (const S of [0, K - 1, K, be, 2 * C]) assert.ok(Math.min(S, K) + P - C < 0);
+      } else if (be < 0) {
+        assert.equal(client.nodes['out-breakeven'].textContent, 'Not needed');
+      } else {
+        assert.equal(Math.min(be, K) + P - C, 0);
+        const price = '$' + (be / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        assert.equal(client.nodes['out-breakeven'].textContent, price + (cap === 0 ? ' and above' : ''));
+      }
+    }
+  });
+}
