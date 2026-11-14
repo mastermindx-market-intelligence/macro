@@ -19844,6 +19844,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/subsector_confluence_history.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24794,6 +24795,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/subsector_confluence_history.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -28522,6 +28524,14 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Confluence publication-history source and fixture closure.
+      - "engine/subsector_confluence_history.py"
+      - "tests/__init__.py"
+      - "tests/test_subsector_confluence_history.py"
+      - "tests/test_subsector_confluence_history_ui.py"
+      - "templates/subsectors.js"
+      - "site/subsectors.js"
+      - "site/marketdata/subsector_confluence_history.json"
       - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
@@ -29242,7 +29252,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install BioCatalyst test deps
-        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3
+        run: pip install pytest fastapi httpx requests pyyaml jsonschema jinja2 boto3 pandas numpy
       - name: BioCatalyst serving, UI, and deployment-isolation contracts
         run: >
           python -m pytest
@@ -29254,6 +29264,9 @@ jobs:
           tests/test_biocatalyst_catalyst_radar_api.py
           tests/test_biocatalyst_d0b_ui.py
           tests/test_biocatalyst_hydration.py -q
+
+      - name: Confluence history observation, outcome, and browser-consumer contracts
+        run: python -m pytest tests/test_subsector_confluence_history.py tests/test_subsector_confluence_history_ui.py -q
 
   biocatalyst-evidence:
     if: ${{ false }}
@@ -36534,6 +36547,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/subsector_confluence_history.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -38060,6 +38074,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Confluence publication-history source and fixture closure.
+      - "engine/subsector_confluence_history.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -51992,6 +52008,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/subsector_confluence_history.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

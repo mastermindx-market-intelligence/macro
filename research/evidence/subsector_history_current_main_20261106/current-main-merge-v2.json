@@ -1,0 +1,55 @@
+{
+  "schema": "c4.subsector.current-main-merge.v2",
+  "original_qualifier_head": "075445df2872a877fe11049da4d35245068c3a08",
+  "published_head": "191568e908c92829729e3c50ef0b604e6f839817",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "preserved_private_entries": 991,
+  "sparse_hydration_replayed": false,
+  "sparse_profile_modified_by_resume": false,
+  "index_preparation": "Public git add --sparse for only three already-materialized, expected published tracked postimages; no runtime/sparse completeness claim",
+  "phases": [
+    {
+      "name": "exact_published_three_path_stage",
+      "command": [
+        "git",
+        "add",
+        "--sparse",
+        "--",
+        "data/subsector_rotation/confluence_snapshots.jsonl",
+        "site/marketdata/subsector_confluence_history.json",
+        "site/subsectors.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.89,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_tail": ""
+    },
+    {
+      "name": "settled_published_source_fast_forward",
+      "command": [
+        "git",
+        "merge",
+        "--ff-only",
+        "191568e908c92829729e3c50ef0b604e6f839817"
+      ],
+      "exit_code": 0,
+      "seconds": 20.72,
+      "log_sha256": "fb2bc07e94d5713cd3eeaa1599b8ed932bea2a478b4a1afcf7dc2823a6080583",
+      "log_tail": "3912)\nUpdating files:  44% (45722/103912)\nUpdating files:  45% (46761/103912)\nUpdating files:  46% (47800/103912)\nUpdating files:  47% (48839/103912)\nUpdating files:  48% (49878/103912)\nUpdating files:  49% (50917/103912)\nUpdating files:  50% (51956/103912)\nUpdating files:  51% (52996/103912)\nUpdating files:  52% (54035/103912)\nUpdating files:  53% (55074/103912)\nUpdating files:  54% (56113/103912)\nUpdating files:  55% (57152/103912)\nUpdating files:  56% (58191/103912)\nUpdating files:  57% (59230/103912)\nUpdating files:  58% (60269/103912)\nUpdating files:  59% (61309/103912)\nUpdating files:  59% (61361/103912)\nUpdating files:  60% (62348/103912)\nUpdating files:  61% (63387/103912)\nUpdating files:  62% (64426/103912)\nUpdating files:  63% (65465/103912)\nUpdating files:  64% (66504/103912)\nUpdating files:  65% (67543/103912)\nUpdating files:  66% (68582/103912)\nUpdating files:  67% (69622/103912)\nUpdating files:  68% (70661/103912)\nUpdating files:  69% (71700/103912)\nUpdating files:  70% (72739/103912)\nUpdating files:  71% (73778/103912)\nUpdating files:  72% (74817/103912)\nUpdating files:  73% (75856/103912)\nUpdating files:  73% (76756/103912)\nUpdating files:  74% (76895/103912)\nUpdating files:  75% (77934/103912)\nUpdating files:  76% (78974/103912)\nUpdating files:  77% (80013/103912)\nUpdating files:  78% (81052/103912)\nUpdating files:  79% (82091/103912)\nUpdating files:  80% (83130/103912)\nUpdating files:  81% (84169/103912)\nUpdating files:  82% (85208/103912)\nUpdating files:  83% (86247/103912)\nUpdating files:  84% (87287/103912)\nUpdating files:  85% (88326/103912)\nUpdating files:  86% (89365/103912)\nUpdating files:  87% (90404/103912)\nUpdating files:  88% (91443/103912)\nUpdating files:  89% (92482/103912)\nUpdating files:  89% (92521/103912)\nUpdating files:  90% (93521/103912)\nUpdating files:  91% (94560/103912)\nUpdating files:  92% (95600/103912)\nUpdating files:  93% (96639/103912)\nUpdating files:  94% (97678/103912)\nUpdating files:  95% (98717/103912)\nUpdating files:  96% (99756/103912)\nUpdating files:  97% (100795/103912)\nUpdating files:  98% (101834/103912)\nUpdating files:  99% (102873/103912)\nUpdating files: 100% (103912/103912)\nUpdating files: 100% (103912/103912), done.\nUpdating 075445df2872a..191568e908c92\nFast-forward\n .github/ci/legacy-jobs.yml                         |  19 +-\n data/ops/nightly_timings/capital_structure.jsonl   |   1 +\n data/ops/nightly_timings/factor_series.jsonl       |   1 +\n data/subsector_rotation/confluence_snapshots.jsonl | 220 +++++++++++\n engine/subsector_confluence_history.py             | 418 +++++++++++++++++++++\n scripts/build_subsector_confluence.py              |  33 ++\n site/anticipationdata/us_leader_pullback.json      |   2 +-\n site/factordata/factor_series.json                 |   2 +-\n site/marketdata/subsector_confluence_history.json  |   1 +\n site/subsectors.js                                 | 165 ++++++--\n templates/subsectors.js                            | 165 ++++++--\n tests/test_subsector_confluence_history.py         | 271 +++++++++++++\n tests/test_subsector_confluence_history_ui.py      | 250 ++++++++++++\n 13 files changed, 1491 insertions(+), 57 deletions(-)\n create mode 100644 data/subsector_rotation/confluence_snapshots.jsonl\n create mode 100644 engine/subsector_confluence_history.py\n create mode 100644 site/marketdata/subsector_confluence_history.json\n create mode 100644 tests/test_subsector_confluence_history.py\n create mode 100644 tests/test_subsector_confluence_history_ui.py\n"
+    },
+    {
+      "name": "accepted_current_main_merge",
+      "command": [
+        "git",
+        "merge",
+        "--no-commit",
+        "--no-ff",
+        "ede58e46e40d454613b06ef0fbf1fb0f139d24a9"
+      ],
+      "exit_code": 1,
+      "seconds": 8.7,
+      "log_sha256": "ac8c9db97fa7b3ae4b7161fd766d8d6f99bcec913ad0424463d87f87151a5f52",
+      "log_tail": "Auto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAutomatic merge failed; fix conflicts and then commit the result.\n"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "c4.subsector.source-qualification.v1",
+  "pr": 7384,
+  "publication_branch": "sol/sector-confluence-history-semantics",
+  "expected_original_head": "191568e908c92829729e3c50ef0b604e6f839817",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "qualification_operation": "github-pr-sweep-2028-c4-pr7384-repair",
+  "qualifier_branch_push_permitted": false,
+  "mastermind_law_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "source_index_blobs": {
+    ".github/ci/legacy-jobs.yml": "aecb63fadf17c5b811d29f69e42a713917faad5c",
+    "data/subsector_rotation/confluence_snapshots.jsonl": "f043423be9023f4c1d2d2678278f10eb141b1bcf",
+    "engine/subsector_confluence_history.py": "48e51c846f17a21f0a6a8a53cfe9c0c5646da837",
+    "scripts/build_subsector_confluence.py": "9ad33805b91b3285192002390731fe024752515f",
+    "site/marketdata/subsector_confluence_history.json": "06cfedfeda6b965f14ec0953b6d8af359e963efe",
+    "site/subsectors.js": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+    "templates/subsectors.js": "2fe99d64f0de298e8229eda78bfda2607a11be1b",
+    "tests/test_subsector_confluence_history.py": "eaa795758f71cea3fb53c46563bacbbde43e21b3",
+    "tests/test_subsector_confluence_history_ui.py": "f36e16ca8b7441b55a3a1e7335007ceb51578c7c"
+  },
+  "all_eight_published_product_blobs_and_modes_retained": true,
+  "manifest_incoming_additions": {
+    "regime-outlook-mapping": [
+      "engine/rate_futures_repricing.py"
+    ],
+    "washout-turn-organ": [
+      "collectors/rate_futures.py",
+      "engine/rate_futures_repricing.py"
+    ],
+    "unrun-picks-boards": [
+      "engine/rate_futures_repricing.py"
+    ]
+  },
+  "all_published_non_path_metadata_unchanged": true,
+  "published_path_order_and_duplicates_preserved": true,
+  "job_count": 388,
+  "unrun_picks_gate": "data",
+  "private_entries": 991,
+  "private_regular_files": 828,
+  "private_symlinks": 163,
+  "private_unchanged": true,
+  "private_inventory_sha256": "ae8d9282e12980bb7173f72a7a77f1cdbb9f63c3c7e8e322c7196478213954f6",
+  "sparse_hydration_timed_out_seconds": 300,
+  "sparse_hydration_clean_sigterm_reported": true,
+  "sparse_source_reconciliation": {
+    "all_nine_before_blobs_unchanged": true,
+    "three_omitted_after_ordinary_git_transition": true,
+    "eight_nonmanifest_index_blobs_exact_published": true
+  },
+  "sparse_runtime_completeness_claimed": false,
+  "local_existing_static_cases": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "66fd3664adc2269622c5d399e1880672536501952c1a83c44ac4c6ab16e513a8"
+  },
+  "reused_prior_separate_evidence": {
+    "history_cases": 65,
+    "owner_cases": 292,
+    "browser_cases": 14,
+    "newly_executed": false,
+    "source_return": "https://github.com/mastermindx-market-intelligence/Macro/pull/7384#issuecomment-6681935580"
+  },
+  "fresh_hosted_ci": "pending original-branch publication",
+  "merge_or_production_acceptance": false,
+  "files": {
+    "README.md": {
+      "bytes": 2495,
+      "sha256": "fc9c41484448bf410e59be2ed909c7c2813da31d699fec6e3cd6d7a7a21dc5fc"
+    },
+    "actual-merge-reconciliation.json": {
+      "bytes": 6960,
+      "sha256": "29d73befd02da8ad83d995215cf4277da35f837340932908ebb53513f05353a5"
+    },
+    "current-main-merge-v2.json": {
+      "bytes": 5494,
+      "sha256": "def39753fb041083ecd933a442115e1e077063da0ae81d2dab680b3fba7a5758"
+    },
+    "current-source-composition.json": {
+      "bytes": 1076,
+      "sha256": "09ea569332e96c21c6b248bf934c62485082a69615db8a481ff9418c44f42993"
+    },
+    "focused-manifest-tests.json": {
+      "bytes": 2114,
+      "sha256": "1f7864d8d21d6bd6316297a571952779a5714e12f810bd9f570db475bdec2c17"
+    },
+    "focused-manifest-tests.log": {
+      "bytes": 110,
+      "sha256": "66fd3664adc2269622c5d399e1880672536501952c1a83c44ac4c6ab16e513a8"
+    },
+    "site-data-hydration.log.gz": {
+      "bytes": 345,
+      "sha256": "6f21a2a8704c27095807d77b6716cdf16fa0ab77c8639a840cec2c4a04ea36d6",
+      "encoding": "gzip",
+      "decoded_bytes": 522,
+      "decoded_sha256": "e973ad28e506db9595aa3726539e779b49bf27bccaf03c1eb6620fb75814d207"
+    },
+    "sparse-timeout-reconciliation.json": {
+      "bytes": 3193,
+      "sha256": "5eb6ccd180e380dfa3d5f6c15c8bffc11cbb7f8be010c47fcda74d0ed96858d4"
+    }
+  }
+}

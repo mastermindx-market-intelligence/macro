@@ -46,6 +46,7 @@
   var TAB = 'subsectors';
   var NIDATA = null;
   var LEAD = null;
+  var HISTORY = null;
   var SORT = {};   // per-tab full-table sort {col, dir}
   var FILTER = {}; // per-tab full-table search text
 
@@ -61,6 +62,27 @@
     if (e.tier === 'T3' || e.tier === 'T4') return L('about to fire', '即将触发');
     if (e.ticks != null) return e.ticks === 0 ? L('just fired', '刚刚触发') : L('fired ' + e.ticks + ' bar' + (e.ticks > 1 ? 's' : '') + ' ago', e.ticks + ' 根K线前触发');
     return '';
+  }
+  /* Entry trigger and entry condition answer different questions.  Keep the raw
+     producer regime visible, but never render EXTENDED as though it cancels a fresh
+     T1/T2/T3 cross.  This is presentation semantics only; no ranking/gate changes. */
+  function entryCondition(r) {
+    r = r || {};
+    var state = String(r.state || r.regime_state || '').toUpperCase();
+    var side = String(r.side || r.regime_side || '').toLowerCase();
+    if (state === 'EXTENDED') return { key: 'stretched', label: ['Stretched — wait for pullback', '已伸展——等待回撤'] };
+    if (state === 'BELOW_TREND') return { key: 'below_trend', label: ['Below trend — require confirmation', '低于趋势——需要确认'] };
+    if (side === 'avoid' || state === 'TOPPING' || state === 'SELL') return { key: 'caution', label: ['Caution — confirm before entry', '谨慎——入场前确认'] };
+    if (['BUY', 'BUY_PARTIAL', 'SETUP_BUY', 'OVERSOLD_BOUNCE', 'NEUTRAL'].indexOf(state) >= 0) return { key: 'clean', label: ['Clear enough to act', '入场环境较清晰'] };
+    return { key: 'unavailable', label: ['Entry condition unavailable', '入场条件不可用'] };
+  }
+  function conditionText(r) {
+    var q = entryCondition(r);
+    return L(q.label[0], q.label[1]);
+  }
+  function rawRegime(r) {
+    var state = (r && (r.state || r.regime_state)) || '';
+    return state ? '<span class="g-fresh">(' + esc(state) + ')</span>' : '';
   }
   function detailHref(ds, key) { var d = DS[ds]; return d.dir + d.prefix + key + '.html'; }
   function stockHref(tk) { return 'stock.html#' + encodeURIComponent(tk); }
@@ -79,7 +101,7 @@
      universe split buy→avoid) · the single best-timed entry · honest coverage. */
 
   var CLASS_META = {
-    entry_now: { seg: 'entry',    label: ['Entry now', '现可入场'],  col: 'var(--up)' },
+    entry_now: { seg: 'entry',    label: ['Fresh signals', '新信号'],  col: 'var(--up)' },
     tailwind:  { seg: 'tailwind', label: ['Tailwind', '顺风'],       col: 'color-mix(in srgb,var(--up) 55%,var(--info))' },
     neutral:   { seg: 'neutral',  label: ['Neutral', '中性'],        col: 'var(--g-mid)' },
     late:      { seg: 'late',     label: ['Late', '偏晚'],           col: 'var(--orange)' },
@@ -159,8 +181,8 @@
     var c = stats.counts, tail = c.tailwind, e = c.entry_now, head = c.headwind + c.late;
     var body, bodyZh;
     if (e > 0) {
-      body = '<b>' + e + '</b> group' + (e > 1 ? 's' : '') + ' just turned <span class="accent-up">buyable</span>' + (tail ? ' and <b>' + tail + '</b> more carry a tailwind' : '') + '. Entries have the wind at their back — confirm the group before chasing.';
-      bodyZh = '<b>' + e + '</b> 个子行业刚转为<span class="accent-up">可买</span>' + (tail ? '，另有 <b>' + tail + '</b> 个处于顺风' : '') + '。入场有顺风——追涨前请先确认该组。';
+      body = '<b>' + e + '</b> group' + (e > 1 ? 's' : '') + ' triggered a <span class="accent-up">fresh entry signal</span>' + (tail ? ' and <b>' + tail + '</b> more carry a tailwind' : '') + '. Entry condition needs a separate check: a group can still be stretched or below trend.';
+      bodyZh = '<b>' + e + '</b> 个组出现<span class="accent-up">新入场信号</span>' + (tail ? '，另有 <b>' + tail + '</b> 个处于顺风' : '') + '。入场条件需单独判断：该组仍可能已伸展或低于趋势。';
     } else if (tail > 0) {
       body = 'No group is firing a <span class="accent-up">fresh entry</span> right now, but <b>' + tail + '</b> carry a tailwind — watch for the cross, don\'t force it.';
       bodyZh = '当前无子行业触发<span class="accent-up">新入场</span>，但有 <b>' + tail + '</b> 个处于顺风——等待交叉，不要勉强。';
@@ -195,21 +217,23 @@
 
   function bestEntryHTML(stats, ds) {
     var g = stats.best;
-    if (!g) return '<div class="sc-best none"><span class="ar">◦</span><div class="bd"><span class="nm">' + L('No group is buyable right now', '当前无可买子行业') + '</span> <span class="why">— ' + L('the cleanest setups are still forming; watch the board below.', '最干净的形态仍在构筑；关注下方看板。') + '</span></div></div>';
+    if (!g) return '<div class="sc-best none"><span class="ar">◦</span><div class="bd"><span class="nm">' + L('No fresh entry signal right now', '当前无新入场信号') + '</span> <span class="why">— ' + L('the cleanest setups are still forming; watch the board below.', '最干净的形态仍在构筑；关注下方看板。') + '</span></div></div>';
     var r = g.regime || {}, e = g.entry || {};
     var avoid = r.side === 'avoid';
-    var good = stats.bestIsEntry && !avoid;   // green beacon only when the freshest entry is also clean
-    var why = r.signal_line ? esc(r.signal_line) : (r.action ? esc(r.action) : '');
+    var good = stats.bestIsEntry && !avoid;
     var href = g.chart_key ? detailHref(ds, g.key) : null;
     var nm = href ? '<a class="nm" href="' + href + '">' + esc(g.label) + '</a>' : '<span class="nm">' + esc(g.label) + '</span>';
-    var tag = !stats.bestIsEntry ? L('Closest to buyable', '最接近可买')
-      : avoid ? L('Freshest cross — but extended, confirm', '最新交叉——但已伸展，请确认')
-      : L('Best-timed entry now', '当前最佳择时入场');
+    var tag = stats.bestIsEntry ? L('Fresh entry signal', '新入场信号') : L('Closest to a fresh signal', '最接近新信号');
     var fresh = freshTxt(e);
+    var sigLine = L('Signal: ', '信号：') + (e.tier ? tierBadge(e.tier) : '') + (fresh ? ' <span class="why">' + fresh + '</span>' : '');
+    var condLine = L('Entry condition: ', '入场条件：') + '<b>' + conditionText(r) + '</b> ' + rawRegime(r);
+    var context = r.action ? '<div class="why" style="margin-top:4px">' + L('Context: ', '背景：') + L(esc(r.action), esc(r.action_zh || r.action)) + '</div>' : '';
     return '<div class="sc-best' + (good ? '' : ' none') + '"><span class="ar">▸</span><div class="bd">'
       + '<span style="font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">' + tag + '</span><br>'
-      + nm + ' ' + tierBadge(e.tier) + ' ' + regimePill(r)
-      + (why ? '<br><span class="why">' + why + (fresh ? ' · ' : '') + '</span>' + (fresh ? '<span class="why">' + fresh + '</span>' : '') : '')
+      + nm
+      + '<div class="why" style="margin-top:5px">' + sigLine + '</div>'
+      + '<div class="why" style="margin-top:3px">' + condLine + '</div>'
+      + context
       + '</div></div>';
   }
 
@@ -225,7 +249,7 @@
       + '<div class="sc-eyebrow"><span class="dot"></span><span class="lbl">' + L('Rotation read', '轮动读数') + '</span>'
       + '<span class="backdrop">' + backdropChips() + '</span></div>'
       + '<div class="sc-hero-grid">'
-      + '<div class="sc-headline"><div class="big' + (e ? '' : ' zero') + '">' + e + '</div><div class="cap">' + L('Buyable now', '现可买') + '</div></div>'
+      + '<div class="sc-headline"><div class="big' + (e ? '' : ' zero') + '">' + e + '</div><div class="cap">' + L('Fresh entry signals', '新入场信号') + '</div></div>'
       + ribbonHTML(stats)
       + '</div>'
       + verdictProse(stats, ds)
@@ -265,17 +289,20 @@
     var col = side === 'avoid' ? (g['class'] === 'headwind' ? 'var(--down)' : 'var(--orange)')
       : (g['class'] === 'entry_now' ? 'var(--up)' : g['class'] === 'forming' ? 'var(--info)' : 'color-mix(in srgb,var(--up) 55%,var(--info))');
     var href = g.chart_key ? detailHref(ds, g.key) : '#';
-    var avoid = r.side === 'avoid';
     var action = regimeAction(r);
     var sig = r.signal_line ? esc(r.signal_line) : '';
-    var pills = regimePill(r) + (e.tier && g['class'] === 'entry_now' ? ' <span class="pill entry">' + L('ENTRY', '入场') + '</span>' : '') + behavesAsChip(g);
+    var pills = side === 'buy'
+      ? ((g['class'] === 'entry_now' ? '<span class="pill entry">' + L('FRESH TRIGGER', '新触发') + '</span> ' : '') + behavesAsChip(g))
+      : (regimePill(r) + behavesAsChip(g));
     var body;
     if (side === 'avoid') {
       body = action ? '<div class="g-act"><span class="lead">' + action + '</span></div>' : '';
     } else {
       var er = entryRead(g);
       body = (er ? '<div class="g-act"><span class="lead">' + er + '</span></div>' : '')
-        + (action ? '<div class="g-act" style="margin-top:5px' + (avoid ? ';color:var(--ink-orange, var(--orange))' : ';color:var(--muted)') + '">' + (avoid ? '⚠ ' : '') + action + '</div>' : '');
+        + '<div class="g-act" style="margin-top:5px;color:var(--muted)">' + L('Entry condition: ', '入场条件：')
+        + '<b>' + conditionText(r) + '</b> ' + rawRegime(r) + '</div>'
+        + (action ? '<div class="g-sig">' + L('Context: ', '背景：') + action + '</div>' : '');
     }
     return '<a class="gcard" style="border-left-color:' + col + '" href="' + href + '">'
       + '<div class="g-top"><div><div class="g-nm">' + esc(g.label) + '</div>'
@@ -290,13 +317,14 @@
     var groups = groupsOf(ds);
     var noun = DS[ds].noun;
     var buy = groups.filter(function (g) { return g['class'] === 'entry_now'; });
-    var forming = (payload.forming || []);
+    var formingKeys = payload.forming || [];
+    var forming = groups.filter(function (g) { return g['class'] === 'forming' || formingKeys.indexOf(g.key) >= 0; });
     var avoid = groups.filter(function (g) { return g['class'] === 'headwind' || g['class'] === 'late'; })
       .sort(function (a, b) { return (a['class'] === 'headwind' ? 0 : 1) - (b['class'] === 'headwind' ? 0 : 1); });
 
-    var buyCol = '<div class="sc-col"><div class="sc-colhead"><span class="pip buy"></span>' + L('Buy-ready — just turned', '可买——刚转向') + ' <span class="n">' + buy.length + '</span></div>';
+    var buyCol = '<div class="sc-col"><div class="sc-colhead"><span class="pip buy"></span>' + L('Fresh signals — just triggered', '新信号——刚触发') + ' <span class="n">' + buy.length + '</span></div>';
     buyCol += buy.length ? '<div class="gcards">' + buy.map(function (g) { return gcardHTML(g, ds, 'buy'); }).join('') + '</div>'
-      : '<div class="empty">' + L('No ' + noun[0] + ' is firing a fresh entry tier right now. When one crosses, it lands here first.', '当前无' + noun[1] + '触发新的入场层级。一旦有交叉，将最先显示于此。') + '</div>';
+      : '<div class="empty">' + L('No ' + noun[0] + ' is firing a fresh entry signal right now. When one crosses, it lands here first.', '当前无' + noun[1] + '触发新的入场信号。一旦有交叉，将最先显示于此。') + '</div>';
     if (forming.length) {
       buyCol += '<div style="margin-top:11px;font-size:11px;color:var(--muted)">' + L('Also forming (T4 — earliest, weakest)', '构筑中（T4 — 最早、最弱）') + ' <span class="num">' + forming.length + '</span></div>'
         + '<div class="gcards" style="margin-top:6px">' + forming.slice(0, 4).map(function (g) { return gcardHTML(g, ds, 'buy'); }).join('') + '</div>';
@@ -310,8 +338,8 @@
     avoidCol += '</div>';
 
     return '<div class="sec sc-stagger sc-s1"><div class="sec-head"><h2>' + ic('target','sc-h2-ic') + ' ' + L('What to do now', '当下操作') + '</h2></div>'
-      + '<div class="desc">' + L('Fresh T1–T3 confluence crosses on the left (buy-ready); groups that are overbought or below trend on the right (don\'t chase). The detail page shows each group\'s chart and which members are firing.',
-        '左侧为新触发的 T1–T3 汇聚交叉（可买）；右侧为超买或跌破趋势的组（勿追）。详情页展示各组图表与触发成分。') + '</div>'
+      + '<div class="desc">' + L('Fresh T1–T3 crosses are signals that the setup just triggered. Entry condition is shown separately: a stretched group can have a fresh signal and still be a poor place to chase. The detail page shows the chart and which members are firing.',
+        'T1–T3 新交叉表示形态刚刚触发。入场条件会单独显示：一个已伸展的组可以同时出现新信号，但并不代表适合追涨。详情页展示图表与触发成分。') + '</div>'
       + '<div class="sc-board">' + buyCol + avoidCol + '</div></div>';
   }
 
@@ -338,6 +366,65 @@
       + '<div class="desc">' + L('Stocks with an active or forming T1–T4 entry read inside a subsector that is also working. Strongest combined reads come first' + (buys.length > PICKS_CAP ? '; the top ' + PICKS_CAP + ' are shown.' : '.'),
         '这些股票出现了已生效或正在形成的 T1–T4 入场判断，同时所在子行业也在走强。综合判断最强的排在前面' + (buys.length > PICKS_CAP ? '；默认显示前 ' + PICKS_CAP + ' 个。' : '。')) + '</div>'
       + '<div class="sc-tablecard">' + body + '</div></div>';
+  }
+
+
+  /* ══ HISTORY — immutable first-seen publication record ═══════════════════════ */
+  function historySection(ds) {
+    if (!HISTORY || !Array.isArray(HISTORY.days) || !HISTORY.days.length) return '';
+    var days = HISTORY.days.slice(0, 12);
+    var rows = [];
+    days.forEach(function (day) {
+      if (!day || typeof day !== 'object' || Array.isArray(day) || typeof day.date !== 'string' || !day.date) return;
+      var desk = day.desks && typeof day.desks === 'object' && !Array.isArray(day.desks) ? day.desks[ds] : null;
+      var valid = desk && typeof desk === 'object' && !Array.isArray(desk) && Array.isArray(desk.recommendations);
+      var recs = valid ? desk.recommendations.filter(function (r) {
+        return r && typeof r === 'object' && !Array.isArray(r)
+          && ((typeof r.label === 'string' && r.label) || (typeof r.key === 'string' && r.key));
+      }) : [];
+      if (!valid || (desk.recommendations.length && !recs.length)) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('Publication record unavailable for this desk.', '该栏目当日发布记录不可用。') + '</td></tr>');
+        return;
+      }
+      if (!recs.length) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('No fresh entry signal published.', '当日未发布新入场信号。') + '</td></tr>');
+        return;
+      }
+      recs.forEach(function (r) {
+        var tier = /^T[1-4]$/.test(r.entry_tier) ? r.entry_tier : null;
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td>'
+          + '<td style="font-weight:700">' + esc(r.label || r.key || '') + '</td>'
+          + '<td>' + tierBadge(tier) + '</td>'
+          + '<td>' + conditionText(r) + '</td>'
+          + '<td style="color:var(--muted)">' + esc(r.regime_state || '—') + '</td></tr>');
+      });
+      if (recs.length !== desk.recommendations.length) {
+        rows.push('<tr><td class="num">' + esc(day.date) + '</td><td colspan="4" style="color:var(--muted)">'
+          + L('Some publication entries are unavailable.', '部分发布条目不可用。') + '</td></tr>');
+      }
+    });
+    if (!rows.length) return '';
+    var acc = HISTORY.accuracy || {};
+    var status = acc.status === 'measuring'
+      ? L('Forward scorecard: measuring', '前瞻评分：测量中')
+      : L('Forward scorecard: accruing', '前瞻评分：累积中');
+    var start = typeof HISTORY.history_start === 'string' ? HISTORY.history_start : '—';
+    var note = L('Publication record starts ' + esc(start) + '. Earlier dates are not reconstructed from today\'s membership.',
+                 '发布记录始于 ' + esc(start) + '。更早日期不会用当前成分进行回溯重建。');
+    note += ' · ' + (typeof HISTORY.pit_only_since === 'string'
+      ? L('Prospective observations since ' + esc(HISTORY.pit_only_since) + '.', '前瞻时点观测始于 ' + esc(HISTORY.pit_only_since) + '。')
+      : L('Prospective observations are still accruing.', '前瞻时点观测仍在累积。'));
+    return '<div class="sec sc-stagger sc-s3"><div class="sec-head"><h2>' + ic('list','sc-h2-ic') + ' '
+      + L('Recommendation history', '推荐历史') + '</h2></div>'
+      + '<div class="desc">' + L('Session-dated publication records. Prospective measurement requires a known first-observation clock; late or unknown observations stay in history.',
+          '按数据交易日保存的发布记录。前瞻测量要求已知首次观测时间；迟到或时间未知的观测仅保留于历史。') + '</div>'
+      + '<div class="sc-tablecard"><div class="tbl-scroll"><table class="sc-tbl"><thead><tr>'
+      + '<th>' + L('Date', '日期') + '</th><th>' + L('Group', '组别') + '</th><th>' + L('Signal', '信号') + '</th>'
+      + '<th>' + L('Entry condition', '入场条件') + '</th><th>' + L('Raw regime', '原始状态') + '</th>'
+      + '</tr></thead><tbody>' + rows.join('') + '</tbody></table></div>'
+      + '<div class="sc-note">' + note + ' · ' + status + '</div></div></div>';
   }
 
   /* ══ EXPLORE — leadership, sector backdrop, internals, full table ═════════════ */
@@ -499,6 +586,21 @@
 
   /* ══ render + wiring ═════════════════════════════════════════════════════════ */
 
+  function refreshFullTable() {
+    var table = document.getElementById('sc-fulltable'), payload = DATA[TAB];
+    if (!table || !payload || !payload.ok) return;
+    var staging = document.createElement('div');
+    staging.innerHTML = fullTableSection(payload, TAB);
+    var fresh = staging.querySelector('#sc-fulltable');
+    if (!fresh || !table.tHead || !table.tBodies.length) return;
+    table.tHead.innerHTML = fresh.tHead.innerHTML;
+    table.tBodies[0].innerHTML = fresh.tBodies[0].innerHTML;
+    var card = table.closest('.sc-tablecard'), freshCard = fresh.closest('.sc-tablecard');
+    var count = card && card.querySelector('.sc-search .cnt');
+    var freshCount = freshCard && freshCard.querySelector('.sc-search .cnt');
+    if (count && freshCount) count.textContent = freshCount.textContent;
+  }
+
   function render() {
     var app = document.getElementById('sc-app');
     var ds = TAB;
@@ -510,11 +612,19 @@
     app.innerHTML = heroSection(payload, ds)
       + boardSection(payload, ds)
       + picksSection(payload, ds)
+      + '<div id="sc-history">' + historySection(ds) + '</div>'
       + leadershipSection(ds)
       + sectorStrip(payload, ds)
       + niSection
       + fullTableSection(payload, ds);
     wrapTbls(app);
+  }
+
+  function refreshHistory() {
+    var slot = document.getElementById('sc-history');
+    if (!slot) return;
+    slot.innerHTML = historySection(TAB);
+    wrapTbls(slot);
   }
 
   function setTab(tab) {
@@ -539,15 +649,12 @@
     if (!th) return;
     var col = th.getAttribute('data-col'), s = SORT[TAB] || { col: 'tier', dir: 1 };
     SORT[TAB] = { col: col, dir: s.col === col ? -s.dir : (col === 'label' || col === 'sector' ? 1 : (col === 'rs60' || col === 'n') ? -1 : 1) };
-    render();
+    refreshFullTable();
   }
   function onAppInput(e) {
     if (!e.target || e.target.id !== 'sc-fulltable-q') return;
     FILTER[TAB] = e.target.value || '';
-    var pos = e.target.selectionStart;
-    render();
-    var again = document.getElementById('sc-fulltable-q');
-    if (again) { again.focus(); try { again.setSelectionRange(pos, pos); } catch (x) {} }
+    refreshFullTable();
   }
 
   function boot() {
@@ -557,9 +664,13 @@
     var appEl = document.getElementById('sc-app');
     if (appEl) { appEl.addEventListener('click', onAppClick); appEl.addEventListener('input', onAppInput); }
     var keys = Object.keys(DS);
-    Promise.all(keys.map(function (k) {
+    var deskFetches = keys.map(function (k) {
       return fetch(DS[k].url, { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
-    })).then(function (res) {
+    });
+    var historyFetch = fetch('marketdata/subsector_confluence_history.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    historyFetch.then(function (history) { HISTORY = history; refreshHistory(); });
+    Promise.all(deskFetches).then(function (res) {
       keys.forEach(function (k, i) { DATA[k] = res[i]; });
       var cnt = function (k) { var p = DATA[k]; return p ? (p[DS[k].groupsKey] || []).length : 0; };
       var set = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
