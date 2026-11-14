@@ -5357,6 +5357,24 @@ def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:
     return inferred_as_if_not_exclusive(MANIFEST)
 
 
+def test_market_tide_pit_suite_runs_in_event_response_ci() -> None:
+    """Keep the PIT suite enrolled once and run it for each Market Tide input."""
+    jobs = PACK.load_legacy_jobs(MANIFEST, gate="code")
+    suite = "tests/test_market_tide_event_response.py"  # ci-trigger-closure: data
+    owners = [
+        job for job in jobs for step in job.definition["steps"]
+        if suite in str(step.get("run", "")).split()
+    ]
+    assert [job.job_id for job in owners] == ["sni-s2-event-response"]
+    job = owners[0]
+    for path in (
+        "engine/market_tide_event_response.py",  # ci-trigger-closure: data
+        "scripts/market_tide_event_response.py",  # ci-trigger-closure: data
+        suite,
+    ):
+        assert PACK._job_diff_match(job, [path]), path
+
+
 def test_the_curated_exclusive_set_is_actually_declared() -> None:
     """The set this file pins must be the set the manifest declares."""
     declared = {job.job_id for job in PACK.load_legacy_jobs(MANIFEST) if job.exclusive}

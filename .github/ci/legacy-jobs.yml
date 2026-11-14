@@ -50093,6 +50093,13 @@ jobs:
       - lib/exchange_holidays.py
       - lib/hk_calendar.py
       - lib/nyse_calendar.py
+      # Market Tide shares this historical event-response test job.
+      - engine/__init__.py
+      - scripts/__init__.py
+      - tests/__init__.py
+      - engine/market_tide_event_response.py
+      - scripts/market_tide_event_response.py
+      - tests/test_market_tide_event_response.py
       - tests/test_sni_s2_ledger_order.py
       - tests/test_sni_s2_mirror.py
       - tests/test_sni_s2_clock.py
@@ -50116,7 +50123,7 @@ jobs:
       - name: install minimal S2 dependencies
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: S2 event response contracts (P04-P06, historical-descriptive)
-        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_sni_s2_ledger_order.py tests/test_sni_s2_mirror.py tests/test_sni_s2_clock.py tests/test_sni_s2_selection.py tests/test_sni_s2_collapse.py tests/test_sni_s2_abstain.py tests/test_sni_s2_stats.py tests/test_sni_s2_info_leak.py tests/test_sni_s2_report_order.py tests/test_sni_s2_cli.py tests/test_sni_s2_seal_integrity.py tests/test_sni_s2_language.py tests/test_sni_s2_property.py tests/test_sni_s2_v1_1_hardening.py tests/test_market_tide_event_response.py -q -p no:cacheprovider
 
   single-name-coverage-profiles:
     if: ${{ false }}
