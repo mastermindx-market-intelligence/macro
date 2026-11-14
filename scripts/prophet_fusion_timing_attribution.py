@@ -8,9 +8,14 @@ The native grader, registered horizons/costs and original event set are unchange
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+
+# Direct file-path execution must resolve this repository, not the caller cwd.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
 

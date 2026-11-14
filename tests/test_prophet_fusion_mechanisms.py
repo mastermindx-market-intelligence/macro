@@ -308,3 +308,25 @@ def test_complete_synthetic_consumer_and_equal_asset_benchmark_negative_control(
     assert "NOT_PROMOTION_BEARING" in markdown
     assert "Familywise" in markdown
     assert "survivor" in markdown.lower()
+
+
+@pytest.mark.parametrize("script", [
+    "prophet_fusion_input_readiness.py",
+    "prophet_fusion_mechanism_study.py",
+    "prophet_fusion_mechanism_verify.py",
+    "prophet_fusion_timing_attribution.py",
+])
+def test_owned_research_clis_work_outside_repo(tmp_path, script):
+    """The real file-path consumer must not depend on the shell's cwd/PYTHONPATH."""
+    import os
+    from pathlib import Path
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parents[1]
+    env = dict(os.environ)
+    env.pop("PYTHONPATH", None)
+    result = subprocess.run([sys.executable, str(root / "scripts" / script), "--help"],
+                            cwd=tmp_path, env=env, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    assert "usage:" in result.stdout

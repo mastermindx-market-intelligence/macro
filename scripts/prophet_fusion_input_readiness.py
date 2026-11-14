@@ -8,12 +8,17 @@ predictive edge. No performance label, frozen W3/W2 store or live score is read.
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import datetime, timezone
 import io
 from pathlib import Path
 import re
 import subprocess
 from typing import Any
+
+# Direct file-path execution must resolve this repository, not the caller cwd.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 import numpy as np
 import pandas as pd

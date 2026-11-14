@@ -7,6 +7,7 @@ No strategy promotion, new trial, live-data write or automatic repair is perform
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import datetime, timezone
 import hashlib
 import importlib.metadata
@@ -15,6 +16,10 @@ from pathlib import Path
 import platform
 import subprocess
 from typing import Any
+
+# Direct file-path execution must resolve this repository, not the caller cwd.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 import numpy as np
 import pandas as pd
