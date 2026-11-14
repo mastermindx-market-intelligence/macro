@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+  "source_revision": "410fbd966a2a591e2565f6516923807f905ced98",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the one-line bilingual Risk Radar disclaimer repair. The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. This static evidence does not replace the separately retained original 175-check workspace and 32-cell visual evidence, or either live-site acceptance.",
-    "pr_branch": "sol/web-risk-radar-paper-live-20261104-c3",
-    "pr_parent_of_evidence_commit": "530a11df95e2ed619b0a98e233bcd971c47ffd78",
+    "note": "The unchanged existing probe actually recaptured all 68 static cases at source_revision after the #11151 Sector Central template change (templates/sector_central.html.j2). The probe records the exact capture source; all 31 render/fixture paths were compared to both that commit and the current workspace. The static harness renders neither host page, so all 68 shots and all 5 contact sheets are byte-identical to the prior capture; only the receipt's source_revision and render-input blob bindings changed. This static evidence is not signed-in production acceptance.",
+    "pr_branch": "claude/si-lane1-final-pass-20261112",
+    "pr_parent_of_evidence_commit": "410fbd966a2a591e2565f6516923807f905ced98",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2160,8 +2160,8 @@
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
+        "blob_at_source_revision": "3957ca0e4df74c40a2eff90abc8e43698f824512",
+        "blob_on_pr_branch": "3957ca0e4df74c40a2eff90abc8e43698f824512",
         "equal": true
       },
       {

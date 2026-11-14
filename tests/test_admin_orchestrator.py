@@ -37,6 +37,206 @@ def _disable_real_codex_account(monkeypatch):
 # Fixture repo
 # ---------------------------------------------------------------------------
 
+
+def _estate_panel(count=2):
+    rows = [{"engine_id": f"engine-{i:02d}", "canonical_t1": True,
+             "owner_program": "owner-a", "producer": "engine/example.py",
+             "output_class": None, "authority": "context_only",
+             "worst_state": "fresh", "state_counts": {"fresh": 1, "null": 1},
+             "n_blind": 1, "evidence_status": "Accruing",
+             "evidence_reason_codes": ["owner_snapshot_unavailable"],
+             "evidence_refs": [f"fixture:engine-{i:02d}"],
+             "evidence_owner_scope": {"qualified_task_scope": None,
+                                       "reason": "owner_validation_scope_unqualified"},
+             "evidence_provider": {"kind": "owner_native", "read_status": "unavailable",
+                 "recorded_snapshot": {"current_source_qualification": "unavailable",
+                                        "native_generation_comparison": "deferred"},
+                 "error": "private raw diagnostic"}}
+            for i in range(count)]
+    return {"ok": True, "engines": rows,
+            "census": {"engines": count, "canonical_engines": count, "artifacts": count * 2,
+                       "outputs_assessed": count, "by_state": {"fresh": count, "null": count}},
+            "typed_findings": {"status": "unavailable", "records": None, "gaps": None,
+                               "current_source_qualification": "unavailable"},
+            "generated": {"observed_at": "2026-11-12T00:00:00Z", "cache": "miss",
+                          "compute_seconds": 1, "source_generation": {"read_status": "ok"}}}
+
+
+def test_estate_context_preserves_blindness_nulls_and_owner_qualifications():
+    result = orchestrator_chat._project_estate_context(_estate_panel())
+    row = result["engines"][0]
+    assert result["available"] is True
+    assert row["worst_state"] == "fresh" and row["n_blind"] == 1
+    assert row["output_class"] is None
+    assert row["evidence_status"] == "Accruing"
+    assert row["evidence_owner_scope"]["qualified_task_scope"] is None
+    assert row["evidence_provider"]["recorded_snapshot"]["native_generation_comparison"] == "deferred"
+    assert result["census"]["outputs_assessed"] == 2
+    assert result["typed_findings"]["current_source_qualification"] == "unavailable"
+    assert result["finding_records"] is None
+    assert "private raw diagnostic" not in json.dumps(result)
+
+
+def test_estate_context_change_key_covers_omitted_engines_but_not_observation_time():
+    import copy
+    panel = _estate_panel(15)
+    initial = orchestrator_chat._project_estate_context(panel)
+    assert len(initial["engines"]) == 12
+    assert initial["coverage"]["engines_omitted"] == 3
+    later = copy.deepcopy(panel)
+    later["generated"].update(observed_at="2026-11-12T01:00:00Z", cache="hit", compute_seconds=2)
+    observation = orchestrator_chat._project_estate_context(later)
+    assert observation["change_key"] == initial["change_key"]
+    assert observation["snapshot_digest"] != initial["snapshot_digest"]
+    later["engines"][14]["owner_program"] = "owner-b"
+    changed = orchestrator_chat._project_estate_context(later)
+    assert changed["engines"] == initial["engines"]
+    assert changed["change_key"] != initial["change_key"]
+
+
+def test_estate_context_caps_complete_json_and_keeps_intact_rows():
+    panel = _estate_panel(20)
+    panel["engines"][0]["evidence_refs"] = ["证据" * 8000]
+    result = orchestrator_chat._project_estate_context(panel)
+    assert len(json.dumps(result).encode("utf-8")) <= orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
+    assert result["engines"][0]["engine_id"] == "engine-01"
+    assert result["coverage"]["engines_omitted"] == 8
+    assert result["coverage"]["limited"] is True
+    panel["generated"]["source_generation"] = {"oversized": "x" * 40000}
+    failed = orchestrator_chat._project_estate_context(panel)
+    assert failed["available"] is False
+    assert failed["error_code"] == "estate_context_budget_exceeded"
+    assert len(json.dumps(failed).encode("utf-8")) <= orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
+
+
+def test_estate_context_findings_are_bounded_with_unknowns_distinct_from_empty():
+    panel = _estate_panel()
+    panel["typed_findings"].update(status="recorded", records=[{"id": str(i)} for i in range(5)], gaps=[])
+    result = orchestrator_chat._project_estate_context(panel)
+    assert result["finding_records"] == [{"id": "0"}, {"id": "1"}, {"id": "2"}]
+    assert result["finding_gaps"] == []
+    assert result["coverage"]["finding_records_omitted"] == 2
+    before = result["change_key"]
+    panel["typed_findings"]["records"][4]["id"] = "changed-omitted"
+    assert orchestrator_chat._project_estate_context(panel)["change_key"] != before
+
+
+@pytest.mark.parametrize("code", ["changed_during_read", "evidence_deadline_exceeded",
+    "evidence_cleanup_unconfirmed", "evidence_binding_not_transferable", "evidence_derivation_busy"])
+def test_estate_context_freezes_owner_failure_without_retry(tmp_path, monkeypatch, code):
+    calls = []
+    def owner(operation, **kwargs):
+        calls.append((operation, kwargs))
+        return {"ok": False, "error_code": code, "error": "private diagnostic"}
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
+    @orchestrator_chat._with_estate_invocation
+    def ask():
+        a = orchestrator_chat._read_estate_context(tmp_path, {})
+        a["error_code"] = "caller-mutated"
+        return orchestrator_chat._read_estate_context(tmp_path, {})
+    result = ask()
+    assert result["available"] is False and result["error_code"] == code
+    assert calls == [("panel", {"root": tmp_path.resolve(), "force": False})]
+    assert "private diagnostic" not in json.dumps(result)
+    assert orchestrator_chat._read_estate_context(tmp_path, {})["error_code"] == "estate_invocation_required"
+
+
+def test_estate_context_refuses_model_options_and_cross_root_reads(tmp_path, monkeypatch):
+    calls = []
+    def owner(*args, **kwargs):
+        calls.append(kwargs["root"])
+        return _estate_panel()
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
+    @orchestrator_chat._with_estate_invocation
+    def ask():
+        for params in ({"force": True}, {"root": "/arbitrary"}, [], None):
+            assert orchestrator_chat._read_estate_context(tmp_path, params)["error_code"] == "evidence_request_invalid"
+        first = orchestrator_chat._read_estate_context(tmp_path, {})
+        other = orchestrator_chat._read_estate_context(tmp_path / "other", {})
+        assert other["error_code"] == "evidence_binding_not_transferable"
+        return first
+    assert ask()["available"] is True
+    assert calls == [tmp_path.resolve()]
+
+
+def test_operator_chat_reuses_one_canonical_estate_read_across_rounds_and_turns(tmp_path, monkeypatch):
+    from types import SimpleNamespace as NS
+    calls = []
+    def collect(command, *, cwd, seconds, limit):
+        calls.append((command, seconds, limit))
+        return json.dumps({"complete": True, "result": _estate_panel()}).encode()
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "_collect", collect)
+    monkeypatch.setattr(orchestrator_chat, "_resolve_candidates", lambda: [("api_key", "synthetic", "fixture", "fixture")])
+    monkeypatch.setattr(orchestrator_chat, "_rate_ok", lambda: True)
+    monkeypatch.setattr(orchestrator_chat, "_advice_filter", lambda text: (text, False))
+    monkeypatch.setattr(orchestrator_chat, "_append_chat_log", lambda *a, **k: None)
+    monkeypatch.setattr(orchestrator_chat, "_record_ai_costs", lambda *a, **k: None)
+    seen = []
+    def client(*args):
+        rounds = iter([0, 1, 2])
+        def create(**kwargs):
+            step = next(rounds)
+            if step:
+                seen.append(json.loads(kwargs["messages"][-1]["content"][0]["content"]))
+            if step < 2:
+                block = NS(type="tool_use", name="read_intelligence_estate", input={}, id=f"read-{step}")
+                return NS(content=[block], stop_reason="tool_use", usage=None)
+            return NS(content=[NS(type="text", text="Engine engine-00 has one blind output; restoration is a draft proposal.")], stop_reason="end_turn", usage=None)
+        return NS(messages=NS(create=create))
+    monkeypatch.setattr(orchestrator_chat, "_build_client", client)
+    for _ in range(2):
+        result = orchestrator_chat.chat("Which estate observation needs attention?", root=tmp_path)
+        assert result["ok"] is True and result["degraded"] is False
+        assert result["tool_call_census"] == {"read_intelligence_estate": 2}
+    assert len(calls) == 2
+    assert all(c[0][-1] == "0" and c[1:] == (45.0, 16 * 1024 * 1024) for c in calls)
+    assert seen[0] == seen[1] and seen[2] == seen[3]
+    assert not list(tmp_path.rglob("*"))
+
+
+def test_private_estate_tool_does_not_enter_customer_or_public_cortex_catalogs():
+    from engine.neuralweb import cortex, ask_brain
+    assert "read_intelligence_estate" in orchestrator_chat._READ_TOOLS
+    assert "read_intelligence_estate" not in cortex._ALLOWED_TOOLS
+    assert "read_intelligence_estate" not in ask_brain._ASK_READ_TOOLS
+
+
+def test_estate_context_complete_result_can_fill_byte_budget_exactly():
+    panel = _estate_panel(1)
+    initial = orchestrator_chat._project_estate_context(panel)
+    room = orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES - len(json.dumps(initial).encode("utf-8"))
+    panel["engines"][0]["evidence_refs"][0] += "x" * room
+    result = orchestrator_chat._project_estate_context(panel)
+    assert len(result["engines"]) == 1
+    assert result["coverage"]["limited"] is False
+    assert len(json.dumps(result).encode("utf-8")) == orchestrator_chat._ESTATE_MAX_CONTEXT_BYTES
+
+
+def test_operator_estate_observation_survives_existing_provider_retry(tmp_path, monkeypatch):
+    owner_calls = []
+    snapshots = []
+    def owner(*args, **kwargs):
+        owner_calls.append(kwargs)
+        return _estate_panel()
+    monkeypatch.setattr(orchestrator_chat.intelligence_execution, "response", owner)
+    monkeypatch.setattr(orchestrator_chat, "_resolve_candidates", lambda: [
+        ("api_key", "synthetic-a", "a", "a"), ("api_key", "synthetic-b", "b", "b")])
+    monkeypatch.setattr(orchestrator_chat, "_build_client", lambda *args: object())
+    monkeypatch.setattr(orchestrator_chat, "_rate_ok", lambda: True)
+    monkeypatch.setattr(orchestrator_chat, "_advice_filter", lambda text: (text, False))
+    monkeypatch.setattr(orchestrator_chat, "_append_chat_log", lambda *a, **k: None)
+    monkeypatch.setattr(orchestrator_chat, "_record_ai_costs", lambda *a, **k: None)
+    def loop(messages, client, repo):
+        snapshots.append(orchestrator_chat._dispatch_tool("read_intelligence_estate", {}, repo))
+        if len(snapshots) == 1:
+            raise RuntimeError("401 synthetic fixture")
+        return "Observed one blind output; no action dispatched.", {"read_intelligence_estate": 1}, "fixture-model", {}
+    monkeypatch.setattr(orchestrator_chat, "_run_loop", loop)
+    result = orchestrator_chat.chat("Explain the evidence gap", root=tmp_path)
+    assert result["ok"] and not result["degraded"]
+    assert snapshots[0] == snapshots[1] and len(owner_calls) == 1
+    assert orchestrator_chat._read_estate_context(tmp_path, {})["error_code"] == "estate_invocation_required"
+
 @pytest.fixture()
 def orch_repo(tmp_path):
     """A fake repo root with orchestrator run log, reviews, dialogue + cortex artifacts."""
