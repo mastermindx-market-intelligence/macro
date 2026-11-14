@@ -48269,11 +48269,13 @@ jobs:
       - "lib/tsx_calendar.py"
       - "templates/markets.html.j2"
       - "templates/_market_regime_strip.html.j2"
+      - "templates/_cycle_locked_slot.html.j2"
       # Parity test reads the hero stance sentences from this partial.
       - "templates/_unified_dashboard_hero.html.j2"
       - "templates/theme.css"
       - "site/theme.css"
       - "site/markets.html"
+      - "site/assets/css/43732ec2.css"
       # markets.css (mobile in-flow detail) + its DOM-measured suite (2026-09-23).
       - "site/markets.css"
       - "scripts/build_markets.py"
