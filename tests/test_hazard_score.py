@@ -16,8 +16,19 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+import copy
+import json
+
+import pandas as pd
+
 _REPO = Path(__file__).parent.parent.resolve()
 sys.path.insert(0, str(_REPO))
+
+from engine import commodity_cycle_state as ccs
+from engine import cycle_proxies as cp
+from engine import hazard_score as hs
+from engine import sector_cycles as sc
+from scripts import build_cycle
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -619,3 +630,197 @@ def test_public_score_up_sector_is_monotone_or_unavailable():
             assert h not in result
     else:
         assert _hazard_cdf_is_monotone(_hazard_cdf_cells(result))
+
+
+# Flagship producer publication boundary (#10943). Only acquisition/record
+# construction is substituted; scorer, artifacts, qualifier and writers are real.
+@pytest.fixture
+def committed_model():
+    if not hs._MODEL_PATH.exists() or not hs._KM_PATH.exists():
+        pytest.skip("committed model/KM artifacts absent from sparse checkout")
+
+
+@pytest.fixture
+def cycle_record(monkeypatch):
+    band = {
+        "band": "intermediate", "tier": "measured", "series": "fixture",
+        "freq": "D", "basis": "price", "invert": False, "proxy": False,
+        "position_gauge": True, "kernel": {"zz_pct": 0.1},
+    }
+    tape = pd.Series([101.0, 100.0, 99.0],
+                     index=pd.date_range("2026-01-02", periods=3))
+    tape.attrs["ref"] = "synthetic:qualification-boundary"
+    record = {
+        "basis": "price", "turn_knowledge": {"epoch": "price_c4414dcb"},
+        "price": [{"x": 2026.01, "y": 99.0}],
+        "osc": [{"x": 2026.01, "y": 0.0}],
+        "turns": [{"k": "peak", "x": 2025.9},
+                  {"k": "trough", "x": 2026.0, "provisional": True}],
+        "n_turns_all": 2,
+        "proj": {"nextTurn": "trough", "central": 2026.2,
+                 "overdue": True, "overdue_frac": 0.25},
+        "now": {
+            "pos": 0.0, "phase": "Downturn", "phase_v2": "rolling",
+            "osc_slope": -10.0,
+            "hazard_features": {
+                "age_since_turn_bars": 1, "median_half_yrs": 1.0,
+                "freq": "D", "pos": 0.0, "osc_slope": -10.0,
+                "amp_leg_pct": 42.0, "mom_score": 0.0, "rs_63d": 0.0,
+                "vol_pctile": 0.42, "trend_pass": 0.0,
+            },
+        },
+    }
+    monkeypatch.setattr(cp, "REGISTRY", {"gold": {"bands": [band]}})
+    monkeypatch.setattr(cp, "load_series", lambda _band: tape)
+    monkeypatch.setattr(sc, "record_series", lambda *a, **k: copy.deepcopy(record))
+    monkeypatch.setattr(build_cycle, "_XDOMAIN0", None)
+    return record, band
+
+
+def _produce(consumer, band):
+    if consumer == "flagship":
+        produced = build_cycle._measured_record("gold", band)
+        return produced, produced["now"]["hazard"]
+    produced = ccs._run_cycle("gold")
+    return produced, produced["hz"]
+
+
+def _assert_context(consumer, produced, record):
+    assert produced["now"]["pos"] == record["now"]["pos"]
+    assert produced["now"]["phase"] == record["now"]["phase"]
+    assert produced["proj"] == record["proj"]
+    if consumer == "flagship":
+        assert produced["turns"] == record["turns"]
+        assert produced["record_basis"] == record["basis"]
+        assert produced["price"] == record["price"]
+        assert produced["osc"] == record["osc"]
+        assert produced["series_last"] == "2026-01-04"
+        assert produced["position_gauge"] is True
+    else:
+        assert ccs._extract_entry("gold", produced) == {
+            "cycle_ref": "gold", "pos": 0.0,
+            "phase": record["now"]["phase"], "phase_v2": "rolling",
+            "overdue": True, "overdue_frac": 0.25,
+            "hazard_1m": None, "hazard_3m": None, "hazard_6m": None,
+            "asof": "2026-01-04",
+        }
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+def test_plausible_current_model_curve_is_withheld(consumer, cycle_record, committed_model, tmp_path):
+    record, band = cycle_record
+    raw = hs.score(record["now"]["hazard_features"], "down", family="flagship")
+    # The actual committed model can emit a valid-looking monotone curve. This
+    # boundary test must not pass merely because the scorer already withheld it.
+    assert not raw.get("unavailable")
+    values = [raw[h]["p"] for h in ("1m", "3m", "6m")]
+    assert 0 < values[0] <= values[1] <= values[2] < 1
+    assert all(raw[h]["source"] == "MODEL" for h in ("1m", "3m", "6m"))
+
+    produced, hz = _produce(consumer, band)
+    assert hz["unavailable_reason"] == "current_model_unqualified"
+    assert not any(h in hz for h in ("1m", "3m", "6m"))
+    assert hz["current_model"]["qualified"] is False
+    assert {"parity", "cohort"} <= set(hz["current_model"]["failing"])
+    assert hz["current_model"]["qualifiers"]["direction"] is True
+    assert hz["current_model"]["qualifiers"]["whole_curve"] is True
+    assert hz["prior"]["status"] == "withheld"
+    assert hz["direction"] == "down" and hz["turn_kind"] == "trough"
+    _assert_context(consumer, produced, record)
+
+    if consumer == "flagship":
+        assert hz["direction_agrees"] is None
+        build_cycle._write_engine_js(tmp_path, {"cycles": {"gold": produced}})
+        script = (tmp_path / "cycledata" / "cycle_engine.js").read_text()
+        emitted = json.loads(script.split("window.CYCLE_ENGINE = ", 1)[1].rsplit(";", 1)[0])
+        assert emitted["cycles"]["gold"]["now"]["hazard"] == hz
+    else:
+        emitted = ccs.write_cycle_positions(tmp_path)
+        assert json.loads((tmp_path / "commodity" / "cycle_positions.json").read_text()) == emitted
+        assert emitted["gold"] == ccs._extract_entry("gold", produced)
+
+
+def _raw_curve():
+    return {
+        "epoch": "price_c4414dcb", "direction": "down", "turn_kind": "trough",
+        **{h: {"p": p, "source": "MODEL", "cell_verdict": "PASS"}
+           for h, p in zip(("1m", "3m", "6m"), (0.2, 0.4, 0.6))},
+    }
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+@pytest.mark.parametrize("case", ["no_confirmed_turn", "direction_mismatch", "missing_epoch"])
+def test_qualification_diagnostics_survive(consumer, case, cycle_record, committed_model, monkeypatch):
+    record, band = cycle_record
+    monkeypatch.setattr(hs, "score", lambda *a, **k: _raw_curve())
+    if case == "no_confirmed_turn":
+        record["turns"] = [{"k": "peak", "provisional": True}]
+    elif case == "direction_mismatch":
+        record["turns"] = [{"k": "trough"}]
+    else:
+        record.pop("turn_knowledge")
+    produced, hz = _produce(consumer, band)
+    assert hz["unavailable_reason"] == "current_model_unqualified"
+    assert hz["prior"]["status"] == "withheld"
+    assert not any(h in hz for h in ("1m", "3m", "6m"))
+    if case == "no_confirmed_turn":
+        assert "direction" not in hz and "turn_kind" not in hz
+        assert hz["scored_direction"] == "down"
+        assert "direction" in hz["current_model"]["failing"]
+    elif case == "direction_mismatch":
+        assert hz["direction"] == "up" and hz["turn_kind"] == "peak"
+        assert hz["scored_direction"] == "down"
+        assert "direction" in hz["current_model"]["failing"]
+    else:
+        assert "epoch" in hz["current_model"]["failing"]
+    if consumer == "flagship":
+        assert hz["direction_agrees"] is None
+    _assert_context(consumer, produced, record)
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+def test_scorer_unavailable_stays_unavailable(consumer, cycle_record, committed_model, monkeypatch):
+    record, band = cycle_record
+    monkeypatch.setattr(hs, "score", lambda *a, **k: {
+        "epoch": "price_c4414dcb", "direction": "down", "turn_kind": "trough",
+        "unavailable": True, "unavailable_reason": "non_monotone_cdf",
+    })
+    produced, hz = _produce(consumer, band)
+    assert hz["unavailable"] is True
+    assert hz["current_model"]["qualifiers"]["whole_curve"] is False
+    assert not any(h in hz for h in ("1m", "3m", "6m"))
+    _assert_context(consumer, produced, record)
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+@pytest.mark.parametrize("phase", [None, "", "Unrecognized"])
+def test_unknown_phase_does_not_score(consumer, phase, cycle_record, monkeypatch):
+    record, band = cycle_record
+    record["now"]["phase"] = phase
+    calls = []
+    monkeypatch.setattr(hs, "score", lambda *a, **k: calls.append((a, k)) or _raw_curve())
+    produced, hz = _produce(consumer, band)
+    assert calls == []
+    assert hz is None or (hz["unavailable_reason"] == "unknown_phase" and "turn_kind" not in hz)
+    _assert_context(consumer, produced, record)
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+def test_absent_score_preserves_context(consumer, cycle_record, monkeypatch):
+    record, band = cycle_record
+    monkeypatch.setattr(hs, "score", lambda *a, **k: None)
+    produced, hz = _produce(consumer, band)
+    assert hz is None
+    _assert_context(consumer, produced, record)
+
+
+@pytest.mark.parametrize("consumer", ["flagship", "commodity"])
+def test_qualification_exception_never_leaks_raw_score(consumer, cycle_record, monkeypatch):
+    record, band = cycle_record
+    monkeypatch.setattr(hs, "score", lambda *a, **k: _raw_curve())
+    def broken_gate(*a, **k):
+        raise RuntimeError("fixture: qualification could not execute")
+    monkeypatch.setattr(sc, "_qualify_hazard", broken_gate)
+    produced, hz = _produce(consumer, band)
+    assert hz is None
+    _assert_context(consumer, produced, record)

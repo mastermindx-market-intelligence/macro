@@ -87,12 +87,11 @@ def test_depth_rows_are_cards_not_one_wrapped_name_paragraph():
 
 
 def test_live_rank_copy_names_only_earned_components():
-    assert "signal 35%" in TEMPLATE
-    assert "entry 25%" in TEMPLATE
-    assert "runway 20%" in TEMPLATE
-    assert "bottom quality 10%" in TEMPLATE
-    assert "reversal-sleeve membership 10%" in TEMPLATE
-    assert "not a win probability or return forecast" in TEMPLATE
+    assert ".get('formula_points')" in TEMPLATE
+    for key in ("signal", "entry", "runway", "bottom_quality", "reversal_member", "theme_timing"):
+        assert f"('{key}'," in TEMPLATE
+    assert "signal 35%" not in TEMPLATE
+    assert "not a win rate and not a return forecast" in TEMPLATE
 
 
 def test_zero_universe_publishes_outage_instead_of_reusing_stale_board():

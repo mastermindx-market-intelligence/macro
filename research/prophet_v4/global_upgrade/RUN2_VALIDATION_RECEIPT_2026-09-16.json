@@ -1,0 +1,44 @@
+{
+  "artifact_role": "Immutable research validation receipt; not production acceptance",
+  "operation": "prophet-global-r2-autopsy-20260916-sol-001",
+  "pr": 7218,
+  "analysis_source_commit": "c37c4e37b20ada935f32516a2a31428d558430c3",
+  "reproducer_source_commit": "a25d51d97e087be84e6fc843385258a13f8a0202",
+  "reproducer_path": "research/prophet_v4/global_upgrade/reproduce_run2.py",
+  "reproducer_git_blob": "42aea38e6851675215ff90c43f1103214537e12f",
+  "reproducer_sha256": "66e3985b7a810adc899c46805a9cc9a2884f62aa7f3c24ebb4df02fcf44d3339",
+  "result_sha256": "650b23209fc014568bdcb61b37a1c2b8464e4b31fe2f2ceb90dda0bd76b8ff89",
+  "result_written_at": "2026-09-16T10:43:51.707864+00:00",
+  "same_carrier_reconciliation": {
+    "first_pid": 73549,
+    "first_return": "Host disconnected; returned session subsequently absent",
+    "reconciled_before_repeat": ["Same device was observed online again", "No exact reproducer process remained", "No result file existed", "No prepare receipt existed", "All 15 local immutable source blobs matched the committed reproducer", "Downloaded script bytes remained intact"],
+    "next_action_taken": "One same-device execution with persistent stdout/stderr log; no alternative host or product mutation",
+    "successful_pid": 91555,
+    "exit_marker": "REPRODUCER_EXIT=0",
+    "exit_code": 0,
+    "log_path": "/Volumes/Mastermind/Mastermind/research/prophet-global-20260916-run2-c37c4e37/reproduction_run.log"
+  },
+  "verification": {
+    "mechanism_checks": 16,
+    "desired_conditions_met": 13,
+    "contract_failures_reproduced_not_repaired": 3,
+    "historical_rank_clock_mutation": "Reproduced 1 -> 99 after a later board; old episode date and outcome unchanged",
+    "key_published_metrics_match_reproducer": true,
+    "metric_comparison_pid": 1072,
+    "metric_comparison_exit_code": 0,
+    "metric_comparison_marker": "PUBLISHED_KEY_METRICS_MATCH_REPRODUCTION=True",
+    "python": "3.14.7",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5"
+  },
+  "supersedes": {
+    "path": "research/prophet_v4/global_upgrade/RUN2_EVIDENCE_2026-09-16.json",
+    "field": "combined_reproducer.verification_state",
+    "historical_value": "RETURN_UNAVAILABLE_HOST_DISCONNECTED",
+    "current_finding": "Same-carrier interruption reconciled and exact published reproducer successfully executed; no unresolved effect remains for this research verification",
+    "all_measurement_results_and_caveats_preserved": true
+  },
+  "not_claimed": ["Production defect fixed", "New model trained or promoted", "Higher future win rate proven", "Paired W3 comparison consumed", "Production browser acceptance", "CI green or PR merged", "External Fable/subagent job running"],
+  "next_capability": "Admission-time frozen rank/sector and full-funnel missed-runner reference panel through existing owners"
+}

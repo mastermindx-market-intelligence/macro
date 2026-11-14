@@ -1031,6 +1031,8 @@ html[data-theme="light"] .census-metric strong { font-size:11px; }
       {%- set _ft = _fol_entry.get('follow_tier') or 'insufficient' -%}
       {%- if _ft == 'follow' -%}<div class="mc-line"><span class="ftier follow">{{ t('Follow','跟随') }}</span></div>
       {%- elif _ft == 'watch' -%}<div class="mc-line"><span class="ftier watch">{{ t('Watch','观察') }}</span></div>
+      {%- elif _ft == 'fade' -%}<div class="mc-line"><span class="ftier fade">{{ t('Fade','淡出') }}</span></div>
+      {%- else -%}<div class="mc-line"><span class="ftier insufficient">{{ t('LOW DATA','数据不足') }}</span></div>
       {%- endif -%}
     {%- endif -%}
   </a>
