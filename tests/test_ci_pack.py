@@ -4768,6 +4768,8 @@ CURATED_EXCLUSIVE = {
     "quant-q15-noise-robust-rv",  # Q15 quant assessment: suite imports importlib/subprocess; AST-derived closure
     "unrun-picks-boards",
     "intelligence-registry",
+    # Macro turnaround replay has an explicit narrow source/test closure.
+    "macro-turnaround-research",
     # 2026-08-14 wave 2: the manifest grew 180→193 jobs and the new fallback
     # riders pushed scripts/build_free_content.py to 127 > 126, redding pack-1
     # fleet-wide. Curated: the three NEW subject-guards whose owner-written
@@ -10527,3 +10529,29 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+def test_macro_turnaround_research_has_dedicated_code_owner_and_narrow_scope() -> None:
+    """Macro turnaround source edits must select one bounded code-gated owner."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    assert "macro-turnaround-research" in jobs
+    job = jobs["macro-turnaround-research"]
+    assert job.gate == "code"
+    assert job.exclusive is True
+    assert "macro-turnaround-research" in CURATED_EXCLUSIVE
+
+    suites = {
+        "tests/test_macro_turnaround_research.py",
+        "tests/test_macro_turnaround_replay.py",
+        "tests/test_macro_turnaround_replay_cli.py",
+        "tests/test_macro_turnaround_feature_honesty.py",
+        "tests/test_macro_turnaround_evidence_change.py",
+    }
+    assert suites <= set(job.paths)
+    command_text = "\n".join(
+        str(step.get("run", ""))
+        for step in job.definition.get("steps", [])
+        if isinstance(step, dict)
+    )
+    assert all(suite in command_text for suite in suites)
+    assert not job.fallback_paths
+    assert not any(path.endswith("/**") for path in job.paths)
