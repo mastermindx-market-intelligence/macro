@@ -1529,15 +1529,52 @@
       }
       if (pos.short_flow) {
         var sf = pos.short_flow;
+        // Disclose producer qualification without changing the reading or scoring.
+        var sfStateNote = sf.state === 'partial'
+          ? lz('Partial history or limited z-score coverage.', '历史样本不足或 z 分数覆盖有限。')
+          : sf.state === 'observed_zero'
+            ? lz('Reported zero short volume in the recent window.', '近期窗口报告的卖空成交量为零。')
+            : '';
+        // Scope comes from the producer's original windows, never from a displayed zero.
+        var sfCoverage = sf.coverage && typeof sf.coverage === 'object' ? sf.coverage : {};
+        function sfCoverageReason(state) {
+          return state === 'parse_error' ? lz('invalid input', '输入无效')
+            : state === 'unavailable' ? lz('incomplete inputs', '输入不完整')
+            : state === 'no_observation' ? lz('no paired volume observation', '没有配对的成交量观测')
+            : '';
+        }
+        var sfScopes = [
+          ['latest', lz('Latest ratio', '最新比率')],
+          ['recent', lz('Recent volume window', '近期成交量窗口')],
+          ['baseline', lz('Baseline volume window', '基准成交量窗口')],
+          ['history_z', lz('Historical z-score', '历史 z 分数')]
+        ];
+        var sfCoverageNotes = [], sfHasZQualification = false;
+        sfScopes.forEach(function (scope) {
+          var detail = sfCoverage[scope[0]];
+          var reason = detail && sfCoverageReason(detail.state);
+          if (reason) {
+            sfCoverageNotes.push(scope[1] + ': ' + reason + '.');
+            if (scope[0] === 'history_z') { sfHasZQualification = true; }
+          }
+        });
+        if (!sfCoverageNotes.length) {
+          var sfLegacyReason = sfCoverageReason(sf.state);
+          if (sfLegacyReason) {
+            sfCoverageNotes.push(lz('Short-flow data', '卖空流量数据') + ': ' + sfLegacyReason + '.');
+          }
+        }
         // ratio_z: color at ±1.5σ to match darkpool desk threshold
         var sfzStr = sf.ratio_z == null ? LF('na')
           : '<span class="' + (sf.ratio_z >= 1.5 ? 'neg' : sf.ratio_z <= -1.5 ? 'pos' : 'muted') + '">'
             + (sf.ratio_z > 0 ? '+' : '') + sf.ratio_z.toFixed(2) + 'σ</span>';
         var sfTrendStr = sf.trend_pp == null ? LF('na') : signPct(sf.trend_pp) + 'pp';
         html += '<div class="posbox"><h3>' + LF('shortflow') + '</h3>' +
+          (sfStateNote ? '<p class="srcline">' + sfStateNote + '</p>' : '') +
+          sfCoverageNotes.map(function (note) { return '<p class="srcline">' + note + '</p>'; }).join('') +
           kvRow(LF('sfratio'), sf.short_ratio_pct == null ? LF('na') : sf.short_ratio_pct.toFixed(1) + '%', false) +
           kvRow(LF('sftrend'), sfTrendStr, false) +
-          (sf.ratio_z != null ? kvRow(LF('sfz'), sfzStr, false) : '') +
+          (sf.ratio_z != null || sfHasZQualification ? kvRow(LF('sfz'), sfzStr, false) : '') +
           (sf.asof ? '<p class="srcline">' + esc(sf.asof) + ' · ' + (sf.n_days || '?') + lz('d', '个交易日') + '</p>' : '') +
           '</div>';
       }

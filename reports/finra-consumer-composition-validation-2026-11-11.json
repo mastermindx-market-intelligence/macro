@@ -1,0 +1,1340 @@
+{
+  "candidate_consumer_files": [
+    {
+      "bytes": 256927,
+      "path": "templates/stock.html.j2",
+      "sha": "8fbc58df7ce19fc469fcc8350f13ff2f1f2b1e3e",
+      "sha256": "9369275cf1d13519f0d9a5610305f036867c031505b12b5c1f6482a502244b1d"
+    },
+    {
+      "bytes": 15208,
+      "path": "tests/test_c19_wp24_consumer_states.py",
+      "sha": "5b18a3837dd7570915069dbd63e763b8b3a55cd4",
+      "sha256": "a81852dd324cb8347da4dace17be961b77d6edc9573fc87a8b80ae140e49040b"
+    },
+    {
+      "bytes": 6264,
+      "path": "tests/test_short_flow_disclosure.cjs",
+      "sha": "915f59b607068fe0f324b98fb703ef92a2c49936",
+      "sha256": "222b906355a2bfad84554e9e03564d50aa6453da6b4f5acf19fe6ae52f29b4d2"
+    }
+  ],
+  "carrier": 11061,
+  "ci_selector_qualification": {
+    "added_paths": [
+      "tests/test_short_flow_disclosure.cjs",
+      "templates/stock.html.j2"
+    ],
+    "after_weight": 6,
+    "before_weight": 6,
+    "catalog": {
+      "bytes": 2681084,
+      "path": ".github/ci/legacy-jobs.yml",
+      "sha": "b6a0f62fabd161d90bf1be2af368bc390ebd6984",
+      "sha256": "e5c6f8ab62c61bed5f348f9a985da050f22787a110205ad9529223d2bc74c947"
+    },
+    "code_owners": 328,
+    "commands_unchanged": true,
+    "donor": "45ca874522907687393960e33222ac4e88cd614b",
+    "full_tree_planner_executed": false,
+    "other_owners_unchanged": 400,
+    "owner": "c19-wp24-consumer-states",
+    "owners": 401,
+    "probe_ceilings_unchanged": [
+      5968,
+      5991,
+      5726
+    ],
+    "selector_marginal_weight": 0
+  },
+  "consumer_proof": {
+    "actual_tickers": 1545,
+    "current": {
+      "count": 3090,
+      "languages": {
+        "en": {
+          "after_sha256": "40608d73f8f49267f144b6a7a7a29d0846dcbf766d70c00388ad05582df84f28",
+          "before_sha256": "40608d73f8f49267f144b6a7a7a29d0846dcbf766d70c00388ad05582df84f28",
+          "identical": 1545
+        },
+        "zh": {
+          "after_sha256": "fdaaffb87e9a721a15cf340b51b38872b17c6a857bf061c4909f5e41349e72b2",
+          "before_sha256": "fdaaffb87e9a721a15cf340b51b38872b17c6a857bf061c4909f5e41349e72b2",
+          "identical": 1545
+        }
+      }
+    },
+    "fixture_cases": 16,
+    "input_positioning_sha256": "1450a8574935684fc7dc22dd30443d05947583e93d49046bc44f15c20d018f30",
+    "rendered": {
+      "all_missing": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: no paired volume observation.</p><p class=\"srcline\">Recent volume window: no paired volume observation.</p><p class=\"srcline\">Baseline volume window: no paired volume observation.</p><p class=\"srcline\">Historical z-score: no paired volume observation.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 20,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 30,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 5,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "no_observation",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 没有配对的成交量观测.</p><p class=\"srcline\">近期成交量窗口: 没有配对的成交量观测.</p><p class=\"srcline\">基准成交量窗口: 没有配对的成交量观测.</p><p class=\"srcline\">历史 z 分数: 没有配对的成交量观测.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "baseline_missing": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Baseline volume window: incomplete inputs.</p><p class=\"srcline\">Historical z-score: incomplete inputs.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "50.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": 50,
+            "state": "unavailable",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">基准成交量窗口: 输入不完整.</p><p class=\"srcline\">历史 z 分数: 输入不完整.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "50.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "genuine_zero": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Reported zero short volume in the recent window.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "0.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": 0,
+            "short_ratio_pct": 0,
+            "state": "observed_zero",
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">近期窗口报告的卖空成交量为零。</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "0.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        }
+      },
+      "healthy": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "50.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": 0,
+            "short_ratio_pct": 50,
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "50.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        }
+      },
+      "infinite_total": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: invalid input.</p><p class=\"srcline\">Recent volume window: invalid input.</p><p class=\"srcline\">Baseline volume window: invalid input.</p><p class=\"srcline\">Historical z-score: invalid input.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "latest": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "recent": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "parse_error",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 输入无效.</p><p class=\"srcline\">近期成交量窗口: 输入无效.</p><p class=\"srcline\">基准成交量窗口: 输入无效.</p><p class=\"srcline\">历史 z 分数: 输入无效.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "invalid_latest_ratio": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: invalid input.</p><p class=\"srcline\">Historical z-score: invalid input.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 30,
+                "reason": "stored_ratio",
+                "state": "parse_error"
+              },
+              "latest": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 1,
+                "reason": "stored_ratio",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "parse_error",
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 输入无效.</p><p class=\"srcline\">历史 z 分数: 输入无效.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "latest_zero_only": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"neg\">-7.5%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"pos\">-5.39σ</span></span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "0.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"neg\">-7.5%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"pos\">-5.39σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": -5.39,
+            "short_ratio_pct": 0,
+            "trend_pp": -7.5
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"neg\">-7.5%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"pos\">-5.39σ</span></span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "0.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"neg\">-7.5%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"pos\">-5.39σ</span>",
+              false
+            ]
+          ]
+        }
+      },
+      "missing_short": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: no paired volume observation.</p><p class=\"srcline\">Recent volume window: incomplete inputs.</p><p class=\"srcline\">Baseline volume window: incomplete inputs.</p><p class=\"srcline\">Historical z-score: incomplete inputs.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "unavailable",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 没有配对的成交量观测.</p><p class=\"srcline\">近期成交量窗口: 输入不完整.</p><p class=\"srcline\">基准成交量窗口: 输入不完整.</p><p class=\"srcline\">历史 z 分数: 输入不完整.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "missing_total": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: no paired volume observation.</p><p class=\"srcline\">Recent volume window: incomplete inputs.</p><p class=\"srcline\">Baseline volume window: incomplete inputs.</p><p class=\"srcline\">Historical z-score: incomplete inputs.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "history_z": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "unavailable"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "unavailable",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 没有配对的成交量观测.</p><p class=\"srcline\">近期成交量窗口: 输入不完整.</p><p class=\"srcline\">基准成交量窗口: 输入不完整.</p><p class=\"srcline\">历史 z 分数: 输入不完整.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "mixed_invalid_missing": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Latest ratio: no paired volume observation.</p><p class=\"srcline\">Recent volume window: invalid input.</p><p class=\"srcline\">Baseline volume window: invalid input.</p><p class=\"srcline\">Historical z-score: invalid input.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\">n/a</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "n/a",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "n/a",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "baseline": {
+                "n_invalid": 1,
+                "n_missing": 1,
+                "n_rows": 20,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 1,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              },
+              "latest": {
+                "n_invalid": 0,
+                "n_missing": 1,
+                "n_rows": 1,
+                "reason": "paired_operands",
+                "state": "no_observation"
+              },
+              "recent": {
+                "n_invalid": 1,
+                "n_missing": 1,
+                "n_rows": 5,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": null,
+            "state": "parse_error",
+            "trend_pp": null
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">最新比率: 没有配对的成交量观测.</p><p class=\"srcline\">近期成交量窗口: 输入无效.</p><p class=\"srcline\">基准成交量窗口: 输入无效.</p><p class=\"srcline\">历史 z 分数: 输入无效.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\">无</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "无",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "无",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "no_ratio_column": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Partial history or limited z-score coverage.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "50.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": 50,
+            "state": "partial",
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">历史样本不足或 z 分数覆盖有限。</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "50.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ]
+          ]
+        }
+      },
+      "old_invalid": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Historical z-score: invalid input.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\">n/a</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "50.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "n/a",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "coverage": {
+              "history_z": {
+                "n_invalid": 1,
+                "n_missing": 0,
+                "n_rows": 30,
+                "reason": "paired_operands",
+                "state": "parse_error"
+              }
+            },
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": 50,
+            "state": "parse_error",
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">历史 z 分数: 输入无效.</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\">无</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "50.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "无",
+              false
+            ]
+          ]
+        }
+      },
+      "optional_latest_absent": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Partial history or limited z-score coverage.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">54.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"pos\">+3.0%</span>pp</span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "54.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"pos\">+3.0%</span>pp",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": null,
+            "short_ratio_pct": 54,
+            "state": "partial",
+            "trend_pp": 3
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">历史样本不足或 z 分数覆盖有限。</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">54.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"pos\">+3.0%</span>pp</span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "54.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"pos\">+3.0%</span>pp",
+              false
+            ]
+          ]
+        }
+      },
+      "partial": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Partial history or limited z-score coverage.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-08 · 8d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "50.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-08",
+            "n_days": 8,
+            "ratio_z": 0,
+            "short_ratio_pct": 50,
+            "state": "partial",
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">历史样本不足或 z 分数覆盖有限。</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">50.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-08 · 8个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "50.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        }
+      },
+      "rounded_positive": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "0.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": 0,
+            "short_ratio_pct": 0,
+            "trend_pp": 0
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"muted\">0.0%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"muted\">0.00σ</span></span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "0.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"muted\">0.0%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"muted\">0.00σ</span>",
+              false
+            ]
+          ]
+        }
+      },
+      "zero_recent": {
+        "en": {
+          "html": "<div class=\"posbox\"><h3>Daily short flow</h3><p class=\"srcline\">Reported zero short volume in the recent window.</p><div class=\"kv\"><span class=\"kvk\">Short ratio</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">Trend (recent−base)</span><span class=\"kvv\"><span class=\"neg\">-37.5%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">Ratio vs normal</span><span class=\"kvv\"><span class=\"pos\">-2.24σ</span></span></div><p class=\"srcline\">2026-10-30 · 30d</p></div>",
+          "labels": {
+            "na": "n/a",
+            "ratio": "Short ratio",
+            "trend": "Trend (recent−base)",
+            "z": "Ratio vs normal"
+          },
+          "rows": [
+            [
+              "Short ratio",
+              "0.0%",
+              false
+            ],
+            [
+              "Trend (recent−base)",
+              "<span class=\"neg\">-37.5%</span>pp",
+              false
+            ],
+            [
+              "Ratio vs normal",
+              "<span class=\"pos\">-2.24σ</span>",
+              false
+            ]
+          ]
+        },
+        "positioning": {
+          "short_flow": {
+            "asof": "2026-10-30",
+            "n_days": 30,
+            "ratio_z": -2.24,
+            "short_ratio_pct": 0,
+            "state": "observed_zero",
+            "trend_pp": -37.5
+          }
+        },
+        "zh": {
+          "html": "<div class=\"posbox\"><h3>每日做空流向</h3><p class=\"srcline\">近期窗口报告的卖空成交量为零。</p><div class=\"kv\"><span class=\"kvk\">做空比率</span><span class=\"kvv\">0.0%</span></div><div class=\"kv\"><span class=\"kvk\">趋势（近期−基线）</span><span class=\"kvv\"><span class=\"neg\">-37.5%</span>pp</span></div><div class=\"kv\"><span class=\"kvk\">比率z值</span><span class=\"kvv\"><span class=\"pos\">-2.24σ</span></span></div><p class=\"srcline\">2026-10-30 · 30个交易日</p></div>",
+          "labels": {
+            "na": "无",
+            "ratio": "做空比率",
+            "trend": "趋势（近期−基线）",
+            "z": "比率z值"
+          },
+          "rows": [
+            [
+              "做空比率",
+              "0.0%",
+              false
+            ],
+            [
+              "趋势（近期−基线）",
+              "<span class=\"neg\">-37.5%</span>pp",
+              false
+            ],
+            [
+              "比率z值",
+              "<span class=\"pos\">-2.24σ</span>",
+              false
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "integration_base": "16e874433e0ff0fb0ad863b839deb1d16f824005",
+  "issue": 11050,
+  "original_consumer_head": "1a346ad7aa6cfac1bb57f630e916ada3d67017ae",
+  "producer_head": "45ca874522907687393960e33222ac4e88cd614b",
+  "producer_report": {
+    "json_blob": "2f7f5831525b29193caf4621a055472119d177a4",
+    "markdown_blob": "93f7884e715188cc4f87da458e9174dfe446f13e",
+    "panel_blob": "e81dbeeb1d89b8dfadf60c97276bc9e90fa081c1",
+    "panel_sha256": "0a745421517fbe572f5628c6a782c82a8449f0ce471b96198e1a99509937d096",
+    "source_data_pin": "cdb3144ea48f2a69f814560f2248123f02c97ff3"
+  },
+  "python": "3.14.7",
+  "release_qualification": {
+    "browser_and_full_page_acceptance_proven": false,
+    "draft": true,
+    "merge_on_green_armed": false,
+    "natural_composed_ci_required": true,
+    "original_producer_ci": "43091844204",
+    "original_producer_ci_observation": "in_progress at 2026-11-11T20:52:13Z; preserved, not cancelled or replayed",
+    "production_render_or_deployment_proven": false,
+    "style_original_unknown_effects_and_access_denials_preserved": true
+  },
+  "reproduction_scripts": {
+    "consumer-audit.cjs": "const fs=require('fs'),path=require('path'),assert=require('assert'),crypto=require('crypto');\nconst root=__dirname, source=path.join(root,'after');\nconst harness=fs.readFileSync(path.join(source,'tests/test_short_flow_disclosure.cjs'),'utf8');\nconst prefix=harness.slice(0,harness.indexOf('const notes ='));\nassert(prefix.includes('function render('));\nconst api=new Function('require','__dirname',prefix+';return {render,text};')(require,path.join(source,'tests'));\nconst original=fs.readFileSync(path.join(root,'baseline-stock.html.j2'),'utf8');\nconst raw=fs.readFileSync(process.argv[2]);\nconst sha=x=>crypto.createHash('sha256').update(x).digest('hex');\nassert.strictEqual(sha(raw),'1450a8574935684fc7dc22dd30443d05947583e93d49046bc44f15c20d018f30');\nconst actual=JSON.parse(raw), current={count:0,languages:{}};\nassert.strictEqual(Object.keys(actual).length,1545);\nfor(const locale of ['en','zh']){\n const before={},after={};\n for(const [ticker,positioning] of Object.entries(actual)){\n  const sf=positioning.short_flow;assert(sf && !sf.coverage);\n  const a=api.render(original,sf,locale),b=api.render(api.text,sf,locale);\n  assert.deepStrictEqual(a,b,ticker+' '+locale);\n  before[ticker]=a.html;after[ticker]=b.html;current.count++;\n }\n current.languages[locale]={before_sha256:sha(JSON.stringify(before)),after_sha256:sha(JSON.stringify(after)),identical:Object.keys(after).length};\n}\nconst fixtures=JSON.parse(fs.readFileSync(path.join(root,'fixture-positioning.json'),'utf8'));\nconst rendered={};\nfor(const [name,pos] of Object.entries(fixtures)){\n rendered[name]={positioning:pos,en:api.render(api.text,pos.short_flow,'en'),zh:api.render(api.text,pos.short_flow,'zh')};\n}\nconst out={input_positioning_sha256:sha(raw),actual_tickers:1545,current,fixture_cases:Object.keys(fixtures).length,rendered};\nfs.writeFileSync(path.join(root,'consumer-proof.json'),JSON.stringify(out,null,2)+'\\n');\nconsole.log(JSON.stringify({actual_tickers:1545,current,fixture_cases:out.fixture_cases,proof_sha256:sha(fs.readFileSync(path.join(root,'consumer-proof.json')))}));\n",
+    "consumer-audit.py": "from pathlib import Path\nimport importlib.util,json,subprocess,sys\nfrom pytest import MonkeyPatch\nroot=Path(\".\").resolve();source=root/\"after\";sys.path.insert(0,str(source))\nspec=importlib.util.spec_from_file_location(\"consumer_fixtures\",source/\"tests/test_c19_wp24_consumer_states.py\")\nfx=importlib.util.module_from_spec(spec);spec.loader.exec_module(fx)\nout={}\nfor case in fx._SHORT_FLOW_CASES:\n    target=root/\"fixtures\"/case;target.mkdir(parents=True,exist_ok=False)\n    p=target/\"finra_short_volume/panel.parquet\";p.parent.mkdir()\n    fx._short_flow_fixture(case).to_parquet(p)\n    with MonkeyPatch.context() as mp:\n        mp.setattr(fx.config,\"data_dir\",lambda:target)\n        panel,state=fx.sv.panel_state();assert state==fx.sv.OBSERVED\n        direct=fx.sv.signal_map(panel);assert direct and direct==fx.sf._load_short_volume()\n        out[case]=fx.sf._positioning(\"AAA\",fx._F,None,None,direct[\"AAA\"])\n(root/\"fixture-positioning.json\").write_text(json.dumps(out,sort_keys=True,allow_nan=False,indent=2)+\"\\n\")\nsubprocess.run([\"node\",str(root/\"audit_consumer.cjs\"),\"../producer-proof/after-audit/positioning.json\"],check=True)\nprint(\"FINRA_CONSUMER_AUDIT_COMPLETE\",flush=True)\n"
+  },
+  "schema": "finra-consumer-composition-validation-v1",
+  "style_compatibility": {
+    "browser_or_full_style_proof": false,
+    "node": {
+      "baselineParity": true,
+      "htmlParity": 604,
+      "numericRowParity": 600,
+      "passed": 1238,
+      "rendered": {}
+    },
+    "original_short_flow_equal": true,
+    "outside_short_flow_block_unchanged": true,
+    "style_blob": "5d198462e55d6c25d9f086cbb3f90cbfe6d9f684",
+    "style_head": "9cd1c665595933532a2186164deb1dce18962708",
+    "union_blob": "7b5b32a61e5613790632b9b59af0588a1ced5bd1"
+  },
+  "tests": {
+    "after": {
+      "log_bytes": 180,
+      "log_sha256": "ce58727b777a80e349b3e5997496916487d03f6ae89181e18108df5b9730a083",
+      "returncode": 0,
+      "seconds": 9.05,
+      "tail": [
+        "........................................................................ [ 54%]",
+        ".............................................................            [100%]",
+        "133 passed in 8.71s"
+      ]
+    },
+    "before": {
+      "log_bytes": 132200,
+      "log_sha256": "19fe5d03d0695a309ccf805ffe399d0690e76b506a5fcb41fe820f94d1b8be7d",
+      "returncode": 1,
+      "seconds": 7.957,
+      "tail": [
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[missing_total]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[all_missing]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[infinite_total]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[old_invalid]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[invalid_latest_ratio]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[optional_latest_absent]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[baseline_missing]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[mixed_invalid_missing]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[zero_recent]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[latest_zero_only]",
+        "FAILED tests/test_c19_wp24_consumer_states.py::test_native_short_flow_producer_to_disclosure[no_ratio_column]",
+        "17 failed, 116 passed in 7.49s"
+      ]
+    },
+    "node_version": "v26.5.0"
+  }
+}

@@ -233,3 +233,122 @@ def test_positioning_full_short_flow_is_unchanged():
 ], ids=["short_history", "no_z", "zero_recent"])
 def test_positioning_qualified_short_flow_carries_state(sig, state):
     assert sf._positioning("AAA", _F, None, None, sig)["short_flow"]["state"] == state
+
+
+
+def test_short_flow_state_disclosure_node():
+    """Execute the shipped short-flow JS block; Node absence is explicit."""
+    import shutil
+    import subprocess
+    from pathlib import Path
+    node = shutil.which('node')
+    if not node:
+        pytest.skip('Node required for actual short-flow block rendering')
+    subprocess.run([node, str(Path(__file__).with_name('test_short_flow_disclosure.cjs'))], check=True)
+
+
+_SHORT_FLOW_CASES = (
+    "healthy", "partial", "genuine_zero", "rounded_positive", "missing_short",
+    "missing_total", "all_missing", "infinite_total", "old_invalid",
+    "invalid_latest_ratio", "optional_latest_absent", "baseline_missing",
+    "mixed_invalid_missing", "zero_recent", "latest_zero_only", "no_ratio_column",
+)
+
+
+def _short_flow_fixture(case):
+    from collectors.finra_short_volume import _parse
+
+    n = 8 if case == "partial" else 30
+    short, total = ((0, 100) if case == "genuine_zero" else
+                    (1, 100_000_000) if case == "rounded_positive" else (50, 100))
+    text = "Date|Symbol|ShortVolume|ShortExemptVolume|TotalVolume|Market\n" + "\n".join(
+        f"{day:%Y%m%d}|AAA|{short}|0|{total}|Q"
+        for day in pd.date_range("2026-10-01", periods=n)
+    )
+    panel = _parse(text, universe={"AAA"})
+    assert len(panel) == n and set(panel["ticker"]) == {"AAA"}
+    # Fresh malformed pairs are rejected by _parse. These deliberate mutations
+    # exercise corruption/missingness retained in an existing Parquet store.
+    if case in {"missing_short", "missing_total"}:
+        panel.loc[n - 1, "short_vol" if case == "missing_short" else "total_vol"] = float("nan")
+    elif case == "all_missing":
+        panel[["short_vol", "total_vol"]] = float("nan")
+    elif case == "infinite_total":
+        panel.loc[n - 1, "total_vol"] = float("inf")
+    elif case == "old_invalid":
+        panel.loc[0, "short_vol"] = -1.0
+    elif case == "invalid_latest_ratio":
+        panel.loc[n - 1, "short_ratio"] = 1.2
+    elif case == "optional_latest_absent":
+        panel.loc[n - 1, "short_vol"] = 70.0
+        panel.loc[n - 1, "short_ratio"] = float("nan")
+    elif case == "baseline_missing":
+        panel.loc[n - 10, "short_vol"] = float("nan")
+    elif case == "mixed_invalid_missing":
+        panel.loc[n - 1, "short_vol"] = float("nan")
+        panel.loc[n - 2, "total_vol"] = -1.0
+    elif case in {"zero_recent", "latest_zero_only"}:
+        panel.loc[n - (5 if case == "zero_recent" else 1):, ["short_vol", "short_ratio"]] = 0.0
+    elif case == "no_ratio_column":
+        panel = panel.drop(columns=["short_ratio"])
+    return panel
+
+
+@pytest.mark.parametrize("case", _SHORT_FLOW_CASES)
+def test_native_short_flow_producer_to_disclosure(tmp_path, monkeypatch, case):
+    import json
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node required for producer-to-render qualification")
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    panel_path = tmp_path / "finra_short_volume" / "panel.parquet"
+    panel_path.parent.mkdir()
+    _short_flow_fixture(case).to_parquet(panel_path)
+    panel, panel_status = sv.panel_state(panel_path)
+    assert panel_status == sv.OBSERVED
+    direct = sv.signal_map(panel)
+    assert direct and direct == sf._load_short_volume(), "the catch-all reader must not hide an exception"
+    block = sf._positioning("AAA", _F, None, None, direct["AAA"])
+    flow = block["short_flow"]
+    expected_state = {
+        "partial": sv.PARTIAL, "genuine_zero": sv.OBSERVED_ZERO,
+        "missing_short": sv.UNAVAILABLE, "missing_total": sv.UNAVAILABLE,
+        "all_missing": sv.NO_OBSERVATION, "infinite_total": sv.PARSE_ERROR,
+        "old_invalid": sv.PARSE_ERROR, "invalid_latest_ratio": sv.PARSE_ERROR,
+        "optional_latest_absent": sv.PARTIAL, "baseline_missing": sv.UNAVAILABLE,
+        "mixed_invalid_missing": sv.PARSE_ERROR, "zero_recent": sv.OBSERVED_ZERO,
+        "no_ratio_column": sv.PARTIAL,
+    }.get(case)
+    assert flow.get("state") == expected_state
+    if case in {"missing_short", "missing_total", "all_missing", "infinite_total", "mixed_invalid_missing"}:
+        assert flow["short_ratio_pct"] is None and flow["trend_pp"] is None and flow["ratio_z"] is None
+    elif case == "old_invalid":
+        assert flow["short_ratio_pct"] == 50.0 and flow["trend_pp"] == 0.0 and flow["ratio_z"] is None
+        assert set(flow["coverage"]) == {"history_z"}
+    elif case == "invalid_latest_ratio":
+        assert flow["short_ratio_pct"] is None and flow["trend_pp"] == 0.0
+        assert set(flow["coverage"]) == {"latest", "history_z"}
+    elif case == "baseline_missing":
+        assert flow["short_ratio_pct"] == 50.0 and flow["trend_pp"] is None
+        assert set(flow["coverage"]) == {"baseline", "history_z"}
+    elif case == "optional_latest_absent":
+        assert (flow["short_ratio_pct"], flow["trend_pp"], flow["ratio_z"]) == (54.0, 3.0, None)
+    elif case in {"rounded_positive", "genuine_zero", "latest_zero_only", "zero_recent"}:
+        assert flow["short_ratio_pct"] == 0.0
+    if "coverage" in flow:
+        assert flow["coverage"] == direct["AAA"]["coverage"]
+    file = tmp_path / "positioning.json"
+    file.write_text(json.dumps(block, allow_nan=False, sort_keys=True))
+    run = subprocess.run(
+        [node, str(Path(__file__).with_name("test_short_flow_disclosure.cjs")), str(file)],
+        check=True, capture_output=True, text=True,
+    )
+    result = json.loads(run.stdout)
+    assert set(result["rendered"]) == {"en", "zh"} and result["passed"] > 0
+    for locale, rendered in result["rendered"].items():
+        zero_note = "Reported zero" if locale == "en" else "报告的卖空成交量为零"
+        assert (zero_note in rendered["html"]) == (expected_state == sv.OBSERVED_ZERO)

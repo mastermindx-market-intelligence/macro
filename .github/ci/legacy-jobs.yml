@@ -51187,9 +51187,13 @@ jobs:
     timeout-minutes: 10
     paths:
       - "collectors/finra.py"
+      - "collectors/finra_short_volume.py"
       - "engine/short_volume.py"
       - "engine/stock_fundamentals.py"
       - "tests/test_c19_wp24_consumer_states.py"
+      - "tests/test_short_flow_disclosure.cjs"
+      - "templates/stock.html.j2"
+      - "tests/test_short_volume.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51199,7 +51203,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: c19-wp24-consumer-states
-        run: python -m pytest tests/test_c19_wp24_consumer_states.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp24_consumer_states.py tests/test_short_volume.py -q -p no:cacheprovider
   c19-wp24-dtc-map:
     if: ${{ false }}
     gate: code
