@@ -4,18 +4,6 @@
   {
    "ticker": "AMAT",
    "issuer": "co:us:AMAT",
-   "theme": "theme:advanced_packaging_equipment",
-   "role": "component_supplier",
-   "knowledge_cutoff": "2026-11-14T14:30:00Z",
-   "created": "2026-11-14T14:30:00Z",
-   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
-   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
-   "exposure_role": "primary",
-   "profit_driver": false
-  },
-  {
-   "ticker": "AMAT",
-   "issuer": "co:us:AMAT",
    "theme": "theme:cmp_planarization_equipment",
    "role": "component_supplier",
    "knowledge_cutoff": "2026-11-14T14:30:00Z",
