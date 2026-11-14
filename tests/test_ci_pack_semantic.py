@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import copy
 import importlib.util
 import json
 import os
@@ -30,6 +31,151 @@ SPEC.loader.exec_module(PACK)
 SHA_TREE = "1" * 40
 SHA_HEAD = "2" * 40
 SHA_BASE = "3" * 40
+
+# Original diagnostic effects, not an instruction to execute their commands.
+UNSETTLED_REPLAY_CASES = (
+    ("2fbee06234fec4e792918c1cb0d9f8ea2ed833c4", "ci-control-plane-contracts", "41966589230"),
+    ("75f1ed49f9ad991dfc04dcba3a787166751fe91c", "washout-turn-organ", "41887071408"),
+)
+
+
+def _held_replay_record(job_id: str, outcome: str = "failed") -> dict:
+    return {
+        "logical_job_id": job_id,
+        "job_exec_sha256": "a" * 64,
+        "infrastructure": {"outcome": "passed"},
+        "steps": [
+            {"proof_id": "earlier", "step_spec_sha256": "b" * 64,
+             "outcome": "passed", "failure_signature": None},
+            {"proof_id": "subject", "step_spec_sha256": "c" * 64,
+             "outcome": outcome,
+             "failure_signature": None if outcome == "passed" else {"sha256": "d" * 64, "atoms": ["original-head-failure"]}},
+            {"proof_id": "later", "step_spec_sha256": "e" * 64,
+             "outcome": "not_run_prior_failure", "failure_signature": None},
+        ],
+    }
+
+
+def _no_base_diagnostic(*args: object, **kwargs: object) -> None:
+    raise AssertionError("unsettled exact-base diagnostic must not start")
+
+
+@pytest.mark.parametrize("base,job_id,original_run", UNSETTLED_REPLAY_CASES)
+@pytest.mark.parametrize("outcome", ("failed", "timed_out"))
+def test_unsettled_exact_base_hold_precedes_checkout_and_preserves_head(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    base: str, job_id: str, original_run: str, outcome: str,
+) -> None:
+    plan = SimpleNamespace(base_sha=base, role="pr_head", workflow_run_id="fixture-successor", workflow="ci")
+    record = _held_replay_record(job_id, outcome)
+    before = copy.deepcopy(record)
+    monkeypatch.setattr(PACK, "_exact_base_worktree", _no_base_diagnostic)
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", _no_base_diagnostic)
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=[record], budget_seconds=60)
+    replay = record["steps"][1]["base_replay"]
+    assert replay["tested_tree_sha"] == base
+    assert replay["outcome"] == "unavailable"
+    assert original_run in replay["detail"]
+    assert "settlement unknown" in replay["detail"]
+    assert "base_replay" not in record["steps"][0]
+    assert "base_replay" not in record["steps"][2]
+    del record["steps"][1]["base_replay"]
+    assert record == before
+    if outcome == "failed":
+        failed_step = {**before["steps"][1], "base_replay": replay}
+        classification, _ = SEMANTIC.classify_head_failure(
+            logical_job_id=job_id, head_job_exec_sha256=record["job_exec_sha256"],
+            head_step=failed_step, expected_base_sha=base,
+        )
+        assert classification == "unknown"
+        assert classification not in {"passed", "inherited_base"}
+
+
+def test_unsettled_exact_base_hold_preserves_original_observation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base, job_id, _ = UNSETTLED_REPLAY_CASES[0]
+    plan = SimpleNamespace(base_sha=base, role="pr_head", workflow_run_id="fixture-successor", workflow="ci")
+    record = _held_replay_record(job_id)
+    original = {"tested_tree_sha": base, "outcome": "timed_out", "detail": "original UNKNOWN"}
+    record["steps"][1]["base_replay"] = original
+    before = copy.deepcopy(record)
+    monkeypatch.setattr(PACK, "_exact_base_worktree", _no_base_diagnostic)
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=[record], budget_seconds=60)
+    assert record == before
+    assert record["steps"][1]["base_replay"] is original
+
+
+def _mock_unrelated_base_replay(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, base: str) -> list[str]:
+    base_root = tmp_path / "mock-base"
+    base_root.mkdir()
+    calls: list[str] = []
+
+    @contextlib.contextmanager
+    def checkout(*args: object, **kwargs: object) -> Iterator[Path]:
+        yield base_root
+
+    def stream(command: list[str], **kwargs: object) -> tuple[int, bool]:
+        job_id = command[command.index("--semantic-replay-job") + 1]
+        calls.append(job_id)
+        output = Path(command[command.index("--emit-semantic-fragment") + 1])
+        step = _held_replay_record(job_id)["steps"][1]
+        step.update(outcome="passed", failure_signature=None)
+        output.write_text(json.dumps({
+            "schema": PACK.FRAGMENT_SCHEMA, "tested_tree_sha": base,
+            "subject_head_sha": base, "base_sha": base, "role": "main",
+            "jobs": [{"logical_job_id": job_id, "job_exec_sha256": "a" * 64,
+                      "infrastructure": {"outcome": "passed"}, "steps": [step]}],
+        }))
+        return 0, False
+
+    monkeypatch.setattr(PACK, "_exact_base_worktree", checkout)
+    monkeypatch.setattr(PACK, "_stream_process_with_deadline", stream)
+    return calls
+
+
+@pytest.mark.parametrize("change", ("base", "job"))
+def test_unsettled_exact_base_hold_does_not_match_other_tuple(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, change: str,
+) -> None:
+    base, job_id, _ = UNSETTLED_REPLAY_CASES[0]
+    if change == "base":
+        base = SHA_BASE
+    else:
+        job_id = "ci-control-plane-contracts-unrelated"
+    plan = SimpleNamespace(base_sha=base, role="pr_head", workflow_run_id="fixture-successor", workflow="ci")
+    record = _held_replay_record(job_id)
+    calls = _mock_unrelated_base_replay(tmp_path, monkeypatch, base)
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=[record], budget_seconds=60)
+    assert calls == [job_id]
+    assert record["steps"][1]["base_replay"]["job_present"] is True
+
+
+def test_unsettled_exact_base_hold_keeps_mixed_unrelated_diagnostic(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base, job_id, original_run = UNSETTLED_REPLAY_CASES[0]
+    plan = SimpleNamespace(base_sha=base, role="pr_head", workflow_run_id="fixture-successor", workflow="ci")
+    held, other = _held_replay_record(job_id), _held_replay_record("unrelated")
+    calls = _mock_unrelated_base_replay(tmp_path, monkeypatch, base)
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=[held, other], budget_seconds=60)
+    assert calls == ["unrelated"]
+    assert original_run in held["steps"][1]["base_replay"]["detail"]
+    assert held["steps"][1]["base_replay"]["outcome"] == "unavailable"
+    assert other["steps"][1]["base_replay"]["job_present"] is True
+
+
+@pytest.mark.parametrize("role,outcome", (("pr_head", "passed"), ("main", "failed")))
+def test_unsettled_exact_base_hold_does_not_touch_passes_or_main(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, role: str, outcome: str,
+) -> None:
+    base, job_id, _ = UNSETTLED_REPLAY_CASES[0]
+    plan = SimpleNamespace(base_sha=base, role=role, workflow_run_id="fixture-successor", workflow="ci")
+    record = _held_replay_record(job_id, outcome)
+    before = copy.deepcopy(record)
+    monkeypatch.setattr(PACK, "_exact_base_worktree", _no_base_diagnostic)
+    PACK._run_exact_base_replays(root=tmp_path, plan=plan, records=[record], budget_seconds=60)
+    assert record == before
 
 
 @pytest.fixture(autouse=True)
