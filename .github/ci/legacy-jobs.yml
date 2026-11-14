@@ -54268,3 +54268,114 @@ jobs:
         run: python -m pytest tests/test_public_site_figma_import_plan.py -q
       - name: reference matrix sealing contracts
         run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
+  gmi-segment-sources-tooling:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Ruling 105 step 1: synthetic pin/packet/propose segment-source tooling suite.
+    # Curated exclusive closure (measured suite_dependency_closure of the suite):
+    # the owner / segment-route import chain carries opaque subprocess/glob edges
+    # that would smear a non-exclusive job across every ordinary-code packing probe;
+    # exclusive pins the exact static closure so this lane never widens the matrix.
+    paths:
+      - .github/workflows/gmi-segment-sources.yml
+      - collectors/__init__.py
+      - collectors/edgar_forensics.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
+      - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
+      - collectors/sec_request_pacer.py
+      - config/dataset_registry.yml
+      - config/delisted_symbols.yml
+      - config/fundamental_forensics_disclosure_diff.v1.json
+      - config/issuer_group_allowlist.yml
+      - config/theme_crosswalk.yml
+      - config/theme_graph/segment_source_targets.v1.json
+      - config/theme_graph_identity_breaks.yml
+      - config/theme_sources.yml
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - contracts/theme_graph/activity_membership_proposal.v1.schema.json
+      - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+      - contracts/theme_graph/probation_proposal.v1.schema.json
+      - contracts/theme_graph/probation_relation_event.v2.schema.json
+      - engine/company_intelligence/__init__.py
+      - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/current_company_context.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/documents.py
+      - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - engine/company_intelligence/issuer_disclosures.py
+      - engine/company_intelligence/pinned_relationship_candidates.py
+      - engine/company_intelligence/relationship_candidates.py
+      - engine/company_intelligence/sec_segment_adoption.py
+      - engine/company_intelligence/sec_supplier_adoption.py
+      - engine/company_intelligence/views.py
+      - engine/earnings_narrative/contracts.py
+      - engine/earnings_release/receipts.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/detectors.py
+      - engine/fundamental_forensics/disclosure_diff.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/change_report.py
+      - engine/theme_graph/identity.py
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/membership_evidence.py
+      - engine/theme_graph/ontology.py
+      - engine/theme_graph/probation.py
+      - engine/theme_graph/rights.py
+      - engine/theme_graph/store.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/delisted_symbols.py
+      - lib/symbol_directory_receipts.py
+      - lib/ticker_aliases.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - research/theme_graph/microtheme_membership_candidates_2026-10-08.json
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - scripts/pin_segment_sources.py
+      - scripts/propose_activity_membership.py
+      - scripts/publish_company_disclosure.py
+      - tests/test_pin_segment_sources.py
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Proven install line of the GMI segment-route owner job: the suite imports
+        # collectors.sec_document_spine -> requests plus the owner chain producers.
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 requests
+      - name: GMI segment-source tooling (pin / packet / propose)
+        run: python -m pytest tests/test_pin_segment_sources.py -q

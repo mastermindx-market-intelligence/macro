@@ -1,0 +1,16 @@
+{
+  "schema": "theme_graph.segment_source_targets/v1",
+  "targets": [
+    {"ticker": "MU", "cik": "0000723125", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "SNDK", "cik": "0002023554", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "WDC", "cik": "0000106040", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "STX", "cik": "0001137789", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "NTAP", "cik": "0001002047", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "NTNX", "cik": "0001618732", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "RMBS", "cik": "0000917273", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "SIMO", "cik": "0001329394", "forms": ["20-F", "20-F/A"]},
+    {"ticker": "MRAM", "cik": "0001438423", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "PENG", "cik": "0001616533", "forms": ["10-K", "10-K/A"]},
+    {"ticker": "AMKR", "cik": "0001047127", "forms": ["10-K", "10-K/A"]}
+  ]
+}
