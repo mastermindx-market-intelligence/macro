@@ -35833,6 +35833,7 @@ jobs:
     # script/data/fixture inputs remain explicit and closure-audited by CI.
     scope: exclusive
     paths:
+      - "tests/test_release_radar_render.py"
       - ".gitignore"
       - "app/**"
       - "collectors/**"

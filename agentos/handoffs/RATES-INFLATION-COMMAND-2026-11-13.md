@@ -141,3 +141,48 @@ claimed. Receipts and source SHA-256 bindings are in
 
 The legacy P4 source-equivalence visual guard still needs genuine recapture at
 the committed current render source. The native proof above does not waive it.
+
+
+## Integrated source qualification milestone
+
+Source fixes committed as `c1bd700db69107273f3435a6f22c0feaccf271c3`.
+The exact current main `3534fad62bb2cbfba1e44a89c92fa717c9c54c52` was integrated
+without conflicts at `3fa0404a7dec46621ffd93a67f4f25b801db52b3`. The only overlapping
+owned path was the CI manifest; other sessions' changes were retained. A broad
+inherited-generated-file whitespace check was noisy, so the actual owned delta
+was separately checked against that protected base and passed; no unrelated
+upstream SVG/data was reformatted.
+
+The existing P4 probe genuinely recaptured **68 cases** at the integrated source,
+bound all **31** render/fixture inputs, and its **164 tests passed**. Only its
+receipt changed; the recaptured images were byte-identical to retained evidence.
+The merged MRI + consumer regression returned **701 passed, 7 skipped, 5 warnings**
+in 81.12s; overlapping earlier runs are not additive unique-test totals.
+
+A read-only head census ran the incumbent closure/suite/control-plane checks
+without invoking host-wide stale-worktree cleanup. Unrun suites, skip-only and
+trigger-gap findings were empty. All three fixed packing probes met unchanged
+10-pack/weight/count ceilings. Its sole closure finding was the native host test's
+`tests/test_release_radar_render.py` input; that exact edge is now included in the
+existing MRI scope. Hosted exact-head/base-delta CI remains authoritative.
+
+Before: no source-bound macro-surprise comparison reached the real visible Events
+host. After: tested original MRI producer/readers and native dialog integration,
+with private poll storage and strict public derived-rights gates. Capability
+state remains **BUILT_NOT_PROVEN** until permitted source release and covering
+production/render/readback. Historical economist archives still need explicit
+source qualification; no ingest path may backdate system possession. A provider's
+historical market-availability proof must not be confused with our live capture
+clock. Genuine historical reproduction and forward predictive validity are not
+claimed by any test or screenshot in this work.
+
+Next: publish this original candidate and consume exact-head CI; repair only
+introduced failures, then use the existing qualified release controller and
+verify actual consumers. The original active assigned session retains recovery;
+no old-chat acknowledgment, duplicate worker, new watcher or new branch is owed.
+
+
+Final local closure recheck after declaring the native-host test dependency:
+**1 passed, 303 deselected in 138.89s**. The remaining code/visual candidate is
+ready for publication to original PR #11226 and its binding hosted CI. Release
+is not armed, and this source checkpoint does not end the mission.

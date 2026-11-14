@@ -133,3 +133,40 @@ The original capture writer preflights the complete proposal batch before its
 first append. Malformed or unqualified later proposals cannot leave an unreported
 partial batch. Actual append/readback interruptions retain the original uncertain
 effect and reconciliation rules; caller clocks never replace writer time.
+
+
+## Historical-source qualification boundary
+
+The live v1 ingestion clock is deliberately the actual local receipt time. A
+historical vendor download is not permission to backdate `recorded_at`, and
+post-release `LastUpdate` must not be copied into `forecast_at` as though it were
+an economist's original estimate timestamp. Archived market availability and our
+system's later possession are distinct facts. The live producer remains strict;
+qualified retrospective reconstruction must preserve both clocks and remain
+separately labeled from actual forward captures.
+
+A concrete candidate for the source-admission lane is Trading Economics' documented
+calendar point-in-time method. Its documentation describes original release-time
+values; its schema distinguishes economist `Forecast` from provider-model
+`TEForecast`. This identifies a possible source, not an admitted dataset, a license,
+an authenticated connection, or proof that the desired 2008-2026 target definitions
+and original consensus vintages are covered.
+
+Primary documentation inspected 2026-11-13:
+- https://docs.tradingeconomics.com/economic_calendar/point-in-time/
+- https://docs.tradingeconomics.com/economic_calendar/schema/
+- https://docs.tradingeconomics.com/mcp/tools/#get_calendar_point_in_time
+
+Before using an archive, the existing MRI/RIC source owner must resolve access and
+internal/derived/raw rights, exact CPI/PPI target and definition-era mapping,
+original-forecast versus later revision semantics, release/calendar timezone,
+market-availability evidence, current acquisition timestamps and immutable input
+receipts. The historic endpoint's date-range parameters alone do not prove an
+arbitrary pre-release forecast snapshot. Do not relabel ordinary calendar history
+as certified point-in-time history. No provider was activated or purchased by this
+change; no historical archive has been admitted, normalized or used for validation.
+The current connector catalog search returned no Trading Economics plugin; that
+is a bounded catalog result, not proof that no account or integration exists.
+
+This dependency is independent of release of honest unavailable/shadow context.
+Do not claim the Alphatica result was reproduced while it remains unresolved.
