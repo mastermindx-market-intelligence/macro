@@ -58,7 +58,7 @@
 <div class="formula">
 {{ t('<strong>Static return %</strong> = 100 × premium ÷ cost basis', '<strong>静态回报 %</strong> = 100 × 权利金 ÷ 成本价') }}<br>
 {{ t('<strong>Return if called %</strong> = 100 × (strike − basis + premium) ÷ basis', '<strong>被行权回报 %</strong> = 100 × (行权价 − 成本价 + 权利金) ÷ 成本价') }}<br>
-{{ t('<strong>Break-even</strong> = cost basis − premium', '<strong>保本价</strong> = 成本价 − 权利金') }}<br>
+{{ t('<strong>Break-even</strong> = cost basis − premium, when that price is between zero and the call strike', '<strong>保本价</strong> = 成本价 − 权利金，且该价格必须介于零与看涨期权行权价之间') }}<br>
 {{ t('<strong>Annualized if called %</strong> = 100 × ( (1 + return if called)^(365 ÷ days) − 1 )', '<strong>被行权年化 %</strong> = 100 × ( (1 + 被行权回报)^(365 ÷ 天数) − 1 )') }}
 </div>
 <p>{{ t('The premium does double duty: it is your income <em>and</em> your first line of downside protection — the stock can fall by the premium before you’re underwater, which is exactly the break-even. The annualized figure simply scales the if-called return to a full year; it assumes the same trade could be repeated at the same pace, which is a big assumption.',
@@ -113,15 +113,32 @@
 (function(){
   "use strict";
 
+  // Classify the accepted decimal values exactly. Binary subtraction can turn
+  // 0.30 - 0.10 === 0.20 into a false gain/loss; an epsilon hides real losses.
+  // This changes only the payoff state, not the existing numeric outputs.
+  function payoffState(c, K, prem){
+    var parts = [c,K,prem].map(function(n){
+      var e=String(n).split("e"), m=e[0].split(".");
+      return {digits:m.join(""), exponent:Number(e[1]||0)-(m[1]||"").length};
+    });
+    var scale = Math.min.apply(null, parts.map(function(p){return p.exponent;}));
+    var units = parts.map(function(p){
+      return BigInt(p.digits) * (BigInt(10) ** BigInt(p.exponent-scale));
+    });
+    var cap = units[1] + units[2] - units[0], zero = BigInt(0);
+    return cap < zero ? "loss" : units[2] > units[0] ? "gain" : cap === zero ? "plateau" : "point";
+  }
+
   // ── pure compute (covered-call spec — do not re-derive) ────────────────────
   // inputs: {c basis, K strike, prem premium, d daysToExp (optional, 0 = none)}.
   // Returns an outputs object, or {ok:false, msg} for invalid input.
   // Never returns NaN/Infinity.
   function compute(inp){
     var c=inp.c, K=inp.K, prem=inp.prem, d=inp.d;
-    if(!(c>0)) return {ok:false, msg:"Enter a cost basis above zero."};
-    if(!(K>0)) return {ok:false, msg:"Enter the call strike you sold."};
-    if(!(prem>0)) return {ok:false, msg:"Enter the premium you received per share."};
+    if(!isFinite(c) || !(c>0)) return {ok:false, msg:"Enter a cost basis above zero."};
+    if(!isFinite(K) || !(K>0)) return {ok:false, msg:"Enter the call strike you sold."};
+    if(!isFinite(prem) || !(prem>0)) return {ok:false, msg:"Enter the premium you received per share."};
+    if(typeof BigInt !== "function") return {ok:false, msg:"This calculator requires a browser with exact integer arithmetic support."};
     var staticReturnPct = 100 * prem / c;
     var ifCalledReturnPct = 100 * (K - c + prem) / c;
     var breakeven = c - prem;
@@ -138,6 +155,9 @@
       ifCalledReturnPct:ifCalledReturnPct,
       breakeven:breakeven,
       downsideProtectionPct:downsideProtectionPct,
+      // A covered position is capped at K: c-prem is a reachable zero only
+      // when it is nonnegative and no higher than the strike.
+      breakevenState: payoffState(c, K, prem),
       hasDays:hasDays,
       annualizedIfCalled:annualizedIfCalled,
       strikeBelowBasis: K < c
@@ -171,6 +191,11 @@
     function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
     function pct(n){ return n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) + "%"; }
+    function breakText(res, forCopy){
+      if(res.breakevenState === "loss") return forCopy ? "not attainable" : "Not attainable";
+      if(res.breakevenState === "gain") return forCopy ? "not needed" : "Not needed";
+      return money(res.breakeven) + (res.breakevenState === "plateau" ? " and above" : "");
+    }
     function dash(){ outMain.textContent="—";
       [outStatic,outBreak,outProtect,outAnnual].forEach(function(e){e.textContent="—"; e.className="";}); }
 
@@ -182,25 +207,28 @@
 
       outMain.textContent = res.ifCalledReturnPct.toFixed(2) + "%";
       outStatic.textContent  = pct(res.staticReturnPct);
-      outBreak.textContent   = money(res.breakeven);
+      outBreak.textContent   = breakText(res, false);
       outProtect.textContent = pct(res.downsideProtectionPct);
       outStatic.className = "pos";
       outAnnual.textContent  = res.hasDays && res.annualizedIfCalled !== null ? pct(res.annualizedIfCalled) : "—";
 
       // Law 3: plain-word interpretation under the number
-      var plain = "You keep " + pct(res.staticReturnPct) + " as income if the stock stays flat, "
-        + "and make " + pct(res.ifCalledReturnPct) + " in total if it’s called away at the strike. "
-        + "Break-even is " + money(res.breakeven) + " — below that, the premium no longer covers the loss.";
+      var plain = "The premium received is " + pct(res.staticReturnPct) + " of your cost basis. "
+        + "If called away at the strike, the total return is " + pct(res.ifCalledReturnPct) + ". ";
+      if(res.breakevenState === "loss"){
+        plain += "Being called locks in a loss even after the premium. No nonnegative expiration price can break even because the call caps the stock proceeds.";
+      } else if(res.breakevenState === "gain"){
+        plain += "The position is positive at every nonnegative expiration price before excluded costs, so no break-even price is needed.";
+      } else if(res.breakevenState === "plateau"){
+        plain += "The position breaks even at or above " + money(res.breakeven) + " at expiration; below that price it loses money.";
+      } else {
+        plain += "Break-even is " + money(res.breakeven) + " — below that, the premium no longer covers the loss.";
+      }
       if(res.hasDays && res.annualizedIfCalled !== null){
         plain += " Annualized, the if-called return is " + pct(res.annualizedIfCalled)
           + " — illustrative only, if the trade repeated all year.";
       }
-      if(res.strikeBelowBasis){
-        plain = "Your strike is below your cost basis, so being called locks in a loss even after the premium. " + plain;
-        outPlain.className = "co-plain warn";
-      } else {
-        outPlain.className = "co-plain";
-      }
+      outPlain.className = res.breakevenState === "loss" ? "co-plain warn" : "co-plain";
       outPlain.textContent = plain;
     }
 
@@ -208,7 +236,7 @@
       if(!last || !last.ok) return "";
       var s = "Covered call: static " + pct(last.staticReturnPct)
         + " · if called " + pct(last.ifCalledReturnPct)
-        + " · break-even " + money(last.breakeven);
+        + " · break-even " + breakText(last, true);
       if(last.hasDays && last.annualizedIfCalled !== null){
         s += " · ~" + pct(last.annualizedIfCalled) + " annualized (hypothetical)";
       }
