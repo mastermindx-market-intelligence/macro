@@ -764,6 +764,12 @@ def _metrics(snapshot: Mapping[str, Any], *, published: str | None = None) -> li
             "metric_id": metric.get("metric_id"),
             "label": L.label("metric", metric.get("metric_id")),
             "value": L.value_pair(value),
+            "value_raw": value,
+            "value_type": value_type,
+            "unit_token": unit,
+            "basis_token": basis,
+            "freshness_token": metric.get("freshness"),
+            "presence_token": metric.get("status"),
             "absence": None if value is not None else _absence(metric.get("null_reason")),
             "unit": _strip_currency_unit(value_type, unit, normalized),
             "basis": _translation_basis_pair(basis, metric),
@@ -877,6 +883,16 @@ _EMPTY_HISTORY_RANGE = _pair(
 )
 
 
+def _history_reference_age_label(token: Any) -> dict[str, str]:
+    """Raw collector histories have reference dates, not qualified update clocks."""
+    return {
+        "CURRENT": _pair("Reference period within the stated window", "参考期在声明窗口内"),
+        "LATE_WITHIN_TOLERANCE": _pair("Reference period in the grace window", "参考期在宽限窗口内"),
+        "STALE_SOURCE": _pair("Older reference period", "较早的参考期"),
+        "SOURCE_FAILED": _pair("No reference observations available", "暂无参考期观察值"),
+    }.get(token, L.label("freshness", token))
+
+
 def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
     block = snapshot.get("series") or {}
     items = []
@@ -900,16 +916,24 @@ def _series(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "first": first,
             "last": last,
             "range": range_pair,
-            "freshness": L.label("freshness", entry.get("freshness")),
+            "freshness": (_history_reference_age_label(entry.get("freshness"))
+                          if entry.get("basis") == "latest_revised_observation_history"
+                          else L.label("freshness", entry.get("freshness"))),
             "freshness_tone": L.tone("freshness", entry.get("freshness")),
             "revision_behavior": entry.get("revision_behavior"),
             "source_ref": entry.get("source_ref"),
+            # Preserve original nulls: dropping them would join a line across a
+            # deliberate source gap. Display strings are never chart coordinates.
+            "points": [dict(point) for point in (entry.get("points") or [])],
+            "unit_token": entry.get("unit"),
+            "basis_token": entry.get("basis"),
+            "freshness_token": entry.get("freshness"),
         })
     return {
         # `entries`, not `items` — see the note in _implications.
         "entries": items,
-        "absent": not items,
-        "absence": None if items else _absence(block.get("null_reason")),
+        "absent": not any(item["count"] for item in items),
+        "absence": None if any(item["count"] for item in items) else _absence(block.get("null_reason")),
         "status": L.label("presence", block.get("status")),
     }
 
@@ -1126,8 +1150,12 @@ def _evidence(snapshot: Mapping[str, Any], context: Mapping[str, Any],
             "transform": source.get("transform"),
             "definition_id": source.get("definition_id"),
             "definition_version": source.get("definition_version"),
-            "rights": L.label("rights_state", source.get("rights_state")),
-            "freshness": L.label("freshness", source.get("freshness")),
+            "rights": (_pair("Available with source attribution", "使用时保留来源归属")
+                       if str(source.get("source_id", "")).startswith("history:") and source.get("rights_state") == "OPEN"
+                       else L.label("rights_state", source.get("rights_state"))),
+            "freshness": (_history_reference_age_label(source.get("freshness"))
+                          if str(source.get("source_id", "")).startswith("history:")
+                          else L.label("freshness", source.get("freshness"))),
             "freshness_tone": L.tone("freshness", source.get("freshness")),
             "correction": L.label("correction_state", source.get("correction_state")),
             "clocks": _clock_rows({
@@ -1862,6 +1890,9 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
         as_of_tenor = rows[-1][0] if rows else None
         prior_close = _prior_close_value(rows)
         prior_month = _prior_month_value(rows, as_of_tenor)
+        prior_close_as_of = rows[-2][0] if len(rows) >= 2 else None
+        prior_month_rows = [row for row in rows if as_of_tenor is not None and row[0] <= as_of_tenor - timedelta(days=_CURVE_PRIOR_MONTH_DAYS)]
+        prior_month_as_of = prior_month_rows[-1][0] if prior_month_rows else None
         if today is None:
             missing.append(tenor)
         elif as_of_tenor is not None:
@@ -1873,6 +1904,8 @@ def _curve_hero(snapshot: Mapping[str, Any]) -> dict[str, Any]:
             "today": today,
             "prior_close": prior_close,
             "prior_month": prior_month,
+            "prior_close_as_of": prior_close_as_of.isoformat() if prior_close_as_of else None,
+            "prior_month_as_of": prior_month_as_of.isoformat() if prior_month_as_of else None,
             "delta_close": _delta(today, prior_close),
             "delta_month": _delta(today, prior_month),
         })
@@ -2675,3 +2708,4 @@ def _glt_view_note(metric: Mapping[str, Any]) -> dict[str, str] | None:
         L.record_unknown(f"glt_view_note:{token}")
         return None
     return dict(pair)
+

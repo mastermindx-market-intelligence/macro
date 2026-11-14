@@ -54,6 +54,7 @@ from engine.market_os.macro_workspaces import (
     trade_flows,
 )
 from engine.market_os.macro_workspaces.publication_prior import apply_producer_prior_seal
+from engine.market_os.macro_workspaces.history import attach_workspace_history, load_economic_histories
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUT_ROOT = ROOT / "site" / "macrodata"
@@ -460,6 +461,11 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
         sid: _load_series_rows(Path(fred_dir) / f"{sid}.parquet", column)
         for sid, column in _TRADE_FRED_COLUMNS.items()
     }
+    # Shared component histories are loaded once, before any publication. An
+    # unreadable existing source fails this build before body or manifest writes.
+    histories = load_economic_histories(
+        fred_dir=fred_dir, treasury_dir=treasury_dir, built_at=built_at,
+    )
 
     out = Path(out_root)
     manifest_entries: dict[str, dict] = {}
@@ -499,6 +505,7 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
             trade_fred_frames=trade_fred_frames,
             built_at=built_at,
             prior_snapshot=prior, code_version=code_version)
+        body = attach_workspace_history(body, histories.get(wid))
         body = apply_producer_prior_seal(body, prior)
         snapshot = contract.finalize(body)
         contract.validate(snapshot)
@@ -546,3 +553,4 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
 
     receipts["_manifest"] = {"manifest": manifest, "path": str(manifest_path) if write else None}
     return receipts
+
