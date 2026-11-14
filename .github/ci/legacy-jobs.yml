@@ -40092,6 +40092,61 @@ jobs:
       - "scripts/build_spr.py"
       - "templates/spr.html.j2"
 
+  exposure-outlook-r1:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Published R1 source-readiness and observed-outcome consumers. The three
+    # suites use synthetic/tmp_path inputs, including the actual stdout-only
+    # CLI; no Theta/provider acquisition or private feature draft is executed.
+    # Keep shared pytest context and guards, plus the fixed subprocess target.
+    paths:
+      - "engine/__init__.py"
+      - "engine/basket_breadth_divergence.py"
+      - "engine/catalyst_tone.py"
+      - "engine/desk_ledger.py"
+      - "engine/exposure_outlook_data.py"
+      - "engine/exposure_outlook_outcomes.py"
+      - "engine/exposure_outlook_prices.py"
+      - "engine/exposure_outlook_research.py"
+      - "engine/gdelt_client.py"
+      - "engine/marketing/__init__.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/chart_render.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/logo_cache.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/master_brain.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "scripts/__init__.py"
+      - "scripts/worktree_sparse.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_exposure_outlook_audit_cli.py"
+      - "tests/test_exposure_outlook_data.py"
+      - "tests/test_exposure_outlook_prices.py"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install R1 test dependencies
+        run: pip install pytest pyyaml
+      - name: Exposure Outlook source and price readiness with real CLI consumer
+        run: python -m pytest tests/test_exposure_outlook_data.py tests/test_exposure_outlook_prices.py tests/test_exposure_outlook_audit_cli.py -q
+
   unrun-market-plumbing:
     # live quotes / tape / GEX / options-flow / theme + tech-lab feeds behind the intraday lanes.
     if: ${{ false }}

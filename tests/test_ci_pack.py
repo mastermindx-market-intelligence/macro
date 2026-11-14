@@ -4568,6 +4568,7 @@ CURATED_EXCLUSIVE = {
     "catalyst-opportunity",  # Attention/API job owns its measured import/read closure.
     "forex-r26-consumer",  # R26 consumer suites retain their declared import/read closure.
     # OA3 retained reader and contract terms: exact closure, no unrelated code probes.
+    "exposure-outlook-r1",
     "options-nbbo-cohort",
     "commodities-research-workspace",  # R3 fixture contracts retain their complete named import/read closure.
     "options-pilot-chronology-code",
@@ -10527,3 +10528,76 @@ def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
         PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
                         scope_mode="active", pack_count=12,
                         event="pull_request", role="pr_head")
+
+
+def test_exposure_outlook_r1_has_one_actual_code_owner() -> None:
+    """Naming R1 only in a data job must not make ordinary code CI green."""
+    all_jobs = PACK.load_legacy_jobs(MANIFEST)
+    code_jobs = {job.job_id: job for job in all_jobs if job.gate == "code"}
+    assert "exposure-outlook-r1" in code_jobs
+    job = code_jobs["exposure-outlook-r1"]
+    assert job.exclusive
+    expected = {
+        "engine/__init__.py",  # ci-trigger-closure: data
+        "engine/basket_breadth_divergence.py",  # ci-trigger-closure: data
+        "engine/catalyst_tone.py",  # ci-trigger-closure: data
+        "engine/desk_ledger.py",  # ci-trigger-closure: data
+        "engine/exposure_outlook_data.py",  # ci-trigger-closure: data
+        "engine/exposure_outlook_outcomes.py",  # ci-trigger-closure: data
+        "engine/exposure_outlook_prices.py",  # ci-trigger-closure: data
+        "engine/exposure_outlook_research.py",  # ci-trigger-closure: data
+        "engine/gdelt_client.py",  # ci-trigger-closure: data
+        "engine/marketing/__init__.py",  # ci-trigger-closure: data
+        "engine/marketing/accounts.py",  # ci-trigger-closure: data
+        "engine/marketing/authority.py",  # ci-trigger-closure: data
+        "engine/marketing/chart_render.py",  # ci-trigger-closure: data
+        "engine/marketing/charter.py",  # ci-trigger-closure: data
+        "engine/marketing/claims.py",  # ci-trigger-closure: data
+        "engine/marketing/cmo.py",  # ci-trigger-closure: data
+        "engine/marketing/departments.py",  # ci-trigger-closure: data
+        "engine/marketing/economics.py",  # ci-trigger-closure: data
+        "engine/marketing/events.py",  # ci-trigger-closure: data
+        "engine/marketing/ledgers.py",  # ci-trigger-closure: data
+        "engine/marketing/logo_cache.py",  # ci-trigger-closure: data
+        "engine/marketing/opportunity_bus.py",  # ci-trigger-closure: data
+        "engine/marketing/publication.py",  # ci-trigger-closure: data
+        "engine/marketing/state.py",  # ci-trigger-closure: data
+        "engine/master_brain.py",  # ci-trigger-closure: data
+        "lib/__init__.py",  # ci-trigger-closure: data
+        "lib/config.py",  # ci-trigger-closure: data
+        "scripts/__init__.py",  # ci-trigger-closure: data
+        "scripts/worktree_sparse.py",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/test_exposure_outlook_audit_cli.py",  # ci-trigger-closure: data
+        "tests/test_exposure_outlook_data.py",  # ci-trigger-closure: data
+        "tests/test_exposure_outlook_prices.py",  # ci-trigger-closure: data
+    }
+    assert set(job.paths) == expected
+    scoped, _ = PACK.infer_job_scopes([job])
+    for dependency in sorted(expected):
+        selected, reason = PACK.select_jobs(scoped, [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+    command = "python -m pytest tests/test_exposure_outlook_data.py tests/test_exposure_outlook_prices.py tests/test_exposure_outlook_audit_cli.py -q"
+    assert any(step.get("run") == command for step in job.definition["steps"])
+    for suite in (
+        "tests/test_exposure_outlook_data.py",  # ci-trigger-closure: data
+        "tests/test_exposure_outlook_prices.py",  # ci-trigger-closure: data
+        "tests/test_exposure_outlook_audit_cli.py",  # ci-trigger-closure: data
+    ):
+        owners = [entry.job_id for entry in all_jobs
+                  if any(suite in step.get("run", "") for step in entry.definition["steps"])]
+        assert owners == [job.job_id], (suite, owners)
+
+
+@pytest.mark.parametrize("probe", [
+    "templates/index.html",  # ci-trigger-closure: data
+    "scripts/build_free_content.py",  # ci-trigger-closure: data
+    "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+])
+def test_exposure_outlook_r1_skips_unrelated_packing_probes(probe: str) -> None:
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "exposure-outlook-r1")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason

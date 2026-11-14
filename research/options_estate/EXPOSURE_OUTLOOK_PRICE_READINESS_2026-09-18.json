@@ -1,0 +1,67 @@
+{
+  "authority_tier": "research",
+  "bar_count": 78,
+  "calendar_completeness": "not_inferred_from_bar_count",
+  "cutoff": "2026-09-18T21:39:59.690827+00:00",
+  "first_bar_open_utc": "2026-09-17T13:30:00+00:00",
+  "forecast_eligible": false,
+  "last_bar_close_utc": "2026-09-17T20:00:00+00:00",
+  "point_in_time_availability": "not_verified",
+  "reason_codes": [
+    "COMPLETENESS_NOT_VERIFIED",
+    "INSTRUMENT_IDENTITY_NOT_VERIFIED",
+    "INTRADAY_TRAINING_CORPUS_NOT_QUALIFIED",
+    "POINT_IN_TIME_AVAILABILITY_NOT_VERIFIED",
+    "PRICE_ADJUSTMENT_NOT_VERIFIED"
+  ],
+  "response_sha256": "5bdf4a9322e15c1cefdbc80649eb25fdd28e343bfee8bd52197961c1968e2693",
+  "root": "SPY",
+  "schema": "options.exposure_outlook.price_audit/v1",
+  "session": "2026-09-17",
+  "source_evidence": {
+    "assembly_clock": {
+      "assembled_at": "2026-09-18T21:39:59.617Z",
+      "cache_age_ms": 4,
+      "cache_state": "new_assembly",
+      "meaning": "server_assembly_not_market_data_freshness",
+      "served_at": "2026-09-18T21:39:59.621Z"
+    },
+    "assembly_store_reads": [
+      {
+        "base": "5m",
+        "content_sha256": "9d7722ab5ff673a90d8c00d3413decdea10b43f1774eecbb34fabb8dd68cb52d",
+        "status": "available"
+      }
+    ],
+    "authority": "descriptive_only",
+    "completeness": "not_assessed",
+    "construction": "live_tail",
+    "instrument_identity": "not_verified",
+    "point_in_time_availability": "not_verified",
+    "price_adjustment": "not_verified",
+    "requested_timeframe": "5m",
+    "research_admission": "not_assessed",
+    "response_scope": {
+      "first_bar_time": 1789637400,
+      "last_bar_time": 1789660500,
+      "requested_date": "2026-09-17",
+      "returned_bars": 78
+    },
+    "schema": "terminal.intraday_source_evidence.v1",
+    "session": "regular",
+    "source_counts": {
+      "live_tail": 78,
+      "stored_1h": 0,
+      "stored_5m": 0,
+      "unattributed": 0
+    },
+    "store_read_scope": "whole_assembly_not_requested_date",
+    "symbol": "SPY",
+    "timestamp_basis": "market_local_display_epoch",
+    "volume_adjustment": "not_verified",
+    "warnings": [
+      "live_tail_construction_not_receipted"
+    ]
+  },
+  "timestamp_basis": "market_local_display_epoch"
+}

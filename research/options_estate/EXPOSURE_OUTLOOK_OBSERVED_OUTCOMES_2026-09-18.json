@@ -1,0 +1,183 @@
+{
+  "input_bytes": 5582,
+  "input_sha256": "59b32d6cedf721b7d052a6ac3f531ae93e7bc08160e60eb82a67c8ceab30672a",
+  "observed_at": "2026-09-18T23:35:05.826417+00:00",
+  "qualification": "observed_outcomes_only_not_forecast_or_model_qualification",
+  "result": {
+    "anchor_price": 762.63,
+    "as_of": "2026-09-18T23:35:05.826417+00:00",
+    "authority_tier": "research",
+    "barriers": null,
+    "can_publish_forecast": false,
+    "input_research_admission": "not_qualified",
+    "input_sha256": "59b32d6cedf721b7d052a6ac3f531ae93e7bc08160e60eb82a67c8ceab30672a",
+    "mode": "retrospective_observation",
+    "origin": "2026-09-17T18:00:00+00:00",
+    "outcome_known_at": "2026-09-18T23:35:05.762000+00:00",
+    "outcomes": [
+      {
+        "duration_minutes": 30.0,
+        "endpoint_inside_band": null,
+        "endpoint_price": 762.73,
+        "endpoint_return_pct": 0.013112518521429806,
+        "endpoint_status": "observed",
+        "exited_band": null,
+        "first_touch": null,
+        "first_touch_interval": null,
+        "horizon": 30,
+        "lower_touched": null,
+        "observation_id": "outlook-observation:be21f2f2bae98e19074fb9627360a9a67c802ac958860be0c405b37fe484c8b5",
+        "path_status": "complete",
+        "reason_codes": [],
+        "target_end": "2026-09-17T18:30:00+00:00",
+        "target_id": "outlook-target:5263f66dc6a7eca65bfd162df1569e1fa7ff362027c66ee884d9c6507ad5b274",
+        "upper_touched": null
+      },
+      {
+        "duration_minutes": 60.0,
+        "endpoint_inside_band": null,
+        "endpoint_price": 762.44,
+        "endpoint_return_pct": -0.02491378519071663,
+        "endpoint_status": "observed",
+        "exited_band": null,
+        "first_touch": null,
+        "first_touch_interval": null,
+        "horizon": 60,
+        "lower_touched": null,
+        "observation_id": "outlook-observation:5dfd55cf22143a58b5c962f03d772bd7807bcbb573aaf4d4f9722911be7b7a20",
+        "path_status": "complete",
+        "reason_codes": [],
+        "target_end": "2026-09-17T19:00:00+00:00",
+        "target_id": "outlook-target:8a03c43c783c836e3e73d4134c51330637ff8db6fb407957d94f5abc42b1fe2f",
+        "upper_touched": null
+      },
+      {
+        "duration_minutes": 90.0,
+        "endpoint_inside_band": null,
+        "endpoint_price": 762.6099,
+        "endpoint_return_pct": -0.0026356162228013957,
+        "endpoint_status": "observed",
+        "exited_band": null,
+        "first_touch": null,
+        "first_touch_interval": null,
+        "horizon": 90,
+        "lower_touched": null,
+        "observation_id": "outlook-observation:23770da2bc58758c259354f60b7ebc0f1a4117e16cb128c732f0acc8057904a9",
+        "path_status": "complete",
+        "reason_codes": [],
+        "target_end": "2026-09-17T19:30:00+00:00",
+        "target_id": "outlook-target:068c1b336267e9b0f07e8cde81623dc38a23b69a5e96547224f65e6a62f8ce6f",
+        "upper_touched": null
+      },
+      {
+        "duration_minutes": 120.0,
+        "endpoint_inside_band": null,
+        "endpoint_price": 762.63,
+        "endpoint_return_pct": 0.0,
+        "endpoint_status": "observed",
+        "exited_band": null,
+        "first_touch": null,
+        "first_touch_interval": null,
+        "horizon": 120,
+        "lower_touched": null,
+        "observation_id": "outlook-observation:75986aba52840f3d1f3e407c75d22d39a94d4ea69f15f535a16bb1f1c08ecb7f",
+        "path_status": "complete",
+        "reason_codes": [],
+        "target_end": "2026-09-17T20:00:00+00:00",
+        "target_id": "outlook-target:76c59e14be7e1ef7e90b50e647c2156503e78a67acb02db612356d9130ab00f1",
+        "upper_touched": null
+      },
+      {
+        "duration_minutes": 120.0,
+        "endpoint_inside_band": null,
+        "endpoint_price": 762.63,
+        "endpoint_return_pct": 0.0,
+        "endpoint_status": "observed",
+        "exited_band": null,
+        "first_touch": null,
+        "first_touch_interval": null,
+        "horizon": "close",
+        "lower_touched": null,
+        "observation_id": "outlook-observation:7254464e91f37be2b16a30df058b3c9a51f1783c2f6fa31fe542f73592d7c3f0",
+        "path_status": "complete",
+        "reason_codes": [],
+        "target_end": "2026-09-17T20:00:00+00:00",
+        "target_id": "outlook-target:7659bd0fd2cb00f3087458ac84a6cfd3a1da1e11954feb6c5214029acc7f5bb0",
+        "upper_touched": null
+      }
+    ],
+    "reason_codes": [],
+    "root": "SPY",
+    "schema": "options.exposure_outlook.observed_outcomes/v1",
+    "session": "2026-09-17",
+    "session_window": {
+      "close": "2026-09-17T20:00:00+00:00",
+      "open": "2026-09-17T13:30:00+00:00",
+      "qualification": "caller_declared",
+      "source_ref": "macro:engine.session_digest.session_window_et+lib.nyse_calendar.is_session"
+    },
+    "source_input_sha256": "09c0236fbcb755539df01f234c578a68951e1563b172c3040aca6253c4ecce06",
+    "source_reason_codes": [
+      "COMPLETENESS_NOT_VERIFIED",
+      "INSTRUMENT_IDENTITY_NOT_VERIFIED",
+      "INTRADAY_TRAINING_CORPUS_NOT_QUALIFIED",
+      "POINT_IN_TIME_AVAILABILITY_NOT_VERIFIED",
+      "PRICE_ADJUSTMENT_NOT_VERIFIED"
+    ],
+    "status": "observed_outcomes"
+  },
+  "schema": "options.exposure_outlook.real_outcome_receipt/v1",
+  "source_evidence": {
+    "assembly_clock": {
+      "assembled_at": "2026-09-18T23:35:05.757Z",
+      "cache_age_ms": 5,
+      "cache_state": "new_assembly",
+      "meaning": "server_assembly_not_market_data_freshness",
+      "served_at": "2026-09-18T23:35:05.762Z"
+    },
+    "assembly_store_reads": [
+      {
+        "base": "5m",
+        "content_sha256": "9d7722ab5ff673a90d8c00d3413decdea10b43f1774eecbb34fabb8dd68cb52d",
+        "status": "available"
+      }
+    ],
+    "authority": "descriptive_only",
+    "completeness": "not_assessed",
+    "construction": "live_tail",
+    "instrument_identity": "not_verified",
+    "point_in_time_availability": "not_verified",
+    "price_adjustment": "not_verified",
+    "requested_timeframe": "5m",
+    "research_admission": "not_assessed",
+    "response_scope": {
+      "first_bar_time": 1789637400,
+      "last_bar_time": 1789660500,
+      "requested_date": "2026-09-17",
+      "returned_bars": 78
+    },
+    "schema": "terminal.intraday_source_evidence.v1",
+    "session": "regular",
+    "source_counts": {
+      "live_tail": 78,
+      "stored_1h": 0,
+      "stored_5m": 0,
+      "unattributed": 0
+    },
+    "store_read_scope": "whole_assembly_not_requested_date",
+    "symbol": "SPY",
+    "timestamp_basis": "market_local_display_epoch",
+    "volume_adjustment": "not_verified",
+    "warnings": [
+      "live_tail_construction_not_receipted"
+    ]
+  },
+  "source_sha256": {
+    "engine/exposure_outlook_outcomes.py": "6aacc43b0fe9c6d2af726c3569be1ec88744fd7229ad6e0f5ff0cc47e23f55ff",
+    "engine/exposure_outlook_prices.py": "2f2a617aa0b1d3bf4e4668cbe2c369fcd3a71b26bab0b01df93e4ffa82ac0fa6",
+    "engine/exposure_outlook_research.py": "32637b490b710341c56cf98a6e636f508427296f69d2e8b6ea1598220579647c",
+    "engine/session_digest.py": "25ae25d29f1a1e6ce7d38372bbfaaf03e18925072e41aaea8bc3c1c730a14191",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+  },
+  "source_url": "https://app.mastermind-x.com/api/intraday?sym=SPY&tf=5m&date=2026-09-17"
+}

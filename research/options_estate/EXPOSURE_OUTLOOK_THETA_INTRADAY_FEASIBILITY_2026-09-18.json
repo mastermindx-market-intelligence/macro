@@ -1,0 +1,69 @@
+{
+  "comparison": {
+    "changed_rows_by_field": {
+      "charm": 3,
+      "delta": 3,
+      "gamma": 3,
+      "implied_vol": 3
+    },
+    "matched_contracts": 1,
+    "matched_quote_timestamps": 3,
+    "quote_and_underlying_inputs_match": true
+  },
+  "conclusion": "bounded_5m_historical_greeks_request_succeeds_and_method_selection_changes_results",
+  "endpoint": "/v3/option/history/greeks/all",
+  "limitations": [
+    "one SPY call and three late-session observations only",
+    "not a full-chain or multi-session training corpus",
+    "underlying_timestamp is not original publication or availability evidence",
+    "methodology selection differs; the precise internal 0DTE time floor is not independently measured",
+    "no production collector, method default, store, schedule, credential or subscription changed",
+    "no raw vendor quotes or reusable vendor corpus included in this metadata receipt"
+  ],
+  "primary_documentation": "https://docs.thetadata.us/operations/option_history_greeks_all.html",
+  "requests": [
+    {
+      "body_sha256": "a69b62ef0e63992058360755d3e143a9763a323645475335e447a185c4a4df67",
+      "bytes": 1055,
+      "http_status": 200,
+      "observed_at": "2026-09-18T23:42:29.483747+00:00",
+      "request_params": {
+        "date": "2026-09-17",
+        "end_time": "15:55:00",
+        "expiration": "2026-09-17",
+        "format": "csv",
+        "interval": "5m",
+        "right": "call",
+        "start_time": "15:45:00",
+        "strike": "762",
+        "symbol": "SPY",
+        "version": "latest"
+      },
+      "requested_version_echoed": false,
+      "rows": 3
+    },
+    {
+      "body_sha256": "03e23225dd9371471c7a11b1416f01dd5dbef343472b68dda3e80a6521f28c03",
+      "bytes": 1048,
+      "http_status": 200,
+      "observed_at": "2026-09-18T23:43:13.039224+00:00",
+      "request_params": {
+        "date": "2026-09-17",
+        "end_time": "15:55:00",
+        "expiration": "2026-09-17",
+        "format": "csv",
+        "interval": "5m",
+        "right": "call",
+        "start_time": "15:45:00",
+        "strike": "762",
+        "symbol": "SPY",
+        "version": "1"
+      },
+      "requested_version_echoed": false,
+      "rows": 3
+    }
+  ],
+  "schema": "options.exposure_outlook.theta_intraday_feasibility/v1",
+  "source_host": "canonical M1 Theta Terminal",
+  "source_note_superseded": "collectors/thetadata.py July 4 interval-rejection observation is historical, not current proof of unavailability"
+}
