@@ -417,7 +417,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 expected_team_id=args.team_id,
                 expected_semantic_hash=args.expected_semantic_hash,
             )
-    except (OSError, json.JSONDecodeError, UnicodeError):
+    except (OSError, json.JSONDecodeError, UnicodeError, RecursionError):
         outcome = _refuse("input_unavailable_or_invalid")
     print(json.dumps(outcome, sort_keys=True, ensure_ascii=False, separators=(",", ":")))
     return 0 if outcome["status"] == "dry_run" else 2

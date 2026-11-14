@@ -217,6 +217,37 @@ def test_cli_round_trip_refuses_invalid_snapshot(tmp_path, valid):
     assert receipt["status"] == ("dry_run" if valid else "refused")
 
 
+@pytest.mark.parametrize("nested_input", ["plan", "bindings", "snapshot"])
+def test_cli_nested_json_refuses_without_traceback_or_effect(tmp_path, nested_input):
+    """Untrusted over-deep JSON must fail as a deterministic refusal, not traceback."""
+    plan, bindings, projects = fixture()
+    snapshot = {"schema": p1.SNAPSHOT_SCHEMA, "workspace_id": WORKSPACE,
+                "team_id": TEAM, "observed_at": "2026-10-20T08:10:00Z",
+                "projects": projects}
+    for name, value in (("plan", plan), ("bindings", bindings), ("snapshot", snapshot)):
+        content = ("[" * 12000 + "0" + "]" * 12000
+                   if name == nested_input else json.dumps(value))
+        (tmp_path / (name + ".json")).write_text(content, encoding="utf-8")
+    command = [
+        sys.executable, "-m", "scripts.linear_projector_p1_offline",
+        "--plan", str(tmp_path / "plan.json"),
+        "--bindings", str(tmp_path / "bindings.json"),
+        "--snapshot", str(tmp_path / "snapshot.json"),
+        "--expected-semantic-hash", plan["semantic_hash"],
+        "--workspace-id", WORKSPACE, "--team-id", TEAM,
+    ]
+    result = subprocess.run(
+        command, cwd=Path(__file__).resolve().parents[1],
+        capture_output=True, text=True, timeout=12,
+    )
+    assert result.returncode == 2
+    assert "Traceback" not in result.stderr
+    assert json.loads(result.stdout) == {
+        "schema": p1.SCHEMA, "status": "refused",
+        "reason": "input_unavailable_or_invalid", "effects": 0,
+    }
+
+
 @pytest.mark.parametrize("bad", ["garbage", "2026-10-20T20:01:00", "", None])
 def test_invalid_observation_version_refuses(bad):
     _, _, projects = fixture()
