@@ -50746,6 +50746,9 @@ jobs:
       - "engine/short_pressure.py"
       - ".github/ci/legacy-jobs.yml"
       - "tests/test_c19_wp24_short_pressure_availability.py"
+      - "tests/test_short_pressure.py"
+      - "collectors/ibkr_borrow.py"
+      - "lib/config.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50753,9 +50756,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
       - name: short-pressure availability guard
-        run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py -q -p no:cacheprovider
+        run: python -m pytest tests/test_c19_wp24_short_pressure_availability.py tests/test_short_pressure.py -q -p no:cacheprovider
 
   options-pilot-chronology-code:
     # Synthetic guards must run on source PRs; flow-surface is data-gated.

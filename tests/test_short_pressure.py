@@ -15,6 +15,14 @@ from engine import short_pressure as sp
 # --------------------------------------------------------------------------
 # fixtures
 # --------------------------------------------------------------------------
+@pytest.fixture(autouse=True)
+def isolated_data_root(monkeypatch, tmp_path):
+    """Keep implicit native borrow reads inside each test's temporary store."""
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+
+
 def _panel(rows):
     df = pd.DataFrame(rows)
     df["settlement_date"] = pd.to_datetime(df["settlement_date"])
