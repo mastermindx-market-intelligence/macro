@@ -34,7 +34,7 @@ from urllib.parse import parse_qs, urlparse
 
 from . import (actions, ai_cost, alerts as _alerts_mod, allies_store, analytics_first_party, auth, brain_guest, brief, causal_lab,
                chronicle,
-               codex_panel, capacity_router,
+               codex_panel, capacity_router, capacity_stream, capacity_intelligence, capacity_control_transport,
                config_store,
                content, context_lobe, edge_trust, email_center, entitlements, experiments,
                flags, ga4, github_api, github_config, gitops, health, intelligence_os, intelligence_execution,
@@ -151,6 +151,10 @@ _API_RESPONSE_CACHE_LOCK = threading.Lock()
 _API_RESPONSE_CACHE_GENERATION = 0
 _API_CACHE_BYPASS_PATHS = {
     "/api/capacity-router",
+    "/api/capacity-router/events",
+    "/api/capacity-router/history",
+    "/api/capacity-router/intelligence",
+    "/api/capacity-router/settings",
     "/api/session",
     "/api/auth-check",
     "/api/live_runs",
@@ -911,6 +915,21 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(_summary_payload())
             if path == "/api/capacity-router":
                 return self._json(capacity_router.panel((q.get("minutes") or ["15"])[0]))
+            if path == "/api/capacity-router/events":
+                return capacity_stream.serve(self, (q.get("minutes") or ["15"])[0],
+                    authorized=lambda: not settings.auth_enabled() or self._authed())
+            if path == "/api/capacity-router/settings":
+                return self._json(capacity_control_transport.settings())
+            if path == "/api/capacity-router/intelligence":
+                return self._json(capacity_intelligence.panel((q.get("minutes") or ["1440"])[0]))
+            if path == "/api/capacity-router/history":
+                try:
+                    result = capacity_router.historical((q.get("minutes") or ["1440"])[0],
+                        start=(q.get("from") or [None])[0], end=(q.get("to") or [None])[0],
+                        resolution=(q.get("resolution") or ["auto"])[0])
+                except ValueError:
+                    return self._json({"ok": False, "error": "Invalid history range or resolution"}, 400)
+                return self._json(result)
             if path == "/api/flags":
                 return self._json(flags.snapshot())
             if path == "/api/brain/guest":
@@ -1312,6 +1331,9 @@ class Handler(BaseHTTPRequestHandler):
         try:
             g = self._guard(write=True)
             if g:
+                # The rejected body's bytes are unread. Closing prevents them
+                # being parsed as another request on a persistent connection.
+                self.close_connection = True
                 return self._json({"ok": False, "error": g[0]}, g[1])
             b = self._body()
 
@@ -1342,6 +1364,9 @@ class Handler(BaseHTTPRequestHandler):
             # in-process cache keeps operator actions immediately self-consistent.
             _clear_response_cache()
 
+            if path == "/api/capacity-router/settings":
+                result, status = capacity_control_transport.submit(b)
+                return self._json(result, status)
             if path == "/api/flags/toggle":
                 flag_path = b.get("path")
                 value = bool(b.get("value"))

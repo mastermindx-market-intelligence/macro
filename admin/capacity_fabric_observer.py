@@ -11,6 +11,7 @@ from collections import deque
 from contextlib import asynccontextmanager, suppress
 from contextvars import ContextVar
 import functools
+import concurrent.futures
 import hashlib
 import hmac
 import importlib
@@ -22,6 +23,8 @@ from pathlib import Path
 import re
 import time
 import uuid
+
+from . import capacity_control_owner
 
 from .capacity_fabric_schema import (
     SCHEMA, MAX_ACTIVE, MAX_RECENT, MAX_BYTES, MAX_ATTEMPTS, TOKEN_FIELDS,
@@ -103,8 +106,13 @@ class ObservationStore:
         self.totals = {k: 0 for k in ("started", "completed", "failed", "cancelled",
             "usage_known", "attributed", "overflow_active", "dropped_requests", "observer_errors", *TOKEN_FIELDS)}
         self._claude_cache = None
+        self._control_cache = None
+        self._field_coverage = {k: 0 for k in TOKEN_FIELDS}
+        self.alias_names = frozenset()
+        self.changed = asyncio.Event()
 
     def begin(self, headers):
+        self.changed.set()
         self.totals["started"] += 1
         if len(self.active) >= MAX_ACTIVE:
             self.totals["overflow_active"] += 1
@@ -128,13 +136,14 @@ class ObservationStore:
         return rid
 
     def input(self, rid, payload):
+        self.changed.set()
         r = self.active.get(rid)
         if r is None:
             return
         raw_model = payload.get("model")
         model = label(raw_model) if isinstance(raw_model, str) and raw_model in self.known_models else "unknown"
         r["requested_model"] = model
-        r["lane"] = model if model.startswith("fabric/") else "direct"
+        r["lane"] = model if model in self.alias_names or model.startswith("fabric/") else "direct"
         r["streaming"] = payload.get("stream") is True
         metadata = payload.get("metadata")
         metadata = metadata if isinstance(metadata, dict) else {}
@@ -164,6 +173,7 @@ class ObservationStore:
                 r["identity_source"] = "sdk_session"
 
     def attempt(self, rid, route, payload):
+        self.changed.set()
         r = self.active.get(rid)
         if r is None:
             return None
@@ -186,6 +196,7 @@ class ObservationStore:
         return a
 
     def usage(self, rid, value):
+        self.changed.set()
         r = self.active.get(rid)
         if r is None or not isinstance(value, dict):
             return
@@ -204,6 +215,7 @@ class ObservationStore:
             r["usage"]["cache_read_tokens"] = int(detail["cached_tokens"])
 
     def event(self, rid, event):
+        self.changed.set()
         r = self.active.get(rid)
         if r is None or not isinstance(event, dict):
             return
@@ -238,6 +250,7 @@ class ObservationStore:
             r["state"] = "failed"
 
     def finish(self, rid, state=None):
+        self.changed.set()
         if rid is None:
             self.totals["overflow_active"] = max(0, self.totals["overflow_active"] - 1)
             return
@@ -277,6 +290,7 @@ class ObservationStore:
             self.totals[k] += r["usage"][k] or 0
             b[k] += r["usage"][k] or 0
             b[k + "_known"] += r["usage"][k] is not None
+            self._field_coverage[k] += r["usage"][k] is not None
         for old in list(self.buckets):
             if old < at - 119 * 60:
                 del self.buckets[old]
@@ -304,7 +318,8 @@ class ObservationStore:
             "active": list(self.active.values()), "recent": list(self.recent),
             "series": [dict(at=k, **v) for k, v in sorted(self.buckets.items())], "totals": totals,
             "peak": _observe_peak(app), "overflow": _observe_overflow(app),
-            "claude": self.claude_view()})
+            "claude": self.claude_view(), "controls": self._control_cache,
+            "total_field_coverage": dict(self._field_coverage)})
 
     def claude_view(self):
         """Latest cached gateway lane observation; never blocks the snapshot path."""
@@ -555,6 +570,7 @@ def instrument_app(app, gateway, *, export_config=None):
             context = _CONTEXT.get()
             if context and context[1] is not None:
                 try:
+                    context[0].alias_names = frozenset(dict(aliases))
                     context[0].input(context[1], payload)
                 except Exception:
                     context[0].totals["observer_errors"] += 1
@@ -577,7 +593,7 @@ def instrument_app(app, gateway, *, export_config=None):
     @asynccontextmanager
     async def lifespan(instance):
         async with original_lifespan(instance):
-            task = asyncio.create_task(publish_snapshots(instance, store, export_config)) if export_config else None
+            task = asyncio.create_task(publish_snapshots(instance, store, export_config, gateway=gateway)) if export_config else None
             lanes = asyncio.create_task(poll_claude_lanes(store, export_config)) if export_config else None
             try:
                 yield
@@ -678,13 +694,90 @@ async def poll_claude_lanes(store, config):
         await asyncio.sleep(30)
 
 
-async def publish_snapshots(app, store, config):
-    """One latest-value SSH stream; no backlog and no work on inference's path."""
+
+def control_writers_ready(config):
+    """Enrollment proves the actual installed native writers share one transaction."""
+    rows = config.get("control_writers")
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 16:
+        return False
+    try:
+        for row in rows:
+            if not isinstance(row, dict) or set(row) != {"path", "sha256"}:
+                return False
+            path = Path(row["path"])
+            if not path.is_absolute() or path.is_symlink() or not path.is_file() or path.stat().st_size > 256 * 1024:
+                return False
+            if hashlib.sha256(path.read_bytes()).hexdigest() != row["sha256"]:
+                return False
+        return True
+    except (OSError, ValueError, TypeError, KeyError):
+        return False
+
+async def publish_snapshots(app, store, config, *, gateway=None):
+    """Coalesced latest-value observation and bounded RPC on the same SSH pipe.
+
+    Inference callbacks only set a dirty event. Encoding, configuration reads and
+    control-file writes are off-thread; native policy refresh runs on its event
+    loop, never concurrently from a file-writing thread.
+    """
     alias = config.get("ssh_alias")
     if not isinstance(alias, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", alias):
         return
-    process = None
-    delay = 2
+    process = reader = operation_task = None
+    send_lock = asyncio.Lock()
+    delay, last_controls = 2, 0.0
+    loop = asyncio.get_running_loop()
+    controls_requested = config.get("controls_enabled") is True and gateway is not None
+
+    def refresh_on_loop():
+        future = concurrent.futures.Future()
+        def refresh():
+            try:
+                value = app.state.config_refresh.refresh(app, gateway._routes_from_document, force=True)
+                future.set_result(value)
+            except Exception as error:
+                future.set_exception(error)
+        loop.call_soon_threadsafe(refresh)
+        return future.result(timeout=10)
+
+    async def send(target, value):
+        async with send_lock:
+            if target.returncode is not None:
+                raise ConnectionError("observation transport exited")
+            target.stdin.write(value)
+            await asyncio.wait_for(target.stdin.drain(), 3)
+
+    async def controls(target):
+        nonlocal operation_task, last_controls
+        while True:
+            raw = await target.stdout.readline()
+            if not raw:
+                return
+            if len(raw) > capacity_control_owner.MAX_CONTROL_BYTES or gateway is None:
+                continue
+            try:
+                envelope = json.loads(raw)
+                if not isinstance(envelope, dict) or set(envelope) != {"control_request"}:
+                    continue
+                request = envelope["control_request"]
+                capacity_control_owner.validate_intent(request)
+                if operation_task and not operation_task.done():
+                    await asyncio.shield(operation_task)
+                enabled = controls_requested and await asyncio.to_thread(control_writers_ready, config)
+                operation_task = asyncio.create_task(asyncio.to_thread(capacity_control_owner.handle,
+                    request, app, gateway, epoch=store.epoch, enabled=enabled, refresh_owner=refresh_on_loop))
+                result = await asyncio.shield(operation_task)
+                result["epoch"] = store.epoch
+                result["request_id"] = request.get("request_id") or request["operation_id"]
+                body = (json.dumps({"control_result": result}, separators=(",", ":"), allow_nan=False)+"\n").encode()
+                await send(target, body)
+                last_controls = 0.0
+                store.changed.set()
+            except asyncio.CancelledError:
+                raise
+            except (ValueError, TypeError, KeyError):
+                continue  # Invalid data is never interpreted as executable instructions.
+
     try:
         while True:
             try:
@@ -693,29 +786,53 @@ async def publish_snapshots(app, store, config):
                         "ssh", "-T", "-o", "BatchMode=yes", "-o", "StrictHostKeyChecking=yes",
                         "-o", "ConnectTimeout=8", "-o", "ServerAliveInterval=10", "-o", "ServerAliveCountMax=2",
                         alias, "cd /opt/macro && exec /opt/macro/.venv/bin/python -m admin.capacity_ingest",
-                        stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
-                # Snapshot copies bounded scalar structures before off-thread encoding.
+                        stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
+                        limit=capacity_control_owner.MAX_CONTROL_BYTES + 1)
+                    reader = asyncio.create_task(controls(process))
+                if reader is not None and reader.done():
+                    raise ConnectionError("observation control reader exited")
+                if gateway is not None and time.monotonic()-last_controls >= 1:
+                    enabled = controls_requested and await asyncio.to_thread(control_writers_ready, config)
+                    store._control_cache = await asyncio.to_thread(capacity_control_owner.projection, app, gateway, enabled=enabled)
+                    last_controls = time.monotonic()
+                interval = (store._control_cache or {}).get("interval_s", 2)
+                interval = interval if interval in {.25, .5, 1, 2, 5} else 2
+                started = time.monotonic()
+                store.changed.clear()
                 snapshot = store.snapshot(app)
                 body = await asyncio.to_thread(serialize_snapshot, snapshot)
-                process.stdin.write(body)
-                await asyncio.wait_for(process.stdin.drain(), 3)
+                await send(process, body)
                 delay = 2
-                await asyncio.sleep(2)
+                await asyncio.sleep(max(0, interval - (time.monotonic()-started)))
+                try:
+                    await asyncio.wait_for(store.changed.wait(), max(.1, 5-interval))
+                except TimeoutError:
+                    pass  # Idle heartbeat keeps explicit freshness without busy polling.
             except asyncio.CancelledError:
                 raise
             except Exception:
                 store.totals["observer_errors"] += 1
+                if reader:
+                    reader.cancel()
+                    with suppress(asyncio.CancelledError, Exception):
+                        await reader
                 if process and process.returncode is None:
                     process.kill()
                     await process.wait()
-                process = None
+                process = reader = None
                 await asyncio.sleep(delay)
                 delay = min(delay * 2, 30)
     finally:
+        if reader:
+            reader.cancel()
+            with suppress(asyncio.CancelledError, Exception):
+                await reader
         if process and process.returncode is None:
             process.kill()
             with suppress(Exception):
                 await process.wait()
+        # An already prepared write is not reissued or cancelled on disconnect.
+        # Its durable operation receipt remains the reconciliation authority.
 
 
 def create_app():

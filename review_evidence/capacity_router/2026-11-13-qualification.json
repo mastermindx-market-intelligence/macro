@@ -1,0 +1,611 @@
+{
+  "schema": "mastermind.capacity_router.qualification.v1",
+  "recorded_at": "2026-11-13T04:04:29.203941+00:00",
+  "status": "LOCAL_QUALIFICATION_PASSED_HOSTED_RELEASE_PENDING",
+  "mission_complete": false,
+  "recovered_head": "f77fc850b38491207043bc100fde253c84f6a528",
+  "branch": "sol/web-capacity-router-upgrade-20261113-pro",
+  "operation_id": "capacity-router-upgrade-20261113-pro",
+  "source_law_pin": "c0b30b422d2310e614f91faed49a4adbce4291f0",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "bfa5954b09d3a65283418fd2becbe8de0958229026c719334bef4890b1fbffa4",
+    "admin/CAPACITY_ROUTER.md": "833d4bbb763b3d16d3ea6d160fefcaff4a20c161dd68f8991664f4165303d1ce",
+    "admin/capacity_config_transaction.py": "fcd8f3976e77aa6a9c74dc9fc928ca790d07813c3db6bac30e969755d045baca",
+    "admin/capacity_control_owner.py": "393d95d2a384de5dbb946522920960b39d04f71911695bb23ff76e463a0fab21",
+    "admin/capacity_control_transport.py": "5d88dbb8d3e50a09973aee7ed6512eed4b8ca64bd0f5621d9c8f51146a39e30d",
+    "admin/capacity_fabric_observer.py": "e6b6ff5f50a4c1cc6dd1cab6f336f634d1f23704df7204fef84839ac5628871a",
+    "admin/capacity_ingest.py": "376c4153a1f4f66a358514a980d6f07d3b36a23744cc6dd2fd9503a212916672",
+    "admin/deploy/CAPACITY_ATTENDED_ACTIVATION.md": "5952d8d3539bedbfad15c231a21a3c762e7a9c78ff80e9fb75b13214ced8c1d2",
+    "admin/deploy/stage_capacity_observer.py": "a2fef59e1ee54025eba7609996af2bba93a148a66e782781228a7b8a6839645a",
+    "admin/server.py": "0d115596f4ce7760c072fec19e34b37cd8966486c28ba50adbe40b0646d51e84",
+    "admin/static/capacity-router.js": "277f8aa9698890e09ba85ed05732733f823d504b429642fee2d69537a4d239fc",
+    "admin/tests/prove_capacity_control_pipe.py": "3287ca82a14d2810c364030cb598a3862a276cb290639b58d6a202aae5401fd6",
+    "admin/tests/prove_capacity_launchd.py": "6314272df61d4fe51d58319f00e41f7de2ddbcc067aebec83517e3795012eaf7",
+    "admin/tests/prove_capacity_router_ui.py": "c759ed9edcfe4077fd04c272a7d69dde552ac85a5ea0feac76ac64cbf4f46483",
+    "admin/tests/prove_capacity_runtime.py": "a6e210e7962b6e2c6cfbcb9cb8ba245f4a5ecd6dc2b1d4c92fff2cd51150098f",
+    "admin/tests/test_capacity_api.py": "cf0a8a5f733a58e6ca5cf052f7189c3c984c27ea509ac64f7f1db257455778dd",
+    "admin/tests/test_capacity_controls.py": "92edaab20658e596e3de766b9b435ceff8380e46a876b131a38f3f921b1b7e9f",
+    "admin/tests/test_capacity_history.py": "df18c3c8df62a27d0c760357b204aa4cf75b652deee4966c5ce055bb7de48b08",
+    "admin/tests/test_capacity_staging.py": "58aab7efecdfda2414237175b9fb748ad72ae5e690e2aa6d411193b5b164c864",
+    "agentos/workstreams/WS-EXECUTIVE-CAPACITY-FABRIC.md": "08132190885e456e74f2a0b71a4999ec602a4130b507b8e6a12d4855abbc563a",
+    "research/CAPACITY_ROUTER_OBSERVATORY_2026-11-10.md": "6b8aac19adc44a46be79bd9f0e9d4ac30f8d2a4194f8665267a144a780687437",
+    "admin/capacity_fabric_schema.py": "46862ac848d25e4513ada94f1f8ed8693e7b82312c0576a939630e5de1858231",
+    "admin/capacity_intelligence.py": "3146979d39dd410d85a8cc3a74fb5015d83e11362eeafe8bdd98fabf27713f09",
+    "admin/tests/test_capacity_intelligence.py": "26e03b36e496e372af46890b67af8ec8c90b7073215bd2479f2f783dc61054cb",
+    "admin/capacity_history.py": "9e968b0778aee78e69329e2221c1b65c3b74dec43827f56fccc387ee63a1f7ac"
+  },
+  "changes": [
+    "Closed the warning-producing test SQLite connection explicitly.",
+    "Shared native configuration writer lock and unresolved-receipt fence.",
+    "Same-operation reconcile-only delivery with current and origin epoch identity; no apply replay.",
+    "Exact installed writer fingerprints gate native controls.",
+    "Complete runtime overlay dependencies and preservation of incumbent export/source manifests.",
+    "Real HTTP auth, CSRF, SSE/reconnect, controls and persisted-history restart proof.",
+    "Rejected POST connections close before unread bytes can be reused.",
+    "Existing CI owner enrolled with complete dependency closure.",
+    "Actual native protocol and real isolated SSH control-pipe qualification.",
+    "Exact-job/path/service-digest startup fence qualified under real launchd.",
+    "Existing reload/watchdog marker holds survive ordinary stale thresholds.",
+    "Configuration writers remain held by the existing maintenance journal after a process loses its flock.",
+    "Quota baselines use actual stored observation timestamps and the current quota observation clock; one-hour minimum and abstention gates retained."
+  ],
+  "local_proof": {
+    "history": {
+      "cases": 18,
+      "result": "PASS",
+      "resource_warning_after_fix": false
+    },
+    "controls": {
+      "cases": 36,
+      "result": "PASS"
+    },
+    "api_isolated": {
+      "cases": 6,
+      "result": "PASS"
+    },
+    "staging": {
+      "cases": 7,
+      "result": "PASS"
+    },
+    "ui": {
+      "topology_nodes": 209,
+      "topology_edges": 318,
+      "incremental_node_identity": true,
+      "incremental_row_identity": true,
+      "settings_validation_and_explicit_apply": true,
+      "settings_uncertainty_reconciled_without_apply_replay": true,
+      "mobile_overflow": false,
+      "page_errors": [],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "viewports": [
+        1440,
+        390
+      ],
+      "source": "deterministic synthetic telemetry; not production"
+    },
+    "ui_artifact_sha256": {
+      "dark-settings.png": "2d5e7abbbbb0b19a992f7bd17d71b1dd459c66772a3f7e2bae27943a4af141e1",
+      "dark-topology.png": "dec522df78f20cce5adaa70cbe0049437fa81e25e817ba242096ce4f6cc5cdeb",
+      "dark-requests.png": "744023d55f7fd13e77b4c557be13ce8afda2deae1afe86fabf2faaddb82cb95b",
+      "mobile-light-topology.png": "6f00e57027f4e435773f56ffb127ce181020fef4ef14a8ca14b580c9d358128e",
+      "light-topology.png": "d7c661221e4c1a70243f3f73c0d0548d05d0b59303e637a0ec3152af915bafe4",
+      "dark-intelligence.png": "fa422575ca365a9f985f0ff5c879be3f441e7087955359305216c4fa7ba80c24",
+      "dark-history.png": "9bccc37ea941669a4270556414b8eef397106567b67ebf9c0fe7122548691389",
+      "proof.json": "7c4a6dcf71f1bfbd7a4422cc4e244cd08ba2bde714a7aedca4f6467dc5b39858"
+    },
+    "composition_first": {
+      "cases": 99,
+      "result": "FAIL",
+      "detail": "One HTTP client timeout; all other cases passed. Failure-path client cleanup subsequently repaired."
+    },
+    "composition_diagnostic": {
+      "result": "INTERPRETER_CRASH",
+      "exit_code": 139,
+      "detail": "Conda Python 3.12 process crashed while faulthandler emitted a timed stack. Not accepted as a test pass; root cause not established."
+    },
+    "api_timed_recheck": {
+      "cases": 1,
+      "result": "PASS",
+      "detail": "Actual HTTP validation/apply passed; atomic file synchronization observed at 0.031\u20130.129 seconds."
+    },
+    "linux_composition": {
+      "cases": 99,
+      "result": "PASS",
+      "seconds": 7.971,
+      "environment": "Isolated /tmp source fixture with incumbent VPS application dependencies; served checkout and services untouched",
+      "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "resource_warning": false,
+      "log_sha256": "162f338db6e6bb76127f7253ca334e41dc51cc72b245d94bbb2e5090a1f7c6fc"
+    },
+    "homebrew_composition": {
+      "cases": 99,
+      "result": "PASS",
+      "seconds": 36.084,
+      "python": "Homebrew 3.14.7, explicit /opt/homebrew/bin/python3",
+      "resource_warning": false,
+      "log_sha256": "caa4b482fd9e5b717e6108626ad5412c4ce6315fab0c0665269e1db92f161972"
+    },
+    "ui_capture_note": "Capture returns to the page top before full-page screenshots, so the sticky header is shown at its real initial position.",
+    "mac_environment_diagnosis": "The login shell resolved python3 to Conda 3.12 with a different Playwright build. Explicit Homebrew 3.14.7 runs the entire composition and current browser proof successfully. This does not establish the root cause of the earlier Conda interpreter crash.",
+    "final_composition": {
+      "cases": 110,
+      "result": "PASS",
+      "seconds": 30.541,
+      "resource_warning": false,
+      "python": "Homebrew 3.14.7",
+      "log_sha256": "0c85ae5d8f90649d74d2c67382fa49535872deb23d258d598d74a6699d1184ab"
+    },
+    "native_protocol": {
+      "result": "PASS",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-75351592de8e",
+      "cases": [
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        }
+      ],
+      "proof": "Exact gateway and translators with equal nonce/admission-clock inputs; identical response status, headers and bytes; real provider usage or unknown; no network",
+      "tested_source_commit": "75351592de8e7463edd3aa7911a52442b0d33e01"
+    },
+    "launchd": {
+      "schema": "mastermind.capacity_router.launchd_qualification.v1",
+      "production_effects": false,
+      "service_sha256": "d4bfdadf5eb2229ca0f7404f4b50040d2035a88576b1c2716d2ea96f325c9006",
+      "signal_handler_sha256": "2ebc1f33c577a341efbe6274d8b8cf437987f082c9dd3d86d16653be645b9290",
+      "label": "ai.mastermind.capacity-proof-11194-86623",
+      "prepared_startup_guard_sha256": "8e97a123a0c8352ebc65e9dafe640236c400d159e88a80cc754b5328c7688305",
+      "launchd_job_identity_verified": true,
+      "loaded_original_timeout_s": 1,
+      "original_pid": 86627,
+      "stream_completed_after_signal_s": 3.831,
+      "complete_stream_bytes": true,
+      "keepalive_child_fenced_before_listener": true,
+      "successful_fence_exit_stops_keepalive": true,
+      "new_pid": 92199,
+      "loaded_new_timeout_s": 19,
+      "serial_bootstrap_new_definition": true,
+      "result": "PASS",
+      "fixture_job_removed": true
+    },
+    "control_pipe": {
+      "schema": "mastermind.capacity_router.control_pipe_qualification.v1",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-75351592de8e",
+      "remote_source_sha256": {
+        "ingress_sha256": "376c4153a1f4f66a358514a980d6f07d3b36a23744cc6dd2fd9503a212916672"
+      },
+      "native_config_path": "/private/tmp/capacity-control-native-11194-_9by0oa2/routes.json",
+      "production_effects": false,
+      "native_startup_with_configuration_lock_held": true,
+      "receipts": [
+        {
+          "operation_id": "71551282b51744c5a1071afe60c46158",
+          "state": "VALIDATED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "epoch": "2b8ce6b2e91b45a49f98c095dbb72110",
+          "origin_epoch": null,
+          "request_id": "71551282b51744c5a1071afe60c46158",
+          "code": "VALIDATED",
+          "at": 1794540508.496324,
+          "retry_allowed": false,
+          "ok": true
+        },
+        {
+          "operation_id": "71971566eb5f443490a679a8b65aba2e",
+          "state": "APPLIED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "epoch": "2b8ce6b2e91b45a49f98c095dbb72110",
+          "origin_epoch": null,
+          "request_id": "71971566eb5f443490a679a8b65aba2e",
+          "code": "EFFECTIVE_REVISION_VERIFIED",
+          "at": 1794540513.759181,
+          "retry_allowed": false,
+          "ok": true
+        }
+      ],
+      "native_effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+      "configuration_writes": 1,
+      "real_ssh_bidirectional_pipe": true,
+      "vps_effective_readback": {
+        "writable": true,
+        "revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+        "epoch": "2b8ce6b2e91b45a49f98c095dbb72110",
+        "interval_s": 0.5
+      },
+      "native_shutdown_with_configuration_lock_held": true,
+      "cleanup": {
+        "ingress_exited": true
+      },
+      "result": "PASS",
+      "pipe_connections": 1,
+      "tested_source_commit": "75351592de8e7463edd3aa7911a52442b0d33e01"
+    },
+    "maintenance_owners": {
+      "result": "PASS",
+      "existing_owner_marker_age_s": 400,
+      "reload_stale_reclaim_held": true,
+      "watchdog_stale_restart_held": true,
+      "launchctl_invoked": false,
+      "production_effects": false,
+      "source_sha256": {
+        "reload.sh": "ab8c6b0c0f3627054f585c9d81983596e7fa6d356d6a745972392a24d8323a86",
+        "watchdog.sh": "bc9e887a2e006469af934ff815bb890763d589ef96592e7cce7eee36a3202291"
+      }
+    },
+    "intelligence": {
+      "cases": 11,
+      "result": "PASS"
+    },
+    "pre_quota_composition": {
+      "cases": 104,
+      "result": "PASS",
+      "seconds": 7.83,
+      "resource_warning": false,
+      "python": "Homebrew 3.14.7",
+      "log_sha256": "620d330186077e5caffc5b0bec8c91de4f8bfdd15c6dfb70b7791d4be7048def"
+    },
+    "quota_boundary": {
+      "source_finding": "https://github.com/mastermindx-market-intelligence/macro/pull/11194#issuecomment-6842786427",
+      "source_preimage_head": "75351592de8e7463edd3aa7911a52442b0d33e01",
+      "local_before_fix": {
+        "targeted_regressions": 2,
+        "failed": 2
+      },
+      "local_after_fix": {
+        "history_intelligence_tests": 29,
+        "result": "PASS",
+        "seconds": 20.102
+      },
+      "persisted_matrix": {
+        "collector_phases": 30,
+        "fresh_cached_ages": 91,
+        "panel_cases": 2730,
+        "ingress_frames": 9960,
+        "exact_rate_units_per_hour": 10,
+        "stable_observation_pair_and_quota_quantities": true
+      },
+      "persisted_negative_controls": 12,
+      "minimum_comparison_seconds": 3600,
+      "maximum_read_candidates": 2,
+      "production_incidence_measured": false,
+      "purchase_or_routing_authority": false
+    },
+    "native_protocol_prior_stage": {
+      "result": "PASS",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-a471372dcb47",
+      "cases": [
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "anthropic",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "openai",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": false,
+          "usage_reported": true,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": false,
+          "result": "PASS"
+        },
+        {
+          "wire": "responses",
+          "stream": true,
+          "usage_reported": true,
+          "result": "PASS"
+        }
+      ],
+      "proof": "Exact gateway and translators with equal nonce/admission-clock inputs; identical response status, headers and bytes; real provider usage or unknown; no network"
+    },
+    "control_pipe_prior_stage": {
+      "schema": "mastermind.capacity_router.control_pipe_qualification.v1",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-a471372dcb47",
+      "remote_source_sha256": {
+        "ingress_sha256": "376c4153a1f4f66a358514a980d6f07d3b36a23744cc6dd2fd9503a212916672"
+      },
+      "native_config_path": "/private/tmp/capacity-control-native-11194-xq6zc5b3/routes.json",
+      "production_effects": false,
+      "native_startup_with_configuration_lock_held": true,
+      "receipts": [
+        {
+          "operation_id": "d2f1956c157d4a55b927567a73e4082f",
+          "state": "VALIDATED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+          "origin_epoch": null,
+          "request_id": "d2f1956c157d4a55b927567a73e4082f",
+          "code": "VALIDATED",
+          "at": 1794539689.7700129,
+          "retry_allowed": false,
+          "ok": true
+        },
+        {
+          "operation_id": "1bb02d2ee4224839b5d819078a9a01da",
+          "state": "APPLIED",
+          "before_revision": "6596722fed83e46a0cfd630088e0b9d4906d801ab039018edc915f36e578cb4e",
+          "after_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+          "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+          "origin_epoch": null,
+          "request_id": "1bb02d2ee4224839b5d819078a9a01da",
+          "code": "EFFECTIVE_REVISION_VERIFIED",
+          "at": 1794539695.030015,
+          "retry_allowed": false,
+          "ok": true
+        }
+      ],
+      "native_effective_revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+      "configuration_writes": 1,
+      "real_ssh_bidirectional_pipe": true,
+      "vps_effective_readback": {
+        "writable": true,
+        "revision": "045f4627acafa77d51f3af0572244e500ee9f3ddb279d1def576bd7217cb335c",
+        "epoch": "8a7139eb4b0f439f902799a19db2eb65",
+        "interval_s": 0.5
+      },
+      "native_shutdown_with_configuration_lock_held": true,
+      "cleanup": {
+        "ingress_exited": true
+      },
+      "result": "PASS",
+      "pipe_connections": 1
+    }
+  },
+  "logs": {
+    "sqlite-before": {
+      "sha256": "3e2f18865fda1a4bf64a56d9c1762d635b6287e460308d685b266901f2888f62",
+      "bytes": 1072
+    },
+    "sqlite-after": {
+      "sha256": "cd2fd8cc326cfc7dc973734ebded2cfc695f6b9ff66cf2dafd7d0abb4def26cf",
+      "bytes": 115
+    },
+    "controls-adversarial": {
+      "sha256": "0ffe5980fc5216bde6c002ca7214f5988e79ebe6ea51172838f33a3f16bca523",
+      "bytes": 133
+    },
+    "ui-controls": {
+      "sha256": "7c4a6dcf71f1bfbd7a4422cc4e244cd08ba2bde714a7aedca4f6467dc5b39858",
+      "bytes": 437
+    },
+    "api-fixed": {
+      "sha256": "6f546ddeb990f48573c83d1bc4557176caa82c5ace7e7e3a877f86acb58e21f1",
+      "bytes": 104
+    },
+    "api-timing": {
+      "sha256": "750b010162baa37ead4c2e1a85bf958772c9e71b49ca1c674b2b67a43450cb12",
+      "bytes": 573
+    },
+    "staging": {
+      "sha256": "d307313b5f6871f06ba443b5c5960522d29e58efcd8c519cb461908839046b34",
+      "bytes": 102
+    },
+    "composed": {
+      "sha256": "f30b22cea312d77961a200baeab400ca8721f3752d483c38d42d70c35f5a169a",
+      "bytes": 2545
+    },
+    "composed-timed": {
+      "sha256": "1725cf34a04b8cfb5eafabda42d9d3327cd3b0bf0e6934abecc16f23287f76b8",
+      "bytes": 27317
+    },
+    "final-composition": {
+      "sha256": "620d330186077e5caffc5b0bec8c91de4f8bfdd15c6dfb70b7791d4be7048def",
+      "bytes": 651
+    },
+    "native-protocol": {
+      "sha256": "e125db42c50187d644c1a74548c2ffc52d144125a0907a0992e71635d19a60f0",
+      "bytes": 1328
+    },
+    "launchd-final": {
+      "sha256": "a987fee10a0a18a387ce54914da11ca5377eb0944aee6b6f2a85b946d9be1449",
+      "bytes": 862
+    },
+    "control-pipe": {
+      "sha256": "b3c03fb0da4d36e20ade5cf7ffafb9c4089f6ad1829fdf30bafe18c824591e38",
+      "bytes": 2334
+    },
+    "maintenance-owners": {
+      "sha256": "48a8a8c9d936020800d53cb7379f7041d7d9e53fb8a454307719a26444084263",
+      "bytes": 395
+    },
+    "quota-red": {
+      "sha256": "cec907505d52af058d00c39d131b5f2b2bf0ed0bfe6786d836c8ea0aacb999be",
+      "bytes": 1508
+    },
+    "quota-green": {
+      "sha256": "cae70ada2432724f76eafcda4e06e174ee9ab085cb1ec296580f031c2139900c",
+      "bytes": 129
+    },
+    "quota-composition": {
+      "sha256": "0c85ae5d8f90649d74d2c67382fa49535872deb23d258d598d74a6699d1184ab",
+      "bytes": 658
+    },
+    "final-stage-runtime": {
+      "sha256": "6a66f283e8c905c92aa550e4e302934dec2e8e14a72a6c74f32e5672c84f266f",
+      "bytes": 1328
+    },
+    "final-stage-control-pipe": {
+      "sha256": "05e0acb2696e0045c09abf8b93a93b0c0ebd56f202a0115415b7ec73b9805127",
+      "bytes": 2333
+    }
+  },
+  "ci_repair": {
+    "failed_job": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/43351141062/job/131642215095",
+    "introduced_missing_paths": 5,
+    "repaired_declared_paths": 6,
+    "hosted_final_head_proof_pending": true,
+    "recovery_head": "ebc62ce548f445337d7d402c518bdc29f1693a18",
+    "recovery_head_contract_delta": "SUCCESS",
+    "last_verified_head": "75351592de8e7463edd3aa7911a52442b0d33e01",
+    "last_verified_ci": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/43359098333",
+    "last_verified_binding_result": "SUCCESS",
+    "repair_head_binding_checks_pending": true
+  },
+  "production_effects": {
+    "vps_deployed": false,
+    "router_restarted": false,
+    "native_writers_installed": false,
+    "router_configuration_changed": false,
+    "browser": "Original connected browser lost originating context after authenticated baseline. Separate secure sign-in was cancelled; fallback tab remains logged out. Authenticated upgraded dashboard acceptance is pending."
+  },
+  "runtime_findings": {
+    "installed_gateway_advanced_independently": true,
+    "loaded_launchd_exit_timeout_s": 60,
+    "disk_plist_exit_timeout_s": 1860,
+    "application_graceful_timeout_s": 960,
+    "existing_forced_reload_not_qualified": true,
+    "staged_candidate": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-75351592de8e",
+    "staged_candidate_state": "STAGED_NOT_ACTIVE; native closure unchanged by quota read-path repair",
+    "stage_receipt": {
+      "state": "STAGED_NOT_ACTIVE",
+      "release": "/Users/chriswong/.local/share/mastermind/fabric-router/releases/model-tier-20261111-peak-d3bd87514e4ca129-obs-d4ee4ad515d4-obs-75351592de8e",
+      "commit": "75351592de8e7463edd3aa7911a52442b0d33e01",
+      "preserved_files": 772,
+      "overlay_files": {
+        "ops/native_fabric/unified_router/capacity_fabric_observer.py": "e6b6ff5f50a4c1cc6dd1cab6f336f634d1f23704df7204fef84839ac5628871a",
+        "ops/native_fabric/unified_router/capacity_fabric_schema.py": "46862ac848d25e4513ada94f1f8ed8693e7b82312c0576a939630e5de1858231",
+        "ops/native_fabric/unified_router/capacity_control_owner.py": "393d95d2a384de5dbb946522920960b39d04f71911695bb23ff76e463a0fab21",
+        "ops/native_fabric/unified_router/capacity_config_transaction.py": "fcd8f3976e77aa6a9c74dc9fc928ca790d07813c3db6bac30e969755d045baca",
+        "ops/native_fabric/unified_router/service.py": "b6a878bfb8e8239ddf3880b78aecbdc69eea08c59633f9993173606ede5c2e4a",
+        "ops/native_fabric/unified_router/observatory-export.json": "b4becf8d678b879d8e6fd26668b6ec7a577fb301754b56ce50a26a8dd82c55da",
+        "SOURCE.json": "4032b90183a619382b97e8bd4f84725dca1de758ddaacf38b69435afc1db45e8"
+      }
+    }
+  },
+  "pending": [
+    "Quota-repair source commit/push and exact-head binding hosted CI",
+    "Permitted merge-on-green controller release",
+    "Existing-owner VPS admin deployment",
+    "Accepted-source binding of unchanged staged native closure and attended serial activation",
+    "Authenticated production dashboard, durable history, SSE reconnect, reversible cadence control and consumer proof",
+    "Production receipts and Agent OS closeout"
+  ]
+}
