@@ -1,6 +1,7 @@
 # Research Explore — Paper design and shared-shell migration
 
 Status: IN PROGRESS. Design work is not implementation or production acceptance.
+Current design frontier: Milestone C6 below. Earlier C4/C5 sections are historical; C6 and the linked native Paper inventory supersede their pending design actions and visual-review statuses.
 Chairman assignment: 14 November 2026, ChatGPT4; redesign the complete Research > Explore family in Paper, preserve and strengthen existing capabilities, then implement frontend and engines in the Terminal shared shell over subsequent phases.
 This is a scoped migration packet under research/MASTER_PRODUCT_SHELL_MAKEOVER_MIGRATION_2026-10-08.md. It does not create a new shell, data authority, runtime, queue, watchlist, alert service, or publication owner.
 
@@ -99,7 +100,7 @@ Preserve existing owner-issued discovery/cohort/ranking semantics without new fu
 ## Phases
 
 - P1 source and design inventory: source contracts and twelve destination routes recovered. Current dedicated design homes inspected; existing Terminal and Intelligence Hub files provide isolated new pages for destinations without a located dedicated home. This bounded inventory does not claim account-wide absence.
-- P2 Paper composition: ACTIVE. Policy, Government Revenue and Alternative Data primary flows have been authored. Special Situations, BioCatalyst and Capital Structure populated flows have also been authored; continue all five Cycles routes and Research, then close remaining interaction/responsive gaps.
+- P2 Paper composition: ACTIVE. All twelve destinations now have primary shared-shell compositions. Fifty native pages include deeper Policy/Capital/Research flows, eight mobile family treatments, eight Build boards, two state sheets and selected theme/locale variants. Continue the scoped advanced-view and complete interaction/responsive gaps in the C6 design index.
 - P3 interaction/responsive/theme/locale and Build closure: follows each product; no static-frame-only completion.
 - P4 Terminal frontend and engine upgrade packets: after full Paper design completion, with fresh carrier/hold/running-writer reconciliation.
 - P5 implementation, protected release and real consumer acceptance: not started.
@@ -175,6 +176,66 @@ The bounded review of `templates/sector_cycles.js` at pinned Macro `e856ef0200a0
 
 Markets exposes canonical `pos_v2` / `phase_v2`, timing fields and confirmed turns, not a full oscillator history in its summary packet. Do not draw a dense historical curve from the scalar. China has `osc[]` history with a 0–100 axis and a separate date-window projection; it does not need an extrapolated oscillator path. Preserve canonical versus legacy position distinctions. Long Cycle FRAME has turns, leg lengths in years and typical windows, but no scalar, gauge, oscillator or uncertainty cone. Long Cycle measured normalization must be bound to the actual producer before assigning an amplitude label.
 
-### Continuity and next exact action
+### Historical C5 next action — superseded by C6
 
 Continue the five cycle product views, their interaction/state details and build contract; then Research Discover/Following/All desks and its owner-preserving contract. Close final visual checks for the small refinements listed above, add Government Revenue save/uncertain mapping states, persist per-engine build specifications and exact Paper inventory, and prepare a draft design PR. Do not begin product implementation while the design phase remains incomplete. No runtime collectors, watchers, alert enrollment, product code, merge or deployment were changed.
+
+
+## Milestone C6 — all destinations, deeper investigations and exact design inventory
+
+This is a material design milestone, not parent completion. The Chairman's full acceptance still requires completed design coverage followed by production-ready frontend and backend in Terminal's shared shell.
+
+### What became usable
+
+The Chairman and implementers can now open a coherent native Paper composition for every Explore destination and inspect dedicated detail, state and Build pages. The set has **50 native pages across five existing files: 40 product/viewport/theme/locale views, eight Build boards and two state sheets**. Each new page has one owned root. The source inventory confirms 50 unique file/root pairs.
+
+| Family | Native pages | Authored capability |
+|---|---:|---|
+| Policy Watch R6 | 11 | Now, dossier, Central Banks dark, Pipeline, Memory, calls, transmission, company exposure, mobile, states and Build |
+| Government Revenue R13 | 5 | Changes, exact award/order funding dossier, mobile, save/unresolved/correction states and Build |
+| Alternative Data R1 | 4 | Company investigation queue, source-group evidence, mobile and Build |
+| Special Situations R1 | 4 | Events, case terms/amendments, 320px mobile and Build |
+| BioCatalyst R10 | 5 | Milestones, registry changes, explicit peers, mobile and Build |
+| Capital Structure R1 | 7 | Today, then-known date, dark scenario, exact operand/source inspector, saved-version changes, mobile and Build |
+| Global Cycles R1 | 7 | Markets, Countries, U.S. Sectors, China Sectors, Long Cycles, Countries mobile and Build |
+| Research R5 | 7 | Discover, Following, All desks, Evidence History, mobile, Chinese dark directory and Build |
+
+Exact views, native URLs, roots and remaining units: [Paper design index](research_explore/PAPER_DESIGN_INDEX_2026-11-14.md).  
+Machine-readable identities and final screenshot SHA-256 digests: [Paper inventory](research_explore/PAPER_INVENTORY_2026-11-14.json).  
+Engine/consumer plan: [Implementation blueprint](research_explore/ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md).  
+Policy detail: [R6 build specification](research_explore/POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md).
+
+### Material design and source decisions
+
+- Capital calculation request identity is **(issuer_id, mode, cutoff, clock, scenario_id)**. Drawer focus is URL navigation state updated through replaceState; it is not another calculation request operand. Independently verified against the pinned U0 journey freeze and corrected in both the specification and Paper Build card.
+- Capital source inspection preserves separate dollars and shares and the source availability clock. Saved scenario version 1 retains its original anchor; a newer utilization record is reviewed before creating version 2. The specimen is not a persisted account action.
+- Countries' primary local series, USD ETF series and currency context remain distinct. Comparison charts now use solid/dashed patterns and matching legend keys. China names the selected sector, stops measured history before the timing window, and labels the year-spanning window correctly. Long Cycle Frames use historical turns and leg duration, not an invented oscillator.
+- Policy Pipeline includes undated records under All dates. Market Memory uses ±20 trading sessions and explicitly differentiated series. Calls separate a resolution event from a review date, including “not recorded” when absent. Transmission and company exposure preserve proposed/conditional/unverified states instead of manufacturing an impact score.
+- Government award/order identity is explicit. The record date and first observation remain separate; the Research discovery feed uses 14 Nov first observation for the 13 Nov procurement record.
+- Alternative Data counts independent primary sources separately from related records of the same event. BioCatalyst retains date precision, registry-versus-readout distinctions and explicitly selected non-ranked peers.
+- Research Following uses the canonical company/desk owners. Source history remains usable when an evaluation has not started; no invented success rate is shown.
+- English dark and Chinese dark specimens were visually checked. Noto Sans SC availability was verified. The specimens do not claim whole-product theme/locale parity.
+
+### Verification and effect reconciliation
+
+All 50 final compositions have screenshot inspection of the affected content, by the principal and bounded read-only domain reviewers. Review found and repaired actual overlap, excess gaps, wrapped years/headings, legend ambiguity, selected-state ambiguity, source-date inconsistency and review-date ambiguity. The final Policy Build card was reconciled against its live tree (node 2X4-1 contains actual newlines) and the corrected screenshot; an earlier literal-backslash-n capture is excluded from the inventory.
+
+The five owned file/root sets received guarded finish_working_on_nodes. The final Market Memory refinement was followed by its own finish receipt. This closes Paper editing markers for the current authored set; it does not declare the design phase complete. All editing processes in this phase returned completion; no modifying call remains uncertain. An identical screenshot request returned ARTIFACT_EXISTS and was reconciled by reusing the already captured artifact, without replay or overwrite.
+
+Two native reasoning/review children returned their bounded findings and received explicit acceptance/stop. No external worker, watcher, scheduled task, alert enrollment, Slack/email message, trade, product deployment or autonomous return path was created. The earlier M2 transport failure was not retried or used for content edits; M1 remains the qualified carrier.
+
+### Current durable evidence
+
+- Blueprint C6: commit 598658f786ad51fb788733f7371c6e7bbe30a6ce; blob 6127f765d06c1f7c6b3e5eecb700f103ba1dd7b0; byte readback matched.
+- Policy C6: commit d4de7b69960b10d691aff36cc390d229944c7603; blob 55c00af648048d26c63a4dd51be22808199e0915; byte readback matched.
+- Paper inventory: commit c22d373a56f04126ec34a07497a88ad397f19607; blob 36671d82064dcb7c3798d5aac8716a8498d7ba35; byte readback matched.
+- Navigable index: commit 0aa11f2462698d366752a2ae56ba5b90f86d20fd; verify/read back before final continuation.
+- Original source pins and carrier remain as recorded above. The docs are reviewable candidates on the owned branch, not a protected-release or organizational-adoption claim.
+
+### Exact next design unit and preserved acceptance
+
+Next is **D1-BIO: Trial screen and First-seen** in Paper file 01M6Y34XE4JKS3A40GMMZ954JE. Recover the pinned app/biocatalyst.py five-view contract and the current design index, qualify the same M1 Paper binding, create new owned pages for explicit trial selection and first-observed change inspection, and prove partial-date/record-availability/return-state meaning with populated and degraded compositions. Do not redo the accepted Milestones, Changes, Peer matrix, mobile or Build pages without a material reason.
+
+Then advance the other scoped units in the index: Government Programs/recompete; Alternative Data relationships; Special Situations advanced branches; remaining Policy world/people/state depth; Hub Models/cohorts/disagreement; Capital unavailable/conflict/restore states; and systematic intermediate widths, collapsed rail, EN/ZH, themes and keyboard/touch/navigation states.
+
+Implementation remains after design closure. It must use Terminal AppShell and the existing route/auth/context/persistence owners, upgrade each incumbent engine, and prove real producer → authenticated consumer → source/return → supported persistence → deployed browser journeys. Static Paper controls and synthetic fixtures do not satisfy those obligations.
