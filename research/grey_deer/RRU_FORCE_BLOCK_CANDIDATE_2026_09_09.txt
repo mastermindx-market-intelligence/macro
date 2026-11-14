@@ -1,0 +1,22 @@
+test_block_0_nightly_legacy (__main__.BlockTests.test_block_0_nightly_legacy) ... ok
+test_block_0_nightly_modern (__main__.BlockTests.test_block_0_nightly_modern) ... ok
+test_block_0_readonly_legacy (__main__.BlockTests.test_block_0_readonly_legacy) ... ok
+test_block_0_readonly_modern (__main__.BlockTests.test_block_0_readonly_modern) ... ok
+test_block_1_nightly_legacy (__main__.BlockTests.test_block_1_nightly_legacy) ... ok
+test_block_1_nightly_modern (__main__.BlockTests.test_block_1_nightly_modern) ... ok
+test_block_1_readonly_legacy (__main__.BlockTests.test_block_1_readonly_legacy) ... ok
+test_block_1_readonly_modern (__main__.BlockTests.test_block_1_readonly_modern) ... ok
+test_block_2_nightly_legacy (__main__.BlockTests.test_block_2_nightly_legacy) ... ok
+test_block_2_nightly_modern (__main__.BlockTests.test_block_2_nightly_modern) ... ok
+test_block_2_readonly_legacy (__main__.BlockTests.test_block_2_readonly_legacy) ... ok
+test_block_2_readonly_modern (__main__.BlockTests.test_block_2_readonly_modern) ... ok
+test_block_3_nightly_legacy (__main__.BlockTests.test_block_3_nightly_legacy) ... ok
+test_block_3_nightly_modern (__main__.BlockTests.test_block_3_nightly_modern) ... ok
+test_block_3_readonly_legacy (__main__.BlockTests.test_block_3_readonly_legacy) ... ok
+test_block_3_readonly_modern (__main__.BlockTests.test_block_3_readonly_modern) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.253s
+
+OK
+{"tests": 16, "failures": 0, "errors": 0, "original_blocks": false, "source_unchanged": true, "synthetic_only": true, "effects_mocked": true, "full_pipeline": false}

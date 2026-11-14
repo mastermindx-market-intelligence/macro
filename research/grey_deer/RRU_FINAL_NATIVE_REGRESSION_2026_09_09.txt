@@ -1,0 +1,89 @@
+...........................................................................................
+----------------------------------------------------------------------
+Ran 91 tests in 8.539s
+
+OK
+{"tests": 91, "failures": 0, "errors": 0, "source_unchanged": true, "candidate": true, "synthetic_inputs": true}
+test_all_input_gap_is_not_lost_by_dropping_unscored_dates (__main__.CompositionEdges.test_all_input_gap_is_not_lost_by_dropping_unscored_dates) ... ok
+test_invalid_profile_is_not_a_calm_default (__main__.CompositionEdges.test_invalid_profile_is_not_a_calm_default) ... risk_radar_intl(?) failed: 'NoneType' object has no attribute 'disclaimer'
+ok
+test_old_score_date_is_retained_as_history_not_current (__main__.CompositionEdges.test_old_score_date_is_retained_as_history_not_current) ... ok
+test_partial_card_has_no_calm_checkmark (__main__.CompositionEdges.test_partial_card_has_no_calm_checkmark) ... ok
+test_profile_group_keys_and_weights_are_well_formed (__main__.CompositionEdges.test_profile_group_keys_and_weights_are_well_formed) ... ok
+test_projection_does_not_change_source_authority_or_input (__main__.CompositionEdges.test_projection_does_not_change_source_authority_or_input) ... ok
+test_recent_gap_clearance_does_not_clear_rank_reference_gaps (__main__.CompositionEdges.test_recent_gap_clearance_does_not_clear_rank_reference_gaps) ... ok
+test_snapshot_exception_remains_explicitly_unavailable (__main__.CompositionEdges.test_snapshot_exception_remains_explicitly_unavailable) ... risk_radar_intl(cn) failed: synthetic unavailable source
+ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.212s
+
+OK
+{"tests": 8, "failures": 0, "errors": 0, "synthetic_only": true}
+test_actual_sleeve_consumer_withholds_unreviewed_sizing (__main__.ConsumerClosure.test_actual_sleeve_consumer_withholds_unreviewed_sizing) ... ok
+test_complete_unreviewed_card_is_descriptive_not_an_all_clear (__main__.ConsumerClosure.test_complete_unreviewed_card_is_descriptive_not_an_all_clear) ... ok
+test_incomparable_recovery_preserves_independent_catalysts (__main__.ConsumerClosure.test_incomparable_recovery_preserves_independent_catalysts) ... ok
+test_legacy_us_projection_still_preserves_existing_fields (__main__.ConsumerClosure.test_legacy_us_projection_still_preserves_existing_fields) ... ok
+test_raw_forecast_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_forecast_is_not_current_under_unreviewed_calibration) ... ok
+test_raw_sizing_is_not_current_under_unreviewed_calibration (__main__.ConsumerClosure.test_raw_sizing_is_not_current_under_unreviewed_calibration) ... ok
+test_raw_trajectory_does_not_publish_unreviewed_forecast_odds (__main__.ConsumerClosure.test_raw_trajectory_does_not_publish_unreviewed_forecast_odds) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.192s
+
+OK
+{"tests": 7, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "candidate_not_installed": true}
+test_au_complete_exact_parity (__main__.NumericalTests.test_au_complete_exact_parity) ... ok
+test_au_missing_input_oracle (__main__.NumericalTests.test_au_missing_input_oracle) ... ok
+test_ca_complete_exact_parity (__main__.NumericalTests.test_ca_complete_exact_parity) ... ok
+test_ca_missing_input_oracle (__main__.NumericalTests.test_ca_missing_input_oracle) ... ok
+test_cn_complete_exact_parity (__main__.NumericalTests.test_cn_complete_exact_parity) ... ok
+test_cn_missing_input_oracle (__main__.NumericalTests.test_cn_missing_input_oracle) ... ok
+test_ez_complete_exact_parity (__main__.NumericalTests.test_ez_complete_exact_parity) ... ok
+test_ez_missing_input_oracle (__main__.NumericalTests.test_ez_missing_input_oracle) ... ok
+test_gb_complete_exact_parity (__main__.NumericalTests.test_gb_complete_exact_parity) ... ok
+test_gb_missing_input_oracle (__main__.NumericalTests.test_gb_missing_input_oracle) ... ok
+test_hk_complete_exact_parity (__main__.NumericalTests.test_hk_complete_exact_parity) ... ok
+test_hk_missing_input_oracle (__main__.NumericalTests.test_hk_missing_input_oracle) ... ok
+test_in_complete_exact_parity (__main__.NumericalTests.test_in_complete_exact_parity) ... ok
+test_in_missing_input_oracle (__main__.NumericalTests.test_in_missing_input_oracle) ... ok
+test_jp_complete_exact_parity (__main__.NumericalTests.test_jp_complete_exact_parity) ... ok
+test_jp_missing_input_oracle (__main__.NumericalTests.test_jp_missing_input_oracle) ... ok
+test_kr_complete_exact_parity (__main__.NumericalTests.test_kr_complete_exact_parity) ... ok
+test_kr_missing_input_oracle (__main__.NumericalTests.test_kr_missing_input_oracle) ... ok
+test_tw_complete_exact_parity (__main__.NumericalTests.test_tw_complete_exact_parity) ... ok
+test_tw_missing_input_oracle (__main__.NumericalTests.test_tw_missing_input_oracle) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.216s
+
+OK
+{"tests": 20, "failures": 0, "errors": 0, "baseline": false, "synthetic_only": true, "source_unchanged": true, "oracle": "independent_rowwise_available_weight_plus_actual_percentile"}
+test_legacy_numeric_and_absent_baskets_states_are_unchanged (__main__.DisplayAcceptance.test_legacy_numeric_and_absent_baskets_states_are_unchanged) ... ok
+test_legacy_numeric_reversal_remains_renderable (__main__.DisplayAcceptance.test_legacy_numeric_reversal_remains_renderable) ... ok
+test_legacy_numeric_stock_board_keeps_its_original_advisory (__main__.DisplayAcceptance.test_legacy_numeric_stock_board_keeps_its_original_advisory) ... ok
+test_reversal_sleeve_renders_unavailable_without_numeric_crash (__main__.DisplayAcceptance.test_reversal_sleeve_renders_unavailable_without_numeric_crash) ... ok
+test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible (__main__.DisplayAcceptance.test_shared_baskets_client_keeps_explicit_unavailable_assessment_visible) ... ok
+test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction (__main__.DisplayAcceptance.test_stock_board_never_turns_unreviewed_sizing_into_a_trade_instruction) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.657s
+
+OK
+{"scope": "display", "tests": 6, "failures": 0, "errors": 0, "source_unchanged": true, "synthetic_only": true, "source_sha256": {"templates/china.html.j2": "cb6e0685b96a6d897e9562418927c0bb5d5e656d4b31c99e843ec5f213fa7031", "templates/baskets_desk.js": "bf97c8ba2ce8198e02a39ea3e2bc3097ed53027f7835e8821e99b320fe1c62dd", "templates/cn_reversal_sleeve.html.j2": "9056c65d7c1c6361860186361d8b05e036f20928834f52a15dbbd35108f960e4"}}
+test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity) ... ok
+test_legacy_entry_still_serializes_without_new_composition_claims (__main__.ConstructionSerialization.test_legacy_entry_still_serializes_without_new_composition_claims) ... ok
+test_modern_empty (__main__.ConstructionSerialization.test_modern_empty) ... ok
+test_modern_list (__main__.ConstructionSerialization.test_modern_list) ... ok
+test_modern_nonfinite (__main__.ConstructionSerialization.test_modern_nonfinite) ... ok
+test_modern_null (__main__.ConstructionSerialization.test_modern_null) ... ok
+test_modern_old (__main__.ConstructionSerialization.test_modern_old) ... ok
+test_modern_truthy (__main__.ConstructionSerialization.test_modern_truthy) ... ok
+test_modern_unavailable (__main__.ConstructionSerialization.test_modern_unavailable) ... ok
+test_valid_partial_metadata_is_copied_without_aliasing (__main__.ConstructionSerialization.test_valid_partial_metadata_is_copied_without_aliasing) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.017s
+
+OK
+{"tests": 10, "failures": 0, "errors": 0, "source_unchanged": true, "ledger_io": false, "synthetic_only": true}

@@ -1,0 +1,13 @@
+test_explicit_invalid_composition_never_becomes_implicit_legacy (__main__.CohortTests.test_explicit_invalid_composition_never_becomes_implicit_legacy) ... ok
+test_legacy_scorecard_control_keeps_actual_counts (__main__.CohortTests.test_legacy_scorecard_control_keeps_actual_counts) ... ok
+test_mixed_scorecard_keeps_legacy_statistics (__main__.CohortTests.test_mixed_scorecard_keeps_legacy_statistics) ... ok
+test_mixed_tuner_sample_and_brier_share_legacy_cohort (__main__.CohortTests.test_mixed_tuner_sample_and_brier_share_legacy_cohort) ... ok
+test_modern_only_cannot_start_legacy_tuning (__main__.CohortTests.test_modern_only_cannot_start_legacy_tuning) ... ok
+test_modern_only_cannot_supply_legacy_eligibility (__main__.CohortTests.test_modern_only_cannot_supply_legacy_eligibility) ... ok
+test_realized_odds_share_the_legacy_cohort (__main__.CohortTests.test_realized_odds_share_the_legacy_cohort) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.025s
+
+OK
+{"tests": 7, "failures": 0, "errors": 0, "source_unchanged": true, "ledger_io": false, "synthetic_only": true}

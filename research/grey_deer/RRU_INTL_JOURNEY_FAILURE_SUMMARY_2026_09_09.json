@@ -1,0 +1,483 @@
+{
+  "kind": "derived_compact_failure_receipt",
+  "raw_logs_retained_local_not_published": true,
+  "assertions_or_raw_logs_modified": false,
+  "runs": [
+    {
+      "local_raw_path": "RRU_INTL_JOURNEY_RED_2026_09_09.txt",
+      "raw_sha256": "8a0ac7174190912cf497f76bfa543bf59bbb5f3c1a8d6458c0459114ee00c206",
+      "raw_bytes": 1859355,
+      "native_pid": 58689,
+      "verified_exit": 1,
+      "metadata": {
+        "tests": 51,
+        "failures": 53,
+        "errors": 0,
+        "source_unchanged": true,
+        "synthetic_only": true,
+        "full_template": true,
+        "production": false,
+        "template_sources": {
+          "templates/international_macro.html.j2": "4e4c666b54991e0fa92d7b90d708f1c8d5b0d84b80ced461e7587e445d2b26a9",
+          "templates/_risk_radar_card.html.j2": "86b138e8b65e1ef15a211149129a59809e9da9db1a111dedbb57f4222cf03c14",
+          "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+          "templates/_risk_radar_card.css.j2": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2",
+          "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+          "templates/_navlinks.html.j2": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8"
+        }
+      },
+      "failure_excerpts": [
+        {
+          "test": "test_au_complete (__main__.AdapterJourney.test_au_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_au_partial (__main__.AdapterJourney.test_au_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_au_unavailable (__main__.AdapterJourney.test_au_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_complete (__main__.AdapterJourney.test_ca_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_partial (__main__.AdapterJourney.test_ca_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_unavailable (__main__.AdapterJourney.test_ca_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_complete (__main__.AdapterJourney.test_cn_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_partial (__main__.AdapterJourney.test_cn_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_unavailable (__main__.AdapterJourney.test_cn_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_complete (__main__.AdapterJourney.test_ez_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_partial (__main__.AdapterJourney.test_ez_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_unavailable (__main__.AdapterJourney.test_ez_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_complete (__main__.AdapterJourney.test_gb_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_partial (__main__.AdapterJourney.test_gb_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_unavailable (__main__.AdapterJourney.test_gb_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_complete (__main__.AdapterJourney.test_hk_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_partial (__main__.AdapterJourney.test_hk_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_unavailable (__main__.AdapterJourney.test_hk_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_complete (__main__.AdapterJourney.test_in_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_partial (__main__.AdapterJourney.test_in_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_unavailable (__main__.AdapterJourney.test_in_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_complete (__main__.AdapterJourney.test_jp_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_partial (__main__.AdapterJourney.test_jp_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_unavailable (__main__.AdapterJourney.test_jp_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_complete (__main__.AdapterJourney.test_kr_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_partial (__main__.AdapterJourney.test_kr_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_unavailable (__main__.AdapterJourney.test_kr_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_complete (__main__.AdapterJourney.test_tw_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_partial (__main__.AdapterJourney.test_tw_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_unavailable (__main__.AdapterJourney.test_tw_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_EZ_complete (__main__.CompletePage.test_EZ_complete)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</title>"
+        },
+        {
+          "test": "test_EZ_partial (__main__.CompletePage.test_EZ_partial)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</title>"
+        },
+        {
+          "test": "test_EZ_unavailable (__main__.CompletePage.test_EZ_unavailable)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</title>"
+        },
+        {
+          "test": "test_GB_complete (__main__.CompletePage.test_GB_complete)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — MastermindX</t"
+        },
+        {
+          "test": "test_GB_partial (__main__.CompletePage.test_GB_partial)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — MastermindX</t"
+        },
+        {
+          "test": "test_GB_unavailable (__main__.CompletePage.test_GB_unavailable)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — MastermindX</t"
+        },
+        {
+          "test": "test_IN_complete (__main__.CompletePage.test_IN_complete)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_IN_partial (__main__.CompletePage.test_IN_partial)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_IN_unavailable (__main__.CompletePage.test_IN_unavailable)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_JP_complete (__main__.CompletePage.test_JP_complete)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_JP_partial (__main__.CompletePage.test_JP_partial)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_JP_unavailable (__main__.CompletePage.test_JP_unavailable)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</title>\\n<m"
+        },
+        {
+          "test": "test_KR_complete (__main__.CompletePage.test_KR_complete)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_KR_partial (__main__.CompletePage.test_KR_partial)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_KR_unavailable (__main__.CompletePage.test_KR_unavailable)",
+          "assertion_excerpt": "'Calibrated risk monitor' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_composition_is_published_without_aliasing (__main__.ViewIntegrity.test_composition_is_published_without_aliasing)",
+          "assertion_excerpt": "None != {'status': 'PARTIAL', 'freshness': 'not_a[975 chars].v1'}"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=None)",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata={})",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=[])",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=True)",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata={'method': 'future'})",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_modern_caution_does_not_adjust_measured_score (__main__.ViewIntegrity.test_modern_caution_does_not_adjust_measured_score)",
+          "assertion_excerpt": "Tuples differ: (50, {'base': 50.0, 'growth': 7.7, 'inflati[63 chars]4.0}) != (54, {'base': 50.0, 'growth': 7.7, 'inflati[62 chars]0.0})"
+        },
+        {
+          "test": "test_real_adapter_reaches_complete_page (__main__.ViewIntegrity.test_real_adapter_reaches_complete_page)",
+          "assertion_excerpt": "unexpectedly None"
+        }
+      ]
+    },
+    {
+      "local_raw_path": "RRU_INTL_JOURNEY_AFTER_TEMPLATE_2026_09_09.txt",
+      "raw_sha256": "984e5bf7db9a5eb2c09f931571e0a7b1bd3a263b03778c08c0884fa2dc7cdc23",
+      "raw_bytes": 1859270,
+      "native_pid": 75599,
+      "verified_exit": 1,
+      "metadata": {
+        "tests": 51,
+        "failures": 53,
+        "errors": 0,
+        "source_unchanged": true,
+        "synthetic_only": true,
+        "full_template": true,
+        "production": false,
+        "template_sources": {
+          "templates/international_macro.html.j2": "47734489b3c395677d80fcb57d323a22f722e59018afde8753207788b980db29",
+          "templates/_risk_radar_card.html.j2": "86b138e8b65e1ef15a211149129a59809e9da9db1a111dedbb57f4222cf03c14",
+          "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+          "templates/_risk_radar_card.css.j2": "07b56d52a6e426352ad9ca9cc9b117d50cb50bfd2c7d8de052aaaa4dad9bb2f2",
+          "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+          "templates/_navlinks.html.j2": "10ef03e1d39149ee0e94072bcdeebae3cdbdfa92c0e620efdf54b69a1109f7b8"
+        }
+      },
+      "failure_excerpts": [
+        {
+          "test": "test_au_complete (__main__.AdapterJourney.test_au_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_au_partial (__main__.AdapterJourney.test_au_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_au_unavailable (__main__.AdapterJourney.test_au_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_complete (__main__.AdapterJourney.test_ca_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_partial (__main__.AdapterJourney.test_ca_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ca_unavailable (__main__.AdapterJourney.test_ca_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_complete (__main__.AdapterJourney.test_cn_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_partial (__main__.AdapterJourney.test_cn_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_cn_unavailable (__main__.AdapterJourney.test_cn_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_complete (__main__.AdapterJourney.test_ez_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_partial (__main__.AdapterJourney.test_ez_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_ez_unavailable (__main__.AdapterJourney.test_ez_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_complete (__main__.AdapterJourney.test_gb_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_partial (__main__.AdapterJourney.test_gb_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_gb_unavailable (__main__.AdapterJourney.test_gb_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_complete (__main__.AdapterJourney.test_hk_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_partial (__main__.AdapterJourney.test_hk_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_hk_unavailable (__main__.AdapterJourney.test_hk_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_complete (__main__.AdapterJourney.test_in_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_partial (__main__.AdapterJourney.test_in_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_in_unavailable (__main__.AdapterJourney.test_in_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_complete (__main__.AdapterJourney.test_jp_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_partial (__main__.AdapterJourney.test_jp_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_jp_unavailable (__main__.AdapterJourney.test_jp_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_complete (__main__.AdapterJourney.test_kr_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_partial (__main__.AdapterJourney.test_kr_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_kr_unavailable (__main__.AdapterJourney.test_kr_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_complete (__main__.AdapterJourney.test_tw_complete)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_partial (__main__.AdapterJourney.test_tw_partial)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_tw_unavailable (__main__.AdapterJourney.test_tw_unavailable)",
+          "assertion_excerpt": "unexpectedly None : Explicit assessment disappears in outer adapter"
+        },
+        {
+          "test": "test_EZ_complete (__main__.CompletePage.test_EZ_complete)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</"
+        },
+        {
+          "test": "test_EZ_partial (__main__.CompletePage.test_EZ_partial)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</"
+        },
+        {
+          "test": "test_EZ_unavailable (__main__.CompletePage.test_EZ_unavailable)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Euro Area Macro Dashboard — MastermindX</"
+        },
+        {
+          "test": "test_GB_complete (__main__.CompletePage.test_GB_complete)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — Mastermi"
+        },
+        {
+          "test": "test_GB_partial (__main__.CompletePage.test_GB_partial)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — Mastermi"
+        },
+        {
+          "test": "test_GB_unavailable (__main__.CompletePage.test_GB_unavailable)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>United Kingdom Macro Dashboard — Mastermi"
+        },
+        {
+          "test": "test_IN_complete (__main__.CompletePage.test_IN_complete)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_IN_partial (__main__.CompletePage.test_IN_partial)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_IN_unavailable (__main__.CompletePage.test_IN_unavailable)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>India Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_JP_complete (__main__.CompletePage.test_JP_complete)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_JP_partial (__main__.CompletePage.test_JP_partial)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_JP_unavailable (__main__.CompletePage.test_JP_unavailable)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>Japan Macro Dashboard — MastermindX</titl"
+        },
+        {
+          "test": "test_KR_complete (__main__.CompletePage.test_KR_complete)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX"
+        },
+        {
+          "test": "test_KR_partial (__main__.CompletePage.test_KR_partial)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX"
+        },
+        {
+          "test": "test_KR_unavailable (__main__.CompletePage.test_KR_unavailable)",
+          "assertion_excerpt": "'current calibrated-risk state' unexpectedly found in '<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\\n<title>South Korea Macro Dashboard — MastermindX"
+        },
+        {
+          "test": "test_composition_is_published_without_aliasing (__main__.ViewIntegrity.test_composition_is_published_without_aliasing)",
+          "assertion_excerpt": "None != {'status': 'PARTIAL', 'freshness': 'not_a[975 chars].v1'}"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=None)",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata={})",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=[])",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata=True)",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_explicit_modern_metadata_never_advertises_raw_old_odds (__main__.ViewIntegrity.test_explicit_modern_metadata_never_advertises_raw_old_odds) (metadata={'method': 'future'})",
+          "assertion_excerpt": "0.42 is not None"
+        },
+        {
+          "test": "test_modern_caution_does_not_adjust_measured_score (__main__.ViewIntegrity.test_modern_caution_does_not_adjust_measured_score)",
+          "assertion_excerpt": "Tuples differ: (50, {'base': 50.0, 'growth': 7.7, 'inflati[63 chars]4.0}) != (54, {'base': 50.0, 'growth': 7.7, 'inflati[62 chars]0.0})"
+        },
+        {
+          "test": "test_real_adapter_reaches_complete_page (__main__.ViewIntegrity.test_real_adapter_reaches_complete_page)",
+          "assertion_excerpt": "unexpectedly None"
+        }
+      ]
+    }
+  ]
+}

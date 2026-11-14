@@ -1,0 +1,16 @@
+      <div class="cnx-kv"><span class="k">{{ t('Deep-drawdown gauge','深跌仪表') }}</span>
+        {# Consume the exact existing dialog gauge; do not rescore slowdown as drawdown. #}
+        {% set _rr_dd = namespace(value=none, count=0) %}
+        {% if radar_dlg is defined and radar_dlg and radar_dlg.gauges is defined %}
+          {% for _g in radar_dlg.gauges or [] %}
+            {% if _g.label_en is defined and _g.label_en == 'Deep-drawdown gauge' %}
+              {% set _rr_dd.value = _g %}
+              {% set _rr_dd.count = _rr_dd.count + 1 %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% set _rr_ddg = _rr_dd.value %}
+        {% set _rr_dd_known = _rr_dd.count == 1 and _rr_ddg.score is defined and _rr_ddg.score is number and _rr_ddg.score >= 0 and _rr_ddg.score <= 100 and _rr_ddg.read_en is defined and _rr_ddg.read_en and _rr_ddg.read_zh is defined and _rr_ddg.read_zh %}
+        {% set _rr_dd_tone = (_rr_ddg.tone if _rr_ddg.tone is defined else 'muted') if _rr_dd_known else 'muted' %}
+        {% set _rr_dd_ink = {'up':'var(--up)', 'warn':'var(--warn)', 'down':'var(--down)'}.get(_rr_dd_tone, 'var(--muted)') %}
+        <span class="v"><span style="font-weight:700;color:{{ _rr_dd_ink }}">{{ t(_rr_ddg.read_en, _rr_ddg.read_zh) if _rr_dd_known else t('Unavailable','暂不可用') }}</span></span></div>

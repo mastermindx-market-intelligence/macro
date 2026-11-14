@@ -1,0 +1,25 @@
+test_all_input_gap_is_not_lost_by_dropping_unscored_dates (__main__.CompositionEdges.test_all_input_gap_is_not_lost_by_dropping_unscored_dates) ... ok
+test_comparison_recovers_after_its_window_clears (__main__.CompositionEdges.test_comparison_recovers_after_its_window_clears) ... ok
+test_invalid_profile_is_not_a_calm_default (__main__.CompositionEdges.test_invalid_profile_is_not_a_calm_default) ... risk_radar_intl(?) failed: 'NoneType' object has no attribute 'disclaimer'
+ok
+test_old_score_date_is_retained_as_history_not_current (__main__.CompositionEdges.test_old_score_date_is_retained_as_history_not_current) ... ok
+test_partial_card_has_no_calm_checkmark (__main__.CompositionEdges.test_partial_card_has_no_calm_checkmark) ... FAIL
+test_profile_group_keys_and_weights_are_well_formed (__main__.CompositionEdges.test_profile_group_keys_and_weights_are_well_formed) ... ok
+test_projection_does_not_change_source_authority_or_input (__main__.CompositionEdges.test_projection_does_not_change_source_authority_or_input) ... ok
+test_snapshot_exception_remains_explicitly_unavailable (__main__.CompositionEdges.test_snapshot_exception_remains_explicitly_unavailable) ... risk_radar_intl(cn) failed: synthetic unavailable source
+ok
+
+======================================================================
+FAIL: test_partial_card_has_no_calm_checkmark (__main__.CompositionEdges.test_partial_card_has_no_calm_checkmark)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/risk-radar-upgrade-records-20260908-sol/research/grey_deer/RRU_COMPOSITION_EDGE_TESTS_2026_09_08.py", line 17, in test_partial_card_has_no_calm_checkmark
+    self.assertIn('Partial reading', html)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Partial reading' not found in Markup('<div class="rrx rrx-calm" style="--rc:var(--ok)">\n  \n  <div class="rrx-main">\n  <div class="rrx-hd">\n    <span class="rrx-ic">✅</span>\n    <div class="rrx-id">\n      <div class="rrx-ttl"><span class="l-en">Risk Radar</span><span class="l-zh">风险雷达</span>\n        <span class="rrx-badge"><span class="l-en">CALM</span><span class="l-zh">平静</span> · 0/100</span>\n        <span class="help">?<span class="tip"><span class="l-en">Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.</span><span class="l-zh">回撤风险仪表。高读数用于降风险，不用于选股。</span></span></span>\n      </div>\n      <div class="rrx-dom"><span class="l-en">Partial-input risk reading</span><span class="l-zh">输入不完整的风险读数</span></div>\n      \n      \n      <div class="rrx-authority is-advisory" data-composition-status="PARTIAL">\n        <span class="l-en">Input coverage</span><span class="l-zh">输入覆盖</span>: 5 / 6.\n        <span class="l-en">Some inputs unavailable.</span><span class="l-zh">部分输入暂缺。</span>\n        <span class="l-en">Recovery comparison unavailable.</span><span class="l-zh">复苏对比暂不可用。</span>\n        <details><summary><span class="l-en">Data details</span><span class="l-zh">数据详情</span></summary>\n          <div><span class="l-en">Groups available</span><span class="l-zh">可用输入组</span>: 3 / 4.</div>\n          \n          <div><span class="l-en">US 2-year yield jump</span><span class="l-zh">美债2年利率跳升</span>: <span class="l-en">Available</span><span class="l-zh">可用</span>; <span class="l-en">US real yield jump</span><span class="l-zh">美债实际利率跳升</span>: <span class="l-en">Available</span><span class="l-zh">可用</span>; <span class="l-en">US 10-year yield jump</span><span class="l-zh">美债10年利率跳升</span>: <span class="l-en">Available</span><span class="l-zh">可用</span></div>\n          \n          <div><span class="l-en">Yuan depreciation (USD/CNH)</span><span class="l-zh">人民币贬值</span>: <span class="l-en">Available</span><span class="l-zh">可用</span></div>\n          \n          <div><span class="l-en">US–China yield gap widening</span><span class="l-zh">中美利差走阔</span>: <span class="l-en">Available</span><span class="l-zh">可用</span></div>\n          \n          <div><span class="l-en">A-share breadth &lt; 200-day</span><span class="l-zh">A股广度跌破200日</span>: <span class="l-en">Unavailable</span><span class="l-zh">暂缺</span></div>\n          \n          <div><span class="l-en">Availability does not establish freshness.</span><span class="l-zh">输入可用不代表来源及时。</span></div>\n        </details>\n        <div><span class="l-en">Forecast calibration under review.</span><span class="l-zh">预测校准待核验。</span></div>\n      </div>\n      \n      \n    </div>\n    \n  </div>\n\n  \n  </div>\n\n  <div class="rrx-side">\n  \n  \n  \n\n  \n  \n  <div class="rrx-do"><span class="rrx-do-k"><span class="l-en">Do</span><span class="l-zh">应对</span></span><span class="l-en">Review price and breadth alongside this reading.</span><span class="l-zh">结合价格与市场广度观察此读数。</span></div>\n  \n\n  \n  \n\n  \n  \n\n  \n  \n  \n  \n\n  \n\n  \n  </div>\n</div>')
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.248s
+
+FAILED (failures=1)
+{"tests": 8, "failures": 1, "errors": 0, "synthetic_only": true}

@@ -1,0 +1,75 @@
+{
+  "kind": "synthetic_review_adjudication_not_market_validation",
+  "no_market_data_reads": true,
+  "no_production_source_writes": true,
+  "source_hashes": {
+    "engine/indicators.py": "edb47847dba4e3ae011341e17c9c914b58639b0ae42a09969800044b4cd4a5b5",
+    "engine/risk_radar_intl_tune.py": "a7f3adbf3ea60f62eaf9346300c176c138d90c054cf348d81c0f96ca14ca7f58"
+  },
+  "checks": [
+    {
+      "claim": "raw_missingness_bias",
+      "passed": true,
+      "meaning": "Old minus corrected equals 0.5 times missing/available group weight."
+    },
+    {
+      "claim": "complete_current_row_rank_cannot_decrease",
+      "passed": true,
+      "tested_rows": 315,
+      "strict_increases": 315
+    },
+    {
+      "claim": "global_positive_rescale_is_rank_invariant",
+      "passed": true,
+      "meaning": "A doubling mutant is not a valid discriminator for rank-level output."
+    },
+    {
+      "claim": "missingness_can_raise_or_lower_vs_unobserved_full_blend",
+      "passed": true,
+      "full_blend": 0.5,
+      "only_low_leg": 0.1,
+      "only_high_leg": 0.9,
+      "meaning": "Missing evidence is not necessarily quiet or necessarily loud versus truth."
+    },
+    {
+      "claim": "fewer_legs_need_not_strictly_increase_variance",
+      "passed": true,
+      "partial_to_full_variance": 0.03305785123966942,
+      "meaning": "Heterogeneous correlated legs refute the review's universal variance claim."
+    },
+    {
+      "claim": "tuner_reads_graded_history_not_constructor",
+      "passed": true,
+      "meaning": "Review F5 conflates the offline calibration script with the online tuner.",
+      "calls": [
+        "A._path",
+        "A._read",
+        "A.realized_odds",
+        "R._calib",
+        "_append_governance_a6",
+        "_brier",
+        "_calib_path",
+        "_calib_path(key, root).write_text",
+        "_clamp",
+        "_log_review",
+        "_monotone",
+        "abs",
+        "any",
+        "cand[h].get",
+        "cur_pc[h].get",
+        "datetime.now",
+        "datetime.now(timezone.utc).isoformat",
+        "dict",
+        "json.dumps",
+        "len",
+        "log.warning",
+        "max",
+        "min",
+        "r.get",
+        "realized.get",
+        "round",
+        "str"
+      ]
+    }
+  ]
+}

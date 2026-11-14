@@ -1,0 +1,16 @@
+test_corrected_entry_must_retain_composition_and_calibration_identity (__main__.ConstructionSerialization.test_corrected_entry_must_retain_composition_and_calibration_identity) ... ok
+test_legacy_entry_still_serializes_without_new_composition_claims (__main__.ConstructionSerialization.test_legacy_entry_still_serializes_without_new_composition_claims) ... ok
+test_modern_empty (__main__.ConstructionSerialization.test_modern_empty) ... ok
+test_modern_list (__main__.ConstructionSerialization.test_modern_list) ... ok
+test_modern_nonfinite (__main__.ConstructionSerialization.test_modern_nonfinite) ... ok
+test_modern_null (__main__.ConstructionSerialization.test_modern_null) ... ok
+test_modern_old (__main__.ConstructionSerialization.test_modern_old) ... ok
+test_modern_truthy (__main__.ConstructionSerialization.test_modern_truthy) ... ok
+test_modern_unavailable (__main__.ConstructionSerialization.test_modern_unavailable) ... ok
+test_valid_partial_metadata_is_copied_without_aliasing (__main__.ConstructionSerialization.test_valid_partial_metadata_is_copied_without_aliasing) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.023s
+
+OK
+{"tests": 10, "failures": 0, "errors": 0, "source_unchanged": true, "ledger_io": false, "synthetic_only": true}
