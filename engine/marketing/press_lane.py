@@ -61,6 +61,7 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 # The house language law is CALLED, never forked: copywriter.banned_language is the
 # one function validate_copy runs at generation time and the publisher runs at post
@@ -511,6 +512,84 @@ def _emission_key(item: dict) -> str:
     if tsid:
         return f"truth:{tsid}"
     return str(item.get("id", ""))
+
+
+def _historical_press_feed_days(root: Path | str) -> dict[str, set[str]]:
+    """Durable feed identities already queued on an earlier plan day.
+
+    The daemon's bounded seen ring eventually evicts old feed IDs. Its seven-day
+    text dedupe then lets an unchanged RSS entry return as *new* breaking news
+    weeks later. An actual BEA release was emitted three times over 64 days.
+    The canonical outbox, including the host spool, is the existing durable
+    identity ledger; this is only a read-only view of it, never a new queue.
+
+    A quarantined/failed/recalled item does not occupy the identity: the desk
+    can repair it. Same-day fanout remains under the normal story/near-dup
+    budgets. A revised release needs a distinct source item ID so that the
+    update is auditable instead of silently reusing the original wire identity.
+    """
+    try:
+        from engine.marketing import outbox as _ob  # noqa: PLC0415
+        dead = _ob.dead_item_ids(root)
+        rows = _ob.read_items_all(root)
+    except Exception as exc:  # noqa: BLE001 — preflight, not the final gate
+        print(f"::warning title=press-history-census-unavailable::"
+              f"{type(exc).__name__}: {exc}", flush=True)
+        return {}
+    result: dict[str, set[str]] = {}
+    for row in rows:
+        if not isinstance(row, dict) or str(row.get("id") or "") in dead:
+            continue
+        src = row.get("source")
+        if not isinstance(src, dict) or src.get("lane") != "press":
+            continue
+        feed_id = str(src.get("feed_item_id") or "").strip()
+        day = str(row.get("as_of") or "")[:10]
+        if feed_id and len(day) == 10 and day[4:5] == "-" and day[7:8] == "-":
+            result.setdefault(feed_id, set()).add(day)
+    return result
+
+
+def _stale_feed_clock(item: dict, *, now: datetime, max_age_hours: float) -> bool:
+    """Refuse an explicitly dated OLD release in the real-time breaking lane.
+
+    A source's actual date outranks the time our poller happened to rediscover
+    its RSS entry. Missing/unparseable dates remain a separate ingress defect:
+    breaking_feed's legacy parser may substitute poll time, so this test must
+    not pretend that a synthetic current timestamp proves a new release.
+    """
+    stamp = str(item.get("published_at") or "").strip()
+    if not stamp:
+        return False
+    try:
+        published = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    if published.tzinfo is None:
+        published = published.replace(tzinfo=timezone.utc)
+    # Aware subtraction handles offsets without constructing a UTC datetime
+    # outside years 1..9999 for otherwise valid extreme source timestamps.
+    return (now - published).total_seconds() > max_age_hours * 3600
+
+
+def _stale_bea_release_url(item: dict, *, now: datetime) -> bool:
+    """Catch an old official BEA release even when an RSS clock was fabricated.
+
+    The observed 2026 repost pointed to bea.gov/news/2024/... while the feed
+    adapter's fallback can make an absent pubDate look current. A year-old
+    official /news/YYYY/ archive is not a real-time release. This narrow check
+    does not guess dates from arbitrary article URLs or ticker symbols.
+    """
+    if str(item.get("source") or "").lower() != "bea_news":
+        return False
+    try:
+        link = urlsplit(str(item.get("url") or ""))
+    except ValueError:
+        return False
+    if link.hostname not in {"bea.gov", "www.bea.gov"}:
+        return False
+    m = re.match(r"^/news/(20\d{2})(?:/|$)", link.path)
+    return bool(m and int(m.group(1)) <= now.year - 2)
 
 
 class _NoStoryLedger:
@@ -2299,8 +2378,38 @@ def run_press_tick(
     gate_drops: dict[str, int] = {}
     gate_rows: list[dict] = []
     scrubbed_n = 0
+    historical_feed_days = _historical_press_feed_days(root) if items else {}
+    historical_replays = 0
+    # A real-time X flash cannot use a two-year-old published timestamp just
+    # because it has not hit the short-lived seen ring recently. Seven days is
+    # a generous default for weekend/holiday coverage; the existing RSS clock
+    # is the authority, not the ingestion timestamp.
+    try:
+        requested_h = float(wire_cfg.get("max_source_age_hours", 168))
+        if not 0 < requested_h <= 720:
+            raise ValueError("source age window must be between 0 and 720 hours")
+        max_source_age_h = requested_h
+    except (TypeError, ValueError, OverflowError):
+        max_source_age_h = 168.0
+    stale_source_rows = 0
+    archive_source_rows = 0
     for it in items:
         iid = str(it.get("id", ""))
+        if any(prior_day != day for prior_day in historical_feed_days.get(iid, ())):
+            # The seen ring has a bounded horizon; the outbox does not. Without
+            # this the same government RSS entry can be sold as a fresh flash
+            # every month once both short windows have rolled off.
+            skipped.append({"id": iid, "reason": "historical_feed_replay"})
+            historical_replays += 1
+            continue
+        if _stale_feed_clock(it, now=now, max_age_hours=max_source_age_h):
+            skipped.append({"id": iid, "reason": "stale_source_timestamp"})
+            stale_source_rows += 1
+            continue
+        if _stale_bea_release_url(it, now=now):
+            skipped.append({"id": iid, "reason": "stale_official_archive_url"})
+            archive_source_rows += 1
+            continue
         # REPAIR FIRST. A headline wearing a source-page pointer is a story we
         # correctly ingested with a prefix that means nothing off their site;
         # scrubbing it here keeps the story and hands the gate below the same
@@ -2329,6 +2438,18 @@ def run_press_tick(
         if ekey:
             seen_this_tick.add(ekey)
         ingest.append(it)
+    if historical_replays:
+        print(f"::notice title=press-history-replay::{historical_replays} "
+              "previously queued feed item(s) held from repeat publication",
+              flush=True)
+    if stale_source_rows:
+        print(f"::notice title=press-stale-source::{stale_source_rows} "
+              "feed item(s) held because their publication clock is too old",
+              flush=True)
+    if archive_source_rows:
+        print(f"::notice title=press-stale-archive::{archive_source_rows} "
+              "old BEA news-archive item(s) held despite an apparently new feed clock",
+              flush=True)
     if scrubbed_n:
         # SAY WHAT WAS EDITED. A silent rewrite of a publisher's headline is the
         # kind of change that reviews as "hygiene" and ships as a fabrication if

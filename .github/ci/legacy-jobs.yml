@@ -30309,7 +30309,7 @@ jobs:
         # publisher lane it exercises.
         run: python -m pytest tests/test_marketing_social_publisher.py tests/test_marketing_outbox.py tests/test_marketing_outbox_single_composition.py tests/test_marketing_publisher_autoapprove.py tests/test_marketing_live_verify.py tests/test_marketing_publish_time_content.py tests/test_marketing_publish_time_read.py tests/test_marketing_outbox_garbage.py tests/test_marketing_metrics_poll.py tests/test_marketing_metrics_poll_quota.py tests/test_marketing_weekend_levels.py tests/test_marketing_market_clock.py -q
       - name: stale backlog quarantine + optional publish-time phrase fallback
-        run: python -m pytest tests/test_marketing_stale_purge.py tests/test_publish_time_llm_phrase.py -q
+        run: python -m pytest tests/test_marketing_stale_purge.py tests/test_publish_time_llm_phrase.py tests/test_marketing_press_history_dedup.py -q
       - name: liveness tripwire rule engine (the green-and-dark alarm)
         # 2026-08-06→08-10: Buffer 429'd, the kill-switch went to 0, Buffer was
         # fixed and nobody re-armed — five days of GREEN sweeps posting nothing.
