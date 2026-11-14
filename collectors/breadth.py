@@ -24,7 +24,7 @@ import pandas as pd
 import yfinance as yf
 
 from collectors.base import Adapter
-from lib import config, delisted_symbols
+from lib import config, delisted_symbols, store
 
 log = logging.getLogger(__name__)
 
@@ -539,6 +539,17 @@ class BreadthAdapter(Adapter):
                 if closes.dropna(how="all").index.max() < prior_tip:
                     raise RuntimeError("breadth returned tip precedes retained cache tip")
 
+                # Retain every observed session still inside the configured
+                # live calendar window, not merely a percentage of row count.
+                retained = prior.dropna(how="all")
+                cutoff = closes.index.max() - pd.Timedelta(days=self.cfg["lookback_days_live"] + 30)
+                required_dates = retained.index[retained.index >= cutoff]
+                if not required_dates.isin(closes.dropna(how="all").index).all():
+                    raise RuntimeError("breadth replacement omits retained live sessions")
+
+        aggregate = self.compute(closes)
+        if not full_history:
+            aggregate = self._anchor_ad_line(aggregate, closes)
         self.cache_path.parent.mkdir(parents=True, exist_ok=True)
         if not full_history:
             closes.to_parquet(self.cache_path)
@@ -571,7 +582,7 @@ class BreadthAdapter(Adapter):
             log.warning("%s constituents churn log failed (%s)", self.name, e)
         members.set_index("symbol").to_parquet(cpath)
 
-        out = {"breadth": self.compute(closes)}
+        out = {"breadth": aggregate}
         # per-GICS-sector breadth (rotation-tensor breadth-migration gap,
         # 2026-07-02 incident handoff H5): same closes matrix, split by the
         # sector labels already on the constituents table. Never fatal —
@@ -608,6 +619,31 @@ class BreadthAdapter(Adapter):
         except Exception as e:  # noqa: BLE001 — updown must never break the breadth build
             log.warning("breadth updown accrual failed (%s) — breadth.parquet unaffected", e)
         return out
+
+    def _anchor_ad_line(self, frame: pd.DataFrame, closes: pd.DataFrame) -> pd.DataFrame:
+        """Keep the stored cumulative origin without mixing price vintages."""
+        prior = store.read(self.group, "breadth")
+        if prior is None or prior.empty or frame.empty:
+            return frame
+        if not prior.index.is_unique or not prior.index.is_monotonic_increasing:
+            raise RuntimeError("breadth cumulative history index is ambiguous")
+        first, last = frame.index.min(), frame.index.max()
+        overlap = prior.index[(prior.index >= first) & (prior.index <= last)]
+        if not overlap.isin(frame.index).all():
+            raise RuntimeError("breadth replacement omits retained aggregate sessions")
+        prefix = prior.loc[prior.index < first]
+        if prefix.empty:
+            return frame
+        position = closes.index.get_loc(first)
+        if position == 0 or prefix.index[-1] != closes.index[position - 1]:
+            raise RuntimeError("breadth cumulative predecessor is unavailable")
+        anchor = prefix.iloc[-1].get("ad_line")
+        if pd.isna(anchor) or not float("-inf") < float(anchor) < float("inf"):
+            raise RuntimeError("breadth cumulative predecessor is invalid")
+        frame = frame.copy()
+        target = float(anchor) + frame.iloc[0]["adv"] - frame.iloc[0]["dec"]
+        frame["ad_line"] += target - frame.iloc[0]["ad_line"]
+        return frame
 
     def compute_sectors(self, closes: pd.DataFrame,
                         members: pd.DataFrame) -> pd.DataFrame | None:
@@ -707,5 +743,3 @@ def breadth_summary(br: pd.DataFrame | None, full: bool) -> dict | None:
         "state": state, "tone": tone, "full": bool(full),
         "asof": pd.Timestamp(last.name).strftime("%Y-%m-%d"),
     }
-
-
