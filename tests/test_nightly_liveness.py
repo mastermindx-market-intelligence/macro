@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -1534,3 +1534,250 @@ def test_settled_with_failures_or_no_failure_receipt_is_unverified():
                    for w in report["warnings"])
         assert not _settlement_fact_keys(report)
         assert "SECRET-TICKER" not in json.dumps(report)
+
+
+# ── 2026-10-19→11-09 AI-brief freeze: no-op green runs + brief age (checks B, F) ──
+from scripts.check_nightly_liveness import (  # noqa: E402
+    BRIEF_LENSES,
+    engine_job_verdict,
+    evaluate_brief_freshness,
+    load_briefs,
+)
+
+_NOOP_JOBS = [
+    {"name": "et_gate", "conclusion": "success"},
+    {"name": "collect", "conclusion": "skipped"},
+    {"name": "engine", "conclusion": "skipped"},
+]
+_ENGINE_OK = [{"name": "et_gate", "conclusion": "success"},
+              {"name": "engine", "conclusion": "success"}]
+_ENGINE_CANCELLED = [{"name": "et_gate", "conclusion": "success"},
+                     {"name": "engine", "conclusion": "cancelled"}]
+
+
+def test_engine_job_verdict_shapes():
+    assert engine_job_verdict(_NOOP_JOBS) == "noop"
+    assert engine_job_verdict([{"name": "et_gate", "conclusion": "success"}]) == "noop"
+    assert engine_job_verdict(_ENGINE_OK) == "success"
+    assert engine_job_verdict(_ENGINE_CANCELLED) == "not_success"
+    assert engine_job_verdict(None) is None and engine_job_verdict([]) is None
+
+
+def test_noop_green_run_does_not_satisfy_the_concluded_check():
+    """A DST-gate no-op (et_gate only, engine skipped) concludes success in seconds.
+    With the job list in hand it must NOT count as the night's bake, so the store
+    standing still is NO SUCCESS, not 'RAN GREEN BUT DID NOT ADVANCE' nor a pass."""
+    run = _run(id=101)
+    report = evaluate([run], FROZEN, NOW, run_jobs={101: _NOOP_JOBS})
+    assert report["ok"] is False
+    assert any("NO SUCCESS" in f for f in report["fail_reasons"])
+    assert report["facts"]["gate_skips"] == [101]
+    assert not any("DID NOT ADVANCE" in f for f in report["fail_reasons"])
+
+
+def test_engine_job_success_is_required_not_just_a_green_run():
+    cancelled = evaluate([_run(id=102)], FROZEN, NOW, run_jobs={102: _ENGINE_CANCELLED})
+    assert cancelled["ok"] is False
+    assert any("NO SUCCESS" in f for f in cancelled["fail_reasons"])
+    real = evaluate([_run(id=103)], ADVANCED, NOW, run_jobs={103: _ENGINE_OK})
+    assert real["ok"] is True and "gate_skips" not in real["facts"]
+    # the sharp case still fires for a REAL green run that left the store behind
+    stuck = evaluate([_run(id=103)], FROZEN, NOW, run_jobs={103: _ENGINE_OK})
+    assert any("DID NOT ADVANCE" in f for f in stuck["fail_reasons"])
+
+
+def test_noop_green_plus_store_advanced_is_lane_latch_not_a_pass_by_the_noop():
+    """A no-op green beside a failed real run: the store advanced, so the existing
+    LANE LATCH downgrade applies — but the no-op itself never supplied the 'bake'."""
+    runs = [_run(id=1, conclusion="failure"), _run(id=2, created_at="2026-08-11T23:40:00Z")]
+    report = evaluate(runs, ADVANCED, NOW, run_jobs={2: _NOOP_JOBS})
+    assert report["ok"] is True
+    assert any("LANE LATCH" in w for w in report["warnings"])
+
+
+def test_unreadable_job_list_falls_back_to_the_existing_heuristics():
+    assert evaluate([_run(id=104)], ADVANCED, NOW, run_jobs={})["ok"] is True
+    assert evaluate([_run(id=104)], ADVANCED, NOW, run_jobs={104: None})["ok"] is True
+    assert evaluate([_run(id=104)], ADVANCED, NOW)["ok"] is True
+
+
+# check F — brief age vs the data clock
+_F_NOW = datetime(2026, 11, 9, 8, 0, tzinfo=timezone.utc)   # Monday 08:00Z
+_F_RUNS = [{"created_at": "2026-11-06T22:30:00Z", "status": "completed",
+            "conclusion": "success"}]
+
+
+def _briefs(**per_lens):
+    out = {s["lens"]: [None, None] for s in BRIEF_LENSES}
+    out.update(per_lens)
+    return out
+
+
+def _b(gen, asof, **kw):
+    return {"generated_at": gen, "state_asof": asof, **kw}
+
+
+def test_check_f_trips_on_the_2026_10_18_freeze_shape():
+    frozen = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=1)
+    report = evaluate(_F_RUNS, {"source_asof": "2026-11-06"}, _F_NOW,
+                      briefs=_briefs(macro=[frozen, None]))
+    assert report["ok"] is False
+    assert any("BRIEF STALE [Check F] [macro]" in f for f in report["fail_reasons"])
+    assert report["facts"]["briefs"]["macro"]["state_asof"] == "2026-10-16"
+
+
+def test_check_f_uses_the_freshest_of_site_and_data_regime():
+    stale_site = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=1)
+    fresh_data = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    report = evaluate(_F_RUNS, {"source_asof": "2026-11-06"}, _F_NOW,
+                      briefs=_briefs(macro=[stale_site, fresh_data]))
+    assert not any("Check F" in f for f in report["fail_reasons"])
+
+
+def test_check_f_does_not_trip_when_fresh_or_within_two_cadences():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    day_and_half = _b("2026-11-07T20:00:00+00:00", "2026-11-05", refresh_days=1)  # 1.5d
+    report = evaluate(_F_RUNS, {"source_asof": "2026-11-06"}, _F_NOW,
+                      briefs=_briefs(macro=[fresh, None], china=[day_and_half, None]))
+    assert not any("Check F" in f for f in report["fail_reasons"])
+
+
+def test_check_f_weekend_grace_data_clock_not_newer_than_brief():
+    """Brief built Friday night is >2 days old on Monday 08:00Z, but the data clock
+    (Friday) is not newer than the brief's state_asof (Friday): no breach."""
+    friday = _b("2026-11-06T23:30:00+00:00", "2026-11-06", refresh_days=1)
+    report = evaluate(_F_RUNS, {"source_asof": "2026-11-06"},
+                      datetime(2026, 11, 9, 8, 0, tzinfo=timezone.utc),
+                      briefs=_briefs(macro=[friday, None], china=[friday, None]))
+    assert not any("Check F" in f for f in report["fail_reasons"])
+
+
+def test_check_f_defers_while_a_fresh_daily_run_is_in_flight():
+    """The Tuesday 08:00Z mid-run window. Prophet checkpoints source_asof EARLY in
+    the engine job; the briefs commit at the job's END. So while a healthy bake runs
+    (started ~06:20Z), the committed tree legitimately reads exactly like the freeze:
+    brief from Saturday, data clock from Monday. Paging here would cry wolf every
+    weekend+1 morning — the deferral hands judgment to the next read after the run
+    concludes (below)."""
+    tue_0800 = datetime(2026, 11, 10, 8, 0, tzinfo=timezone.utc)
+    baking = [{"created_at": "2026-11-10T06:20:00Z", "status": "in_progress",
+               "conclusion": None}]
+    weekend_brief = _b("2026-11-07T06:50:00+00:00", "2026-11-06", refresh_days=1)
+    report = evaluate(baking, {"source_asof": "2026-11-09"}, tue_0800,
+                      briefs=_briefs(macro=[weekend_brief, None]))
+    assert not any("Check F" in f for f in report["fail_reasons"])
+    assert report["ok"] is True
+    assert any("BRIEF OVERDUE, DEFERRED [Check F] [macro]" in w
+               for w in report["warnings"])
+    assert report["facts"]["briefs"]["macro"]["deferred_in_flight"] is True
+
+
+def test_check_f_deferral_ends_when_the_run_concludes_badly():
+    """Same shape one read later, run concluded cancelled at the engine tail: the
+    deferral is gone and the chronic freeze trips — the 2026-11-09 cancel at
+    09:57Z would page at the 14:00Z read, not wait for a human to notice."""
+    tue_1400 = datetime(2026, 11, 10, 14, 0, tzinfo=timezone.utc)
+    dead = [{"created_at": "2026-11-10T06:20:00Z", "status": "completed",
+             "conclusion": "cancelled"}]
+    weekend_brief = _b("2026-11-07T06:50:00+00:00", "2026-11-06", refresh_days=1)
+    report = evaluate(dead, {"source_asof": "2026-11-09"}, tue_1400,
+                      briefs=_briefs(macro=[weekend_brief, None]))
+    assert any("BRIEF STALE [Check F] [macro]" in f for f in report["fail_reasons"])
+    assert report["ok"] is False
+
+
+def test_check_f_in_flight_deferral_at_the_pure_level():
+    frozen = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=1)
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    briefs = _briefs(macro=[frozen, None], china=[fresh, None], btc=[fresh, None])
+    fail, warn, facts = evaluate_brief_freshness(
+        briefs, date(2026, 11, 6), _F_NOW, in_flight=True)
+    assert not fail and any("DEFERRED" in w for w in warn)
+    assert facts["briefs"]["macro"]["deferred_in_flight"] is True
+    fail, warn, facts = evaluate_brief_freshness(
+        briefs, date(2026, 11, 6), _F_NOW, in_flight=False)
+    assert fail and not warn
+
+
+def test_check_f_btc_threshold_is_twice_its_three_day_cadence():
+    btc = _b("2026-11-04T00:00:00+00:00", "2026-11-03")        # 5.3d on 11-09 08:00Z
+    ok = evaluate(_F_RUNS, {"source_asof": "2026-11-06"}, _F_NOW, briefs=_briefs(btc=[btc, None]))
+    assert not any("Check F" in f for f in ok["fail_reasons"])  # < 6d
+    old = _b("2026-11-02T00:00:00+00:00", "2026-11-02")        # 7.3d
+    bad = evaluate(_F_RUNS, {"source_asof": "2026-11-06"}, _F_NOW, briefs=_briefs(btc=[old, None]))
+    assert any("[btc]" in f for f in bad["fail_reasons"])
+
+
+def test_check_f_blindness_is_not_a_breach_and_not_requested_is_silent():
+    idx = {"source_asof": "2026-11-06"}
+    blind = evaluate(_F_RUNS, idx, _F_NOW, briefs=_briefs())
+    assert blind["ok"] is True and any("CHECK F INDETERMINATE" in w for w in blind["warnings"])
+    unread_clock = evaluate(_F_RUNS, None, _F_NOW,
+                            briefs=_briefs(macro=[_b("2026-10-18T22:30:00+00:00", "2026-10-16"), None]))
+    assert not any("Check F" in f for f in unread_clock["fail_reasons"])
+    assert "briefs" not in evaluate(_F_RUNS, idx, _F_NOW)["facts"]
+    fail, warn, facts = evaluate_brief_freshness(_briefs(), None, _F_NOW)
+    assert not fail and warn
+
+
+def test_load_briefs_reads_both_copies_and_tolerates_absence(tmp_path):
+    assert all(v == [None, None] for v in load_briefs(tmp_path).values())
+    (tmp_path / "data" / "regime").mkdir(parents=True)
+    (tmp_path / "data" / "regime" / "btc_brief.json").write_text(
+        json.dumps(_b("2026-11-08T00:00:00+00:00", "2026-11-07")))
+    got = load_briefs(tmp_path)["btc"]
+    assert got[0] is None and got[1]["state_asof"] == "2026-11-07"
+
+
+
+def test_every_brief_copy_is_in_the_sparse_checkout():
+    """Check F reads site/ AND data/regime/ copies of each lens brief. A path missing
+    from the lane's sparse-checkout degrades check F to INDETERMINATE (exit 0) — a
+    silently unwatched brief, the 2026-10-19→11-09 freeze re-created by its own monitor."""
+    import yaml
+    spec = yaml.safe_load(WORKFLOW.read_text())
+    listed = {ln.strip() for ln in
+              spec["jobs"]["liveness"]["steps"][0]["with"]["sparse-checkout"].splitlines()
+              if ln.strip()}
+    for lens in BRIEF_LENSES:
+        for prefix in ("site/", "data/regime/"):
+            assert prefix + lens["file"] in listed, (
+                f"{prefix}{lens['file']} is read by check F but missing from the "
+                "liveness lane's sparse-checkout — that brief would be silently ungraded")
+
+
+def test_check_f_partial_blindness_names_every_ungraded_lens():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    fail, warn, facts = evaluate_brief_freshness(
+        _briefs(macro=[fresh, None]), date(2026, 11, 6), _F_NOW)
+    assert not fail
+    assert any("CHECK F INDETERMINATE" in message
+               and "china" in message and "btc" in message for message in warn)
+    assert facts["briefs_ungraded"] == ["china", "btc"]
+
+
+def test_check_f_complete_readable_lenses_stay_graded():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    briefs = _briefs(**{spec["lens"]: [fresh, None] for spec in BRIEF_LENSES})
+    fail, warn, facts = evaluate_brief_freshness(briefs, date(2026, 11, 6), _F_NOW)
+    assert not fail and not warn
+    assert facts["briefs_ungraded"] == []
+
+
+def test_check_f_partial_blindness_preserves_the_missing_data_clock_warning():
+    fresh = _b("2026-11-09T01:00:00+00:00", "2026-11-06", refresh_days=1)
+    fail, warn, _facts = evaluate_brief_freshness(_briefs(macro=[fresh, None]), None, _F_NOW)
+    assert not fail
+    assert any("china" in message and "btc" in message for message in warn)
+    assert any("data clock" in message for message in warn)
+
+
+@pytest.mark.parametrize("cadence", [float("nan"), float("inf"), float("-inf"),
+                                    True, 0, -1, "1", 10 ** 400])
+def test_check_f_invalid_cadence_cannot_hide_a_stale_brief(cadence):
+    frozen = _b("2026-10-18T22:30:00+00:00", "2026-10-16", refresh_days=cadence)
+    fail, _warn, facts = evaluate_brief_freshness(
+        _briefs(macro=[frozen, None]), date(2026, 11, 6), _F_NOW)
+    assert any("BRIEF STALE [Check F] [macro]" in message for message in fail)
+    assert facts["briefs"]["macro"]["refresh_days"] == 1
+

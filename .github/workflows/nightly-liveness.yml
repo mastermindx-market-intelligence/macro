@@ -67,6 +67,8 @@ jobs:
           # which is the exact failure this check was written for.
           # tests/test_nightly_liveness.py::test_every_market_board_is_in_the_sparse_checkout
           # pins the two lists together so the omission cannot ship.
+          # Check F (AI brief age, 2026-10-19→11-09 freeze) reads the six brief copies
+          # (site/ + data/regime/ x macro/china/btc); BRIEF_LENSES is pinned the same way.
           filter: blob:none
           sparse-checkout: |
             scripts
@@ -85,6 +87,12 @@ jobs:
             site/sectordata/sector_central.json
             data/risk_radar_intl/cn_forward_log.jsonl
             data/risk_radar_intl/hk_forward_log.jsonl
+            site/master_brief.json
+            site/china_brief.json
+            site/btc_brief.json
+            data/regime/master_brief.json
+            data/regime/china_brief.json
+            data/regime/btc_brief.json
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
