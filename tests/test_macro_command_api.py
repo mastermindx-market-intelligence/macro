@@ -83,6 +83,7 @@ def _page(workspace_id: str) -> builder.SuitePage:
 #: hermetically. Everything else in these tests reads exactly this page.
 NARROW_PAGES = (_page("liquidity_regime"),)
 DUAL_PAGES = (_page("liquidity_regime"), _page("growth_real_economy"))
+COMPLETE_PAGES = tuple(builder.SUITE_PAGES)
 
 
 # --------------------------------------------------------------------------- #
@@ -777,6 +778,70 @@ assert response.headers['cache-control'] == 'private, no-store'
 DETAIL_PATH = COMMAND_PATH + "?workspace=liquidity_regime"
 
 
+@pytest.fixture(scope="module")
+def complete_publication(tmp_path_factory):
+    """Every native selection is qualified against its real owner, not a relabelled body."""
+    from engine.market_os.macro_workspaces import build
+    root = tmp_path_factory.mktemp("complete_macro_api")
+    regime = root / "regime.json"
+    regime.write_text(json.dumps(_regime()))
+    build.build_all(regime_latest_path=regime, fred_dir=root / "fred", treasury_dir=root / "treasury",
+                    out_root=root / "site.served" / "macrodata", built_at=BUILT_AT)
+    return root / "site.served"
+
+
+@pytest.mark.parametrize("page", COMPLETE_PAGES, ids=lambda page: page.workspace_id)
+def test_all_native_selections_preserve_their_exact_owner_view_and_read_only_selected_body(complete_publication, monkeypatch, page):
+    monkeypatch.setattr(mc, "_served_root", lambda: complete_publication)
+    _patch_admitted_pages(monkeypatch, COMPLETE_PAGES)
+    app = FastAPI()
+    app.include_router(mc.router)
+    _install_registered_user(app)
+    reads = []
+    original = mc._bounded_bytes
+
+    def observe(path, root, maximum):
+        reads.append(path)
+        return original(path, root, maximum)
+
+    monkeypatch.setattr(mc, "_bounded_bytes", observe)
+    before = {p.relative_to(complete_publication): sha256(p.read_bytes()).hexdigest()
+              for p in complete_publication.rglob("*") if p.is_file()}
+    with TestClient(app) as client:
+        response = client.get(COMMAND_PATH, params={"workspace": page.workspace_id})
+    assert response.status_code == 200
+    _assert_private_output(response)
+    body = response.json()
+    snapshot, artifact = builder.read_workspace(complete_publication / "macrodata", page)
+    assert body["selected_workspace"] == {
+        "workspace_id": page.workspace_id, "region": "US", "state": "ready", "failure": None,
+        "generation_id": snapshot["generation"]["generation_id"], "artifact": artifact,
+        "view": macro_suite_view.build_view(snapshot, page_built_at=body["source"]["composed_at"],
+                                             artifact=artifact, layout=builder._layout_for(page.workspace_id)),
+    }
+    assert [p.name for p in reads] == ["manifest.json", "latest.json", "manifest.json"]
+    assert reads[1] == complete_publication / artifact["path"]
+    assert before == {p.relative_to(complete_publication): sha256(p.read_bytes()).hexdigest()
+                      for p in complete_publication.rglob("*") if p.is_file()}
+
+
+def test_ambiguous_native_admission_fails_before_filesystem_access(client, monkeypatch):
+    _patch_admitted_pages(monkeypatch, NARROW_PAGES * 2)
+    reads = []
+    monkeypatch.setattr(mc, "_served_root", lambda: reads.append("read"))
+    assert client.get(DETAIL_PATH).status_code == 503
+    assert reads == []
+
+
+def test_native_selection_cannot_borrow_a_different_region(client, monkeypatch):
+    from dataclasses import replace
+    _patch_admitted_pages(monkeypatch, (replace(NARROW_PAGES[0], region="CN"),))
+    reads = []
+    monkeypatch.setattr(mc, "_served_root", lambda: reads.append("read"))
+    assert client.get(DETAIL_PATH).status_code == 400
+    assert reads == []
+
+
 def test_detail_is_exact_incumbent_view_and_receipt(client, served):
     before = served.tree_digest()
     response = client.get(DETAIL_PATH)
@@ -889,3 +954,4 @@ def test_detail_manifest_move_withholds_the_whole_read(client, served, monkeypat
         return view
     monkeypatch.setattr(macro_suite_view, "build_view", move_manifest)
     _assert_unavailable(client.get(DETAIL_PATH))
+

@@ -55,12 +55,11 @@ def _bounded_bytes(path: Path, root: Path, maximum: int) -> bytes:
 @router.get("/api/macro/command")
 def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSONResponse:
     headers = {"Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, noarchive"}
-    # One closed, region-bound detail selection on the incumbent reader. Auth
+    # A closed, region-bound detail selection on the incumbent reader. Auth
     # still runs first. No query chooses a path, region, filesystem or producer.
     selections = request.query_params.getlist("workspace")
     if (set(request.query_params) - {"workspace"}
-            or len(selections) > 1
-            or selections and selections[0] != "liquidity_regime"):
+            or len(selections) > 1):
         return JSONResponse({"error": "unsupported macro workspace"}, status_code=400, headers=headers)
     selected = selections[0] if selections else None
     try:
@@ -68,6 +67,16 @@ def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSON
         # remain available while this artifact reader is unavailable.
         from lib import macro_suite_view
         from scripts import build_macro_suite_pages as builder
+
+        # The existing suite owns admission. Never derive a filesystem path
+        # from a query or silently select another region/workspace.
+        pages = (tuple(page for page in builder.SUITE_PAGES
+                       if page.workspace_id == selected and page.region == "US")
+                 if selected is not None else builder.SUITE_PAGES)
+        if selected is not None and not pages:
+            return JSONResponse({"error": "unsupported macro workspace"}, status_code=400, headers=headers)
+        if selected is not None and len(pages) != 1:
+            raise ValueError("selected workspace is not uniquely admitted")
 
         root = _served_root()
         if not root.is_absolute() or root.resolve(strict=True) != root or not root.is_dir():
@@ -102,11 +111,6 @@ def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSON
             except (OSError, ValueError) as exc:
                 raise builder.SnapshotRefused("SOURCE_FAILED", "published body unavailable") from exc
 
-        pages = (tuple(page for page in builder.SUITE_PAGES
-                       if page.workspace_id == selected and page.region == "US")
-                 if selected else builder.SUITE_PAGES)
-        if selected and len(pages) != 1:
-            raise ValueError("selected workspace is not uniquely admitted")
         entries = []
         for page in pages:
             entry = {
@@ -138,7 +142,7 @@ def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSON
             snapshot = entry["snapshot"]
             view = (macro_suite_view.build_view(
                 snapshot, page_built_at=composed_at, artifact=entry["artifact"],
-                layout=macro_suite_view.LAYOUT_DECISION_FIRST,
+                layout=builder._layout_for(selected),
             ) if snapshot is not None else None)
             # Bind the complete detail to the same manifest generation that
             # admitted it. A healthy sibling cannot replace a refused selection.
@@ -194,3 +198,4 @@ def macro_command(request: Request, _user: dict = Depends(require_user)) -> JSON
         return JSONResponse(body, headers=headers)
     except Exception:
         return JSONResponse({"error": "macro command unavailable"}, status_code=503, headers=headers)
+
