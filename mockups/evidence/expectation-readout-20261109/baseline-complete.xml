@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="15" time="5.941" timestamp="2026-11-08T23:33:53.474929-05:00" hostname="24484ce4bd4c"><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[rollover]" time="0.807"><failure message="AssertionError: assert '+10.0%' == 'Period changed'&#10;  &#10;  - Period changed&#10;  + +10.0%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+10.0%' == 'Period changed'
+E     
+E     - Period changed
+E     + +10.0%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[same-period]" time="0.390" /><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[prior-period-unknown]" time="0.347"><failure message="AssertionError: assert '+10.0%' == 'Period unknown'&#10;  &#10;  - Period unknown&#10;  + +10.0%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+10.0%' == 'Period unknown'
+E     
+E     - Period unknown
+E     + +10.0%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[selected-period-unknown]" time="0.333"><failure message="AssertionError: assert '+10.0%' == 'Period unknown'&#10;  &#10;  - Period unknown&#10;  + +10.0%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+10.0%' == 'Period unknown'
+E     
+E     - Period unknown
+E     + +10.0%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[both-periods-unknown]" time="0.353"><failure message="AssertionError: assert '+10.0%' == 'Period unknown'&#10;  &#10;  - Period unknown&#10;  + +10.0%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+10.0%' == 'Period unknown'
+E     
+E     - Period unknown
+E     + +10.0%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[zero-prior]" time="0.323"><failure message="AssertionError: assert '+Infinity%' == 'Zero prior'&#10;  &#10;  - Zero prior&#10;  + +Infinity%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+Infinity%' == 'Zero prior'
+E     
+E     - Zero prior
+E     + +Infinity%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[negative-prior]" time="0.352" /><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[decline]" time="0.351" /><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[flat]" time="0.327" /><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[no-jump-to-older-period]" time="0.356"><failure message="AssertionError: assert '+4.8%' == 'Period changed'&#10;  &#10;  - Period changed&#10;  + +4.8%">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '+4.8%' == 'Period changed'
+E     
+E     - Period changed
+E     + +4.8%</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[skip-missing-average]" time="0.349" /><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[first-point]" time="0.360"><failure message="AssertionError: assert '—No prior session' == '—无上一期'&#10;  &#10;  - —无上一期&#10;  + —No prior session">tests/test_build_expectation_surface.py:459: in test_explorer_readout_comparison_rules
+    assert zh["accessibleChange"] == "—无上一期"
+E   AssertionError: assert '—No prior session' == '—无上一期'
+E     
+E     - —无上一期
+E     + —No prior session</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_readout_comparison_rules[missing-average]" time="0.323"><failure message="AssertionError: assert '—' == 'No average'&#10;  &#10;  - No average&#10;  + —">tests/test_build_expectation_surface.py:450: in test_explorer_readout_comparison_rules
+    assert en["change"] == expected
+E   AssertionError: assert '—' == 'No average'
+E     
+E     - No average
+E     + —</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_keyboard_readout_clears_previous_comparison_tone" time="0.357"><failure message="AssertionError: assert ['+10.0%', '—...0%', '+10.0%'] == ['Period chan...nged', '财期已变']&#10;  &#10;  At index 0 diff: '+10.0%' != 'Period changed'&#10;  Use -v to get more diff">tests/test_build_expectation_surface.py:474: in test_explorer_keyboard_readout_clears_previous_comparison_tone
+    assert [s["change"] for s in states] == ["Period changed", "—", "+10.0%", "Period changed", "财期已变"]
+E   AssertionError: assert ['+10.0%', '—...0%', '+10.0%'] == ['Period chan...nged', '财期已变']
+E     
+E     At index 0 diff: '+10.0%' != 'Period changed'
+E     Use -v to get more diff</failure></testcase><testcase classname="tests.test_build_expectation_surface" name="test_explorer_restored_chart_binds_keyboard_once" time="0.351"><failure message="assert [0, 2] == [0, 1]&#10;  &#10;  At index 1 diff: 2 != 1&#10;  Use -v to get more diff">tests/test_build_expectation_surface.py:493: in test_explorer_restored_chart_binds_keyboard_once
+    assert [s["selected"] for s in states] == [0, 1]
+E   assert [0, 2] == [0, 1]
+E     
+E     At index 1 diff: 2 != 1
+E     Use -v to get more diff</failure></testcase></testsuite></testsuites>

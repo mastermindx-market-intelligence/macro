@@ -448,6 +448,7 @@ body.page-es > .site-nav{ max-width:1200px; margin:14px auto 6px; padding:0 20px
 .es-readout dt{ display:flex; align-items:center; gap:6px; font:400 11.5px/14px var(--font-ui); color:var(--muted); }
 .es-readout dd{ margin:0; font:600 15px/20px var(--fig); color:var(--text); white-space:nowrap; }
 .es-ro-chg.is-up{ color:var(--es-up); } .es-ro-chg.is-down{ color:var(--es-down); }
+.es-readout .es-ro-chg.is-unavailable{ font:500 12px/16px var(--font-ui); color:var(--muted); white-space:normal; }
 .es-ro-sw{ width:14px; height:2px; flex:none; background:var(--es-ser1); }
 .es-ro-sw--med{ background:repeating-linear-gradient(90deg,var(--es-ser2) 0 5px,transparent 5px 9px); }
 .es-chart{ position:relative; height:266px; border-radius:var(--r-ctl,6px); }
@@ -1187,6 +1188,10 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
     "hint_default":  "Opened on {T}, the largest EPS move this session. The view is a record of what analysts published, not a forecast of the price.",
     "hint_after":    "The view is a record of what analysts published, not a forecast of the price.",
     "ro_no_prior":   "No prior session",
+    "ro_no_average": "No average",
+    "ro_period_changed": "Period changed",
+    "ro_period_unknown": "Period unknown",
+    "ro_zero_prior": "Zero prior",
     "chart_cap":     "{T} {metric}, {horizon}: average estimate by session from {first} to {last}, with the low-to-high range and the median.",
     "chart_live":    "{date}: average {avg}, median {med}, low {lo}, high {hi}, {n} analysts.",
     "ntable_cap":    "{T} {metric}, {horizon}, by session",
@@ -1225,6 +1230,10 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
     "hint_default":  "默认显示 {T}（本期 EPS 变动最大）。本视图记录分析师发布的预期，并非价格预测。",
     "hint_after":    "本视图记录分析师发布的预期，并非价格预测。",
     "ro_no_prior":   "无上一期",
+    "ro_no_average": "本期无平均值",
+    "ro_period_changed": "财期已变",
+    "ro_period_unknown": "财期未知",
+    "ro_zero_prior": "上期为零",
     "chart_cap":     "{T} {metric}，{horizon}：{first} 至 {last} 各采集期的平均预期，含最低至最高区间及中位数。",
     "chart_live":    "{date}：平均值 {avg}，中位数 {med}，最低 {lo}，最高 {hi}，{n} 位分析师。",
     "ntable_cap":    "{T} {metric}，{horizon}，按采集期",
@@ -1688,9 +1697,20 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
     var ser = cur.doc.series || {};
     return (ser[cur.metric] && ser[cur.metric][cur.horizon]) || [];
   }
-  function priorAvg(pts, i) {
-    for (var j = i - 1; j >= 0; j--) if (pts[j] && pts[j].average != null) return pts[j].average;
+  function priorPoint(pts, i) {
+    for (var j = i - 1; j >= 0; j--) if (pts[j] && pts[j].average != null) return pts[j];
     return null;
+  }
+  function readoutChange(pts, i) {
+    var p = pts[i], prev = priorPoint(pts, i);
+    if (!p || p.average == null) return { reason: 'ro_no_average' };
+    if (!prev) return { reason: 'ro_no_prior' };
+    /* Match the builder's immediately previous valid point rule. Never jump
+       over a different fiscal period to find an older matching one. */
+    if (p.period_end == null || prev.period_end == null) return { reason: 'ro_period_unknown' };
+    if (p.period_end !== prev.period_end) return { reason: 'ro_period_changed' };
+    if (prev.average === 0) return { reason: 'ro_zero_prior' };
+    return { value: (p.average - prev.average) / Math.abs(prev.average) };
   }
   function updateReadout() {
     var pts = cur.pts || [];
@@ -1704,15 +1724,18 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
     var chg = $('es-ro-chg');
     if (chg) {
       chg.className = 'f es-ro-chg';
-      var prev = p.average == null ? null : priorAvg(pts, cur.sel);
-      if (prev == null || p.average == null) {
-        chg.textContent = '—';
-        twoSpan(chg, '—', '—');
-        chg.className = 'f es-ro-chg';
-        var srEl = d.createElement('span'); srEl.className = 'es-sr'; srEl.textContent = Tp('ro_no_prior');
-        chg.appendChild(srEl);
+      var change = readoutChange(pts, cur.sel);
+      if (change.reason) {
+        if (change.reason === 'ro_no_prior') {
+          twoSpan(chg, '—', '—');
+          var srEl = d.createElement('span'); srEl.className = 'es-sr'; setT(srEl, change.reason);
+          chg.appendChild(srEl);
+        } else {
+          setT(chg, change.reason);
+          chg.classList.add('is-unavailable');
+        }
       } else {
-        var pctv = (p.average - prev) / Math.abs(prev);
+        var pctv = change.value;
         chg.textContent = fmtPct(pctv);
         if (pctv > 0) chg.classList.add('is-up');
         else if (pctv < 0) chg.classList.add('is-down');
@@ -1984,7 +2007,10 @@ html[data-lang="zh"] .es-answer{ letter-spacing:0; }
   /* ---- chart interaction ---- */
   function wireChart() {
     var chart = $('es-chart');
-    if (!chart) return;
+    if (!chart || chart.__esChartWired) return;
+    /* restoreNodes reuses these nodes after loading; bind each chart once so
+       one key press cannot advance the shared selection more than once. */
+    chart.__esChartWired = true;
     chart.addEventListener('keydown', function (ev) {
       var pts = cur.pts || [];
       if (!pts.length) return;

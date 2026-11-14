@@ -1,0 +1,100 @@
+{
+  "file_id": "01M5EX8RTPR7YEZD2A144XED2S",
+  "page_id": "p-2-0",
+  "parent_node": "3UR-0",
+  "card_node": "4FM-0",
+  "illustration_node": "4FR-0",
+  "source_commit": "60fdcc41c30ef5db81f04f30ad8991de1cb527ea",
+  "source_tree": "72f51cc0a53a57e7eb627d907ebb5c7294bf2e82",
+  "prior_children": [
+    "3US-0",
+    "3ZI-0",
+    "3XP-0",
+    "4DE-0",
+    "3YE-0",
+    "499-0",
+    "NG-0",
+    "QN-0",
+    "47N-0",
+    "4D3-0"
+  ],
+  "after_children": [
+    "3US-0",
+    "3ZI-0",
+    "3XP-0",
+    "4DE-0",
+    "3YE-0",
+    "499-0",
+    "NG-0",
+    "QN-0",
+    "47N-0",
+    "4D3-0",
+    "4FM-0"
+  ],
+  "original_prefix_unchanged": true,
+  "readback_labels_present": [
+    "Compare like periods. Keep your place.",
+    "Same point. Honest reason. One step.",
+    "40 tests pass",
+    "60fdcc41c30ef5db81f04f30ad8991de1cb527ea"
+  ],
+  "operations": [
+    {
+      "operation_id": "expectation-readout-20261109-card-header-v1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "after_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "expectation-readout-20261109-comparison-illustration-v1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "after_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "expectation-readout-20261109-contract-v1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "after_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "expectation-readout-20261109-proof-and-source-v1",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "after_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "production_acceptance": false
+    },
+    {
+      "operation_id": "expectation-readout-20261109-release-v1",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "before_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "after_snapshot": "7924d31b63cf36bb58e8f9e57fb655b6b734646ac90bb8477b5b95ad27967541",
+      "production_acceptance": false
+    }
+  ],
+  "files": {
+    "BEFORE_PARENT.jsx": {
+      "sha256": "d9075f6ea6ee054e56ca078dede80f445acee411a688edb042cb152ed6ce3c8f",
+      "bytes": 153534
+    },
+    "AFTER_PARENT.jsx": {
+      "sha256": "a83df631219b2f68832b5d60cb23ec55a30b38c2035f95fb00d1c3c09f82610b",
+      "bytes": 160566
+    },
+    "READOUT_CONTRACT.jpg": {
+      "sha256": "93aa4bf447739a5d77150570ea77757818f7ff149e2e841173b4e845475d15bc",
+      "bytes": 145302
+    }
+  },
+  "visual_review": "Actual Paper JPEG inspected: illustration and bilingual reason readable, text/link inside card, existing token palette retained. Candidate status and remaining work explicit.",
+  "acceptance_scope": "Paper editable build contract; no deployed or merged product claim",
+  "working_indicator": "released on owned parent 3UR-0"
+}

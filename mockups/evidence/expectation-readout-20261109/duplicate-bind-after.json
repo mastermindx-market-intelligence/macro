@@ -1,0 +1,31 @@
+{
+  "delay_ms": 300,
+  "cycles": [
+    {
+      "cycle": 1,
+      "bindings": {
+        "keydown": 1,
+        "pointermove": 1,
+        "click": 1,
+        "pointerleave": 1
+      },
+      "removals": 1,
+      "same_node": true,
+      "after_one_ArrowRight": "110.00",
+      "comparison": "+10.0%"
+    },
+    {
+      "cycle": 2,
+      "bindings": {
+        "keydown": 1,
+        "pointermove": 1,
+        "click": 1,
+        "pointerleave": 1
+      },
+      "removals": 2,
+      "same_node": true,
+      "after_one_ArrowRight": "110.00",
+      "comparison": "+10.0%"
+    }
+  ]
+}

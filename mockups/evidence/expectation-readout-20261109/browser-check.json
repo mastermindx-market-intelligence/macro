@@ -1,0 +1,157 @@
+{
+  "scope": "synthetic RO only; real rendered consumer and Chromium; no production or chart-period segmentation claim",
+  "cells": [
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "readout": "Period changed",
+      "average": "121.00",
+      "metrics": {
+        "client": 132,
+        "scroll": 132,
+        "height": 16,
+        "font": "12px",
+        "theme": "dark",
+        "lang": "en"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/desktop-dark-en.png"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "readout": "财期已变",
+      "average": "121.00",
+      "metrics": {
+        "client": 72,
+        "scroll": 72,
+        "height": 16,
+        "font": "12px",
+        "theme": "dark",
+        "lang": "zh"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/desktop-dark-zh.png"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "readout": "Period changed",
+      "average": "121.00",
+      "metrics": {
+        "client": 132,
+        "scroll": 132,
+        "height": 16,
+        "font": "12px",
+        "theme": "light",
+        "lang": "en"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/desktop-light-en.png"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "readout": "财期已变",
+      "average": "121.00",
+      "metrics": {
+        "client": 72,
+        "scroll": 72,
+        "height": 16,
+        "font": "12px",
+        "theme": "light",
+        "lang": "zh"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/desktop-light-zh.png"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "readout": "Period changed",
+      "average": "121.00",
+      "metrics": {
+        "client": 97,
+        "scroll": 97,
+        "height": 16,
+        "font": "12px",
+        "theme": "dark",
+        "lang": "en"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/mobile-dark-en.png"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "readout": "财期已变",
+      "average": "121.00",
+      "metrics": {
+        "client": 97,
+        "scroll": 97,
+        "height": 16,
+        "font": "12px",
+        "theme": "dark",
+        "lang": "zh"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/mobile-dark-zh.png"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "readout": "Period changed",
+      "average": "121.00",
+      "metrics": {
+        "client": 97,
+        "scroll": 97,
+        "height": 16,
+        "font": "12px",
+        "theme": "light",
+        "lang": "en"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/mobile-light-en.png"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "readout": "财期已变",
+      "average": "121.00",
+      "metrics": {
+        "client": 97,
+        "scroll": 97,
+        "height": 16,
+        "font": "12px",
+        "theme": "light",
+        "lang": "zh"
+      },
+      "keyboard": "passed",
+      "pointer_preview_and_return": "passed",
+      "live_language_switch": "passed",
+      "crop": "mockups/evidence/expectation-readout-20261109/readout-crops/mobile-light-zh.png"
+    }
+  ]
+}
