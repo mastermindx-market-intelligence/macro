@@ -46,7 +46,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # The lane reads the current tree and fetches main before healing.
+          # Full branch/tag history exhausted the job budget before sensing ran.
+          fetch-depth: 1
           # Checkout always uses the ambient GITHUB_TOKEN — sensing (the main-red
           # sentinel) must not depend on METABOLISM_MERGE_PAT being alive, and the
           # checkout token has no bearing on whether a later PR self-triggers CI
