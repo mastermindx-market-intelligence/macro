@@ -25,7 +25,12 @@ filters, keyboard selection, reduced motion and snapshot export are supported.
 Animated flow means that a response is streaming; it does not represent one
 particle per token. The metrics distinguish concurrent requests, waiting for
 first content, reported input/output/cache usage, window-average output rate and
-first-content p50/p95 with sample count. Request details show requested and served
+first-content p50/p95 with sample count. Once the router source is stale (over
+15 seconds), paused or disconnected, live concurrency, known active consumers,
+ready-route count and overflow/bench state show **unknown**, not last recorded
+values represented as current. Historical throughput and latency remain visible
+with a **last recorded** label. This transition runs when freshness expires even
+if no new snapshot arrives. Request details show requested and served
 model, selected route, attempts, HTTP status and elapsed time.
 
 The Overflow and Claude views expose the incumbent gateway's routing and
