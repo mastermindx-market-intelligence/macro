@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T00:55:07.472859+00:00",
-  "count": 3331,
+  "generated_at": "2026-11-14T01:10:12.304556+00:00",
+  "count": 3332,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1803,6 +1803,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 32,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-21nayo968gg-652099",
+      "title": "JPM Update on Yen FX Flows",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T10:39:58Z",
+      "summary_points": [
+        "Off-Balance Flows: Record \"off-balance\" yen selling (unaccounted in BoP) drives yen depreciation since PM Takaichi’s election, widening actual vs. fair value gap (USD/JPY deviating from model-based fair value).",
+        "Policy Correlation Break: Takaichi administration’s policies elevate risk premiums, breaking USD/JPY’s historical correlation with interest rate differentials, causing structural yen weakness.",
+        "Record BoP Intervention: ¥27T net yen buying in BoP (record scale) amid yen’s G10 weakness since Oct 2025 LDP election, reflecting massive off-balance selling pressure.",
+        "Current Account FX Nuance: Surplus (¥35.4T projected) not fully FX-generating due to primary income balance (retained earnings/reinvested interest), reducing headline surplus impact on yen strength."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 9,
       "language": "en",
       "needs_metadata": false
     },
