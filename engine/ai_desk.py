@@ -46,12 +46,14 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
 
 from lib import config
+from lib import fabric_client                    # Capacity Fabric router adapter
 from lib import ticker_aliases                   # stable key -> price-vendor symbol
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends
 from engine import master_brain as _mb          # reuse the DeepSeek/Anthropic client
@@ -577,7 +579,7 @@ _ADJ_SYSTEM = (
 def _run_panel(state: dict, cfg: dict, call=None) -> dict:
     """Run the four analysts over the same bundle (in parallel). Returns
     {key: stance_dict|None}; never raises."""
-    fn = call or _mb._call_model
+    fn = call or _default_call(stage="analyst", lane="fast")
     user = _build_user(state)
 
     def _one(key):
@@ -612,9 +614,130 @@ def _call_tracked(fn, system: str, user: str, cfg: dict, served: dict):
         return fn(system, user, cfg)
 
 
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the desk's own call sites (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+# Estate migration outcome #3: the desk's LLM calls go through the Capacity
+# Fabric unified_router when it is configured, mirroring the brief writer
+# (engine/master_brain.py::_fabric_brief_call). The router owns provider
+# selection, cooldown and account pooling, so ONE logical call here is ONE
+# request: this module never retries and never walks a second provider. A raised
+# SDK error degrades exactly as a legacy ladder failure would. FabricUnavailable
+# is the one exception — it means no request ever left this host (no token, or
+# the anthropic SDK will not import), so the UNCHANGED legacy ladder runs.
+#
+# Scope: the analyst panel (lane "fast" — structured stances) and the desk-head
+# adjudicator (lane "balanced" — the judgement that writes the published note).
+# With no router token, or MACRO_AI_DESK_FABRIC=0, the legacy ladder is
+# byte-identical: the gate reads one env var and one boolean before any legacy
+# statement runs.
+_FABRIC_KILL_SWITCH = "MACRO_AI_DESK_FABRIC"
+_FABRIC_PROJECT_ID = "macro-dashboard"
+
+
+def _fabric_enabled() -> bool:
+    """True when this desk's calls should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_AI_DESK_FABRIC=0 is
+    the operator kill-switch.
+    """
+    if os.environ.get(_FABRIC_KILL_SWITCH, "").strip() == "0":
+        return False
+    return fabric_client.is_configured()
+
+
+def _record_fabric_usage(comp) -> None:
+    """Book one ai_costs row for a fabric-served call. Never raises.
+
+    Ledger continuity with the ladder this branch replaces: those calls are
+    booked by llm_auth._capture_usage under lane "master-brain" / stage
+    "ai-desk", so the fabric row keeps the same lane and stage and changes only
+    the rung — provider "fabric", model = what the router actually served.
+    """
+    try:
+        usage = comp.usage or {}
+        if not usage:
+            return          # no usage object -> no row, same rule as _capture_usage
+        from lib import ai_costs as _ac  # noqa: PLC0415
+        _ac.record_usage(
+            lane="master-brain",
+            provider="fabric",
+            model=comp.model_served or None,
+            input_tokens=int(usage.get("input_tokens", 0) or 0),
+            output_tokens=int(usage.get("output_tokens", 0) or 0),
+            cache_read_tokens=int(usage.get("cache_read_input_tokens", 0) or 0),
+            cache_creation_tokens=int(usage.get("cache_creation_input_tokens", 0) or 0),
+            cost_basis="metered",
+            stage="ai-desk",
+        )
+    except Exception as e:  # noqa: BLE001 — bookkeeping must never sink a served call
+        log.debug("ai_desk: fabric usage ledger write failed (%s)", e)
+
+
+def _fabric_call(system: str, user: str, cfg: dict, *, stage: str, lane: str,
+                 served: dict | None = None) -> tuple[str | None, str | None]:
+    """ONE desk call through the router → (reply_text, degraded_reason).
+
+    Raises fabric_client.FabricUnavailable when nothing left this host, so the
+    caller can fall through to the legacy ladder for that case ONLY.
+    """
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane=lane,
+            max_tokens=int(cfg.get("max_tokens", 8000)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=f"macro-ai-desk-{stage}",
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise, never retry
+        log.warning("ai_desk: fabric call failed (%s)", e)
+        return None, "llm_error"
+    _record_fabric_usage(comp)
+    if getattr(comp.raw, "stop_reason", None) == "refusal":
+        return None, "refusal"      # a refusal is a refusal, even with partial text
+    if not comp.text:
+        return None, "empty_reply"
+    if served is not None:
+        try:  # telemetry only — never let this break a call that otherwise worked
+            served["provider"] = "fabric"
+            if comp.model_served:
+                served["model"] = comp.model_served
+        except Exception as e:  # noqa: BLE001
+            log.debug("ai_desk: fabric served-by telemetry failed (%s)", e)
+    reason = ("truncated"
+              if getattr(comp.raw, "stop_reason", None) == "max_tokens" else None)
+    return comp.text, reason
+
+
+def _default_call(*, stage: str, lane: str):
+    """Default `call` for a desk stage: fabric when enabled, else the legacy ladder.
+
+    Preserves synthesize()'s injectable `call` seam and keeps the off-path
+    reference EXACTLY master_brain._call_model, so tests and operators see the
+    ladder they had before this cutover.
+    """
+    if not _fabric_enabled():
+        return _mb._call_model
+
+    def _call(system: str, user: str, cfg: dict, served: dict | None = None):
+        try:
+            return _fabric_call(system, user, cfg, stage=stage, lane=lane,
+                                served=served)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "ai_desk: fabric router unavailable (%s); using the legacy ladder", e)
+            return _call_tracked(_mb._call_model, system, user, cfg,
+                                 served if served is not None else {})
+    return _call
+
+
 def _adjudicate(state: dict, panel: dict, cfg: dict, call=None, served: dict | None = None):
     """DESK-HEAD synthesis over the panel + raw state → (reply_text, degraded_reason)."""
-    fn = call or _mb._call_model
+    fn = call or _default_call(stage="adjudicator", lane="balanced")
     payload = {"detector_state": state,
                "analyst_panel": {k: v for k, v in panel.items() if v}}
     user = ("The detector state and the four analysts' stances (JSON). Adjudicate into "
