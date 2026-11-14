@@ -296,6 +296,11 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
         native._require(type(theme_sources_raw) is bytes, 'SEC_FACT_POLICY_NOT_QUALIFIED')
         return supplier.qualify_records(code_version, spec_raw, ruling_raw, registry_raw, identities,
                                         theme_sources_raw=theme_sources_raw)
+    if spec.get('schema') == 'company_intelligence.sec_segment_owner_decision/v1':
+        from . import sec_segment_adoption as segment
+        native._require(type(theme_sources_raw) is bytes, 'SEC_FACT_POLICY_NOT_QUALIFIED')
+        return segment.qualify_records(code_version, spec_raw, ruling_raw, registry_raw, identities,
+                                       theme_sources_raw=theme_sources_raw)
     continuity = spec.get('identity_continuity')
     closed = {'schema', 'case_id', 'ruling_reference', 'edition', 'fact', 'identities',
               'temporal_decision', 'correction_decision', 'semantic_review'}
@@ -354,15 +359,19 @@ def qualify_records(code_version: str, spec_raw: bytes, ruling_raw: bytes,
 
 class CommittedDisclosureSource:
     """Fresh installed protected decisions plus the incumbent identity owner."""
-    def __init__(self, repo: Path, identity_owner=None, *, sec_supplier_paths: tuple[str, str, str] | None = None):
+    def __init__(self, repo: Path, identity_owner=None, *, sec_supplier_paths: tuple[str, str, str] | None = None,
+                 sec_segment_paths: tuple[str, str, str] | None = None):
         self.git = CommittedCompanyContextOwner(repo)
         self.identity_owner = identity_owner or self.git
         # Optional deployment-owned exact protected paths: spec, source-purpose
         # basis, theme_sources. No discovery, URL allowance or default activation.
-        native._require(sec_supplier_paths is None or (type(sec_supplier_paths) is tuple
-            and len(sec_supplier_paths) == 3 and all(type(p) is str and p and not p.startswith('/')
-                and '..' not in p.split('/') for p in sec_supplier_paths)), 'SOURCE_PATH_INVALID')
+        for paths in (sec_supplier_paths, sec_segment_paths):
+            native._require(paths is None or (type(paths) is tuple
+                and len(paths) == 3 and all(type(p) is str and p and not p.startswith('/')
+                    and '..' not in p.split('/') for p in paths)), 'SOURCE_PATH_INVALID')
+        native._require(sec_supplier_paths is None or sec_segment_paths is None, 'SOURCE_PATH_INVALID')
         self.sec_supplier_paths = sec_supplier_paths
+        self.sec_segment_paths = sec_segment_paths
 
     def accepts_revision(self, revision: str) -> bool:
         native._require(re.fullmatch('[0-9a-f]{40}', revision) is not None, 'CODE_VERSION_INVALID')
@@ -372,12 +381,20 @@ class CommittedDisclosureSource:
     def snapshot(self) -> OwnerSnapshot:
         head = self.git._head()
         self.git._git('merge-base', '--is-ancestor', head, 'refs/remotes/origin/main')
-        spec_path, ruling_path, theme_path = (SPEC_PATH, RULING_PATH, None) if self.sec_supplier_paths is None else self.sec_supplier_paths
+        if self.sec_segment_paths is not None:
+            spec_path, ruling_path, theme_path = self.sec_segment_paths
+            parties = {'subject'}
+        elif self.sec_supplier_paths is not None:
+            spec_path, ruling_path, theme_path = self.sec_supplier_paths
+            parties = {'subject', 'object'}
+        else:
+            spec_path, ruling_path, theme_path = SPEC_PATH, RULING_PATH, None
+            parties = None
         paths = (spec_path, ruling_path, REGISTRY_PATH) + (() if theme_path is None else (theme_path,))
         blobs = self.git._read(self.git._objects(head, paths))
         queries = {symbol: symbol for symbol in IDENTITY_PARTIES} if theme_path is None else _json(blobs[spec_path])['identity_queries']
         if theme_path is not None:
-            native._closed(queries, {'subject', 'object'})
+            native._closed(queries, parties)
         identities = {role: context.read_company_context(self.identity_owner, symbol,
             purpose=PURPOSE, audience=AUDIENCE)['identity_receipt'] for role, symbol in queries.items()}
         result = qualify_records(head, blobs[spec_path], blobs[ruling_path], blobs[REGISTRY_PATH], identities,
