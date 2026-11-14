@@ -196,6 +196,21 @@
     var delta=consecutive?latest.value-prev.value:null;
     var asofLabel=valid?String(history.source_collected_at).slice(0,10):'';
     var latestLabel=latest?latest.period:'';
+    var sourceBasis=valid && series.basis_metadata && series.basis_metadata[basis];
+    var isProxy=basis==='yoy' && !!sourceBasis &&
+      sourceBasis.official_reported_basis_comparable!==true;
+    var qualifierEn=!sourceBasis?'Source basis unverified':
+      isProxy?'SA-index YoY proxy — NOT the BLS official NSA 12-month headline':
+      basis==='yoy' && sourceBasis.seasonal_adjustment==='NSA' ?
+        'NSA YoY · BLS headline basis (revised index, not original first print)':
+      basis==='yoy' ? 'BEA seasonally-adjusted YoY (revised index)' :
+        'Seasonally-adjusted MoM (revised index, not original first print)';
+    var qualifierZh=!sourceBasis?'来源口径未核实':
+      isProxy?'季调同比替代指标，不等于 BLS 公布的未季调十二个月同比':
+      basis==='yoy' && sourceBasis.seasonal_adjustment==='NSA' ?
+        '未季调同比 · 与 BLS 公布口径一致（修订后指数）':
+      basis==='yoy' ? 'BEA 季调同比（修订后指数）' :
+        '季调环比（修订后指数，非首次公布值）';
     var stale=valid && (
       history.source_status!=='recent' ||
       Date.now()-Date.parse(history.asof)>72*3600000 ||
@@ -225,6 +240,19 @@
       valid?'FRED/ALFRED \u4fee\u8ba2\u540e\u6307\u6570 \u00b7 '+(basis==='yoy'?'\u540c\u6bd4':'\u73af\u6bd4')+
         ' \u00b7 \u622a\u81f3 '+latestLabel+' \u00b7 \u91c7\u96c6 '+asofLabel+(stale?' \u00b7 \u5df2\u8fc7\u671f':''):
         '\u5386\u53f2\u6570\u636e\u7f3a\u5931\u6216\u5b8c\u6574\u6027\u9a8c\u8bc1\u5931\u8d25\u3002');
+    if (valid && sourceBasis && meta) {
+      var sourceDetail=textNode('span','rrh-basis-detail');
+      bilingual(sourceDetail,' · '+qualifierEn+' · FRED '+sourceBasis.series_id,
+        ' · '+qualifierZh+' · FRED '+sourceBasis.series_id);
+      meta.appendChild(sourceDetail);
+      if (isProxy && interpretation) {
+        var basisWarning=textNode('span','rrh-basis-warning');
+        bilingual(basisWarning,
+          ' Source qualification: this SA YoY proxy must not be compared to BLS published unadjusted 12-month rates.',
+          ' 口径说明：季调同比替代指标不能与 BLS 公布的未季调十二个月通胀率混为一谈。');
+        interpretation.appendChild(basisWarning);
+      }
+    }
     bilingual(chartTitle,
       'Revised '+(basis==='yoy'?'year-over-year':'month-over-month')+' inflation trend',
       '\u4fee\u8ba2\u540e\u7684'+(basis==='yoy'?'\u540c\u6bd4':'\u73af\u6bd4')+'\u901a\u80c0\u8d70\u52bf');
