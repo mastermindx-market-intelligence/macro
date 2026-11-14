@@ -1,0 +1,297 @@
+{
+  "additional_stress_era_sensitivity": [
+    {
+      "end": "2024-09-23",
+      "name": "2023_2024_grind",
+      "source": "engine/china_cycle_phase.py ERA_TABLE",
+      "start": "2023-09-01"
+    }
+  ],
+  "availability_eras": {
+    "ah_premium_current_subleg_start": "2026-09-08",
+    "chronological_half_split": "2019-09-02",
+    "contract_complete_primary_start": "2012-08-14",
+    "deep_partial_descriptive_start": "1997-07-02",
+    "interpretation": "A long replay is a current-formula reconstruction with changing subleg availability. It is never labelled the exact current issued model. Pre-2012 evidence is descriptive-only.",
+    "post_2016_start": "2016-01-01",
+    "primary_sessions_observed_at_prereg": 3427,
+    "qvix_near_current_start": "2020-06-15",
+    "sample_end": "2026-09-24",
+    "six_top_level_start": "2012-03-05"
+  },
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "benchmarks": {
+    "exact_csi300_cash": "UNAVAILABLE_IN_CANONICAL_STORES_AT_PREREG",
+    "forbidden": [
+      "SPY as a grading benchmark"
+    ],
+    "primary": {
+      "name": "Shanghai Composite",
+      "reason": "Exact committed deep-history cash/index series and commissioned primary benchmark.",
+      "symbol": "000001.SS"
+    },
+    "secondary_proxy": {
+      "name": "CSI 300 ETF",
+      "status": "proxy diagnostic only; MUST NOT be called exact CSI300 cash index",
+      "symbol": "510300.SS"
+    }
+  },
+  "branch": "sol/cn-risk-p3-market-state-validation-20260923",
+  "component_temporal_qualification": {
+    "breadth": {
+      "class": "CURRENT_UNIVERSE_RECONSTRUCTION",
+      "rules": "Current curated 82-name large-cap roster, not historical membership. Report n_members on every row/slice; never call this genuine PIT breadth."
+    },
+    "liquidity": {
+      "class": "RELEASE_LAGGED_CURRENT_VINTAGE",
+      "rules": "M2 reference-month history must be availability-shifted. SHIBOR daily observations may enter at the end-of-day stamp."
+    },
+    "risk": {
+      "class": "MIXED_RECONSTRUCTED_HISTORY",
+      "rules": "RORO rolling/trailing transforms only. Market-price/flow inputs use same-day end-of-day data. M1/M2 becomes knowable only under the frozen release-lag rules below. Current-universe breadth survivorship limitation applies."
+    },
+    "stress": {
+      "class": "RELEASE_LAGGED_CURRENT_VINTAGE",
+      "rules": "Slowdown macro inputs availability-shifted; drawdown gauge uses only contemporaneously available reconstructed components. Slowdown is intentionally tracked as correlated/double-carried exposure because it also enters liquidity and stress."
+    },
+    "trend": {
+      "class": "RECONSTRUCTED_MARKET_HISTORY",
+      "rules": "Use only closes on/before stamp; completed W/M bars. Exact-production primary keeps the current default-US 3-session anchor; CN-session-anchor construction is a mandatory sensitivity."
+    },
+    "vol": {
+      "class": "RECONSTRUCTED_MARKET_HISTORY",
+      "rules": "QVIX and margin are end-of-day/snapshot histories; no values after stamp. QVIX depth is materially shorter than margin."
+    }
+  },
+  "crisis_loco": [
+    {
+      "end": "2015-09-30",
+      "name": "2015h2_crash",
+      "source": "engine/china_cycle_phase.py ERA_TABLE",
+      "start": "2015-06-13"
+    },
+    {
+      "end": "2018-12-31",
+      "name": "2018_deleveraging",
+      "source": "engine/china_cycle_phase.py ERA_TABLE",
+      "start": "2018-01-01"
+    },
+    {
+      "end": "2020-03-31",
+      "name": "2020_covid_crash",
+      "source": "engine/china_cycle_phase.py ERA_TABLE",
+      "start": "2020-02-01"
+    },
+    {
+      "end": "2022-10-31",
+      "name": "2021_2022_grind",
+      "source": "engine/china_cycle_phase.py ERA_TABLE",
+      "start": "2021-03-01"
+    }
+  ],
+  "current_model": {
+    "cuts": {
+      "mixed_gte": 42,
+      "mixed_lt": 60,
+      "risk_off_lt": 42,
+      "risk_on_gte": 60
+    },
+    "score": "raw six-leg blend before evidence-gated Radar/override caps",
+    "today_orientation": {
+      "artifact_asof": "2026-09-24",
+      "artifact_blob_sha": "d900b0ebccebb70d6c910e3c1f2cc2c8e2ec38a7",
+      "artifact_path": "data/china_market_state/latest.json",
+      "capped": false,
+      "components": {
+        "breadth": 11,
+        "liquidity": 16,
+        "risk": 51,
+        "stress": 63,
+        "trend": 32,
+        "vol": 58
+      },
+      "display_score": 38,
+      "raw_score": 38,
+      "score_source": "blend",
+      "usage": "Orientation/current-semantics check only. Never an evaluation target or tuning datum."
+    },
+    "top_level_missingness": "Production renormalizes weights over available top-level legs. Primary P3 comparisons require all six top-level legs.",
+    "weights": {
+      "breadth": 0.16,
+      "liquidity": 0.14,
+      "risk": 0.18,
+      "stress": 0.12,
+      "trend": 0.24,
+      "vol": 0.16
+    }
+  },
+  "decision_gates": {
+    "COMPONENT": "KEEP if full model robustly improves over its LOCO counterpart; REMOVE_CANDIDATE if LOCO robustly improves full model; DISPLAY_ONLY if incremental forward value is absent with adequate evidence but descriptive coherence remains; NEED_MORE_DATA if coverage/composition/effective-N prevents adjudication.",
+    "CURRENT_WEIGHTS": {
+      "EQUAL_WEIGHT_BETTER": "Equal weight improves primary SHCOMP discrimination with paired uncertainty supporting the improvement, is non-worse on the other preregistered tail target, stays directionally stable in both halves and post-2016, and the ETF-proxy diagnostic does not materially contradict it.",
+      "INSUFFICIENT": "Timing/calendar/era sensitivity materially changes the conclusion, intervals remain non-decisive, effective sample is too weak for the claim, or evidence class cannot support it.",
+      "RETAIN": "Incumbent is not anti-predictive and no frozen challenger robustly dominates it under paired uncertainty and the required stability slices.",
+      "REWEIGHT_CANDIDATE": "A frozen non-equal challenger or LOCO variant robustly dominates current under the same gates. Candidate only; retrospective evidence does not authorize production reweighting."
+    },
+    "CUT_42": "DEFENSIBLE if adjacent-band/event separation is stable and no neighboring frozen lower cut robustly dominates; PRODUCT_ONLY if the partition is coherent/descriptive but forward separation is weak; CHANGE_CANDIDATE if a neighboring frozen cut robustly dominates across required slices; otherwise INSUFFICIENT.",
+    "CUT_60": "Same enum/gate logic, evaluated on benign-event and forward-return separation rather than treating 60 as a probability threshold.",
+    "SCORE_0_100": "FORECAST_CAPABLE requires a separate same-model genuinely issued prospective cohort plus accepted promotion law. This retrospective P3 can at most earn CONDITIONAL_FORECAST_VALUE; otherwise DESCRIPTIVE_ONLY."
+  },
+  "evidence_authority": {
+    "A": "Reconstructed historical evidence, including release-lagged current-vintage macro and current-universe breadth.",
+    "B": "Genuinely issued same-model prospective evidence. P3 does not manufacture or backfill this class.",
+    "C": "Accepted authority/promotion evidence. Cannot be earned by prose or by class-A results.",
+    "rule": "Never convert A -> C. If future prospective evidence is warranted, extend the existing forward-log/issue-receipt discipline; do not create a second validation ledger."
+  },
+  "fixed_models": {
+    "breadth_only": {
+      "breadth": 1
+    },
+    "current": {
+      "breadth": 0.16,
+      "liquidity": 0.14,
+      "risk": 0.18,
+      "stress": 0.12,
+      "trend": 0.24,
+      "vol": 0.16
+    },
+    "equal": {
+      "breadth": 1,
+      "liquidity": 1,
+      "risk": 1,
+      "stress": 1,
+      "trend": 1,
+      "vol": 1
+    },
+    "loco": "Remove exactly one top-level component at a time and renormalize the remainder.",
+    "optimization": "FORBIDDEN. No learned/free weight search, cut search, or post-outcome challenger addition.",
+    "stress_half": {
+      "breadth": 0.16,
+      "liquidity": 0.14,
+      "risk": 0.18,
+      "stress": 0.06,
+      "trend": 0.24,
+      "vol": 0.16
+    },
+    "stress_zero": {
+      "breadth": 0.16,
+      "liquidity": 0.14,
+      "risk": 0.18,
+      "stress": 0.0,
+      "trend": 0.24,
+      "vol": 0.16
+    },
+    "trend_breadth": {
+      "breadth": 1,
+      "trend": 1
+    },
+    "trend_breadth_liquidity": {
+      "breadth": 1,
+      "liquidity": 1,
+      "trend": 1
+    },
+    "trend_only": {
+      "trend": 1
+    }
+  },
+  "forbidden_changes": [
+    "engine/market_state.py weights/cuts",
+    "engine/market_state_cn.py production mapping",
+    "risk_radar_intl signal/audit/tune",
+    "templates/UI",
+    "gross sizing",
+    "Portfolio",
+    "Prophet",
+    "canonical live China score",
+    "P1/P2/P4 evidence",
+    "prospective Risk Radar ledger/control"
+  ],
+  "frozen_release_lag_rules": {
+    "classification": "RELEASE_LAGGED_CURRENT_VINTAGE is evidence class A only. It does NOT reconstruct historical revisions and is not genuine vintage PIT.",
+    "cpi_ppi": "reference month -> calendar day 16 of following month",
+    "daily_market_flow_vol": "same end-of-day stamp; outcomes begin strictly next session",
+    "gdp": "quarter reference month -> calendar day 20 of following month",
+    "home_price": "reference month -> calendar day 20 of following month",
+    "m1_m2_new_loans": "reference month -> calendar day 16 of following month",
+    "pmi": "reference month -> last calendar day of the same month",
+    "principle": "These rules create no new temporal ledger. They are research-only transformations of current-vintage stores. Availability date is mapped to the first Shanghai Composite session STRICTLY AFTER the stated calendar availability date, deliberately conservative about intraday release time.",
+    "tsf": "use stored availability_date when present; otherwise day 16 of following month"
+  },
+  "manifest_file_sha256": {
+    "input": "fec19aede9794b65186e7c70abc8331fe21b0aa2bdd72d444080221aa1d7ff37",
+    "method": "2c6eead96d21e39dc9bbb7be399b06ccca4ee3abdee92d1451fa6c6f73097c6d",
+    "model_source": "292214151c311efd421894f6945e4d4f726e504180dc12ca39f4b7fea3376948"
+  },
+  "manifest_mapping_sha256": {
+    "input": "652af799ba40d7a0820c5249e5dec9eb332887b4af5483f4995d672f456d7c74",
+    "method": "09c32763c7a848abb52a45852c3b42ff4aee63f61e3af269813ef2b9ddec6356",
+    "model_source": "4c7e9e7e4abdce13d8447affd3d8cca9c57fbd2e85264ccc6a44945c065cbe20"
+  },
+  "metrics": {
+    "brier": "FORBIDDEN on raw 0-100 score. Raw score is not a probability.",
+    "continuous": [
+      "Spearman(score, ret21)",
+      "Spearman(score, ret42)",
+      "Spearman(score, forward max-drawdown magnitude)"
+    ],
+    "cut_60": [
+      "benign-event separation and forward-return separation between Mixed and Risk-on; no implied probability claim"
+    ],
+    "episode_view": "Cluster contiguous Risk-off / event-condition runs as episodes for human-readable effective-N; daily rows are not independent authority.",
+    "event_discrimination": [
+      "ROC-AUC using inverse score for dd21_5pct and dd42_10pct",
+      "event rate and lift vs unconditional base rate by score band/cut",
+      "precision and recall of the lower-cut Risk-off partition"
+    ],
+    "return_magnitude": [
+      "mean and median ret21/ret42 by band"
+    ],
+    "uncertainty": "Paired circular moving-block bootstrap with block length equal to the evaluated forward horizon (21 or 42 sessions), deterministic seed=7. Report 95% intervals and engine.grading_stats.effective_n for overlapping daily windows."
+  },
+  "mission": "Determine whether the current China Market State six-component construction, hand weights, and 42/60 product cuts add information beyond simple A-share baselines; determine what the 0-100 score may honestly mean. Research only; no production behavior, sizing, mapping, UI, Risk Radar, or live China-score changes.",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "outcome_access_before_prereg_commit": "FORBIDDEN",
+  "prereg_payload_sha256": "0533cb7add838e65553756e9f21b59b9ff1ae058f347dac0d946da4e977671d8",
+  "repository": "mastermindx-market-intelligence/macro",
+  "sample_end": "2026-09-24",
+  "schema": "cn_market_state_p3_prereg.v1",
+  "skillpack_sha": "63555e1f9405c79405fc30682aa502a68d8abf80",
+  "slices": {
+    "half_1": "2012-08-14..2019-09-02",
+    "half_2": "2019-09-02..2026-09-24",
+    "near_current": "2020-06-15..2026-09-24",
+    "post_2016": "2016-01-01..2026-09-24",
+    "primary": "2012-08-14..2026-09-24 contract-complete current-formula reconstruction"
+  },
+  "structural_sensitivities": {
+    "breadth_membership": "Report current-roster n_members and stratify/check stability as roster depth changes. Current 82-name universe is survivorship-affected.",
+    "missingness": "Report renormalization and component availability. No silent neutral imputation.",
+    "subleg_composition": "Report active RORO/vol/slowdown/drawdown subleg counts. Historical rows with different composition cannot be described as same-issued-model evidence.",
+    "trend_calendar": "Primary reproduces current production default-US 3-session anchor exactly; mandatory counterfactual passes market=CN. Never silently repair production in P3."
+  },
+  "targets": {
+    "anchor": "Score is stamped after session close. Forward window starts at the first Shanghai Composite close strictly after the stamp.",
+    "dd21_5pct": "min(close sessions +1..+21) / entry_close - 1 <= -0.05",
+    "dd42_10pct": "min(close sessions +1..+42) / entry_close - 1 <= -0.10",
+    "partial_forward_windows": "FORBIDDEN",
+    "ret21": "close at session +21 / entry_close - 1",
+    "ret42": "close at session +42 / entry_close - 1"
+  },
+  "threshold_grid": {
+    "lower_cuts": [
+      34,
+      38,
+      42,
+      46,
+      50
+    ],
+    "upper_cuts": [
+      52,
+      56,
+      60,
+      64,
+      68
+    ],
+    "use": "Sensitivity only. No post-hoc production cut is selected from this grid."
+  }
+}

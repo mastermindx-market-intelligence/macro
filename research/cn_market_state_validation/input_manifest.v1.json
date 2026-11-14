@@ -1,0 +1,95 @@
+{
+  "base_sha": "d5eb16f3b3a093afb053efe275be62778729dcf4",
+  "entries": [
+    {
+      "git_blob_sha": "d220472c1de3718132c498ef5d823c41a63e7bb5",
+      "path": "data/china/000001.SS.parquet"
+    },
+    {
+      "git_blob_sha": "836abd6dfa0dd5197e2355089125d934d4e1c2fe",
+      "path": "data/china/399001.SZ.parquet"
+    },
+    {
+      "git_blob_sha": "329e2242e6a89bb63ae902e72c150abe0a4ad0b6",
+      "path": "data/china/510300.SS.parquet"
+    },
+    {
+      "git_blob_sha": "5b4608c44d7803f593506744003f4eb72269f63b",
+      "path": "data/china/CNH_F.parquet"
+    },
+    {
+      "git_blob_sha": "b60f37c32069a4daae37b6151988a6c4228c8d78",
+      "path": "data/china_breadth/breadth.parquet"
+    },
+    {
+      "git_blob_sha": "8e8a8fe536de791d77c77c316331dae75cb98348",
+      "path": "data/china_breadth/constituents.parquet"
+    },
+    {
+      "git_blob_sha": "2f2ad3c3385f96f3df796f18ee920d45ce18792a",
+      "path": "data/china_connect/southbound.parquet"
+    },
+    {
+      "git_blob_sha": "6a74765a491dd4384eb45f9b62eb2c956be13ef5",
+      "path": "data/china_credit/tsf.parquet"
+    },
+    {
+      "git_blob_sha": "6f94c18afa592467d0d858799b3fe91a78d49558",
+      "path": "data/china_flows/ah_premium.parquet"
+    },
+    {
+      "git_blob_sha": "ac8ed5ed3501603bd49e2326718a066912242a75",
+      "path": "data/china_macro/gdp.parquet"
+    },
+    {
+      "git_blob_sha": "cddd7fad9ffe614c1e5a32796497b2d101d63729",
+      "path": "data/china_macro/money_supply.parquet"
+    },
+    {
+      "git_blob_sha": "e7a4aa8817cd12c332593aa8a8de587492dff876",
+      "path": "data/china_macro/pmi.parquet"
+    },
+    {
+      "git_blob_sha": "1a1166910a18df996ee4617daca77d010e062a0f",
+      "path": "data/china_macro/ppi.parquet"
+    },
+    {
+      "git_blob_sha": "1849c39e77a8f1fe62b776d7ea31314c750516dd",
+      "path": "data/china_macro/rates.parquet"
+    },
+    {
+      "git_blob_sha": "501663da82fdd1fe5461f5039e016bf8a44a9925",
+      "path": "data/china_margin/balance.parquet"
+    },
+    {
+      "git_blob_sha": "dc1d99e1972de46ebc1d1c7f03d90e5171ae3979",
+      "path": "data/china_margin/daily_trade.parquet"
+    },
+    {
+      "git_blob_sha": "df1535194e28d0373ee67c2fce1993d6f5b4e870",
+      "path": "data/china_property/cgb.parquet"
+    },
+    {
+      "git_blob_sha": "4d50ad2c47b466e137b88570a129bb91c327f99d",
+      "path": "data/china_property/home_price.parquet"
+    },
+    {
+      "git_blob_sha": "4f7a269fb7b4c9e3708293391c52cdcae7d65212",
+      "path": "data/china_qvix/qvix300.parquet"
+    },
+    {
+      "git_blob_sha": "fe9c9623e87c48e85ab24a0cc904992b0aef6c36",
+      "path": "data/yahoo/GC_F.parquet"
+    },
+    {
+      "git_blob_sha": "a666c6364fd51fd09b38434629cc6a1abe3f5426",
+      "path": "data/yahoo/HG_F.parquet"
+    }
+  ],
+  "mapping_sha256": "652af799ba40d7a0820c5249e5dec9eb332887b4af5483f4995d672f456d7c74",
+  "note": "Exact committed input blobs visible at preregistration. Study calculations MUST truncate every series to sample_end=2026-09-24; later HG/GC rows are manifest provenance only and are excluded from P3 outcomes.",
+  "operation": "cn-risk-p3-market-state-validation-20260923-solpro-001",
+  "repository": "mastermindx-market-intelligence/macro",
+  "sample_end": "2026-09-24",
+  "schema": "cn_market_state_p3_input_manifest.v1"
+}
