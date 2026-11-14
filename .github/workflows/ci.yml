@@ -155,6 +155,7 @@ on:
       # Listed by name so a test-only edit still triggers the lane that runs it.
       - "tests/test_admin_inline_handler_attrs.py"
       - "tests/test_admin_navigation_ux.py"
+      - "tests/test_capacity_observatory_extension.py"
       # Absolute-path prune guard (#3802): a walk excluding ".claude"/"worktrees"
       # via `path.parts` also matches the checkout's own path and scans nothing.
       # Named so a test-only edit still triggers the lane that runs it.
@@ -3286,6 +3287,9 @@ on:
       # edit that weakened an interlock assertion would otherwise fire no run —
       # the exact half-registration this list exists to close.
       - "tests/test_finviz_tree_refresh.py"
+      # The member perf archive suite (2026-11-11) — same subject and same
+      # half-registration reason as its two siblings above.
+      - "tests/test_member_perf_archive.py"
       - "tests/test_notify_turn_events.py"
       - "tests/test_polygon_intraday.py"
       - "tests/test_thetadata_tape_sessions.py"
@@ -3489,6 +3493,10 @@ on:
       - "tests/test_calibrate_stage.py"
       - "tests/test_cctv_finalize_watcher.py"
       - "tests/test_collect_lane_gate.py"
+      # The rotation-context capture suite (2026-11-11) and its subject — same
+      # store-writer-behind-the-nightly-lane class as the lane-gate suite above.
+      - "tests/test_rotation_context_capture.py"
+      - "engine/rotation_context_capture.py"
       - "tests/test_context_candidates.py"
       - "tests/test_context_index_eval.py"
       - "tests/test_deploy_update_self_heal.py"

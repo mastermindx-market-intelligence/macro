@@ -1,0 +1,115 @@
+name: gmi-segment-sources
+# GMI segment-source lane (ruling 105 step 1) — manual, main-only, store-backed.
+# One dispatch input selects pin / packet / propose; each writes ONLY under a
+# per-run --out directory that is uploaded as an artifact. This lane never pushes,
+# opens a PR, or moves the shared fundamental_forensics/sec-source/v1 latest
+# pointer (pin syncs with publish_latest=False). Inputs reach the script through
+# env and are regex-validated before use; no input is interpolated into run:.
+# The `if: github.ref == 'refs/heads/main'` job guard is an accident guard, not a
+# security boundary: GitHub runs this file from the dispatched ref (COO ruling 111).
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which subcommand to run"
+        type: choice
+        options: [pin, packet, propose]
+        required: true
+      snapshot_id:
+        description: "Pinned source snapshot id (packet only)"
+        type: string
+        required: false
+      request_path:
+        description: "Repo path of the packet request JSON (packet only)"
+        type: string
+        required: false
+      manifest_path:
+        description: "Repo path of the propose manifest JSON (propose only)"
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gmi-segment-sources
+  cancel-in-progress: false
+
+jobs:
+  segment_sources:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macstudio-light]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          persist-credentials: false
+      - name: python 3.12 (Homebrew venv — self-hosted runner)
+        run: |
+          VENV="$HOME/.cache/mm-venv-gmi-seg-${RUNNER_NAME:-default}"
+          [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -m pip install --quiet --upgrade pip
+      - run: pip install -r requirements.txt
+      - name: run the selected segment-source step
+        env:
+          INPUT_STEP: ${{ inputs.step }}
+          INPUT_SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+          INPUT_REQUEST_PATH: ${{ inputs.request_path }}
+          INPUT_MANIFEST_PATH: ${{ inputs.manifest_path }}
+          R2_RESEARCH_ENDPOINT: ${{ secrets.R2_RESEARCH_ENDPOINT }}
+          R2_RESEARCH_ACCESS_KEY_ID: ${{ secrets.R2_RESEARCH_ACCESS_KEY_ID }}
+          R2_RESEARCH_SECRET_ACCESS_KEY: ${{ secrets.R2_RESEARCH_SECRET_ACCESS_KEY }}
+          R2_RESEARCH_BUCKET: ${{ secrets.R2_RESEARCH_BUCKET }}
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/gmi-segment-sources-${GITHUB_RUN_ID}"
+          mkdir -p "$OUT"
+          # Whole-string input checks (bash [[ =~ ]] anchors the full value; an
+          # explicit line-break test refuses any multi-line value) - ruling 112.
+          SNAPSHOT_RE='^ffsecsrc_[0-9a-f]{64}$'
+          PATH_RE='^research/theme_graph/sec_segment_[0-9]{8}/[A-Za-z0-9_.-]+\.json$'
+          NL=$'\n'
+          CR=$'\r'
+          valid_input() {
+            [[ "$1" != *"$NL"* && "$1" != *"$CR"* && "$1" =~ $2 ]]
+          }
+          case "$INPUT_STEP" in
+            pin)
+              python -m scripts.pin_segment_sources pin \
+                --targets config/theme_graph/segment_source_targets.v1.json \
+                --raw-root "$HOME/.cache/mm-gmi-seg/raw" \
+                --archive-root "$HOME/.cache/mm-gmi-seg/archive" \
+                --out "$OUT"
+              ;;
+            packet)
+              valid_input "$INPUT_SNAPSHOT_ID" "$SNAPSHOT_RE" \
+                || { echo "invalid snapshot_id"; exit 2; }
+              valid_input "$INPUT_REQUEST_PATH" "$PATH_RE" \
+                || { echo "invalid request_path"; exit 2; }
+              python -m scripts.pin_segment_sources packet \
+                --request "$INPUT_REQUEST_PATH" \
+                --snapshot-id "$INPUT_SNAPSHOT_ID" \
+                --out "$OUT"
+              ;;
+            propose)
+              valid_input "$INPUT_MANIFEST_PATH" "$PATH_RE" \
+                || { echo "invalid manifest_path"; exit 2; }
+              python -m scripts.pin_segment_sources propose \
+                --manifest "$INPUT_MANIFEST_PATH" \
+                --out "$OUT"
+              ;;
+            *)
+              echo "invalid step"
+              exit 2
+              ;;
+          esac
+      - name: upload segment-source outputs (always)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gmi-segment-sources-${{ github.run_id }}
+          path: ${{ runner.temp }}/gmi-segment-sources-${{ github.run_id }}
+          retention-days: 14
