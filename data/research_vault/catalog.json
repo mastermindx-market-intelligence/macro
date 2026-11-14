@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T12:56:31.999679+00:00",
-  "count": 3366,
+  "generated_at": "2026-11-14T13:11:32.305147+00:00",
+  "count": 3367,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1667,6 +1667,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 4,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-t2oeesob8yq-87e9a1",
+      "title": "GS Bartlett GS TMT TODAY 11.12.26 12 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T19:36:15Z",
+      "summary_points": [
+        "NVIDIA CEO Scandal: Board preparing to remove Jensen Huang over extramarital affairs (suspected Chinese spy link), triggering AI sector sell-off (SMH -2.5%, DRAM -3.5%, Neoclouds -5% to -10%); critical risk factor for AI stocks.",
+        "AI Capex Macro Impact: AI-driven hardware/IP spending to exceed $900bn by 2026 ($1.4tn by 2027, 4% of US GDP), boosting true capex growth by 5.3pp vs measured 4.3pp and GDP by 0.6pp vs measured 0.2pp; 2027 real GDP forecast at 2.4%.",
+        "China Internet Collapse: TMT portfolios face severe risk as China Internet YTD down -30.53% due to geopolitical/policy-driven collapse (regulatory crackdowns, US-China tensions).",
+        "TMT Technical Oversold: TMT Size RSI at 19 signals extreme oversold condition—potential rebound but heightened risk of further downside if sentiment deteriorates."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
