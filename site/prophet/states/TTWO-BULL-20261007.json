@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TTWO-BULL-20261007",
-  "asof": "2026-11-13",
+  "asof": "2026-11-14",
   "phase": "at_t2",
   "detection_phase": "at_t2",
-  "management_confidence": 79.4,
-  "raw_confidence": 83.6,
-  "delta_vs_base": 19.4,
+  "management_confidence": 81.7,
+  "raw_confidence": 84.4,
+  "delta_vs_base": 21.7,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
@@ -14,18 +14,18 @@
     "progress": 100.0,
     "pace": 100.0,
     "retention": 100.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 9.965,
-    "dist_to_t1_r": -7.465,
-    "dist_to_t2_r": -5.965,
-    "horizon_pct_used": 82.2,
-    "p1": 5.9766,
-    "p2": 2.9883,
+    "dist_to_stop_r": 10.305,
+    "dist_to_t1_r": -7.805,
+    "dist_to_t2_r": -6.305,
+    "horizon_pct_used": 84.4,
+    "p1": 6.2031,
+    "p2": 3.1016,
     "p3": null,
-    "move_r": 8.965,
-    "mfe_r": 8.965,
+    "move_r": 9.305,
+    "mfe_r": 9.305,
     "mae_r": -5.402
   },
   "rr_ratio": 1.5,
@@ -39,14 +39,14 @@
     "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 22.949996948242188,
+  "_mfe": 23.82000732421875,
   "_mae": -13.830001831054688,
-  "_max_p1": 5.976561705271398,
+  "_max_p1": 6.2031269073486275,
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": "2026-10-09",
   "_first_t2_ts": "2026-11-06",
-  "days_elapsed": 37,
-  "tau": 0.8222,
+  "days_elapsed": 38,
+  "tau": 0.8444,
   "closed": true,
   "outcome": "T1_HIT"
 }
