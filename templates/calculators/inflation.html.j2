@@ -47,6 +47,14 @@
 <div class="calc-actions">
   <button class="gbtn" id="copy-result" type="button">{{ t('Copy result', '复制结果') }}</button>
   <span class="copied" id="copied" role="status">{{ t('Copied', '已复制') }}</span>
+  <span id="copy-fail" role="status" hidden>{{ t('Copy did not complete. Select the result below and copy it manually.', '复制未完成。请选中下方结果并手动复制。') }}</span>
+</div>
+<div id="copy-manual" hidden>
+  <label class="ci ci-wide" for="copy-manual-text">
+    <span class="ci-l">{{ t('Result text — select and copy', '结果文本——选中并复制') }}</span>
+    <input id="copy-manual-text" readonly>
+  </label>
+  <button class="gbtn" id="copy-manual-select" type="button" style="margin-top:8px;">{{ t('Select all', '全选') }}</button>
 </div>
 {% endblock %}
 
@@ -158,7 +166,9 @@
     var els = { amount:$("amount"), rate:$("rate"), years:$("years") };
     var outMain=$("out-main"), outPlain=$("out-plain"),
         outPower=$("out-power"), outLost=$("out-lost"), outErosion=$("out-erosion"), outRise=$("out-rise"),
-        copyBtn=$("copy-result"), copied=$("copied");
+        copyBtn=$("copy-result"), copied=$("copied"),
+        failMsg=$("copy-fail"), manualBox=$("copy-manual"),
+        manualField=$("copy-manual-text"), manualSelect=$("copy-manual-select");
 
     function numFrom(el){ var v=parseFloat((el.value||"").replace(/,/g,"").trim()); return isFinite(v)?v:NaN; }
     function money(n){ return "$" + n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}); }
@@ -166,8 +176,9 @@
     function dash(){ outMain.textContent="—";
       [outPower,outLost,outErosion,outRise].forEach(function(e){e.textContent="—"; e.className="";}); }
 
-    var last=null;
+    var last=null, copyRevision=0, copiedTimer=null;
     function render(){
+      resetCopyFeedback();
       var inp={ A:numFrom(els.amount), i:numFrom(els.rate), n:numFrom(els.years) };
       var res=compute(inp); last=res;
       if(!res.ok){ dash(); outPlain.textContent=res.msg; outPlain.className="co-plain"; return; }
@@ -203,12 +214,57 @@
         " · purchasing power " + money(last.power) +
         " · " + pct(last.erosionPct) + " erosion — mastermind-x.com";
     }
+    // Feedback belongs to one input revision and one copy attempt. Clipboard
+    // completion cannot be cancelled, but stale feedback must not reappear.
+    function resetCopyFeedback(){
+      copyRevision++;
+      copied.classList.remove("show");
+      failMsg.hidden=true; manualBox.hidden=true; manualField.value="";
+      if(copiedTimer!==null){ clearTimeout(copiedTimer); copiedTimer=null; }
+    }
+    function showCopySuccess(revision){
+      if(revision!==copyRevision) return;
+      copied.classList.add("show");
+      copiedTimer=setTimeout(function(){
+        if(revision!==copyRevision) return;
+        copied.classList.remove("show"); copiedTimer=null;
+      },1600);
+    }
+    function showCopyFailure(revision,line){
+      if(revision!==copyRevision) return;
+      copied.classList.remove("show");
+      manualField.value=line; failMsg.hidden=false; manualBox.hidden=false;
+    }
+    function legacyCopy(line){
+      var ta=document.createElement("textarea");
+      ta.value=line; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta);
+      try{ ta.select(); return document.execCommand("copy")===true; }
+      catch(e){ return false; }
+      finally{ document.body.removeChild(ta); }
+    }
     copyBtn.addEventListener("click", function(){
       var line=copyLine(); if(!line) return;
-      var done=function(){ copied.classList.add("show"); setTimeout(function(){copied.classList.remove("show");},1600); };
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(line).then(done,done); }
-      else { var ta=document.createElement("textarea"); ta.value=line; document.body.appendChild(ta); ta.select();
-        try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta); done(); }
+      resetCopyFeedback();
+      var revision=copyRevision;
+      if(navigator.clipboard && typeof navigator.clipboard.writeText==="function"){
+        try{
+          navigator.clipboard.writeText(line).then(
+            function(){ showCopySuccess(revision); },
+            function(){ showCopyFailure(revision,line); }
+          );
+        }catch(e){ showCopyFailure(revision,line); }
+        // Never retry a rejected modern write through another transport.
+      }else if(legacyCopy(line)){
+        showCopySuccess(revision);
+      }else{
+        showCopyFailure(revision,line);
+      }
+    });
+    manualSelect.addEventListener("click", function(){
+      if(manualBox.hidden) return;
+      manualField.focus(); manualField.select();
     });
 
     ["amount","rate","years"].forEach(function(id){

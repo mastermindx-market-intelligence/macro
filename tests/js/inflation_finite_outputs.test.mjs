@@ -19,37 +19,52 @@ const controller = path => {
 const scripts = paths.map(controller);
 assert.equal(scripts[0], scripts[1], 'template/generated controller parity');
 
-function boot(script, transport) {
+function boot(script, transport, options = {}) {
   const errors = [], writes = [], timers = [], nodes = new Map(), ready = [];
-  let selected = null;
+  let selected = null, focused = null;
+  const pending = []; let legacyCalls = 0;
   function element(id) {
     const listeners = new Map(), classes = new Set();
-    return { id, value: '', textContent: '', className: '',
+    return { id, value: '', textContent: '', className: '', hidden: true, style: {},
+      setAttribute() {}, focus() { focused = this; },
       classList: {add: x => classes.add(x), remove: x => classes.delete(x), contains: x => classes.has(x)},
       addEventListener(type, fn) { listeners.set(type, fn); },
       fire(type) { assert.ok(listeners.has(type)); return listeners.get(type)(); },
       select() { selected = this; }
     };
   }
-  for (const id of ['amount', 'rate', 'years', ...outputs, 'out-plain', 'copy-result', 'copied']) nodes.set(id, element(id));
+  for (const id of ['amount', 'rate', 'years', ...outputs, 'out-plain', 'copy-result', 'copied', 'copy-fail', 'copy-manual', 'copy-manual-text', 'copy-manual-select']) nodes.set(id, element(id));
   const children = [];
   const document = {
     getElementById(id) { assert.ok(nodes.has(id), id); return nodes.get(id); },
     addEventListener(type, fn) { assert.equal(type, 'DOMContentLoaded'); ready.push(fn); },
     createElement(tag) { assert.equal(tag, 'textarea'); return element(tag); },
     body: { appendChild(e) {children.push(e);}, removeChild(e) {assert.equal(children.pop(), e);} },
-    execCommand(cmd) { assert.equal(cmd, 'copy'); assert.ok(selected); writes.push(selected.value); return true; }
+    execCommand(cmd) {
+      legacyCalls++; assert.equal(cmd, 'copy'); assert.ok(selected);
+      if(options.legacy === 'throw') throw new Error('copy unavailable');
+      if(options.legacy === false) return false;
+      writes.push(selected.value); return true;
+    }
   };
-  const navigator = transport === 'clipboard' ? {clipboard: {writeText(text) {writes.push(text); return Promise.resolve();}}} : {};
-  vm.runInNewContext(script, {document, navigator, console: {error: (...args) => errors.push(args)}, setTimeout: fn => timers.push(fn)});
+  const navigator = transport === 'clipboard' ? {clipboard: {writeText(text) {
+    writes.push(text);
+    if(options.modern === 'throw') throw new Error('write failed');
+    if(options.modern === 'reject') return Promise.reject(new Error('write denied'));
+    if(options.modern === 'defer') return new Promise((resolve, reject) => pending.push({resolve, reject}));
+    return Promise.resolve();
+  }}} : {};
+  if(options.malformed) navigator.clipboard = {writeText: true};
+  vm.runInNewContext(script, {document, navigator, console: {error: (...args) => errors.push(args)}, setTimeout: fn => {timers.push(fn); return fn;}, clearTimeout: fn => {fn.cancelled = true;}});
   assert.equal(ready.length, 1);
   ready[0]();
   assert.deepEqual(errors, [], 'canonical self-check remains silent');
-  return {nodes, writes, timers, children,
+  return {nodes, writes, timers, children, pending,
+    get legacyCalls() {return legacyCalls;}, get selected() {return selected;}, get focused() {return focused;},
     input(values) { for (const [id, value] of Object.entries(values)) {nodes.get(id).value = value; nodes.get(id).fire('input');} },
     async copy() {nodes.get('copy-result').fire('click'); await Promise.resolve();},
     text(id) {return nodes.get(id).textContent;},
-    resetToast() {while(timers.length) timers.shift()();}
+    resetToast() {while(timers.length) {const fn=timers.shift(); if(!fn.cancelled) fn();}}
   };
 }
 function valid(ui) {
@@ -107,5 +122,97 @@ for (const [index, path] of paths.entries()) for(const transport of ['clipboard'
       ui.input(inputs); invalid(ui); await ui.copy(); assert.equal(ui.writes.length, 1); assert.equal(ui.nodes.get('copied').classList.contains('show'), false);
     }
     ui.input(good[2][1]); valid(ui); await ui.copy(); assert.equal(ui.writes.length, 2); assert.match(ui.writes[1], /future cost \$250\.00/); assert.match(ui.writes[1], /-300\.0% erosion/);
+  });
+}
+
+// Truthful clipboard feedback: scripted API boundaries, not an OS clipboard.
+const silent = ui => {
+  assert.equal(ui.nodes.get('copied').classList.contains('show'), false, 'no success toast');
+  assert.equal(ui.nodes.get('copy-fail').hidden, true, 'no stale failure');
+  assert.equal(ui.nodes.get('copy-manual').hidden, true, 'no stale manual text');
+  assert.equal(ui.nodes.get('copy-manual-text').value, '');
+};
+const failed = ui => {
+  assert.equal(ui.nodes.get('copied').classList.contains('show'), false, 'failed write cannot claim success');
+  assert.equal(ui.nodes.get('copy-fail').hidden, false);
+  assert.equal(ui.nodes.get('copy-manual').hidden, false);
+  assert.match(ui.nodes.get('copy-manual-text').value, /^Inflation: future cost \$1,343\.92/);
+};
+const flush = async () => {await Promise.resolve(); await Promise.resolve();};
+for(const [index, path] of paths.entries()) {
+  for(const modern of ['reject', 'throw']) test(`${path} / modern ${modern} offers exact manual text without retry`, async () => {
+    const ui=boot(scripts[index], 'clipboard', {modern}); ui.input(good[0][1]); await ui.copy();
+    failed(ui); assert.equal(ui.nodes.get('copy-manual-text').value, ui.writes[0]);
+    assert.equal(ui.legacyCalls, 0); assert.equal(ui.children.length, 0);
+    assert.equal(ui.timers.length, 0, 'failure stays available without a success timer');
+    ui.nodes.get('copy-manual-select').fire('click');
+    assert.equal(ui.selected, ui.nodes.get('copy-manual-text'));
+    assert.equal(ui.focused, ui.nodes.get('copy-manual-text'));
+    assert.equal(ui.nodes.get('amount').value, '1000');
+    assert.equal(ui.nodes.get('rate').value, '3');
+    assert.equal(ui.nodes.get('years').value, '10');
+  });
+  for(const legacy of [false, 'throw']) test(`${path} / legacy ${legacy} reports failure and removes temporary field`, async () => {
+    const ui=boot(scripts[index], 'fallback', {legacy}); ui.input(good[0][1]); await ui.copy();
+    failed(ui); assert.equal(ui.legacyCalls, 1); assert.equal(ui.writes.length, 0);
+    assert.equal(ui.children.length, 0); assert.equal(ui.timers.length, 0);
+  });
+  test(`${path} / non-callable Clipboard API uses legacy once`, async () => {
+    const ui=boot(scripts[index], 'fallback', {malformed:true}); ui.input(good[0][1]); await ui.copy();
+    assert.equal(ui.legacyCalls,1); assert.equal(ui.writes.length,1);
+    assert.equal(ui.nodes.get('copied').classList.contains('show'),true);
+  });
+  for(const mode of ['resolve','reject']) for(const field of ['amount','rate','years']) {
+    test(`${path} / pending ${mode} cannot outlive ${field} edit`, async () => {
+      const ui=boot(scripts[index],'clipboard',{modern:'defer'}); ui.input(good[0][1]); await ui.copy();
+      ui.input({[field]: field==='amount'?'2000':field==='rate'?'4':'20'});
+      ui.pending[0][mode](new Error('late completion')); await flush(); silent(ui);
+      assert.equal(ui.legacyCalls,0); assert.equal(ui.writes.length,1);
+      assert.equal(ui.timers.length,0);
+    });
+    test(`${path} / pending ${mode} cannot outlive invalid ${field}`, async () => {
+      const ui=boot(scripts[index],'clipboard',{modern:'defer'}); ui.input(good[0][1]); await ui.copy();
+      ui.input({[field]:''}); invalid(ui);
+      ui.pending[0][mode](new Error('late completion')); await flush(); silent(ui);
+      await ui.copy(); assert.equal(ui.writes.length,1); assert.equal(ui.pending.length,1);
+    });
+  }
+  for(const modern of ['reject', undefined]) for(const field of ['amount','rate','years']) {
+    test(`${path} / completed ${modern || 'success'} feedback clears on ${field} edit`, async () => {
+      const ui=boot(scripts[index],'clipboard',{modern}); ui.input(good[0][1]); await ui.copy();
+      ui.input({[field]:''}); silent(ui); ui.resetToast(); silent(ui);
+    });
+  }
+  test(`${path} / older failure cannot replace newer successful copy`, async () => {
+    const ui=boot(scripts[index],'clipboard',{modern:'defer'}); ui.input(good[0][1]);
+    await ui.copy(); await ui.copy();
+    ui.pending[1].resolve(); await flush();
+    ui.pending[0].reject(new Error('old failed')); await flush();
+    assert.equal(ui.nodes.get('copied').classList.contains('show'),true);
+    assert.equal(ui.nodes.get('copy-manual').hidden,true);
+    assert.equal(ui.nodes.get('copy-fail').hidden,true); assert.equal(ui.legacyCalls,0);
+  });
+  test(`${path} / older success cannot replace newer failure`, async () => {
+    const ui=boot(scripts[index],'clipboard',{modern:'defer'}); ui.input(good[0][1]);
+    await ui.copy(); await ui.copy();
+    ui.pending[1].reject(new Error('new failed')); await flush(); failed(ui);
+    ui.pending[0].resolve(); await flush(); failed(ui); assert.equal(ui.timers.length,0);
+  });
+  test(`${path} / failure recovery clears manual text before next successful attempt`, async () => {
+    const ui=boot(scripts[index],'clipboard',{modern:'defer'}); ui.input(good[0][1]);
+    await ui.copy(); ui.pending[0].reject(new Error('denied')); await flush(); failed(ui);
+    await ui.copy(); silent(ui); ui.pending[1].resolve(); await flush();
+    assert.equal(ui.nodes.get('copied').classList.contains('show'),true);
+    assert.equal(ui.nodes.get('copy-manual').hidden,true); assert.equal(ui.nodes.get('copy-manual-text').value,'');
+  });
+  test(`${path} / an old timer cannot hide the current success`, async () => {
+    const ui=boot(scripts[index],'clipboard'); ui.input(good[0][1]); await ui.copy();
+    const oldTimer=ui.timers[0]; await ui.copy(); oldTimer();
+    assert.equal(ui.nodes.get('copied').classList.contains('show'),true);
+    ui.resetToast(); assert.equal(ui.nodes.get('copied').classList.contains('show'),false);
+  });
+  test(`${path} / hidden manual-select button cannot select stale output`, () => {
+    const ui=boot(scripts[index],'clipboard'); ui.nodes.get('copy-manual-select').fire('click');
+    assert.equal(ui.selected,null); assert.equal(ui.focused,null);
   });
 }
