@@ -380,11 +380,17 @@ def funnel(groups: list[dict]) -> dict:
 
 # ---------------------------------------------------------------- entrypoints ----
 
-def compute_subsector_confluence() -> dict:
+def compute_subsector_confluence(zh_names: dict[str, str] | None = None) -> dict:
     """The S&P-500 sub-industry confluence desk. Builds an equal-weight index per Finviz
     sub-industry (and an 11-sector rollup), runs the entry gate + regime state machine on
     each, and funnels the double-gated members. Returns the full payload (the build script
-    serialises it + the per-subsector chart files). Empty/degraded on missing inputs."""
+    serialises it + the per-subsector chart files). Empty/degraded on missing inputs.
+
+    `zh_names` is an optional {English name: owned Chinese name} lookup covering BOTH the
+    sub-industry labels and the sector words (the build script loads it from tables the
+    repo already owns — heatmap.js INDUSTRY_ZH + engine.sp500_heatmap.SECTOR_ZH; never an
+    authored translation). Exact string match; a key with no entry stays null. None (the
+    default) leaves label_zh/sector_zh null exactly as before — byte-identical output."""
     groups_map = subsector_scan._industry_map()
     if not groups_map:
         log.warning("subsector_confluence: industry_map missing")
@@ -404,7 +410,8 @@ def compute_subsector_confluence() -> dict:
         if len(set(tickers)) < MIN_MEMBERS:
             n_below_min += 1
             continue
-        g = _safe_score(sub, _slug(sub), sub, sector, tickers, spy, member_cache, kind="subsector")
+        g = _safe_score(sub, _slug(sub), sub, sector, tickers, spy, member_cache, kind="subsector",
+                        label_zh=(zh_names or {}).get(sub), sector_zh=(zh_names or {}).get(sector))
         if g is not None:
             subs.append(g)
         else:
@@ -417,8 +424,11 @@ def compute_subsector_confluence() -> dict:
         sector_members.setdefault(sector, []).extend(tickers)
     sectors: list[dict] = []
     for sector, tickers in sorted(sector_members.items()):
+        # the roll-up rows carry the sector name in English (label == sector), so both
+        # bilingual fields take the owned sector word
         g = _safe_score(sector, "sec-" + _slug(sector), sector, sector, tickers, spy, member_cache,
-                        kind="sector", with_members=False)
+                        kind="sector", with_members=False,
+                        label_zh=(zh_names or {}).get(sector), sector_zh=(zh_names or {}).get(sector))
         if g is not None:
             sectors.append(g)
 

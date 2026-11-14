@@ -436,3 +436,43 @@ def test_subsector_detail_adapts_visible_identity_without_builder_fork():
     assert 'L("Theme Intelligence", "主题情报")' in html
     assert 'L("Sector Intelligence", "板块情报")' in html
     assert 'L("Subsector Intelligence", "子行业情报")' in html
+
+
+def test_subsector_detail_sp_sector_word_follows_the_language_toggle():
+    """Review r1 B2 pin: an S&P sub-industry row (English sector + owned Chinese on both
+    fields) must render the subtitle's sector word through L() — the English leg carries
+    the ENGLISH word, the Chinese leg the Chinese one. Before the fix the pre-fix line
+    printed the Chinese word in both modes."""
+    detail = {
+        "kind": "subsector",
+        "group": {
+            "key": "semiconductors", "label": "Semiconductors", "label_zh": "半导体",
+            "sector": "Technology", "sector_zh": "信息技术", "n_members": 1, "n_priced": 6,
+            "reliability": "med", "as_of": "2026-11-06", "class": "forming",
+            "entry": {
+                "tier": "T3", "buyable": True, "reason": "forward confirmation pending",
+                "ticks": 0, "bars_to_cross": 1.5, "above200": True,
+            },
+            "regime": {
+                "side": "tactical", "label": "English label", "label_zh": "中文标签",
+                "action": "English action", "action_zh": "中文行动",
+                "stoch_3d": 12, "rs_60d": 3.2,
+            },
+            "members": [{
+                "ticker": "AAA", "name_zh": "甲", "price": 123.45,
+                "stock_tier": "T2", "ret_20d": 4.2, "vs_basket": 1.1,
+                "stock_state": "BUY", "stock_buyable": True,
+                "behaves_as": {
+                    "home_id": "other", "home_label": "Other", "home_label_zh": "其他",
+                    "homes": [{"label": "Other", "corr20": 0.88}],
+                },
+            }],
+        },
+    }
+    rendered = _execute_subsector_detail_render(detail)
+
+    subtitle = rendered.split('<div class="id-subtitle">', 1)[1].split("</div>", 1)[0]
+    assert '<span class="l-en">Technology</span><span class="l-zh">信息技术</span>' in subtitle
+    # the title keeps its bilingual suffix by design (both modes, as for basket rows)
+    title = rendered.split('<h1 class="id-title">', 1)[1].split("</h1>", 1)[0]
+    assert "Semiconductors" in title and "半导体" in title

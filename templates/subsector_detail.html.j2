@@ -159,7 +159,7 @@ function render() {
   let h = '<section class="id-hero" id="overview">'
     + '<div class="id-card"><div class="id-eyebrow">' + pageIdentity + '</div>'
     + '<h1 class="id-title">' + esc(g.label) + titleZh + '</h1>'
-    + '<div class="id-subtitle"><span>' + esc(g.sector_zh || g.sector || '—') + '</span><span>·</span><span>' + kindLabel + '</span></div>'
+    + '<div class="id-subtitle"><span>' + L(esc(g.sector || g.sector_zh || '—'), esc(g.sector_zh || g.sector || '—')) + '</span><span>·</span><span>' + kindLabel + '</span></div>'
     + '<div class="id-meta"><span class="pill neutral">' + L('as of','截至') + ' ' + esc(g.as_of || '—') + '</span><span class="pill neutral">' + coverage + ' ' + L('members','成分') + '</span><span class="pill neutral">' + L('equal weight','等权') + '</span>' + thin + '</div></div>'
     + '<div class="id-card id-decision"><div class="id-decision-top"><div><div class="id-decision-label">' + L('Current read','当前研判') + '</div><div class="id-decision-read">' + actionRead + '</div></div><div class="id-badges">' + badge + ' ' + reg + '</div></div>'
     + '<div class="id-decision-grid"><div class="id-mini"><div class="k">' + L('Entry','入场') + '</div><div class="v">' + setupState + '</div></div><div class="id-mini"><div class="k">' + L('Reliability','可信度') + '</div><div class="v">' + confidenceLabel + '</div></div>'

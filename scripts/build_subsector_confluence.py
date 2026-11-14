@@ -35,6 +35,7 @@ sys.path.insert(0, str(_ROOT))
 
 from engine import bar_derive          # the display-grid anchor era + b3 boundaries (DG-R3/R6)  # noqa: E402
 from engine import subsector_confluence as sc  # noqa: E402
+from engine.sp500_zh_names import load_sp500_zh_names  # noqa: E402 — light owned-names loader (review r1 B1)
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -45,6 +46,13 @@ SIG_DIR = "subsector_signals"
 DETAIL_DIR = "subsector"
 BOARD_JSON = "marketdata/subsector_confluence.json"
 BASKET_JSON = "marketdata/basket_confluence.json"
+
+# Chinese names for the S&P desk, carried ONLY from tables the repo already owns
+# (never an authored translation), live in engine/sp500_zh_names.py — review r1 B1 split
+# the loader out so tests pin it without importing this heavy builder. The sub-industry
+# table there is a character-for-character copy of templates/heatmap.js INDUSTRY_ZH
+# (parity-pinned by tests/test_subsector_confluence_zh.py); the sector words are
+# engine.sp500_heatmap.SECTOR_ZH — the SAME table the S&P heatmap renders from.
 
 # China 同花顺 (THS) concept desk — namespaced so it never clobbers the US outputs.
 CN_OHLC_DIR = "subsectorohlc_china"
@@ -153,7 +161,7 @@ def _emit_group_files(site: Path, g: dict, ohlc_dir: str = OHLC_DIR, sig_dir: st
 def _build_payloads(site: Path, generated_utc: str) -> tuple[dict, dict]:
     """Run both engines, emit the per-group chart/signal files, return the two board payloads
     (with the heavy series stripped, ready to serialise)."""
-    subs = sc.compute_subsector_confluence()
+    subs = sc.compute_subsector_confluence(zh_names=load_sp500_zh_names())
     for g in subs.get("subsectors", []) + subs.get("sectors", []):
         _emit_group_files(site, g)
     subs["generated_utc"] = generated_utc
