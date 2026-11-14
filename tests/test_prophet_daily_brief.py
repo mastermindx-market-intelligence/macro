@@ -74,6 +74,16 @@ def _b4(state="ENTRY_OPEN", *, blockers=None, quote_asof="2026-09-30T19:59:00Z")
         ],
         "source_receipts": ["sha256:" + "1" * 64],
     }
+    # The owner withholds comparisons when the quote or basis is unqualified.
+    if set(payload["blockers"]) & {
+        "QUOTE_STALE", "QUOTE_FRESHNESS_UNKNOWN", "SOURCE_HEALTH_FAILED",
+        "SOURCE_HEALTH_UNKNOWN", "CORPORATE_ACTION_BASIS_UNKNOWN",
+        "CORPORATE_ACTION_BASIS_AMBIGUOUS",
+    }:
+        for key in ("distance_to_zone_pct", "risk_to_invalidation_pct",
+                    "move_since_first_trigger_pct", "move_since_anchor_pct", "extension_atr"):
+            payload[key] = None
+        payload["chase_state"] = "unknown"
     material = dict(payload)
     payload["availability_id"] = "pea:" + hashlib.sha256(_canon(material).encode()).hexdigest()
     validate_entry_availability(payload)
@@ -794,3 +804,21 @@ def test_same_clock_incomparable_b4_quote_cannot_authorize_latest_price(field, v
         "state": "UNAVAILABLE", "observed_at": None, "price": None, "basis": None,
     }
     assert b4 == before
+
+
+def test_retained_unqualified_b4_diagnostics_are_refused_without_rewriting_receipt():
+    retained = _b4("UNAVAILABLE_DATA", blockers=["QUOTE_STALE"])
+    qualified = _b4()
+    for key in ("distance_to_zone_pct", "risk_to_invalidation_pct",
+                "move_since_first_trigger_pct", "move_since_anchor_pct", "extension_atr",
+                "chase_state"):
+        retained[key] = qualified[key]
+    material = {key: value for key, value in retained.items() if key != "availability_id"}
+    retained["availability_id"] = "pea:" + hashlib.sha256(_canon(material).encode()).hexdigest()
+    before = copy.deepcopy(retained)
+    out = _compose(entry_availability=retained)
+    assert "ENTRY_AVAILABILITY_INVALID" in out["issues"]
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["owners"]["entry_availability"] is None
+    assert retained == before

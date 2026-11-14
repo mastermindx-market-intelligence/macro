@@ -1,0 +1,48 @@
+{
+  "schema": "catalyst.source_verification.v1",
+  "operation_id": "catalyst-entry-basis-r3-20261019",
+  "base_sha": "ff1b80af0f5efa5982656a59d63a0c623d5cd531",
+  "proof_date_utc": "2026-10-19",
+  "test_command": "/tmp/catalyst-stock-context-r1-venv-20261019/bin/python -m pytest -q tests/test_prophet_strategy_definition.py tests/test_prophet_daily_brief.py --tb=short",
+  "test_process_id": 64293,
+  "test_result": {
+    "passed": 319,
+    "failed": 0,
+    "warnings": 2,
+    "warning_scope": "inherited pytest temporary-directory cleanup"
+  },
+  "new_regression_cases": 37,
+  "diff_check": "PASS",
+  "qualified_output_baseline": {
+    "cases": [
+      "open",
+      "numeric_stop",
+      "chase",
+      "pullback",
+      "approaching",
+      "retracted"
+    ],
+    "comparison": "byte-identical",
+    "combined_canonical_sha256": "0a749f43b91c07d5a6b27a3a7b537645d2c84a1f70069aba60bc3ad57b2d5bf4"
+  },
+  "source_sha256": {
+    "engine/prophet_entry_availability.py": "a753eb41771bddd8f9832a355c87999485a4042a1dea849ccaca39b35ed97b9f",
+    "tests/test_prophet_strategy_definition.py": "22c55c56f9fa17b6d808f40d05d2ed3d33daea798d215c4732c98bbd95344d25",
+    "tests/test_prophet_daily_brief.py": "3a96bdda1004dd56a83d0f70280acacd8945bc2c81203e858b96ec51fc38f1cd"
+  },
+  "review": {
+    "reviewer": "C3 entry_research_architect",
+    "verdict": "ACCEPT",
+    "scope": "bounded source repair and regression design",
+    "tests_executed_by_reviewer": false
+  },
+  "native_admission_established": false,
+  "scientific_qualification_changed": false,
+  "disposition": "DRAFT_HOLD",
+  "source_claim_check": {
+    "command": "python scripts/check_validated_claims.py --scope source",
+    "result": "PASS",
+    "process_id": 13303,
+    "checkout_repair": "restored missing allowlist byte-for-byte from this workspace HEAD"
+  }
+}

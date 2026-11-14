@@ -2728,3 +2728,118 @@ def test_b4_native_reader_typed_failure_on_native_decoder_contract_regression(tm
     out = _b4_reader_run(world)
     assert out["unavailable_reasons"] == ["CANDIDATE_EPISODE_STATE_MALFORMED"]
     assert out["quote_input"] is None and out["availability"] is None
+
+
+# Catalyst R3: comparison qualification crosses the invalidation/diagnostic boundary.
+_B4_COMPARISON_METRICS = (
+    "distance_to_zone_pct", "risk_to_invalidation_pct",
+    "move_since_first_trigger_pct", "move_since_anchor_pct", "extension_atr",
+)
+_B4_COMPARISON_DEFECTS = (
+    ("deterministic_gates", "corporate_action_basis", "UNKNOWN", "CORPORATE_ACTION_BASIS_UNKNOWN"),
+    ("deterministic_gates", "corporate_action_basis", "AMBIGUOUS", "CORPORATE_ACTION_BASIS_AMBIGUOUS"),
+    ("quote", "freshness", "STALE", "QUOTE_STALE"),
+    ("quote", "freshness", "UNKNOWN", "QUOTE_FRESHNESS_UNKNOWN"),
+    ("deterministic_gates", "source_health", "FAIL", "SOURCE_HEALTH_FAILED"),
+    ("deterministic_gates", "source_health", "UNKNOWN", "SOURCE_HEALTH_UNKNOWN"),
+)
+
+
+@pytest.mark.parametrize("section,field,value,reason", _B4_COMPARISON_DEFECTS)
+@pytest.mark.parametrize("price", [39.0, 40.95, 45.0])
+def test_b4_comparison_qualification_withholds_stop_chase_and_metrics(section, field, value, reason, price):
+    facts = _b4_facts()
+    facts[section][field] = value
+    facts["quote"]["price"] = price
+    out = _b4_evaluate(f=facts)
+    assert out["state"] == "UNAVAILABLE_DATA"
+    assert out["entry_open"] is False
+    assert reason in out["blockers"]
+    assert "STRUCTURAL_INVALIDATION_BREACHED" not in out["blockers"]
+    assert "PAST_OWNER_CHASE_BOUNDARY" not in out["blockers"]
+    assert all(out[key] is None for key in _B4_COMPARISON_METRICS)
+    assert out["chase_state"] == "unknown"
+    validate_entry_availability(out)
+
+
+@pytest.mark.parametrize("independent", ["terminal", "retracted", "breached"])
+def test_b4_comparison_qualification_retains_independent_invalidation(independent):
+    facts = _b4_facts()
+    facts["quote"].update(price=39.0, freshness="STALE")
+    facts["deterministic_gates"].update(corporate_action_basis="AMBIGUOUS", source_health="FAIL")
+    projection = _b4_projection()
+    if independent == "terminal":
+        projection = _b4_projection("EXPIRED", "expired")
+        expected = "EPISODE_NOT_ACTIVE:CLOSED"
+    elif independent == "retracted":
+        facts["deterministic_gates"]["event_status"] = "RETRACTED"
+        expected = "EVENT_RETRACTED"
+    else:
+        facts["deterministic_gates"]["structural_invalidation"] = "BREACHED"
+        expected = "STRUCTURAL_INVALIDATION_BREACHED"
+    out = _b4_evaluate(p=projection, f=facts)
+    assert out["state"] == "INVALIDATED"
+    assert {expected, "QUOTE_STALE", "CORPORATE_ACTION_BASIS_AMBIGUOUS",
+            "SOURCE_HEALTH_FAILED"} <= set(out["blockers"])
+    assert all(out[key] is None for key in _B4_COMPARISON_METRICS)
+    assert out["chase_state"] == "unknown"
+
+
+@pytest.mark.parametrize("mutation", ["partial_null", "unknown_with_numbers", "null_with_chase",
+                                     "withheld_without_reason", "qualified_with_reason",
+                                     "boolean", "string", "invalid_chase"])
+def test_b4_comparison_diagnostic_validator_rejects_rehashed_inconsistency(mutation):
+    facts = _b4_facts()
+    if mutation in {"null_with_chase", "withheld_without_reason"}:
+        facts["deterministic_gates"]["corporate_action_basis"] = "UNKNOWN"
+    out = _b4_evaluate(f=facts)
+    if mutation == "partial_null":
+        out["extension_atr"] = None
+    elif mutation == "unknown_with_numbers":
+        out["chase_state"] = "unknown"
+    elif mutation == "null_with_chase":
+        out["chase_state"] = "within_boundary"
+    elif mutation == "withheld_without_reason":
+        out["blockers"] = ["LIQUIDITY_FILLABILITY_UNKNOWN"]
+    elif mutation == "qualified_with_reason":
+        out.update(state="UNAVAILABLE_DATA", entry_open=False, blockers=["QUOTE_STALE"])
+    elif mutation == "boolean":
+        out["extension_atr"] = True
+    elif mutation == "string":
+        out["extension_atr"] = "0.1"
+    else:
+        out["chase_state"] = "inferred_safe"
+    _b4_rehash(out)
+    with pytest.raises(EntryAvailabilityContractError, match="comparison diagnostic"):
+        validate_entry_availability(out)
+
+
+def test_b4_comparison_diagnostic_validator_does_not_exempt_independent_invalidation():
+    facts = _b4_facts()
+    facts["deterministic_gates"]["event_status"] = "RETRACTED"
+    out = _b4_evaluate(f=facts)
+    out["distance_to_zone_pct"] = None
+    _b4_rehash(out)
+    with pytest.raises(EntryAvailabilityContractError, match="comparison diagnostic"):
+        validate_entry_availability(out)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf"), 10 ** 400])
+def test_b4_comparison_diagnostic_rejects_nonfinite_before_digest(value):
+    out = _b4_evaluate()
+    out["extension_atr"] = value
+    # NaN/infinity have no canonical JSON rehash. The diagnostic check must
+    # reject them before reaching the digest path, rather than emit a number.
+    with pytest.raises(EntryAvailabilityContractError, match="comparison diagnostic"):
+        validate_entry_availability(out)
+
+
+@pytest.mark.parametrize("state", ["WAIT_PULLBACK", "RAN_DONT_CHASE"])
+def test_b4_comparison_diagnostic_withholding_cannot_keep_price_dependent_state(state):
+    facts = _b4_facts()
+    facts["deterministic_gates"]["corporate_action_basis"] = "UNKNOWN"
+    out = _b4_evaluate(f=facts)
+    out["state"] = state
+    _b4_rehash(out)
+    with pytest.raises(EntryAvailabilityContractError, match="comparison diagnostic"):
+        validate_entry_availability(out)
