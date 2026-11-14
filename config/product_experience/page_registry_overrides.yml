@@ -1275,49 +1275,184 @@ pages:
     evidence: [terminal/app/login/page.tsx]
 
   macro:macro_monetary:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_monetary.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "command_center"
     why: "Macro & Monetary suite hub — the single entry point to the fourteen workspaces"
 
   macro:macro_liquidity_regime:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_liquidity_regime.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_growth_real_economy:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_growth_real_economy.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_business_activity:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_business_activity.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_labor_markets:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_labor_markets.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_inflation_system:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_inflation_system.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_monetary_policy:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_monetary_policy.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_financial_conditions:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_financial_conditions.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_liquidity_central_banks:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_capital_structure:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_capital_structure.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_housing_real_estate:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_housing_real_estate.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_consumer_payments:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_consumer_payments.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_national_debt_liabilities:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_rates_curves:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_rates_curves.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   macro:macro_trade_flows:
+    known_contracts:
+    - site_access.v1:default_insider
+    - shared_shell:admission_withheld
+    evidence:
+    - config/site_access.yml
+    - terminal/app/(shell)/macro_trade_flows.html/page.tsx
+    note: 'Only Shared Shell iframe admission is withheld for the exact native Terminal counterpart. Standalone Macro
+      access, publication, classification and source ownership remain unchanged. Qualification source: Terminal 662d2f18af07f19515f4a3101a886616a79ab97a;
+      release and consumer proof remain open.'
     archetype: "regime_dashboard"
 
   # Pre-existing stragglers healed in passing (2026-09-04, R2 pages wave):
@@ -1462,3 +1597,680 @@ pages:
     evidence:
       - "terminal/app/(shell)/research-assistant/page.tsx"
     why: "Account-scoped native evidence-to-thesis workspace under Terminal doctrine, like the existing research view; this classification creates no data or access authority."
+
+  # Native Macro integration qualification; release holds remain binding.
+  terminal:macro_monetaryhtml:
+    priority: P0
+    archetype: command_center
+    primary_user_question: What is the macro environment, what changed, and where should I investigate?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today
+    evidence:
+    - terminal/app/(shell)/macro_monetary.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyOverview.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_liquidity_regimehtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Is money becoming easier or harder to access, and why?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=liquidity_regime
+    evidence:
+    - terminal/app/(shell)/macro_liquidity_regime.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_growth_real_economyhtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Is the economy expanding or slowing, and how broad is the change?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=growth_real_economy
+    evidence:
+    - terminal/app/(shell)/macro_growth_real_economy.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_business_activityhtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Are businesses producing, investing and ordering more or less?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=business_activity
+    evidence:
+    - terminal/app/(shell)/macro_business_activity.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_labor_marketshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Is demand for workers strengthening or weakening?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=labor_markets
+    evidence:
+    - terminal/app/(shell)/macro_labor_markets.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_inflation_systemhtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Is inflation cooling or accelerating, and where is pressure persistent?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=inflation_system
+    evidence:
+    - terminal/app/(shell)/macro_inflation_system.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_monetary_policyhtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: How restrictive is monetary policy, and what could change it?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=monetary_policy
+    evidence:
+    - terminal/app/(shell)/macro_monetary_policy.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_financial_conditionshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Are credit and market conditions supporting or constraining the economy?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=financial_conditions
+    evidence:
+    - terminal/app/(shell)/macro_financial_conditions.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_liquidity_central_bankshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: How are central-bank balance sheets and funding flows changing liquidity?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=liquidity_central_banks
+    evidence:
+    - terminal/app/(shell)/macro_liquidity_central_banks.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_capital_structurehtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Where are leverage and refinancing pressures building?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=capital_structure
+    evidence:
+    - terminal/app/(shell)/macro_capital_structure.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_housing_real_estatehtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: How are housing demand, supply and financing conditions changing?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=housing_real_estate
+    evidence:
+    - terminal/app/(shell)/macro_housing_real_estate.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_consumer_paymentshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: Are consumers continuing to spend, and where are they under pressure?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=consumer_payments
+    evidence:
+    - terminal/app/(shell)/macro_consumer_payments.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_national_debt_liabilitieshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: How are public debt, financing needs and interest costs evolving?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=national_debt_liabilities
+    evidence:
+    - terminal/app/(shell)/macro_national_debt_liabilities.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_rates_curveshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: What is the yield curve saying about rates, growth and policy?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=rates_curves
+    evidence:
+    - terminal/app/(shell)/macro_rates_curves.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:macro_trade_flowshtml:
+    priority: P1
+    archetype: regime_dashboard
+    primary_user_question: How are trade flows and cross-border conditions changing?
+    access_shell: signed_in
+    payload_tier: public_shell_premium_payload
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Existing ShellMember and subject-keyed reading scope; guests and unavailable identity do not receive member
+      payload
+    - United States coverage only; unsupported or invalid market selection does not mount the data reader
+    - Display-only accepted publications; each owner retains source clocks, missing-data meaning and model authority
+    data_sources:
+    - /api/shared-shell/today?workspace=trade_flows
+    evidence:
+    - terminal/app/(shell)/macro_trade_flows.html/page.tsx
+    - terminal/components/mounts/MacroEconomyMount.tsx
+    - terminal/components/macro-economy/MacroEconomyRoute.tsx
+    - terminal/components/macro-economy/MacroEconomyReader.tsx
+    - terminal/components/macro-economy/MacroEconomyWorkspace.tsx
+    - terminal/lib/shared-shell/readingProxy.ts
+    note: Native source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a. Product navigation is within Macro;
+      no top-level rail membership is asserted. Backend companion is Macro PR11265 at2d35b0e297af2ec246f6214a68e08735fdebc099.
+      Inventory qualification is not protected catalogue admission, API publication, visual compliance or production
+      acceptance.
+  terminal:brain:
+    priority: P1
+    archetype: chart_workspace
+    primary_user_question: What can I learn about this market from cited evidence and the existing research assistant?
+    access_shell: anonymous
+    payload_tier: public_shell_premium_payload
+    nav_family: app_nav.rail
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Anonymous shell; existing Brain widget owns chat, history, usage and login requirements
+    - Existing market and context owners; no second research or authentication service
+    data_sources:
+    - https://www.mastermind-x.com/mm_brain.js
+    - /api/brain/*
+    evidence:
+    - terminal/app/(shell)/brain/page.tsx
+    - terminal/components/BrainWorkspace.tsx
+    - terminal/components/BrainWidget.tsx
+    - terminal/components/AppNav.tsx
+    - terminal/components/chrome/shared-shell/SharedShellLaunchLinks.tsx
+    note: Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501; anonymous shell is not
+      guest access to private chat/history. Backend companion remains Macro PR11251. Registry qualification grants
+      no deployment or visual acceptance.
+  terminal:market_reference:
+    priority: P1
+    archetype: editorial
+    primary_user_question: What does this market term mean, and how should I interpret it?
+    access_shell: anonymous
+    payload_tier: public
+    design_system:
+      compliant: false
+    bilingual: true
+    themes:
+    - dark
+    - light
+    locales:
+    - en
+    - zh
+    known_contracts:
+    - Bundled public editorial registry; no private member payload read
+    - Existing /reference.html alias retains the middleware route owner
+    data_sources:
+    - terminal/lib/market-reference/registry.generated.json
+    evidence:
+    - terminal/app/(shell)/market-reference/page.tsx
+    - terminal/app/(shell)/market-reference/MarketReference.tsx
+    - terminal/lib/market-reference/registry.generated.json
+    - terminal/lib/sharedShellMegaMenu.ts
+    - terminal/proxy.ts
+    note: Inherited source at Terminal 662d2f18af07f19515f4a3101a886616a79ab97a from PR1501. Tools-menu destination,
+      not a top-level rail item. No macro:reference exact-path migration is declared because the existing alias has
+      a different target path. Registry qualification is not production or visual acceptance.
+
+  # Protected native discovery retained by the Macro integration. Source-backed metadata only.
+  terminal:cycle_intelligence:
+    archetype: "chart_workspace"
+    access_shell: "anonymous"
+    payload_tier: "public_shell_premium_payload"
+    themes:
+      - "dark"
+      - "light"
+    primary_user_question: "Which published cycle and band am I inspecting, where are its historical turns, and how current is its source?"
+    data_sources:
+      - "/api/sector-intelligence?source=flagship_cycles"
+      - "/cycledata/cycle_engine.json"
+    known_contracts:
+      - "Anonymous presentation shell; verified subject-scoped reading is required before the cycle payload is requested"
+      - "The publication owns the available cycles and bands; cycle, band and turn selections remain independent of workspace browsing market"
+    evidence:
+      - "terminal/app/(shell)/cycle-intelligence/page.tsx"
+      - "terminal/components/workspaces/CycleIntelligence.tsx"
+      - "terminal/lib/flagshipCycle.ts"
+      - "terminal/app/api/sector-intelligence/route.ts"
+      - "terminal/lib/sharedShellMarket.ts"
+      - "terminal/components/chrome/AppShell.tsx"
+      - "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx"
+    note: "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+
+  terminal:macro_weather:
+    archetype: "chart_workspace"
+    access_shell: "anonymous"
+    payload_tier: "public"
+    themes:
+      - "dark"
+      - "light"
+    primary_user_question: "What do the published regional and domain readings say, and what changed?"
+    data_sources:
+      - "/macro_context.html"
+    known_contracts:
+      - "Reads the bounded published Macro Weather document through the existing server reader; no member credential is forwarded"
+      - "The publication supplies the available domains; explicit domain selection is independent of workspace browsing market"
+    evidence:
+      - "terminal/app/(shell)/macro-weather/page.tsx"
+      - "terminal/components/workspaces/MacroWeather.tsx"
+      - "terminal/lib/macroWeather.server.ts"
+      - "terminal/lib/macroWeather.ts"
+      - "terminal/lib/sharedShellMarket.ts"
+      - "terminal/components/chrome/AppShell.tsx"
+      - "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx"
+    note: "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+
+  terminal:wti_live_path:
+    archetype: "chart_workspace"
+    access_shell: "anonymous"
+    payload_tier: "public_shell_premium_payload"
+    themes:
+      - "dark"
+      - "light"
+    primary_user_question: "Which condition currently blocks the WTI oil-to-duration path, and which source reading explains it?"
+    data_sources:
+      - "/api/ontology/explorer/v1?chain=oil_inflation_duration_derate"
+    known_contracts:
+      - "Anonymous presentation shell; the existing authenticated ontology reader retains sign-in, restricted, limited and unavailable outcomes"
+      - "Fixed oil_inflation_duration_derate chain and four-leg sequence; revision and selected leg remain independent of workspace browsing market"
+    evidence:
+      - "terminal/app/(shell)/wti-live-path/page.tsx"
+      - "terminal/components/workspaces/WtiLivePath.tsx"
+      - "terminal/lib/wtiPath.server.ts"
+      - "terminal/lib/wtiPath.ts"
+      - "terminal/lib/sharedShellMarket.ts"
+      - "terminal/components/chrome/AppShell.tsx"
+      - "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx"
+    note: "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+
+  terminal:market_alerts:
+    archetype: "chart_workspace"
+    access_shell: "signed_in"
+    payload_tier: "public_shell_premium_payload"
+    themes:
+      - "dark"
+      - "light"
+    primary_user_question: "Which published market alerts need investigation, and which source evidence supports them?"
+    data_sources:
+      - "/api/shared-shell/market-desks/alerts"
+      - "/factordata/alerts_triage.json"
+    known_contracts:
+      - "Existing SignupGate and verified subject-scoped reader; the upstream owner retains payload-access decisions"
+      - "United States coverage only; unsupported or invalid workspace market does not mount the desk data reader"
+    evidence:
+      - "terminal/app/(shell)/market-alerts/page.tsx"
+      - "terminal/components/market-desks/MarketDeskPage.tsx"
+      - "terminal/components/market-desks/MarketDesk.tsx"
+      - "terminal/app/api/shared-shell/market-desks/[desk]/route.ts"
+      - "terminal/lib/sharedShellMarket.ts"
+      - "terminal/components/chrome/AppShell.tsx"
+      - "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx"
+    note: "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+
+  terminal:news_intelligence:
+    archetype: "chart_workspace"
+    access_shell: "signed_in"
+    payload_tier: "public_shell_premium_payload"
+    themes:
+      - "dark"
+      - "light"
+    primary_user_question: "Which published news developments matter, and what source evidence should I inspect?"
+    data_sources:
+      - "/api/shared-shell/market-desks/news"
+      - "/live/intelligence.json"
+    known_contracts:
+      - "Existing SignupGate and verified subject-scoped reader; the upstream owner retains payload-access decisions"
+      - "United States coverage only; unsupported or invalid workspace market does not mount the desk data reader"
+    evidence:
+      - "terminal/app/(shell)/news-intelligence/page.tsx"
+      - "terminal/components/market-desks/MarketDeskPage.tsx"
+      - "terminal/components/market-desks/MarketDesk.tsx"
+      - "terminal/app/api/shared-shell/market-desks/[desk]/route.ts"
+      - "terminal/lib/sharedShellMarket.ts"
+      - "terminal/components/chrome/AppShell.tsx"
+      - "terminal/components/chrome/shared-shell/SharedShellPresentation.tsx"
+    note: "Exact native source at Terminal 86931925e2e5c71af3c25e4fc062d461cbc4c9f3. Existing payload access remains with its owner; classification does not grant a plan entitlement, assign a formal owner, assert design compliance, or prove deployed acceptance."
+
