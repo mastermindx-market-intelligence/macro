@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "UNF-BULL-20261021",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.5,
@@ -14,15 +14,15 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
     "dist_to_stop_r": -0.245,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 42.2,
-    "p1": -0.8301,
-    "p2": -0.4151,
+    "horizon_pct_used": 53.3,
+    "p1": -0.8303,
+    "p2": -0.4152,
     "p3": null,
     "move_r": -1.245,
     "mfe_r": 0.235,
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 7.290008544921875,
-  "_mae": -38.600006103515625,
+  "_mae": -38.61000061035156,
   "_max_p1": 0.15677437731014784,
   "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.4222,
+  "days_elapsed": 24,
+  "tau": 0.5333,
   "closed": true,
   "outcome": "INVALIDATED"
 }

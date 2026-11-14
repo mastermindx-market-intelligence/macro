@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-11T08:01:47.967394+00:00",
+  "generated_utc": "2026-11-14T16:53:51.673404+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -749,11 +749,12 @@
       ],
       "n_actors": 6,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.85,
+      "alt_score": 6,
+      "alt_weighted": 2.2,
       "alt_channels": [
         "affiliation",
         "github_momentum",
+        "hf_model_momentum",
         "patent_cluster",
         "retail_buzz",
         "trump"
@@ -798,12 +799,13 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 5,
+      "alt_weighted": 1.7,
       "alt_channels": [
         "affiliation",
-        "github_momentum",
         "lobbying",
+        "material_8k",
+        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -846,11 +848,10 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.75,
+      "alt_score": 4,
+      "alt_weighted": 1.5,
       "alt_channels": [
         "affiliation",
-        "cnbc_pick",
         "lobbying",
         "special_situation",
         "trump"
@@ -895,13 +896,14 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 5,
+      "alt_weighted": 1.8,
       "alt_channels": [
         "13f_add",
         "affiliation",
         "lobbying",
-        "patent_cluster"
+        "patent_cluster",
+        "special_situation"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1048,6 +1050,34 @@
       }
     },
     {
+      "ticker": "IEP",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
+    },
+    {
       "ticker": "GOOGL",
       "actors": [
         {
@@ -1100,10 +1130,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 0.8,
+      "alt_score": 4,
+      "alt_weighted": 1.25,
       "alt_channels": [
         "affiliation",
+        "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -1231,12 +1262,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 8,
-      "alt_weighted": 3.65,
+      "alt_score": 7,
+      "alt_weighted": 3.3,
       "alt_channels": [
         "13f_add",
         "affiliation",
-        "analyst_upgrade_cluster",
         "congress_buy",
         "gov_grant_accel",
         "insider_mspr",
@@ -1262,41 +1292,17 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.0,
+      "alt_score": 3,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "stocktwits_bull",
         "trump"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
         "title": "Institution",
         "shares": 421013782
-      }
-    },
-    {
-      "ticker": "AXP",
-      "actors": [
-        {
-          "actor": "Warren Buffett",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.05,
-      "alt_channels": [
-        "affiliation",
-        "material_8k"
-      ],
-      "top_holder": {
-        "owner": "BERKSHIRE HATHAWAY INC",
-        "title": "Institution",
-        "shares": 151610700
       }
     },
     {
@@ -1312,10 +1318,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 3,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "congress_buy",
         "special_situation"
       ],
       "top_holder": null
@@ -1333,13 +1340,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 2,
+      "alt_weighted": 0.9,
       "alt_channels": [
         "affiliation",
-        "material_8k",
-        "patent_cluster",
-        "stocktwits_bull"
+        "patent_cluster"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1523,33 +1528,6 @@
       }
     },
     {
-      "ticker": "IEP",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
-    },
-    {
       "ticker": "ASML",
       "actors": [
         {
@@ -1635,6 +1613,30 @@
         "affiliation"
       ],
       "top_holder": null
+    },
+    {
+      "ticker": "AXP",
+      "actors": [
+        {
+          "actor": "Warren Buffett",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": false,
+      "alt_score": 1,
+      "alt_weighted": 0.5,
+      "alt_channels": [
+        "affiliation"
+      ],
+      "top_holder": {
+        "owner": "BERKSHIRE HATHAWAY INC",
+        "title": "Institution",
+        "shares": 151610700
+      }
     },
     {
       "ticker": "COIN",

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FIBK-BULL-20260918",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 45.7,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 35.9,
-    "pace": 20.7,
-    "retention": 68.2,
-    "overlay": 33.0
+    "progress": 43.5,
+    "pace": 14.0,
+    "retention": 87.9,
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.641,
-    "dist_to_t1_r": 0.859,
-    "dist_to_t2_r": 2.359,
-    "horizon_pct_used": 115.6,
-    "p1": 0.4272,
-    "p2": 0.2136,
+    "dist_to_stop_r": 1.826,
+    "dist_to_t1_r": 0.674,
+    "dist_to_t2_r": 2.174,
+    "horizon_pct_used": 126.7,
+    "p1": 0.5507,
+    "p2": 0.2753,
     "p3": null,
-    "move_r": 0.641,
+    "move_r": 0.826,
     "mfe_r": 0.94,
     "mae_r": -4.244
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-30",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 52,
-  "tau": 1.1556,
+  "days_elapsed": 57,
+  "tau": 1.2667,
   "closed": true,
   "outcome": "T1_HIT"
 }

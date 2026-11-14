@@ -1,100 +1,63 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-11-10",
-  "generated_utc": "2026-11-11T08:13:28Z",
+  "as_of": "2026-11-13",
+  "generated_utc": "2026-11-14T13:05:12Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
     "n": 4,
-    "n_eff": 1.74,
+    "n_eff": 1.76,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 4 candidates \u2248 1.74 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 4 candidates \u2248 1.76 independent bets."
   },
   "same_thesis_groups": [
     {
       "members": [
-        "AVA",
-        "PFG",
-        "REXR"
+        "AAPL",
+        "HXL",
+        "POWL",
+        "TKR"
       ],
-      "size": 3,
-      "basis": "factor-cosine",
-      "label": "shared-membership"
+      "size": 4,
+      "basis": "membership-jaccard",
+      "label": "Industrials"
     }
   ],
-  "earnings_coverage_frac": 0.0,
+  "earnings_coverage_frac": 0.25,
   "by_ticker": {
-    "PFG": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9768,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "REXR",
-          "combined": 0.9768,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.9768,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "AVA",
-          "combined": 0.6366,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.6366,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "TKR",
-          "combined": 0.553,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.553,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        }
-      ],
-      "earnings_leg": {
-        "next_date": null,
-        "same_week_peers": [],
-        "has_data": false
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as REXR \u2014 shared factor profile (similarity 98%).",
-      "why_zh": "\u4e0e REXR \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
     "TKR": {
-      "verdict": "partial",
-      "max_similarity": 0.5693,
+      "verdict": "duplicate",
+      "max_similarity": 1.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "REXR",
-          "combined": 0.5693,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.5693,
+          "ticker": "HXL",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.9465,
           "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
+          "shared_groups": [
+            "sector:Industrials"
+          ],
           "same_earnings_week": null
         },
         {
-          "ticker": "PFG",
-          "combined": 0.553,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.553,
+          "ticker": "POWL",
+          "combined": 0.743,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.743,
           "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
+          "shared_groups": [
+            "sector:Industrials"
+          ],
           "same_earnings_week": null
         },
         {
-          "ticker": "AVA",
-          "combined": 0.1829,
+          "ticker": "AAPL",
+          "combined": 0.5275,
           "membership_jaccard": 0.0,
-          "factor_cosine": 0.1829,
+          "factor_cosine": 0.5275,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": null
@@ -106,37 +69,129 @@
         "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with REXR \u2014 partially overlapping exposure (similarity 57%).",
-      "why_zh": "\u4e0e REXR \u90e8\u5206\u91cd\u53e0 \u2014 \u90e8\u5206\u91cd\u53e0\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 57%\uff09\u3002"
+      "why_en": "Same bet as HXL \u2014 Industrials (similarity 100%).",
+      "why_zh": "\u4e0e HXL \u62bc\u6ce8\u76f8\u540c \u2014 Industrials\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
     },
-    "REXR": {
+    "HXL": {
       "verdict": "duplicate",
-      "max_similarity": 0.9768,
+      "max_similarity": 1.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "PFG",
-          "combined": 0.9768,
+          "ticker": "TKR",
+          "combined": 1.0,
+          "membership_jaccard": 1.0,
+          "factor_cosine": 0.9465,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "AAPL",
+          "combined": 0.7493,
           "membership_jaccard": 0.0,
-          "factor_cosine": 0.9768,
+          "factor_cosine": 0.7493,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": null
         },
         {
-          "ticker": "AVA",
-          "combined": 0.765,
+          "ticker": "POWL",
+          "combined": 0.5067,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.5067,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": null
+        }
+      ],
+      "earnings_leg": {
+        "next_date": null,
+        "same_week_peers": [],
+        "has_data": false
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as TKR \u2014 Industrials (similarity 100%).",
+      "why_zh": "\u4e0e TKR \u62bc\u6ce8\u76f8\u540c \u2014 Industrials\uff08\u76f8\u4f3c\u5ea6 100%\uff09\u3002"
+    },
+    "POWL": {
+      "verdict": "duplicate",
+      "max_similarity": 0.743,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "TKR",
+          "combined": 0.743,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.743,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "HXL",
+          "combined": 0.5067,
+          "membership_jaccard": 0.3333,
+          "factor_cosine": 0.5067,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [
+            "sector:Industrials"
+          ],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "AAPL",
+          "combined": 0.0,
           "membership_jaccard": 0.0,
-          "factor_cosine": 0.765,
+          "factor_cosine": 0.0,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-16",
+        "same_week_peers": [],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Same bet as TKR \u2014 Industrials (similarity 74%).",
+      "why_zh": "\u4e0e TKR \u62bc\u6ce8\u76f8\u540c \u2014 Industrials\uff08\u76f8\u4f3c\u5ea6 74%\uff09\u3002"
+    },
+    "AAPL": {
+      "verdict": "duplicate",
+      "max_similarity": 0.7493,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "HXL",
+          "combined": 0.7493,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.7493,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": null
         },
         {
           "ticker": "TKR",
-          "combined": 0.5693,
+          "combined": 0.5275,
           "membership_jaccard": 0.0,
-          "factor_cosine": 0.5693,
+          "factor_cosine": 0.5275,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "POWL",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.0,
           "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": null
@@ -148,92 +203,56 @@
         "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as PFG \u2014 shared factor profile (similarity 98%).",
-      "why_zh": "\u4e0e PFG \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
-    "AVA": {
-      "verdict": "duplicate",
-      "max_similarity": 0.765,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "REXR",
-          "combined": 0.765,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.765,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "PFG",
-          "combined": 0.6366,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.6366,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "TKR",
-          "combined": 0.1829,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.1829,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": null
-        }
-      ],
-      "earnings_leg": {
-        "next_date": null,
-        "same_week_peers": [],
-        "has_data": false
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as REXR \u2014 shared factor profile (similarity 76%).",
-      "why_zh": "\u4e0e REXR \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 76%\uff09\u3002"
+      "why_en": "Same bet as HXL \u2014 shared factor profile (similarity 75%).",
+      "why_zh": "\u4e0e HXL \u62bc\u6ce8\u76f8\u540c \u2014 \u5171\u540c\u56e0\u5b50\u655e\u53e3\uff08\u76f8\u4f3c\u5ea6 75%\uff09\u3002"
     }
   },
   "pair_basis": {
-    "PFG__TKR": {
+    "TKR__HXL": {
+      "membership_jaccard": 1.0,
+      "factor_cosine": 0.9465,
+      "combined": 1.0,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Industrials"
+      ]
+    },
+    "TKR__POWL": {
+      "membership_jaccard": 0.3333,
+      "factor_cosine": 0.743,
+      "combined": 0.743,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Industrials"
+      ]
+    },
+    "TKR__AAPL": {
       "membership_jaccard": 0.0,
-      "factor_cosine": 0.553,
-      "combined": 0.553,
+      "factor_cosine": 0.5275,
+      "combined": 0.5275,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "PFG__REXR": {
+    "HXL__POWL": {
+      "membership_jaccard": 0.3333,
+      "factor_cosine": 0.5067,
+      "combined": 0.5067,
+      "factor_basis": "high-tier-factors:4of4",
+      "shared_groups": [
+        "sector:Industrials"
+      ]
+    },
+    "HXL__AAPL": {
       "membership_jaccard": 0.0,
-      "factor_cosine": 0.9768,
-      "combined": 0.9768,
+      "factor_cosine": 0.7493,
+      "combined": 0.7493,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "PFG__AVA": {
+    "POWL__AAPL": {
       "membership_jaccard": 0.0,
-      "factor_cosine": 0.6366,
-      "combined": 0.6366,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "TKR__REXR": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.5693,
-      "combined": 0.5693,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "TKR__AVA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.1829,
-      "combined": 0.1829,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "REXR__AVA": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.765,
-      "combined": 0.765,
+      "factor_cosine": 0.0,
+      "combined": 0.0,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     }
@@ -246,8 +265,8 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 1.5,
-    "setting_up": 1.3
+    "entry_open": 1.8,
+    "setting_up": null
   },
   "source_passport": {
     "factor_betas": {
@@ -258,7 +277,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-11-10"
+      "as_of": "2026-11-13"
     },
     "membership": {
       "path": "data/baskets/membership.json",
