@@ -138,3 +138,131 @@ def test_carry_read_if_cache() -> None:
     from scripts.build_commodities import _carry_read
     c = _carry_read("oil")
     assert c is not None and c["state"] in ("backwardation", "contango")
+
+
+# --- Carry history admission regression (#34, 2026-11-12) ------------------
+def _staggered_carry_contracts(far_start: str = "2026-10-01"):
+    """The far contract is observed later but is never one of the nearest two."""
+    idx = pd.bdate_range("2026-08-03", "2026-11-11")
+    return [
+        (2026, 11, pd.Series(np.linspace(84.0, 80.0, len(idx)), index=idx)),
+        (2026, 12, pd.Series(82.0, index=idx)),
+        (2027, 1, pd.Series(79.0, index=idx[idx >= far_start])),
+    ]
+
+
+def test_carry_late_unused_contract_preserves_history() -> None:
+    # All six inputs have the same end. The existing end/cap contract is unchanged.
+    for start in ("2026-08-04", "2026-08-17", "2026-09-01",
+                  "2026-09-15", "2026-10-01", "2026-10-15"):
+        contracts = _staggered_carry_contracts(start)
+        expected = _reconstruct(contracts[:2], 200)
+        actual = _reconstruct(contracts, 200)
+        assert len(expected) == 73
+        pd.testing.assert_frame_equal(actual, expected)
+
+
+def test_carry_history_cap_preserves_eligible_tail() -> None:
+    contracts = _staggered_carry_contracts()
+    for cap in (1, 20, 30, 50, 200):
+        expected = _reconstruct(contracts[:2], cap)
+        pd.testing.assert_frame_equal(_reconstruct(contracts, cap), expected)
+        assert len(expected) == min(cap, 73)
+
+
+def test_carry_contract_order_does_not_set_history_start() -> None:
+    import itertools
+    contracts = _staggered_carry_contracts()
+    expected = _reconstruct(contracts[:2], 200)
+    for order in itertools.permutations(contracts):
+        pd.testing.assert_frame_equal(_reconstruct(list(order), 200), expected)
+
+
+def test_carry_does_not_emit_before_second_contract_exists() -> None:
+    contracts = _staggered_carry_contracts()
+    # With only one observed contract before October, no earlier pair exists.
+    contracts[1] = (2026, 12, contracts[1][2].loc["2026-10-01":])
+    result = _reconstruct(contracts, 200)
+    assert result.index.min() == pd.Timestamp("2026-10-01")
+    assert len(result) == 30
+    # Nonoverlapping contracts never create a fabricated pair.
+    separated = [contracts[0], (2027, 1, pd.Series(
+        79.0, index=pd.bdate_range("2026-12-01", periods=25)))]
+    assert _reconstruct(separated, 200).empty
+
+
+def test_carry_retains_roll_price_and_month_gap_rules() -> None:
+    idx = pd.bdate_range("2026-08-03", periods=30)
+    front = pd.Series(-5.0, index=idx)  # legitimate negative futures quote
+    second = pd.Series(80.0, index=idx)
+    second.iloc[4:6] = [0.0, -1.0]  # existing nonpositive-second refusal
+    pair = [(2026, 11, front), (2027, 1, second)]
+    far = (2027, 3, pd.Series(90.0, index=idx[10:]))
+    actual = _reconstruct(pair + [far], 200)
+    expected = _reconstruct(pair, 200)
+    pd.testing.assert_frame_equal(actual, expected)
+    assert len(actual) == 28
+    assert (actual["gap_months"] == 2).all()
+    assert (actual["front"] == -5.0).all()
+    assert np.allclose(actual["roll_yield_ann"], (-5.0 / 80.0 - 1.0) * 6.0)
+
+
+def test_carry_date_pair_oracle() -> None:
+    """Independent explicit date walk; use observed quotes, not the source loop."""
+    rng = np.random.default_rng(341112)
+    dates = pd.bdate_range("2026-03-02", periods=90)
+    for _ in range(80):
+        contracts = []
+        for month in range(6, 11):
+            start = int(rng.integers(0, 25))
+            end = int(rng.integers(50, 91))
+            quotes = pd.Series(rng.uniform(50, 150, end - start),
+                               index=dates[start:end])
+            contracts.append((2026, month, quotes))
+        cap = int(rng.integers(1, 121))
+        # Walk the independently known fixture calendar, then apply the same
+        # documented calendar-tail cap before selecting observable quote pairs.
+        observed_dates = {t for _, _, s in contracts for t in s.index}
+        scan = [t for t in dates if min(observed_dates) <= t <= max(observed_dates)][-cap:]
+        rows = []
+        for t in scan:
+            observed = [(year * 12 + month, float(s.loc[t]))
+                        for year, month, s in contracts if t in s.index]
+            if len(observed) < 2:
+                continue
+            (d1, p1), (d2, p2) = sorted(observed)[:2]
+            rows.append({"date": t, "front": p1, "second": p2,
+                         "roll_yield_ann": (p1 / p2 - 1.0) * 12.0 / (d2 - d1),
+                         "gap_months": d2 - d1})
+        expected = pd.DataFrame(rows).set_index("date") if rows else pd.DataFrame()
+        pd.testing.assert_frame_equal(_reconstruct(contracts, cap), expected)
+
+
+def test_carry_force_fetch_and_weekly_cache_preserve_history(tmp_path, monkeypatch) -> None:
+    """Real writer/cache code, synthetic quote fetches, no provider/network access."""
+    from collectors import commodity_carry
+
+    contracts = _staggered_carry_contracts()
+    spec = [("near", 2026, 11), ("second", 2026, 12), ("far", 2027, 1)]
+    quotes = {name: c[2] for (name, _, _), c in zip(spec, contracts)}
+    expected = _reconstruct(contracts[:2], 200)
+    cdir = tmp_path / "commodity_carry"
+    cdir.mkdir()
+    expected.to_parquet(cdir / "oil.parquet")
+    monkeypatch.setattr(commodity_carry, "_cfg", lambda: {
+        "contracts": {"oil": ["CL", ".NYM"]}, "months_back": 2,
+        "months_fwd": 3, "history_d": 200})
+    monkeypatch.setattr(commodity_carry.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(commodity_carry, "_enumerate_symbols", lambda *args: spec)
+    monkeypatch.setattr(commodity_carry, "_fetch_contract", quotes.__getitem__)
+
+    built = commodity_carry.fetch_carry(force=True)["oil"]
+    pd.testing.assert_frame_equal(built, expected)
+    pd.testing.assert_frame_equal(pd.read_parquet(cdir / "oil.parquet"), expected)
+
+    def forbid_fetch(*args):
+        raise AssertionError("fresh weekly cache must not contact the provider")
+
+    monkeypatch.setattr(commodity_carry, "_fetch_contract", forbid_fetch)
+    cached = commodity_carry.fetch_carry()["oil"]
+    pd.testing.assert_frame_equal(cached, expected)
