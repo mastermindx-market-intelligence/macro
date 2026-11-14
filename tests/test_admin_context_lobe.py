@@ -14,6 +14,22 @@ import pytest
 from admin import context_lobe
 
 
+def test_candidate_evidence_preserves_observations_and_excludes_shared_guidance():
+    shared = {"kernel": {"fdr_cleared": False}, "allowed_behavior": "annotate_only"}
+    observed = {
+        "analyst": {"num_analysts": 0}, "seasonality": {"in_window": False},
+        "graph_conflicts": [{"reason": "conflicting claims"}],
+    }
+    candidates = context_lobe._candidate_block({"candidate_context": {
+        "OBS": {**shared, **observed, "bottom": {}},
+        "SHARED": {**shared, "options": {}, "graph_conflicts": []},
+    }})
+    by_ticker = {row["ticker"]: row for row in candidates}
+    assert by_ticker["OBS"]["evidence_blocks"] == observed
+    assert by_ticker["SHARED"]["evidence_blocks"] == {}
+    assert by_ticker["SHARED"]["kernel_fdr_cleared"] is False
+
+
 def test_panel_smoke():
     """panel() never raises and always returns ok=True with the top-level shape."""
     d = context_lobe.panel()

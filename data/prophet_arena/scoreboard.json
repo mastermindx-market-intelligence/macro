@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-14",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,8 +71,18 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [],
-    "live_plan_ids": [],
+    "c0_plan_ids": [
+      "NTRS-BULL-20261106",
+      "UAMY-BULL-20261106",
+      "VSH-BULL-20261111",
+      "VZ-BULL-20261106"
+    ],
+    "live_plan_ids": [
+      "NTRS-BULL-20261106",
+      "UAMY-BULL-20261106",
+      "VSH-BULL-20261111",
+      "VZ-BULL-20261106"
+    ],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -85,21 +95,21 @@
       "label": "the live rule, mirrored",
       "label_zh": "\u5b9e\u76d8\u89c4\u5219\u955c\u50cf",
       "grain": "selection",
-      "n_open": 433,
-      "n_closed": 330,
-      "win_rate_pct": 48.9,
-      "avg_pct": -0.81,
-      "median_pct": -0.99,
-      "expired_share_pct": 30.0,
+      "n_open": 447,
+      "n_closed": 345,
+      "win_rate_pct": 49.5,
+      "avg_pct": -0.4,
+      "median_pct": -0.03,
+      "expired_share_pct": 30.1,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 99,
-        "INVALIDATED": 90,
+        "EXPIRED": 104,
+        "INVALIDATED": 94,
         "NO_ENTRY": 60,
-        "T1_HIT": 75,
+        "T1_HIT": 81,
         "T2_HIT": 6
       },
-      "nights_recorded": 39,
+      "nights_recorded": 41,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true
     },
@@ -108,29 +118,29 @@
       "label": "earlier entries first",
       "label_zh": "\u4f18\u5148\u8f83\u65e9\u5165\u573a",
       "grain": "selection",
-      "n_open": 82,
-      "n_closed": 88,
-      "win_rate_pct": 42.2,
-      "avg_pct": -3.07,
-      "median_pct": -2.42,
-      "expired_share_pct": 37.5,
+      "n_open": 85,
+      "n_closed": 91,
+      "win_rate_pct": 43.3,
+      "avg_pct": -2.52,
+      "median_pct": -2.32,
+      "expired_share_pct": 37.4,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 33,
-        "INVALIDATED": 20,
+        "EXPIRED": 34,
+        "INVALIDATED": 21,
         "NO_ENTRY": 24,
-        "T1_HIT": 11
+        "T1_HIT": 12
       },
-      "nights_recorded": 36,
+      "nights_recorded": 38,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 20,
-        "n_policy": 64,
-        "n_champion": 215,
-        "avg_pct": -3.07,
-        "champion_avg_pct": -2.26,
-        "diff_pp": -0.81
+        "shared_nights": 22,
+        "n_policy": 67,
+        "n_champion": 230,
+        "avg_pct": -2.52,
+        "champion_avg_pct": -1.53,
+        "diff_pp": -0.99
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -139,30 +149,30 @@
       "label": "washout turns added",
       "label_zh": "\u7eb3\u5165\u8d85\u8dcc\u8f6c\u6298",
       "grain": "selection",
-      "n_open": 79,
-      "n_closed": 142,
-      "win_rate_pct": 40.5,
-      "avg_pct": -3.99,
-      "median_pct": -4.54,
-      "expired_share_pct": 38.0,
+      "n_open": 81,
+      "n_closed": 146,
+      "win_rate_pct": 41.7,
+      "avg_pct": -3.49,
+      "median_pct": -4.43,
+      "expired_share_pct": 37.7,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 54,
-        "INVALIDATED": 32,
+        "EXPIRED": 55,
+        "INVALIDATED": 33,
         "NO_ENTRY": 26,
-        "T1_HIT": 29,
+        "T1_HIT": 31,
         "T2_HIT": 1
       },
-      "nights_recorded": 36,
+      "nights_recorded": 38,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 28,
-        "n_policy": 115,
-        "n_champion": 259,
-        "avg_pct": -4.12,
-        "champion_avg_pct": -1.0,
-        "diff_pp": -3.11
+        "shared_nights": 31,
+        "n_policy": 120,
+        "n_champion": 278,
+        "avg_pct": -3.49,
+        "champion_avg_pct": -0.45,
+        "diff_pp": -3.03
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -171,29 +181,29 @@
       "label": "book size follows dispersion",
       "label_zh": "\u6301\u4ed3\u6570\u91cf\u968f\u79bb\u6563\u5ea6",
       "grain": "selection",
-      "n_open": 50,
-      "n_closed": 71,
-      "win_rate_pct": 40.4,
-      "avg_pct": -3.45,
-      "median_pct": -3.65,
-      "expired_share_pct": 43.7,
+      "n_open": 54,
+      "n_closed": 73,
+      "win_rate_pct": 42.6,
+      "avg_pct": -2.73,
+      "median_pct": -2.79,
+      "expired_share_pct": 43.8,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 31,
+        "EXPIRED": 32,
         "INVALIDATED": 14,
         "NO_ENTRY": 19,
-        "T1_HIT": 7
+        "T1_HIT": 8
       },
-      "nights_recorded": 34,
+      "nights_recorded": 36,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 19,
-        "n_policy": 52,
-        "n_champion": 210,
-        "avg_pct": -3.45,
-        "champion_avg_pct": -2.49,
-        "diff_pp": -0.96
+        "shared_nights": 20,
+        "n_policy": 54,
+        "n_champion": 218,
+        "avg_pct": -2.73,
+        "champion_avg_pct": -2.02,
+        "diff_pp": -0.71
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -202,30 +212,30 @@
       "label": "weekly-aligned only",
       "label_zh": "\u4ec5\u9650\u5468\u7ebf\u540c\u5411",
       "grain": "selection",
-      "n_open": 46,
-      "n_closed": 52,
-      "win_rate_pct": 42.9,
-      "avg_pct": -2.6,
-      "median_pct": -1.53,
-      "expired_share_pct": 40.4,
+      "n_open": 47,
+      "n_closed": 53,
+      "win_rate_pct": 41.9,
+      "avg_pct": -2.98,
+      "median_pct": -1.56,
+      "expired_share_pct": 39.6,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
         "EXPIRED": 21,
-        "INVALIDATED": 16,
+        "INVALIDATED": 17,
         "NO_ENTRY": 10,
         "T1_HIT": 3,
         "T2_HIT": 2
       },
-      "nights_recorded": 31,
+      "nights_recorded": 32,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 21,
-        "n_policy": 42,
-        "n_champion": 211,
-        "avg_pct": -2.6,
-        "champion_avg_pct": -1.99,
-        "diff_pp": -0.6
+        "shared_nights": 22,
+        "n_policy": 43,
+        "n_champion": 220,
+        "avg_pct": -2.98,
+        "champion_avg_pct": -1.9,
+        "diff_pp": -1.08
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -234,32 +244,32 @@
       "label": "cut dead money at 21 sessions",
       "label_zh": "21\u4e2a\u4ea4\u6613\u65e5\u6b62\u635f\u79bb\u573a",
       "grain": "closure",
-      "n_open": 411,
-      "n_closed": 352,
-      "win_rate_pct": 38.2,
-      "avg_pct": -0.6,
-      "median_pct": -1.57,
+      "n_open": 422,
+      "n_closed": 370,
+      "win_rate_pct": 38.3,
+      "avg_pct": -0.36,
+      "median_pct": -1.5,
       "expired_share_pct": 6.5,
-      "time_stopped_share_pct": 35.2,
+      "time_stopped_share_pct": 35.4,
       "outcomes": {
-        "EXPIRED": 23,
-        "INVALIDATED": 66,
+        "EXPIRED": 24,
+        "INVALIDATED": 70,
         "NO_ENTRY": 59,
-        "T1_HIT": 75,
+        "T1_HIT": 81,
         "T2_HIT": 5,
-        "time_stopped": 124
+        "time_stopped": 131
       },
-      "nights_recorded": 39,
+      "nights_recorded": 41,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "n_paired": 270,
-        "avg_diff_pp": 0.61,
+        "n_paired": 285,
+        "avg_diff_pp": 0.53,
         "median_diff_pp": 0.0,
-        "better": 63,
-        "worse": 37,
-        "same": 170,
-        "unpaired_plans": 82
+        "better": 64,
+        "worse": 40,
+        "same": 181,
+        "unpaired_plans": 85
       },
       "vs_champion_basis": "per-plan paired \u2014 same plan ids and entries as the live rule, different exits"
     },
@@ -268,29 +278,29 @@
       "label": "almost-ready entries admitted",
       "label_zh": "\u7eb3\u5165\u300c\u5373\u5c06\u4e70\u5165\u300d\u6863",
       "grain": "selection",
-      "n_open": 82,
-      "n_closed": 91,
-      "win_rate_pct": 41.8,
-      "avg_pct": -2.88,
+      "n_open": 84,
+      "n_closed": 95,
+      "win_rate_pct": 42.3,
+      "avg_pct": -2.48,
       "median_pct": -2.32,
-      "expired_share_pct": 36.3,
+      "expired_share_pct": 35.8,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 33,
-        "INVALIDATED": 21,
+        "EXPIRED": 34,
+        "INVALIDATED": 23,
         "NO_ENTRY": 24,
-        "T1_HIT": 13
+        "T1_HIT": 14
       },
-      "nights_recorded": 36,
+      "nights_recorded": 38,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 21,
-        "n_policy": 67,
-        "n_champion": 220,
-        "avg_pct": -2.88,
-        "champion_avg_pct": -2.16,
-        "diff_pp": -0.72
+        "shared_nights": 23,
+        "n_policy": 71,
+        "n_champion": 235,
+        "avg_pct": -2.48,
+        "champion_avg_pct": -1.46,
+        "diff_pp": -1.02
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     }
@@ -311,10 +321,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-11-09",
-    "standouts_as_of": "2026-11-06",
-    "price_through": "2026-11-06",
-    "observed_at_utc": "2026-11-09T06:41:34.144069+00:00",
+    "asof": "2026-11-14",
+    "standouts_as_of": "2026-11-13",
+    "price_through": "2026-11-13",
+    "observed_at_utc": "2026-11-14T08:24:53.605284+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -323,220 +333,184 @@
     "dispersion": {
       "mode": "lean_in",
       "state": "lean_in",
-      "artifact_as_of": "2026-11-09",
+      "artifact_as_of": "2026-11-14",
       "stale_sessions": 0,
       "cap": 12,
       "path": "data/dispersion/regime.json"
     },
     "door_w": {
       "ok": true,
-      "candidates": 31,
-      "rows": 30,
-      "skipped_no_prices": 1,
-      "skipped_tickers": [
-        "XLU"
-      ],
+      "candidates": 20,
+      "rows": 20,
+      "skipped_no_prices": 0,
+      "skipped_tickers": [],
       "reason": null,
       "door_w_disclosure": {
         "source": "baskets/membership.json",
         "ok": true,
         "universe_n": 717,
         "reason": null,
-        "evaluated": 713,
-        "skipped": 4,
-        "state_turn": 60,
-        "fresh": 32,
-        "aligned": 31,
-        "asof_max": "2026-11-06",
+        "evaluated": 714,
+        "skipped": 3,
+        "state_turn": 63,
+        "fresh": 20,
+        "aligned": 20,
+        "asof_max": "2026-11-13",
         "asof_mismatch": 0,
         "fresh_weeks_max": 2,
         "align_grids": [
           "2B",
           "3B"
         ],
-        "runtime_s": 19.8
+        "runtime_s": 25.3
       }
     },
     "policies": {
       "C0_champion_mirror": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
+          "BHF",
+          "KGS",
+          "CEG",
+          "DCI",
+          "CHRW",
+          "CORZ",
+          "TRMK",
+          "NTRS",
+          "MS",
           "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
-          "BABA",
-          "GFI",
-          "HXL",
-          "CNMD",
-          "ARE",
-          "VSEC",
-          "ENPH",
-          "BKNG",
-          "UHS",
-          "BNY",
-          "IART",
-          "AGI",
-          "RUSHA",
-          "MOS",
-          "BKSY",
-          "RGLD",
-          "DEA",
-          "TMDX",
-          "SF",
-          "STEP",
+          "DLR",
+          "SPXC",
+          "CW",
+          "INCY",
+          "JBSS",
           "SPHR",
-          "STC",
-          "XYL",
-          "GRBK",
-          "AIR",
-          "NTES",
-          "BNL",
-          "QFIN",
-          "FUN",
-          "NLY",
-          "ARR",
-          "ALB",
-          "ACAD"
+          "ATEN",
+          "JPM",
+          "ON",
+          "CRK",
+          "NRG",
+          "VC",
+          "GS",
+          "SHEN",
+          "OKLO",
+          "FOXF",
+          "VRT",
+          "VTOL",
+          "VKTX",
+          "UAMY",
+          "RBLX"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "NTRS-BULL-20261106",
+          "UAMY-BULL-20261106",
+          "VSH-BULL-20261111",
+          "VZ-BULL-20261106"
+        ],
+        "n_plans": 4,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 41,
-          "skipped_duplicate_id": 25,
-          "skipped_open_plan": 5,
-          "skipped_clock_provenance": 11,
+          "offered": 39,
+          "skipped_duplicate_id": 23,
+          "skipped_open_plan": 6,
+          "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
+              "ticker": "KGS",
+              "id": "KGS-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'",
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
+              "ticker": "DCI",
+              "id": "DCI-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "HXL",
-              "id": "HXL-BULL-20261106",
+              "ticker": "CORZ",
+              "id": "CORZ-BULL-20261106",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'"
               ]
             },
             {
-              "ticker": "ARE",
-              "id": "ARE-BULL-20261106",
+              "ticker": "SPXC",
+              "id": "SPXC-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
-              ]
-            },
-            {
-              "ticker": "VSEC",
-              "id": "VSEC-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "BKNG",
-              "id": "BKNG-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "IART",
-              "id": "IART-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "STEP",
-              "id": "STEP-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "STC",
-              "id": "STC-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 11
+          "originated": 4,
+          "validation_failed": 6
         },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 4,
+        "ledger_closures_appended": 1
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
-          "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
-          "BABA",
-          "GFI",
-          "HXL",
-          "CNMD"
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
+          "BHF",
+          "KGS",
+          "CEG",
+          "DCI"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "VSH-BULL-20261111"
+        ],
+        "n_plans": 1,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -546,87 +520,80 @@
           "offered": 12,
           "skipped_duplicate_id": 5,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 5,
+          "skipped_clock_provenance": 4,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
+              "ticker": "KGS",
+              "id": "KGS-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'",
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
+              "ticker": "DCI",
+              "id": "DCI-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "HXL",
-              "id": "HXL-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 5
+          "originated": 1,
+          "validation_failed": 4
         },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 1,
+        "ledger_closures_appended": 1
       },
       "C3_door_w_union": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
-          "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
           "CASY",
-          "LHX",
           "TPR",
+          "EIX",
           "O"
         ],
         "plan_ids": [
-          "LHX-BULL-20261106",
-          "TPR-BULL-20261106"
+          "TPR-BULL-20261113",
+          "VSH-BULL-20261111"
         ],
         "n_plans": 2,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": 12,
           "cap_applied": true,
-          "door_w_offered": 30,
-          "door_w_already_in_champion_pool": 0,
+          "door_w_offered": 20,
+          "door_w_already_in_champion_pool": 1,
           "door_w_reserved_slots": 4,
           "door_w_selected": 4,
           "champion_rows_displaced": 4
@@ -634,73 +601,59 @@
         "origination": {
           "offered": 12,
           "skipped_duplicate_id": 3,
-          "skipped_open_plan": 3,
-          "skipped_clock_provenance": 4,
+          "skipped_open_plan": 5,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
-              ]
-            },
-            {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
           "originated": 2,
-          "validation_failed": 4
+          "validation_failed": 2
         },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 2,
+        "ledger_closures_appended": 2
       },
       "C4_dispersion_cap": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
-          "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
-          "BABA",
-          "GFI",
-          "HXL",
-          "CNMD"
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
+          "BHF",
+          "KGS",
+          "CEG",
+          "DCI"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "VSH-BULL-20261111"
+        ],
+        "n_plans": 1,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": 12,
           "cap_applied": true
         },
@@ -708,292 +661,243 @@
           "offered": 12,
           "skipped_duplicate_id": 5,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 5,
+          "skipped_clock_provenance": 4,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
+              "ticker": "KGS",
+              "id": "KGS-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'",
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
+              "ticker": "DCI",
+              "id": "DCI-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "HXL",
-              "id": "HXL-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 5
+          "originated": 1,
+          "validation_failed": 4
         },
-        "ledger_rows_appended": 0,
+        "ledger_rows_appended": 1,
         "ledger_closures_appended": 0
       },
       "C5_align2_gate": {
         "selected_tickers": [
-          "UHS",
-          "STEP",
-          "NTES"
+          "ENOV",
+          "TLN",
+          "CW",
+          "CRK"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
-            "admitted": 3,
+            "admitted": 4,
             "admitted_via_fallback": 2,
-            "excluded_misaligned": 38,
+            "excluded_misaligned": 35,
             "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
-          "passed_gate": 3,
-          "excluded": 38
+          "passed_gate": 4,
+          "excluded": 35
         },
         "origination": {
-          "offered": 3,
-          "skipped_duplicate_id": 1,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 1,
+          "offered": 4,
+          "skipped_duplicate_id": 4,
+          "skipped_open_plan": 0,
+          "skipped_clock_provenance": 0,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
-          "validation_failures": [
-            {
-              "ticker": "STEP",
-              "id": "STEP-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            }
-          ],
+          "validation_failures": [],
           "originated": 0,
-          "validation_failed": 1
+          "validation_failed": 0
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
+          "BHF",
+          "KGS",
+          "CEG",
+          "DCI",
+          "CHRW",
+          "CORZ",
+          "TRMK",
+          "NTRS",
+          "MS",
           "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
-          "BABA",
-          "GFI",
-          "HXL",
-          "CNMD",
-          "ARE",
-          "VSEC",
-          "ENPH",
-          "BKNG",
-          "UHS",
-          "BNY",
-          "IART",
-          "AGI",
-          "RUSHA",
-          "MOS",
-          "BKSY",
-          "RGLD",
-          "DEA",
-          "TMDX",
-          "SF",
-          "STEP",
+          "DLR",
+          "SPXC",
+          "CW",
+          "INCY",
+          "JBSS",
           "SPHR",
-          "STC",
-          "XYL",
-          "GRBK",
-          "AIR",
-          "NTES",
-          "BNL",
-          "QFIN",
-          "FUN",
-          "NLY",
-          "ARR",
-          "ALB",
-          "ACAD"
+          "ATEN",
+          "JPM",
+          "ON",
+          "CRK",
+          "NRG",
+          "VC",
+          "GS",
+          "SHEN",
+          "OKLO",
+          "FOXF",
+          "VRT",
+          "VTOL",
+          "VKTX",
+          "UAMY",
+          "RBLX"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "NTRS-BULL-20261106",
+          "UAMY-BULL-20261106",
+          "VSH-BULL-20261111",
+          "VZ-BULL-20261106"
+        ],
+        "n_plans": 4,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 41,
-          "skipped_duplicate_id": 25,
-          "skipped_open_plan": 5,
-          "skipped_clock_provenance": 11,
+          "offered": 39,
+          "skipped_duplicate_id": 23,
+          "skipped_open_plan": 6,
+          "skipped_clock_provenance": 6,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
+              "ticker": "KGS",
+              "id": "KGS-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'",
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
+              "ticker": "DCI",
+              "id": "DCI-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "HXL",
-              "id": "HXL-BULL-20261106",
+              "ticker": "CORZ",
+              "id": "CORZ-BULL-20261106",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'"
               ]
             },
             {
-              "ticker": "ARE",
-              "id": "ARE-BULL-20261106",
+              "ticker": "SPXC",
+              "id": "SPXC-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
-              ]
-            },
-            {
-              "ticker": "VSEC",
-              "id": "VSEC-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "BKNG",
-              "id": "BKNG-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "IART",
-              "id": "IART-BULL-20261103",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "STEP",
-              "id": "STEP-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "STC",
-              "id": "STC-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 11
+          "originated": 4,
+          "validation_failed": 6
         },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 4,
+        "ledger_closures_appended": 1
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
-          "AMZN",
-          "EQIX",
-          "RIVN",
-          "BIDU",
-          "VZ",
-          "NEM",
-          "FNV",
-          "ITT",
-          "BABA",
-          "GFI",
-          "HXL",
-          "CNMD"
+          "ENOV",
+          "AM",
+          "CVS",
+          "TLN",
+          "KNX",
+          "VSH",
+          "BG",
+          "DTM",
+          "BHF",
+          "KGS",
+          "CEG",
+          "DCI"
         ],
-        "plan_ids": [],
-        "n_plans": 0,
+        "plan_ids": [
+          "VSH-BULL-20261111"
+        ],
+        "n_plans": 1,
         "selection": {
-          "admitted": 41,
+          "admitted": 39,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 41,
+          "admitted_with_widening": 39,
           "buy_soon_in_board": 0,
           "buy_soon_admitted_by_widening": 0,
           "buy_soon_selected": 0,
@@ -1003,60 +907,53 @@
           "offered": 12,
           "skipped_duplicate_id": 5,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 5,
+          "skipped_clock_provenance": 4,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-11-09",
-          "price_basis_date": "2026-11-06",
+          "recorded_at": "2026-11-14",
+          "price_basis_date": "2026-11-13",
           "clock_errors": [],
           "validation_failures": [
             {
-              "ticker": "AMZN",
-              "id": "AMZN-BULL-20261106",
+              "ticker": "KNX",
+              "id": "KNX-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "RIVN",
-              "id": "RIVN-BULL-20261106",
+              "ticker": "BG",
+              "id": "BG-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-04'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "VZ",
-              "id": "VZ-BULL-20261106",
+              "ticker": "KGS",
+              "id": "KGS-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "tier_observed_date '2026-11-12' does not match price_basis_date '2026-11-13'",
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             },
             {
-              "ticker": "ITT",
-              "id": "ITT-BULL-20261106",
+              "ticker": "DCI",
+              "id": "DCI-BULL-20261111",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
-              ]
-            },
-            {
-              "ticker": "HXL",
-              "id": "HXL-BULL-20261106",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-11-06' postdates tier_event_date '2026-11-02'"
+                "formation_date '2026-11-11' postdates tier_event_date '2026-11-10'"
               ]
             }
           ],
-          "originated": 0,
-          "validation_failed": 5
+          "originated": 1,
+          "validation_failed": 4
         },
-        "ledger_rows_appended": 0,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 1,
+        "ledger_closures_appended": 1
       }
     }
   },

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMKR-BULL-20260917",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 12.4,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 39.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.975,
+    "dist_to_stop_r": -0.603,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 115.6,
-    "p1": -1.3168,
-    "p2": -0.6584,
+    "horizon_pct_used": 126.7,
+    "p1": -1.0689,
+    "p2": -0.5345,
     "p3": null,
-    "move_r": -1.975,
+    "move_r": -1.603,
     "mfe_r": 0.646,
     "mae_r": -2.238
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 52,
-  "tau": 1.1556,
+  "days_elapsed": 57,
+  "tau": 1.2667,
   "closed": true,
   "outcome": "INVALIDATED"
 }

@@ -87,7 +87,7 @@ def _normalize_doc_type(raw: str) -> str:
 _FIELDS = [
     "document_number", "title", "abstract", "publication_date",
     "type", "significant", "action", "agencies",
-    "comments_close_on", "regulation_id_numbers", "docket_ids",
+    "comments_close_on", "effective_on", "regulation_id_numbers", "docket_ids",
     "cfr_references",
 ]
 
@@ -360,6 +360,7 @@ class FederalRegisterAdapter(Adapter):
                         "action": action[:200],
                         "rin": rin,
                         "comments_close_on": comments_close,
+                        "effective_on": d.get("effective_on"),
                         "agency_slug": next(iter(doc_agency_slugs), ""),
                         "cfr_ref": cfr_ref,
                         "_first_seen": first_seen_ts if is_new else None,
@@ -415,3 +416,4 @@ class FederalRegisterAdapter(Adapter):
             index=[pd.Timestamp(today)],
         )
         return {"federal_register__ingest": ingest}
+

@@ -416,19 +416,13 @@ def item_evidence(item: dict, *, plan_charts: dict | None = None) -> dict[str, A
       3. `plan_charts[source.chart_id].marker_price` — the chart's marked
          price, when `data/marketing/content_plan.json` is readable and the
          chart id back-joins. Same tier as (2): a fact, not an objective.
-      4. `source.fact_packet` numbers, when a lane stamps one (the breaking
-         lane does; no planned lane does today).
+      4. `source.fact_packet` numbers, when a lane stamps one. Fresh planned
+         writer packets carry the deterministic producer facts and writer
+         license; legacy planned rows and breaking packets may differ.
 
-    NOTE WHAT IS ABSENT. `numbers_whitelist` — the full list of numbers the
-    writer was licensed to type — is built in `copywriter.build_context`, lives
-    in the generation-time ctx, and is stamped onto NOTHING. The value-gate
-    metadata on real items says so in its own words: `numbers_whitelist_
-    supplied: false`. That is why this desk does not hard-fail an ordinary
-    number that fails to trace: with no whitelist on the item, a strict
-    every-token rule would quarantine the entire planned queue for a defect of
-    the EMIT path rather than of the copy. It hard-fails LEVELS (which have
-    real evidence when the item has any) and HOLDS everything else it cannot
-    verify. See `check_number_sanity`.
+    Historical planned rows had no writer whitelist in their source. Those
+    rows stay unverifiable rather than being retroactively blessed. Only a
+    bounded, same-day writer packet gets the stricter every-token check below.
     """
     src = item.get("source")
     src = src if isinstance(src, dict) else {}
@@ -463,6 +457,12 @@ def item_evidence(item: dict, *, plan_charts: dict | None = None) -> dict[str, A
                 sources.append(f"plan_charts[{chart_id}].marker_price")
 
     packet = src.get("fact_packet")
+    writer_packet = False
+    if isinstance(packet, dict) and packet.get("producer") == "content_studio.writer_context.v1":
+        from engine.marketing.fact_evidence import valid_writer_packet
+        writer_packet = valid_writer_packet(packet, as_of=str(item.get("as_of") or ""))
+        if not writer_packet:
+            packet = None  # an old/malformed packet is never numeric evidence
     if isinstance(packet, dict):
         for n in (packet.get("numbers_whitelist") or []):
             whitelist.append(str(n))
@@ -470,6 +470,7 @@ def item_evidence(item: dict, *, plan_charts: dict | None = None) -> dict[str, A
             sources.append("source.fact_packet.numbers_whitelist")
 
     out["numbers_whitelist"] = whitelist
+    out["writer_packet_verified"] = writer_packet
 
     # The price the post is measured against. Item evidence first (an entry or
     # a close is what the plan actually believed), then the chart marker, then
@@ -549,12 +550,9 @@ def check_number_sanity(item: dict, ev: dict, *,
         verdict for macro / education / event / insider items, whose `source`
         (measured, see `_LEVEL_SOURCE_KEYS`) carries no numbers whatsoever.
 
-    A number that is neither a level nor in a slot is NOT hard-failed even when
-    it fails to trace. `numbers_whitelist` is never stamped onto an outbox item
-    (`value_gate.components.numbers_whitelist_supplied: false` on real rows), so
-    a strict every-token rule would quarantine the whole planned queue for a
-    gap in the EMIT path. When the item has no evidence those numbers land in
-    the UNVERIFIABLE branch, which is where an unprovable claim belongs.
+    Legacy numeric copy without a writer packet retains the original behavior.
+    For newly emitted, dated writer packets, ordinary numeric claims must also
+    be licensed: one real source fact must not launder an unrelated model number.
     """
     from engine.marketing.copywriter import (  # noqa: PLC0415
         invented_level_violations, price_slot_tokens,
@@ -590,6 +588,15 @@ def check_number_sanity(item: dict, ev: dict, *,
                 f"numbers",
             )
         return Check("number_sanity", PASS, "no numbers to trace")
+
+    # A deterministic FACT is not a forward target. For planned posts without
+    # an actual setup/receipt level, a sourced historical high, yield, or
+    # percent cannot become "toward X" just because the writer saw that value.
+    if ev.get("writer_packet_verified") and not ev.get("has_levels") and targets:
+        return Check(
+            "invented_level", FAIL,
+            "post names a forward target without a sourced plan or receipt level",
+        )
 
     viols = invented_level_violations(text, ev)
     if viols:
@@ -632,6 +639,33 @@ def check_number_sanity(item: dict, ev: dict, *,
             f"levels or packet numbers ({', '.join(sorted(allowed)) or 'none'}); "
             f"evidence from {', '.join(ev.get('sources') or []) or 'nothing'}",
         )
+
+    if ev.get("writer_packet_verified"):
+        from engine.marketing.copywriter import _extract_number_tokens  # noqa: PLC0415
+        # The writer's legacy number regex sees "221,000" as "221" and "000".
+        # Capture the complete comma run before validating it: protecting only
+        # "221,000" inside "221,000,00" would discard an unlicensed suffix.
+        # Sentence punctuation and separate range endpoints remain outside it.
+        comma_numbers = re.compile(
+            r"(?<![A-Za-z0-9_])[+\-]*\.?\d[\d.,]*,[\d.,]*\d[%xXkKmMbB]*(?![A-Za-z0-9_]|[.,]\d)"
+        )
+        grouped_number = re.compile(
+            r"[+\-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:%|[xXkKmMbB])?\Z"
+        )
+        grouping_normalized = {
+            n.replace(",", "") for n in allowed
+            if "," not in n or grouped_number.fullmatch(n)
+        }
+        quoted_numbers = comma_numbers.findall(text)
+        leftover = comma_numbers.sub(" ", text)
+        for tok in quoted_numbers + _extract_number_tokens(leftover):
+            malformed = "," in tok and not grouped_number.fullmatch(tok)
+            if malformed or (tok not in allowed and tok.replace(",", "") not in grouping_normalized):
+                return Check(
+                    "number_sanity", UNVERIFIABLE,
+                    f"number '{tok}' does not occur in the original writer fact "
+                    "license or the item's structured levels",
+                )
 
     return Check("number_sanity", PASS,
                  f"traced to {', '.join(ev.get('sources') or []) or 'no levels'}")

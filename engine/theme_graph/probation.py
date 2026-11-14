@@ -1165,6 +1165,22 @@ def append_activity_proposals(rows: list[dict], path: str | Path | None = None) 
     return {"appended": appended, "unchanged": unchanged, "path": str(path)}
 
 
+def _receipt_exposure(receipt_bytes: bytes):
+    """The optional closed exposure object a curator restates; None when absent.
+
+    Receipt bytes are hashed, never stored, and historically may be any opaque
+    bytes; a receipt that is not a JSON object simply carries no exposure. The
+    bridge later re-reads and schema-validates the same bytes.
+    """
+    try:
+        receipt = json.loads(receipt_bytes)
+    except (ValueError, UnicodeError):
+        return None
+    if not isinstance(receipt, dict):
+        return None
+    return receipt.get("exposure")
+
+
 def curate_activity_proposal(proposed_row: dict, *, curator: str, decision: str,
                              decided_at: str, receipt_bytes: bytes) -> dict:
     """Carry one PROPOSED row to its terminal status under a named curator act.
@@ -1173,6 +1189,11 @@ def curate_activity_proposal(proposed_row: dict, *, curator: str, decision: str,
     caps are carried unchanged, and the curator name is always caller-supplied.
     A decision before the evidence's knowledge clock is refused by the row
     validator, never silently accepted.
+
+    An ACCEPT of a proposal whose evidence carries ``exposure`` must restate the
+    same exposure role and profit_driver in the receipt; a receipt exposure on a
+    proposal whose evidence has none is refused. Both refuse with
+    ``CURATION_EXPOSURE_MISMATCH``.
     """
     status = proposed_row.get("status") if isinstance(proposed_row, dict) else None
     if status != "PROPOSED":
@@ -1181,6 +1202,20 @@ def curate_activity_proposal(proposed_row: dict, *, curator: str, decision: str,
     if not receipt_bytes:
         raise ActivityProposalRefusal(
             "CURATION_RECEIPT_MISSING", "receipt bytes are required")
+    evidence_exposure = (proposed_row.get("evidence") or {}).get("exposure")
+    receipt_exposure = _receipt_exposure(receipt_bytes)
+    if evidence_exposure is not None:
+        if decision == "ACCEPT" and (
+                not isinstance(receipt_exposure, dict)
+                or receipt_exposure.get("role") != evidence_exposure.get("role")
+                or receipt_exposure.get("profit_driver") != evidence_exposure.get("profit_driver")):
+            raise ActivityProposalRefusal(
+                "CURATION_EXPOSURE_MISMATCH",
+                "an ACCEPT must restate the proposed exposure role and profit_driver")
+    elif receipt_exposure is not None:
+        raise ActivityProposalRefusal(
+            "CURATION_EXPOSURE_MISMATCH",
+            "receipt carries exposure but the proposal evidence has none")
     out = copy.deepcopy(proposed_row)
     out["status"] = "RATIFIED" if decision == "ACCEPT" else "REJECTED"
     out["curation"] = {

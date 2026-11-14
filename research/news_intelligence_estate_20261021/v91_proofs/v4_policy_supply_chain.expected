@@ -1,6 +1,7 @@
-V4 P1 PARTIAL
+V4 P1 PROVEN
 V4 P2 PARTIAL
 V4 P3 ABSENT
 V4 P4 PARTIAL
 V4 P5 PARTIAL
-V4 SUMMARY proven=0 partial=4 absent=1 human_gate=0 rung=COMMITTED_ARTIFACT
+V4 SUMMARY proven=1 partial=3 absent=1 human_gate=0 rung=COMMITTED_ARTIFACT
+

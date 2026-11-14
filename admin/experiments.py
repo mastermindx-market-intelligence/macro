@@ -36,7 +36,8 @@ _RENDER_KEYS = (
 # Keep in step with engine/experiments_registry._DONE — the panel re-derives `ready` with
 # THIS set, so a status the engine considers concluded (gate_open, no_go) but the panel
 # does not re-flags daily forever (2026-08-26 audit: the no_go cortex hypotheses).
-_DONE = {"validated", "proven", "gate_open", "no_go"}
+_ARCHIVED = {"closed", "closed_no_go", "complete", "shipped"}
+_DONE = {"validated", "proven", "gate_open", "no_go"} | _ARCHIVED
 # kinds that never auto-mature a result on their come-back date (a re-check prompt, not a result)
 _NO_AUTO_READY = {"parked_research"}
 
@@ -65,9 +66,16 @@ def _decorate(e: dict) -> dict:
     """Add live days_until + a 'ready' flag (come-back date reached, or the registry already
     computed results are in) so the timing stays current even if the JSON is a few days old."""
     du = _days_until(e.get("come_back_on"))
+    status = e.get("status") or ""
+    if status in _ARCHIVED:
+        # Old manifests mixed elapsed dates and live verdicts in one boolean.
+        # A seed-only archived state without a reader verdict has no new result.
+        reason = e.get("ready_reason")
+        reader_ready = reason == "reader_result" or (reason is None and e.get("state_live") is not False)
+        return {**e, "days_until": None, "ready": bool(e.get("ready")) and reader_ready}
     ready = bool(e.get("ready")) or (
         du is not None and du <= 0
-        and (e.get("status") or "") not in _DONE
+        and status not in _DONE
         and (e.get("kind") or "") not in _NO_AUTO_READY)
     return {**e, "days_until": du, "ready": ready}
 

@@ -173,3 +173,196 @@ def test_card_chrome_is_bilingual_and_accessible():
     assert 'id="tt-detail"' in html and 'aria-live="polite"' in html
     assert 'aria-controls="tt-detail"' in html
     assert "Watch instead" in html and "可替代观察" in html
+
+
+def test_return_selection_identifies_rendered_occurrence_and_restores_actual_script(tmp_path):
+    """Run the real card script across fresh documents, including a shared micro."""
+    import subprocess
+    import pandas as pd
+    from bs4 import BeautifulSoup
+
+    nodes, edges = _fixtures()
+    edges = pd.concat([edges, _mk_edges(
+        {"src": "theme:t2", "dst": "theme:micro1", "edge_id": "multi-parent"},
+    )], ignore_index=True)
+    (tmp_path / "site/basket").mkdir(parents=True)
+    (tmp_path / "site/basket/grid.html").write_text("retained proxy fixture")
+    html = render(REPO, ctx=compose(tmp_path, nodes=nodes, edges=edges))
+    soup = BeautifulSoup(html, "html.parser")
+    chips = [dict(c.attrs) for c in soup.select(".tt-chip[data-node]")]
+    shared = [c for c in chips if c["data-node"] == "theme:micro1"]
+    assert len(shared) == 2
+    assert len({c.get("data-tt-selection") for c in shared}) == 2
+    script = next(x.string for x in soup.find_all("script")
+                  if x.string and "Micro-theme detail card (U2)" in x.string)
+    assert any(i["href"] == "basket/grid.html"
+               for i in _blob(html)["theme:micro1"]["instruments"])
+    packet = {"script": script, "chips": chips, "data": _blob(html),
+              "selected": chips.index(shared[1])}
+    result = subprocess.run(["node", "-e", r"""
+const vm = require('node:vm'), assert = require('node:assert/strict');
+const input = JSON.parse(require('node:fs').readFileSync(0, 'utf8'));
+function boot(url, ambiguous=false, data=input.data, mobile=false) {
+  let active=null, replacements=0, scrollY=0, scrolls=0;
+  const viewport=mobile?780:836;
+  const body=new Set();
+  class El {
+    constructor(attrs={}) { this.attrs={...attrs}; this.children=[]; this.hidden=false; this.parentElement=null;
+      this.classList={add(){},remove(){}}; }
+    getAttribute(k){return this.attrs[k] ?? null;} setAttribute(k,v){this.attrs[k]=String(v);}
+    appendChild(c){this.children.push(c); c.parentElement=this;return c;}
+    get firstChild(){return this.children[0]||null;} removeChild(c){this.children.splice(this.children.indexOf(c),1);}
+    focus(){active=this;}
+    getBoundingClientRect(){
+      if(this===card)return {top:mobile?420:96,bottom:mobile?viewport:410};
+      // Model the actual desktop opening reflow and the phone's sheet overlap.
+      const top=(mobile?680:body.has('tt-detail-open')?1007:680)-scrollY;
+      return {top,bottom:top+24,height:24};
+    }
+    closest(q){if(q==='details')return this.tagName==='DETAILS'?this:this.parentElement?.closest(q)||null;
+      if(q==='[data-close]')return this.attrs['data-close']!==undefined?this:null;
+      return this.attrs['data-node']?this:null;}
+  }
+  const chips=input.chips.map(attrs=>{const c=new El(attrs), p=new El();p.tagName='DETAILS';p.open=false;c.parentElement=p;return c;});
+  if(ambiguous)chips.push(new El({...chips[input.selected].attrs}));
+  const fields={}; for(const k of ['name','paths','breadth','list','note','close'])fields['.tt-detail-'+k]=new El();
+  fields['.tt-detail-close'].attrs['data-close']='';
+  const card=new El();card.hidden=true;card.querySelector=q=>fields[q];
+  card.querySelectorAll=q=>[new El(),new El()];
+  const devents={},wevents={},location={href:url};
+  const document={body:{classList:{add:k=>body.add(k),remove:k=>body.delete(k)}},getElementById:id=>id==='tt-detail-data'?{textContent:JSON.stringify(data)}:card,
+    querySelectorAll:q=>chips,createElement:()=>new El(),createTextNode:t=>({textContent:t}),
+    addEventListener:(k,f)=>{(devents[k]??=[]).push(f);}};
+  const state={preserved:true};
+  const history={state,replaceState(s,t,u){assert.equal(s,state);location.href=new URL(u,location.href).href;replacements++;},
+    pushState(){throw Error('selection must not create a history entry');}};
+  const window={location,history,innerWidth:mobile?390:1440,innerHeight:viewport,
+    matchMedia:q=>({matches:mobile&&q==='(max-width: 560px)'}),
+    scrollBy:({top,behavior})=>{assert.equal(behavior,'instant');scrollY+=top;scrolls++;},
+    addEventListener:(k,f)=>{(wevents[k]??=[]).push(f);}};
+  vm.runInNewContext(input.script,{document,window,URL});
+  return {card,chips,fields,location,get active(){return active;},get replacements(){return replacements;},get scrolls(){return scrolls;},
+    painted(){const rect=chips[input.selected].getBoundingClientRect();return rect.top>=0&&rect.bottom<=(mobile&&!card.hidden?420:viewport);},
+    click(target){for(const f of devents.click||[])f({target});},
+    event(k){for(const f of wevents[k]||[])f({type:k});}};
+}
+const original='https://macro.example/theme_tree.html?keep=1#branch';
+let page=boot(original);assert.equal(page.card.hidden,true);
+const selected=page.chips[input.selected];page.click(selected);
+assert.equal(page.card.hidden,false);assert.equal(selected.getAttribute('aria-expanded'),'true');
+assert.equal(page.active,page.fields['.tt-detail-close']);
+const returnedURL=page.location.href;const parsed=new URL(returnedURL);
+assert.equal(parsed.searchParams.get('keep'),'1');assert.equal(parsed.hash,'#branch');
+assert.equal(parsed.searchParams.get('tt-selection'),selected.getAttribute('data-tt-selection'));
+assert.equal(page.replacements,1);
+page.event('mmx:shell-location');assert.equal(page.replacements,1);assert.equal(page.active,page.fields['.tt-detail-close']);
+// A proxy navigation followed by Back creates a new frame at the retained URL.
+page=boot(returnedURL);assert.equal(page.card.hidden,false);
+assert.equal(page.chips[input.selected].getAttribute('aria-expanded'),'true');
+assert.equal(page.chips.filter(c=>c.getAttribute('aria-expanded')==='true').length,1);
+assert.equal(page.chips[input.selected].parentElement.open,true);
+assert.equal(page.active,page.chips[input.selected]);assert.equal(page.replacements,0);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.card.hidden,true);
+assert.equal(new URL(page.location.href).searchParams.has('tt-selection'),false);
+assert.equal(new URL(page.location.href).searchParams.get('keep'),'1');
+assert.equal(page.active,page.chips[input.selected]);assert.equal(page.replacements,1);
+const duplicate=new URL(returnedURL);duplicate.searchParams.append('tt-selection','extra');
+for(const bad of [original,original.replace('#branch','&tt-selection=missing#branch'),duplicate.href]){
+  const neutral=boot(bad);assert.equal(neutral.card.hidden,true);assert.equal(neutral.replacements,0);
+}
+assert.equal(boot(returnedURL,true).card.hidden,true);
+const absent={...input.data};delete absent[selected.getAttribute('data-node')];
+assert.equal(boot(returnedURL,false,absent).card.hidden,true);
+page=boot(returnedURL);page.location.href=original;page.event('popstate');assert.equal(page.card.hidden,true);
+page.location.href=returnedURL;page.event('mmx:shell-location');assert.equal(page.card.hidden,false);
+// The bridge preserves raw query bytes. The card owns only the selection key.
+const query='?view=A%20B&view=~&view=%2b&%76iew=Keep+One&bad%ZZ=kept&flag&?tt-selection=unrelated&%2574t-selection=unrelated';
+const root='https://macro.example/theme_tree.html';
+const rawURL=root+query+'#branch';
+const alt=input.chips.findIndex((attrs,i)=>i!==input.selected && attrs['data-node']===selected.getAttribute('data-node'));
+const firstValue=input.chips[input.selected]['data-tt-selection'];
+const altValue=input.chips[alt]['data-tt-selection'];
+function assertSelectedURL(current,value) {
+  assert.ok(current.href.startsWith(root+query+'&tt-selection='),current.href);
+  const url=new URL(current.href);
+  assert.deepEqual(url.searchParams.getAll('tt-selection'),[value]);
+  assert.equal(url.hash,'#branch');
+}
+page=boot(rawURL);page.click(page.chips[input.selected]);
+assertSelectedURL(page.location,firstValue);
+page.click(page.chips[alt]);assertSelectedURL(page.location,altValue);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+assert.equal(page.replacements,3);
+
+const encodedOwned=root+query+'&%74t-selection='+encodeURIComponent(firstValue)+'#branch';
+page=boot(encodedOwned);assert.equal(page.active,page.chips[input.selected]);
+assert.equal(page.replacements,0);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+page=boot(encodedOwned);page.click(page.chips[alt]);assertSelectedURL(page.location,altValue);
+const duplicateOwned=encodedOwned.replace('#branch','&tt-selection=extra#branch');
+page=boot(duplicateOwned);assert.equal(page.card.hidden,true);
+page.click(page.chips[input.selected]);assertSelectedURL(page.location,firstValue);
+page.click(page.fields['.tt-detail-close']);assert.equal(page.location.href,rawURL);
+// Keep the occurrence painted after layout changes and behind no sheet.
+for(const mobile of [false,true]){
+  const entry=boot(original,false,input.data,mobile);assert.equal(entry.painted(),true);
+  entry.click(entry.chips[input.selected]);assert.equal(entry.painted(),true);
+  assert.equal(entry.scrolls,1);
+  const back=boot(entry.location.href,false,input.data,mobile);
+  assert.equal(back.active,back.chips[input.selected]);assert.equal(back.painted(),true);
+  assert.equal(back.scrolls,1);
+  back.event('mmx:shell-location');
+  assert.equal(back.scrolls,1);assert.equal(back.replacements,0);
+}
+console.log('real rendered multi-parent selection: click, replace, fresh-frame return, close, neutral controls and bridge replay PASS');
+"""], input=json.dumps(packet), capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_theme_hover_ignores_touch_compatibility_mouse_events():
+    """Run the emitted hover handler for touch and bounded bilingual mouse hover."""
+    import subprocess
+
+    html = _html()
+    scripts = re.findall(r"<script>(.*?)</script>", html, re.S)
+    script = next(s for s in scripts if "Multi-parent tip on micro chips" in s)
+    result = subprocess.run(["node", "-e", r"""
+const {runInNewContext} = require('node:vm'), assert = require('node:assert/strict');
+const script = require('node:fs').readFileSync(0, 'utf8');
+const listeners = {};
+let tip, tipWidth=270, lang='en';
+const window={innerWidth:390,innerHeight:844};
+const chip={closest:()=>chip,getAttribute:key=>({'data-tt-tip-en':'Two branches','data-tt-tip-zh':'两个分支'})[key]};
+const document={
+  createElement:()=>({style:{}, getBoundingClientRect:()=>({width:tipWidth})}),
+  body:{appendChild:el=>{tip=el;}},
+  documentElement:{getAttribute:()=>lang}, addEventListener:(type,fn)=>{listeners[type]=fn;},
+};
+runInNewContext(script,{document,window});
+const emit=(type,pointerType,clientX=130)=>listeners[type]?.({target:chip,pointerType,clientX,clientY:450});
+function assertHorizontalBounds(expectedLeft){
+  const left=Number.parseFloat(tip.style.left);
+  assert.equal(left,expectedLeft);
+  assert(left>=8 && left+tipWidth<=window.innerWidth-8);
+}
+emit('pointerover','touch');emit('pointermove','touch');
+emit('mouseover');emit('mousemove');
+assert.equal(tip,undefined);
+for(const [locale,text] of [['en','Two branches'],['zh','两个分支']]){
+  lang=locale;
+  emit('pointerover','mouse');emit('pointermove','mouse');
+  assert.equal(tip.style.display,'block');assert.equal(tip.textContent,text);
+  assertHorizontalBounds(8);
+  emit('pointermove','mouse',389);assertHorizontalBounds(106);
+  emit('pointermove','mouse',8);assertHorizontalBounds(21);
+  emit('pointerout','mouse');assert.equal(tip.style.display,'none');
+}
+window.innerWidth=320;
+emit('pointerover','mouse');assertHorizontalBounds(8);
+emit('pointerout','mouse');assert.equal(tip.style.display,'none');
+window.innerWidth=390;tipWidth=200;
+emit('pointerover','mouse');assertHorizontalBounds(143);
+emit('pointermove','mouse',133);assertHorizontalBounds(146);
+emit('pointerout','mouse');assert.equal(tip.style.display,'none');
+"""], input=script, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr

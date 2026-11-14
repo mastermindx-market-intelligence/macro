@@ -1,0 +1,245 @@
+{
+  "theme_key": "memory_storage",
+  "regime_document": {
+    "asof": "2026-11-06",
+    "freshness": {
+      "asof": "2026-11-06",
+      "built_at": "2026-11-07T00:11:01Z",
+      "age_days": 1,
+      "age_sessions": 0,
+      "max_age_sessions": 1,
+      "stale": false
+    },
+    "theme_revisions": {
+      "asof": "2026-11-06",
+      "n_themes": 18,
+      "weights": {
+        "breadth": "mean member net-up share [-1,1]",
+        "est_drift_90d": "median member 90d consensus-EPS drift %",
+        "breadth_accel": "theme breadth now - breadth ~prior_snapshot ago (PIT, the broadening gauge)",
+        "breadth_cov": "W2a coverage-normalised breadth: mean of (up-dn)/n_covering over members with n_covering>=MIN_COVERING; None when fewer than MIN_MEMBERS_COV members have coverage data"
+      },
+      "themes": {
+        "memory_storage": {
+          "name": "Memory, HBM & Storage",
+          "breadth": 0.746,
+          "level_state": "POSITIVE",
+          "est_drift_90d": 21.89,
+          "net_up_total": 24.0,
+          "breadth_accel": -0.204,
+          "broadening_state": "ROLLING",
+          "coverage": 0.6,
+          "n_covered": 3,
+          "n_members": 5,
+          "members": [
+            {
+              "ticker": "WDC",
+              "breadth": 0.33,
+              "n_analysts": 3,
+              "est_chg_90d": 21.9,
+              "n_covering": 22,
+              "breadth_cov": 0.0455
+            },
+            {
+              "ticker": "MU",
+              "breadth": 0.91,
+              "n_analysts": 21,
+              "est_chg_90d": 24.5,
+              "n_covering": 36,
+              "breadth_cov": 0.5278
+            },
+            {
+              "ticker": "NTAP",
+              "breadth": 1.0,
+              "n_analysts": 4,
+              "est_chg_90d": 13.6,
+              "n_covering": 20,
+              "breadth_cov": 0.2
+            }
+          ],
+          "breadth_cov": 0.2269,
+          "basis_days": 22
+        }
+      }
+    },
+    "bottleneck": {
+      "asof": "2026-09-01",
+      "n_themes": 18,
+      "themes": {
+        "memory_storage": {
+          "name": "Memory, HBM & Storage",
+          "naics": "3344",
+          "band": "NEUTRAL",
+          "tightness": 0.11,
+          "regime": false,
+          "n_legs": 6,
+          "numeric_composite": 0.0,
+          "numeric_band": "NEUTRAL",
+          "cap_u_latest": 76.51,
+          "ppi_yoy_latest": -2.2,
+          "language_accel": 0.5,
+          "language_hits": 3,
+          "language_n_filers": 2,
+          "leg6_detail": {
+            "value": 0.5,
+            "accel": 0.5,
+            "hits": 3,
+            "n_filers": 2,
+            "provisional": true
+          },
+          "text_only": false,
+          "fingerprint": {
+            "theme": "memory_storage",
+            "fingerprint_tightness": -0.091,
+            "leg7_member_inventory": -0.091,
+            "leg8_member_backlog": null,
+            "n_legs_live": 1,
+            "basis": "annual",
+            "provisional": true,
+            "components": {
+              "leg7_member_inventory": {
+                "value": -0.091,
+                "n_reporting": 5,
+                "latest_fy": 2027,
+                "min_required": 3,
+                "met_gate": true
+              },
+              "leg8_member_backlog": {
+                "value": null,
+                "n_reporting": 2,
+                "latest_fy": 2022,
+                "min_required": 3,
+                "met_gate": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "config_document": {
+    "themes": {
+      "memory_storage": {
+        "name": "Memory, HBM & Storage",
+        "tickers": [
+          "MU",
+          "WDC",
+          "SNDK",
+          "STX",
+          "NTAP"
+        ]
+      }
+    }
+  },
+  "public_risk_document": {
+    "schema": "mastermind.risk_envelope/v1",
+    "definition_id": "grey-deer-v1-2026-08-19",
+    "market": "US",
+    "bundle_id": "fbf32d0f9123bafd",
+    "source_session": "2026-11-06",
+    "as_of": "2026-11-06",
+    "observed_at": "2026-11-07T04:12:49Z",
+    "produced_at": "2026-11-07T04:12:49Z",
+    "revision": "settled",
+    "data_state": "DEGRADED",
+    "stale_after": null,
+    "measured_state": {
+      "as_of": "2026-11-06",
+      "role": "slow_confirmed_trend",
+      "score": 40,
+      "source_artifact": "market-state-latest",
+      "usable": true,
+      "verdict": "RISK_OFF"
+    },
+    "hazard_summary": {
+      "active_episode_count": 0,
+      "capped_sources": [],
+      "contributing_sources": [
+        "risk-radar-us"
+      ],
+      "display_only": true,
+      "primary_episode_id": null,
+      "stage": null,
+      "stage_reason": "required_coverage_unavailable",
+      "stage_since": null,
+      "stage_since_basis": "no_episode_lifecycle_in_v0",
+      "unmapped_required_sources": [],
+      "unreadable_sources": [
+        "leadership-crack-latest"
+      ]
+    },
+    "freshness": {
+      "all_on_session": false,
+      "off_session_sources": [
+        "leadership-crack-latest",
+        "site-marketdata-rotation-events"
+      ],
+      "per_source": {
+        "leadership-crack-latest": {
+          "as_of": "2026-11-05",
+          "matches_session": false,
+          "state": "STALE"
+        },
+        "market-state-latest": {
+          "as_of": "2026-11-06",
+          "matches_session": true,
+          "state": "FRESH"
+        },
+        "risk-radar-us": {
+          "as_of": "2026-11-06",
+          "matches_session": true,
+          "state": "FRESH"
+        },
+        "site-marketdata-rotation-events": {
+          "as_of": "2026-11-05",
+          "matches_session": false,
+          "state": "STALE"
+        }
+      },
+      "source_session": "2026-11-06"
+    },
+    "coherence": {
+      "compares": [
+        "measured_state",
+        "hazard_evidence"
+      ],
+      "contradiction_count": 0,
+      "contradictions": [],
+      "display_only": true,
+      "excludes": [
+        "policy_summary"
+      ],
+      "scope": "market_reads",
+      "state": "MIXED"
+    },
+    "policy_summary": {
+      "active_policy_ids": [],
+      "basis": "zero_active_policies",
+      "display_only": true,
+      "policy_count": 0,
+      "posture": "NORMAL"
+    },
+    "authority": {
+      "envelope_may_execute": false,
+      "envelope_may_gate": false,
+      "envelope_may_rank": false,
+      "envelope_may_size": false,
+      "policy_actions_require_individual_authority": true
+    },
+    "policies": []
+  },
+  "source_attribution": {
+    "regime_document": {
+      "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/data/regime/latest.json",
+      "raw_sha256": "1ec062ec0805727adb900c86a52de4c17612c4ee80ddad36a67e9405f2000f8a"
+    },
+    "config_document": {
+      "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/config.yml",
+      "raw_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    },
+    "public_risk_document": {
+      "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/site/riskdata/risk_envelope.json",
+      "raw_sha256": "93f5b3da1dca0e6e464ef42c44cde22369ff2b2b57c521594374cc00f5ac804a"
+    }
+  }
+}

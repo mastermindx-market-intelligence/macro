@@ -900,16 +900,16 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
            it, and a drawn arrow between them. Both names come straight from the
            nightly leadership read — nothing here is computed in the page. ── #}
       <div class="rvx-hocard">
-        <div class="cap">{{ t("THIS WEEK'S HANDOFF", '本周交棒') }}</div>
+        <div class="cap">{{ t('LEADERSHIP CHECK', '领涨对照') }}</div>
         <div class="rvx-handoff">
           <div class="rvx-hocol out">
-            <div class="lbl">{{ t('Losing the lead', '失去领先') }}</div>
+            <div class="lbl">{{ t('Previous leader', '此前领涨') }}</div>
             <div class="nm">{{ t(_tc_tl.name, _tc_tl.name_zh) }}</div>
             <div class="meta">{{ t('was #1', '原第一') }}</div>
           </div>
           <div class="rvx-hoarrow"><svg viewBox="0 0 46 28" aria-hidden="true"><defs><linearGradient id="rvxHo" x1="0" x2="1"><stop offset="0" stop-color="var(--rvx-weak)"/><stop offset="1" stop-color="var(--rvx-lead)"/></linearGradient></defs><path class="ln" d="M3 14 H37"/><path class="hd" d="M33 8 L43 14 L33 20 Z"/></svg></div>
           <div class="rvx-hocol in">
-            <div class="lbl">{{ t('Taking the lead', '接过领先') }}</div>
+            <div class="lbl">{{ t('Showing strength now', '当前强势') }}</div>
             <div class="nm">{% if _tc_lead.strength %}{{ t(_tc_lead.strength[0].name, _tc_lead.strength[0].name_zh) }}{% if _tc_lead.strength|length > 1 %} · {{ t(_tc_lead.strength[1].name, _tc_lead.strength[1].name_zh) }}{% endif %}{% else %}—{% endif %}</div>
             <div class="meta">{% if _tc_lead.strength %}{{ t('confirming strength', '强势确认中') }}{% else %}{{ t('nobody yet', '暂无') }}{% endif %}</div>
           </div>
@@ -969,6 +969,7 @@ body { font-family:-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI',
             data-tip-en="{{ theme_context.alignment.note_en | e }}"
             data-tip-zh="{{ theme_context.alignment.note_zh | e }}">✓ {{ t('sector rotation agrees', '板块轮动一致') }}</span>
       {% endif %}
+      <a class="rvx-chip" href="china_stocks.html#cn-peer-context">{{ t('See the evidence for Prophet stocks', '查看 Prophet 个股的同业证据') }} →</a>
       <a class="rvx-chip" href="allocation_china.html">{{ t('Open the playbook →', '打开操盘手册 →') }}</a>
     </div>
   </section>

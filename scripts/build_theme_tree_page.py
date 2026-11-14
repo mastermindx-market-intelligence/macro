@@ -811,7 +811,17 @@ def _build_ticker_lookup(
     from engine.theme_graph.ontology import (  # noqa: PLC0415
         _collapse_relevant_edges,
         _parse_date,
+        is_hierarchy_tier_node,
     )
+
+    # W-C2b: a company's activity-route MEMBER_OF into a sub-/micro-theme (or
+    # macro category) is not a basket membership; it must never flip a ticker's
+    # lookup state (e.g. not_in_graph -> no_public_basket).
+    hierarchy_ids = {
+        str(row.get("node_id"))
+        for row in node_rows
+        if row.get("node_id") and is_hierarchy_tier_node(row)
+    }
 
     asof_date = _parse_date(as_of, "as_of")
     cutoff_date = (
@@ -855,7 +865,7 @@ def _build_ticker_lookup(
             if str(row.get("src") or "") != company_id:
                 continue
             dst = str(row.get("dst") or "")
-            if not dst:
+            if not dst or dst in hierarchy_ids:
                 continue
             member_baskets.add(dst)
             eid = str(row.get("edge_id") or "")

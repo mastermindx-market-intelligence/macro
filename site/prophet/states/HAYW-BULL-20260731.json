@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "HAYW-BULL-20260731",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 35.4,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 11.1,
+    "progress": 19.2,
     "pace": 0.0,
-    "retention": 42.4,
-    "overlay": 33.0
+    "retention": 87.9,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.134,
-    "dist_to_t1_r": 1.366,
-    "dist_to_t2_r": 2.866,
-    "horizon_pct_used": 208.9,
-    "p1": 0.0895,
-    "p2": 0.0447,
+    "dist_to_stop_r": 1.278,
+    "dist_to_t1_r": 1.222,
+    "dist_to_t2_r": 2.722,
+    "horizon_pct_used": 220.0,
+    "p1": 0.1853,
+    "p2": 0.0927,
     "p3": null,
-    "move_r": 0.134,
+    "move_r": 0.278,
     "mfe_r": 0.316,
     "mae_r": -1.399
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 94,
-  "tau": 2.0889,
+  "days_elapsed": 99,
+  "tau": 2.2,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

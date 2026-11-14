@@ -1180,9 +1180,12 @@ def test_worker_probe_bootstrap_matches_the_shared_measurement(
     planner answers, or every probe would read as moved on that one run.
 
     The weights cover the pack formula's floor (no job: 1 pack), a round-up
-    (650 s: 2 packs) and its 12-pack cap (7,000 s).
+    (650 legacy s: 2 packs) and its 12-pack cap (7,000 legacy s). They are
+    legacy-scale values mapped through PACK.rescale_legacy_weight, the same
+    function that derives PACK_TARGET_SECONDS, so the shape tracks the target.
     """
-    jobs = [_Job("a", 400), _Job("b", 250), _Job("c", 7_000)]
+    scaled = PACK.rescale_legacy_weight
+    jobs = [_Job("a", scaled(400)), _Job("b", scaled(250)), _Job("c", scaled(7_000))]
     selections = {"x.html": {"a", "b"}, "y.py": {"c"}, "z.py": set()}
 
     def load_legacy_jobs(path: Path) -> list[_Job]:
@@ -1201,7 +1204,7 @@ def test_worker_probe_bootstrap_matches_the_shared_measurement(
         ("select_jobs", select_jobs),
     ):
         monkeypatch.setattr(PACK, name, fn)
-    probes = [("x.html", 1, 600), ("y.py", 5, 9_000), ("z.py", 1, 1)]
+    probes = [("x.html", 1, scaled(600)), ("y.py", 5, scaled(9_000)), ("z.py", 1, 1)]
     spec = {"probes": [list(probe) for probe in probes], "max_packs": 10}
     shared = PACK.packing_probe_measurements(Path(CCD.MANIFEST_REL), probes, max_packs=10)
     assert [row["packs"] for row in shared] == [2, 12, 1]

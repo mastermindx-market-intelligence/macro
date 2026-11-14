@@ -16,7 +16,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | biopharma-seasonality-intelligence | 7 |
 | blocked-entry-override | 2 |
 | btc-vector | 6 |
-| capital-structure-intelligence | 20 |
+| capital-structure-intelligence | 21 |
 | causal-hypothesis-factory | 10 |
 | cbf | 2 |
 | ccw | 10 |
@@ -118,7 +118,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | tier | count |
 |---|---|
 | display | 379 |
-| infrastructure | 163 |
+| infrastructure | 164 |
 | scored | 5 |
 | shadow | 103 |
 
@@ -126,7 +126,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 
 | storage | count |
 |---|---|
-| git | 610 |
+| git | 611 |
 | git+r2 | 3 |
 | gitignored-local | 19 |
 | r2 | 18 |
@@ -207,6 +207,7 @@ The **signal bus** is the set of cross-engine data artifacts that flow between p
 | capital-structure-review-queue | `data/capital_structure/review_queue.parquet` | parquet | collect | infrastructure | 1 | 0 |
 | capital-structure-telemetry | `data/capital_structure/telemetry.json` | json | collect | infrastructure | 1 | 0 |
 | capital-structure-document-term-observations | `data/capital_structure/document_term_observations.parquet` | parquet | collect | infrastructure | 0 | 0 |
+| capital-structure-document-term-parse-receipts | `data/capital_structure/document_term_parse_receipts.jsonl` | jsonl | collect | infrastructure | 0 | 0 |
 | site-capital-structure-projection | `site/capital-structure-data/latest.json` | json | collect | display | 0 | 0 |
 
 ### causal-hypothesis-factory

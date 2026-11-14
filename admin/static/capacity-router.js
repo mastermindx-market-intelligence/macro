@@ -36,7 +36,7 @@
       <header class="cf-hero"><div><div class="cf-eyebrow"><span class="cf-mark">${icon("flow")}</span> INFRASTRUCTURE <span>/</span> ROUTER</div><h1>Capacity Fabric<span class="cf-title-dot">.</span></h1><p>Follow the intelligence. From capacity to every consumer.</p></div>
         <div class="cf-hero-right"><div class="cf-connection" role="status"><i></i><span>Connecting</span><small></small></div><div class="cf-hero-actions"><button data-action="pause" class="cf-button">${icon("pause")}<span>Pause</span></button><button data-action="refresh" class="cf-icon-button" aria-label="Refresh telemetry">${icon("refresh")}</button><button data-action="fullscreen" class="cf-icon-button" aria-label="Toggle full screen">${icon("expand")}</button></div></div></header>
       <div class="cf-notice" hidden role="status"></div><div class="cf-metrics" aria-label="Router metrics"></div>
-      <div class="cf-toolbar"><div class="cf-tabs" role="tablist" aria-label="Router views">${[["flow","Flow map"],["requests","Requests"],["providers","Providers"],["consumers","Consumers"]].map(([id,title])=>`<button role="tab" data-view="${id}" aria-selected="${id==="flow"}" class="${id==="flow"?"is-active":""}">${title}<span data-count="${id}"></span></button>`).join("")}</div><div class="cf-toolbar-right"><span class="cf-window-label">Window</span><select aria-label="Observation time window" data-field="window"><option value="5">5 minutes</option><option value="15" selected>15 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select><button data-action="export" class="cf-icon-button" aria-label="Export sanitized snapshot">${icon("download")}</button></div></div>
+      <div class="cf-toolbar"><div class="cf-tabs" role="tablist" aria-label="Router views">${[["flow","Flow map"],["requests","Requests"],["providers","Providers"],["overflow","Overflow"],["claude","Claude lanes"],["consumers","Consumers"]].map(([id,title])=>`<button role="tab" data-view="${id}" aria-selected="${id==="flow"}" class="${id==="flow"?"is-active":""}">${title}<span data-count="${id}"></span></button>`).join("")}</div><div class="cf-toolbar-right"><span class="cf-window-label">Window</span><select aria-label="Observation time window" data-field="window"><option value="5">5 minutes</option><option value="15" selected>15 minutes</option><option value="60">1 hour</option><option value="120">2 hours</option></select><button data-action="export" class="cf-icon-button" aria-label="Export sanitized snapshot">${icon("download")}</button></div></div>
       <div class="cf-filters"><label class="cf-search">${icon("search")}<input data-field="search" placeholder="Find a model, route or session…" aria-label="Search router telemetry"><kbd>/</kbd></label><select data-field="model" aria-label="Filter by model"><option value="all">All models</option></select><select data-field="status" aria-label="Filter by request state"><option value="all">All activity</option><option value="streaming">Streaming</option><option value="waiting">Awaiting output</option><option value="completed">Completed</option><option value="failed">Errors & interruptions</option></select><button class="cf-clear" data-action="clear" hidden>Clear selection ×</button></div>
       <div class="cf-view" role="tabpanel"></div><footer class="cf-footer"><span>Capacity Fabric <i>•</i> Private telemetry</span><span class="cf-footnote">Connecting to the router observer…</span></footer>
       <aside class="cf-inspector" hidden aria-label="Selected traffic details"><div class="cf-inspector-bar"><span>INSPECTOR</span><button class="cf-icon-button" data-action="close" aria-label="Close inspector">${icon("close")}</button></div><div class="cf-inspector-body"></div></aside>
@@ -126,8 +126,11 @@
       ["Known consumers",v.active_consumers,`${n(v.unattributed_active)} active requests unattributed`,""],
       ["Route capacity",v.ready_routes==null?null:`${v.ready_routes} / ${(d.routes||[]).length}`,`${n(v.cooling_routes)} cooling · ${n(v.providers)} providers`,""],
     ];
+    if(d&&d.ok&&(d.overflow||d.claude)) cards.push(["Overflow & lanes",v.overflowing_families==null?null:v.overflowing_families,`${n(v.benched_lanes)} Claude lanes benched · ${n(v.over_target_keys)} seats over target${d.peak&&d.peak.active?" · peak active":""}`,"violet"]);
     s.root.querySelector(".cf-metrics").innerHTML=cards.map(([title,value,sub,color])=>`<article class="cf-metric ${color}"><div>${title}</div><strong>${typeof value==="string"?value:n(value)}</strong><small>${sub}</small></article>`).join("");
-    const counts={requests:d&&d.ok?(d.active.length+d.recent.length):null,providers:v.providers,consumers:v.active_consumers};
+    const counts={requests:d&&d.ok?(d.active.length+d.recent.length):null,providers:v.providers,consumers:v.active_consumers,
+      overflow:d&&d.ok&&d.overflow?Object.values(d.overflow.families||{}).filter(f=>f.overflowing).length:null,
+      claude:d&&d.ok&&d.claude?(d.claude.accounts||[]).length:null};
     Object.entries(counts).forEach(([key,val])=>{s.root.querySelector(`[data-count="${key}"]`).textContent=val==null?"":val;});
   }
 
@@ -165,6 +168,8 @@
       const newSvg=view.querySelector(".cf-topology");if(newSvg&&newSvg.setCurrentTime)newSvg.setCurrentTime(motionTime);
     } else if(s.view==="requests") view.innerHTML=requestTable(s,50,true);
     else if(s.view==="providers") view.innerHTML=providerView(s);
+    else if(s.view==="overflow") view.innerHTML=overflowView(s);
+    else if(s.view==="claude") view.innerHTML=claudeView(s);
     else view.innerHTML=consumerView(s);
     if(focus) {const el=[...view.querySelectorAll("[data-select]")].find(x=>x.dataset.select===focus.kind&&x.dataset.id===focus.id);if(el)el.focus({preventScroll:true});}
   }
@@ -228,6 +233,73 @@
     const d=s.data,eligible=d.routes.filter(r=>s.model==="all"||r.models.includes(s.model)),providers=[...new Set(eligible.map(r=>r.provider))].filter(p=>!s.query||d.routes.some(r=>r.provider===p&&[p,r.id,...r.models].join(" ").toLowerCase().includes(s.query.toLowerCase())));
     const cards=providers.map(p=>{const routes=eligible.filter(r=>r.provider===p),models=[...new Set(routes.flatMap(r=>r.models))];const req=allRecords(s).filter(r=>r.provider===p),live=d.active.filter(r=>r.provider===p).length;return `<article class="cf-provider-card"><button class="cf-provider-top" data-select="provider" data-id="${escape(p)}"><span class="cf-provider-symbol">${escape(p.slice(0,2).toUpperCase())}</span><span><strong>${escape(p)}</strong><small>${routes.length} routes · ${models.length} models</small></span><span class="cf-provider-live">${live}<small>active</small></span></button><div class="cf-provider-models">${models.slice(0,8).map(m=>`<button data-select="model" data-id="${escape(m)}">${escape(modelName(m))}</button>`).join("")}${models.length>8?`<span>+${models.length-8} more</span>`:""}</div><div class="cf-provider-routes">${routes.map(r=>`<button data-select="route" data-id="${escape(r.id)}"><i class="${r.cooling?"cooling":""}"></i><span>${escape(r.id)}<small>${escape(r.wire)} · base priority ${r.priority} · weight ${r.weight}</small></span><b>${r.cooling?"Cooling":"No cooldown"}</b></button>`).join("")}</div><div class="cf-provider-bottom"><span>${n(routes.reduce((a,r)=>a+r.served,0))} responses started</span><span>${n(routes.reduce((a,r)=>a+r.attempt_failed,0))} failed attempts</span></div></article>`;}).join("");
     return `<div class="cf-view-intro"><div><span class="cf-section-kicker">CAPACITY INVENTORY</span><h2>One fabric. Every provider.</h2><p>Actual route configuration and cooldown state. Counters are since the current router process started.</p></div><span>${d.routes.length} routes / ${d.summary.models} models</span></div><div class="cf-provider-grid">${cards||empty("No matching providers","Try a model name or clear your search.")}</div>`;
+  }
+
+  function overflowView(s) {
+    const d=s.data, ov=d.overflow;
+    if(!ov) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">FAMILY DIVERSION</span><h2>Overflow ladders</h2><p>When a family's primary pool cools down, new sessions climb a configured ladder to another family. Sticky sessions never hop rungs mid-flight.</p></div></div>${empty("No overflow observation","The router has not reported overflow state yet. It appears once the observer publishes an enriched snapshot.")}`;
+    const families=Object.entries(ov.families||{});
+    const cards=families.map(([name,fam])=>{
+      const targets=fam.targets||[];
+      const rungs=[`<li class="cf-rung ${fam.overflowing?"":"current"}"><span>${escape(name)} primary</span><small>family pool</small></li>`]
+        .concat(targets.map((t,i)=>`<li class="cf-rung ${fam.overflowing&&i===0?"current":""}"><button data-select="model" data-id="${escape(t)}">${escape(modelName(t))}</button><small>rung ${i+1}</small></li>`));
+      return `<article class="cf-overflow-card ${fam.overflowing?"overflowing":""}">
+        <div class="cf-overflow-head"><strong>${escape(name)}</strong>
+          <span class="cf-state ${fam.overflowing?"failed":"completed"}"><i></i>${fam.overflowing?"Overflowing":"Primary healthy"}</span>
+          ${fam.signal?`<small class="cf-muted">signal: ${escape(fam.signal)}</small>`:""}
+          ${fam.proactive_window_open?'<small class="cf-amber-text">proactive window open</small>':""}
+        </div>
+        <ol class="cf-rungs">${rungs.join("")}</ol>
+        <div class="cf-overflow-meta">
+          ${fam.overflowing?`<span>overflowing ${seconds(fam.overflowing_for_s)}</span><span>recheck in ${seconds(fam.healthy_in_s)}</span>`:`<span>ladder idle</span>`}
+        </div>
+      </article>`;
+    }).join("");
+    const keys=Object.entries(ov.keys||{});
+    const keyCards=keys.map(([name,k])=>`<article class="cf-key-card ${k.over_target?"over":""}">
+      <strong>${escape(name)}</strong>
+      <div class="cf-meter"><i style="width:${Math.min(100,k.used_pct_of_limit||0)}%"></i></div>
+      <div class="cf-key-stats"><span>${k.used_pct_of_limit==null?"—":k.used_pct_of_limit+"%"} of limit</span><span>${k.over_target?"over target":"within target"}</span></div>
+      <small class="cf-muted">${k.input_tpm_limit!=null?`${n(k.used_or_reserved)} / ${n(k.input_tpm_limit)} TPM · local estimate`:"limit not reported"}</small>
+    </article>`).join("");
+    const events=(ov.recent||[]).slice(-10).reverse().map(e=>`<tr><td><b>${escape(e.event)}</b><small>${escape(e.kind||"")}</small></td><td>${escape(e.family||"—")}</td><td>${escape(modelName(e.requested_model))} → ${escape(modelName(e.served_model))}</td><td>${escape(e.route||"—")}</td><td class="cf-mono">${clock(e.t)}</td></tr>`).join("");
+    return `<div class="cf-view-intro"><div><span class="cf-section-kicker">FAMILY DIVERSION</span><h2>Overflow ladders</h2><p>When a family's primary pool cools down, new sessions climb this ladder. Sticky sessions never hop rungs mid-flight. Seat pressure is a local router estimate, never a provider balance.</p></div>
+      <span>${ov.enabled?"enabled":"disabled"} · ${n(ov.diverted_requests)} diverted · ${ov.diversion_share==null?"—":Math.round(ov.diversion_share*100)+"%"} share</span></div>
+      <div class="cf-overflow-grid">${cards||empty("No families configured","Overflow families appear when the router policy defines them.")}</div>
+      ${keys.length?`<section class="cf-panel cf-keys-panel"><div class="cf-panel-heading"><div><span class="cf-section-kicker">SEAT PRESSURE</span><h2>Token-rate targets</h2></div><span class="cf-muted">${keys.filter(([_,k])=>k.over_target).length} over target</span></div><div class="cf-key-grid">${keyCards}</div></section>`:""}
+      ${events?`<section class="cf-panel"><div class="cf-panel-heading"><div><span class="cf-section-kicker">DIVERSION LOG</span><h2>Recent overflow events</h2></div></div><div class="cf-table-scroll"><table><thead><tr><th>Event</th><th>Family</th><th>Requested → served</th><th>Route</th><th>Time</th></tr></thead><tbody>${events}</tbody></table></div></section>`:""}`;
+  }
+
+  function claudeView(s) {
+    const d=s.data, cl=d.claude;
+    if(!cl) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2><p>Weekly budgets per account and family, with the shared 5-hour window. Benched lanes recover at their reset; a reset time alone does not restore capacity.</p></div></div>${empty("No gateway observation","The observer has not cached a gateway lane reading yet. It polls the incumbent gateway every 30 seconds.")}`;
+    if(!cl.reachable) return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2></div></div>${empty("Gateway unreachable","Lane budgets are unknown. The last observation is not shown as current.")}`;
+    const nowS=Date.now()/1000;
+    const cards=(cl.accounts||[]).map(a=>{
+      const lanes=Object.entries(a.families||{}).map(([name,lane])=>{
+        const benched=lane.cooldown_until!=null&&lane.cooldown_until>nowS;
+        const pct=lane.budget_weekly&&lane.remaining_weekly!=null?Math.max(0,Math.min(100,lane.remaining_weekly/lane.budget_weekly*100)):null;
+        const reset=lane.weekly_resets_at!=null?`resets ${clock(lane.weekly_resets_at)}${lane.weekly_reset_source==="estimated"?" (est.)":""}`:"";
+        return `<div class="cf-lane ${benched?"benched":""}">
+          <div class="cf-lane-head"><span>${escape(name)}</span>${lane.expiring_soon?'<small class="cf-amber-text">expiring soon</small>':""}${benched?'<small class="cf-red-text">benched</small>':""}</div>
+          ${pct!=null?`<div class="cf-meter"><i style="width:${pct}%"></i></div><small>${Math.round(pct)}% left · ${n(lane.remaining_weekly)} / ${n(lane.budget_weekly)}</small>`:'<small class="cf-muted">budget unknown</small>'}
+          <small class="cf-muted">${benched?`until ${clock(lane.cooldown_until)}`:reset}</small>
+        </div>`;
+      }).join("");
+      const pct5=a.budget_5h?Math.max(0,Math.min(100,(a.remaining_5h!=null?a.remaining_5h:a.budget_5h-a.used_5h)/a.budget_5h*100)):null;
+      return `<article class="cf-claude-card">
+        <div class="cf-claude-head"><strong>${escape(a.label||a.id)}</strong>
+          ${a.drain?'<span class="cf-state cancelled"><i></i>draining</span>':""}
+          ${a.inflight?`<small class="cf-muted">${a.inflight} in flight</small>`:""}
+          <small class="cf-muted">${escape(a.last_status||"")}</small></div>
+        <div class="cf-claude-5h"><span>Shared 5h window</span>${pct5!=null?`<div class="cf-meter"><i style="width:${pct5}%"></i></div><small>${n(a.used_5h)} used / ${n(a.budget_5h)}</small>`:'<small class="cf-muted">not reported</small>'}</div>
+        <div class="cf-lane-grid">${lanes}</div>
+      </article>`;
+    }).join("");
+    return `<div class="cf-view-intro"><div><span class="cf-section-kicker">ANTHROPIC GATEWAY</span><h2>Claude family lanes</h2><p>Weekly budgets per account and family, with the shared 5-hour window. Reset times are provider-reported unless marked estimated. Observed ${clock(cl.observed_at)}.</p></div>
+      <span>${(cl.accounts||[]).length} accounts${cl.stranded_family?` · stranded boost: ${escape(cl.stranded_family)}`:""}</span></div>
+      ${cl.preferences&&cl.preferences.length?`<p class="cf-muted cf-prefs">Account preferences: ${cl.preferences.map(escape).join(", ")}</p>`:""}
+      <div class="cf-claude-grid">${cards||empty("No accounts observed","The gateway reported no accounts.")}</div>`;
   }
 
   function consumerView(s) {

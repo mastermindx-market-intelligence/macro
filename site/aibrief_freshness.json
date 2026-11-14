@@ -1,0 +1,26 @@
+{
+  "built_at": "2026-11-14T21:51:16+00:00",
+  "lenses": {
+    "btc": {
+      "generated_at": "2026-10-18T06:52:05.643095+00:00",
+      "refresh_days": 3,
+      "source": "site",
+      "stale": true,
+      "state_asof": "2026-10-17"
+    },
+    "china": {
+      "generated_at": "2026-10-18T06:51:27.029899+00:00",
+      "refresh_days": 1,
+      "source": "site",
+      "stale": true,
+      "state_asof": "2026-10-16"
+    },
+    "macro": {
+      "generated_at": "2026-10-18T06:50:33.674988+00:00",
+      "refresh_days": 1,
+      "source": "site",
+      "stale": true,
+      "state_asof": "2026-10-16"
+    }
+  }
+}

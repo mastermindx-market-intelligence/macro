@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XRAY-BULL-20261026",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 53.9,
-  "raw_confidence": 50.7,
-  "delta_vs_base": -6.1,
+  "management_confidence": 42.8,
+  "raw_confidence": 39.2,
+  "delta_vs_base": -17.2,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Stalling",
   "components": {
-    "validity": 86.2,
+    "validity": 60.3,
     "progress": 0.0,
-    "pace": 70.5,
+    "pace": 41.0,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.896,
+    "dist_to_stop_r": 0.687,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 24.4,
-    "p1": -0.0694,
-    "p2": -0.0347,
+    "horizon_pct_used": 35.6,
+    "p1": -0.2083,
+    "p2": -0.1042,
     "p3": null,
-    "move_r": -0.104,
+    "move_r": -0.313,
     "mfe_r": 0.333,
-    "mae_r": -0.104
+    "mae_r": -0.313
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Weakening",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.4800001525878912,
-  "_mae": -0.14999996185302678,
+  "_mae": -0.45000015258789006,
   "_max_p1": 0.22222229286476441,
   "_first_trigger_ts": "2026-11-03",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 11,
-  "tau": 0.2444
+  "days_elapsed": 16,
+  "tau": 0.3556
 }

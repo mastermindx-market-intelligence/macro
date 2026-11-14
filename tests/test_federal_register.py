@@ -490,3 +490,78 @@ class TestSourcesRegistration:
         assert SOURCES[-1]["name"] == "fedreg_velocity", (
             f"fedreg_velocity must be the last SOURCES entry; got {SOURCES[-1]['name']!r}"
         )
+
+
+class TestEffectiveDateEvidence:
+    """Exercise the API request, actual Parquet tape and calendar consumer."""
+
+    @staticmethod
+    def _fetch_into(tmp_path, monkeypatch, docs):
+        from collectors import federal_register as fr
+
+        monkeypatch.setattr(fr, "_theme_map", lambda: _make_theme_map())
+        monkeypatch.setattr(fr.config, "load", lambda: {})
+        monkeypatch.setattr(fr.config, "data_dir", lambda: tmp_path)
+        monkeypatch.setattr(fr.time, "sleep", lambda _seconds: None)
+        calls = []
+
+        def get(_url, *, params, **_kwargs):
+            calls.append(params)
+            response = MagicMock(status_code=200)
+            response.json.return_value = {"results": docs, "total_pages": 1}
+            return response
+
+        monkeypatch.setattr(fr.requests, "get", get)
+        FederalRegisterAdapter().fetch()
+        return calls, pd.read_parquet(tmp_path / "federal_register" / "documents.parquet")
+
+    def test_effective_date_survives_request_tape_and_calendar(self, tmp_path, monkeypatch):
+        from engine.policy_calendar import compute_policy_calendar, format_policy_reg_chip
+
+        monkeypatch.delenv("COLLECT_LANE", raising=False)
+        monkeypatch.delenv("US_LANE", raising=False)
+        doc = _make_doc(action="Final rule.", pub_date="2026-10-01",
+                        comments_close="2026-11-20")
+        doc["effective_on"] = "2026-12-15"
+        calls, tape = self._fetch_into(tmp_path, monkeypatch, [doc])
+
+        assert calls and all("effective_on" in p["fields[]"] for p in calls)
+        assert tape.iloc[0]["effective_on"] == "2026-12-15"
+        assert tape.iloc[0]["comments_close_on"] == "2026-11-20"
+        assert tape.iloc[0]["reg_stage"] == "final_rule"
+        calendar = compute_policy_calendar(tape, today=date(2026, 11, 2))
+        row = calendar["themes"]["nuclear_power"]
+        assert row["days_to_next_rule_effective"] == 43
+        assert row["days_to_next_comment_close"] == 18
+        chip = format_policy_reg_chip(row, "nuclear_power")
+        assert "rule effective in 43d (2026-12-15)" in chip["summary"]
+        assert "comment close in 18d (2026-11-20)" in chip["summary"]
+        assert not (tmp_path / "foresight" / "policy_calendar_ledger.jsonl").exists()
+
+    @pytest.mark.parametrize("original_effective", [None, "2026-12-01"])
+    def test_effective_date_does_not_rewrite_existing_observation(
+        self, tmp_path, monkeypatch, original_effective
+    ):
+        old_doc = _make_doc(significant=None, pub_date="2026-10-01")
+        old_doc["effective_on"] = original_effective
+        _, original = self._fetch_into(tmp_path, monkeypatch, [old_doc])
+        # An absent column represents the historical collector schema.
+        if original_effective is None:
+            original = original.drop(columns=["effective_on"], errors="ignore")
+            original.to_parquet(tmp_path / "federal_register" / "documents.parquet", index=False)
+
+        duplicate = dict(old_doc, effective_on="2026-12-15", significant=True,
+                         title="Changed source title")
+        new_doc = _make_doc(doc_number="DOC-NEW", pub_date="2026-10-02")
+        new_doc["effective_on"] = "2026-12-20"
+        _, tape = self._fetch_into(tmp_path, monkeypatch, [duplicate, new_doc])
+        old_row = tape.loc[tape.document_number == "DOC-001"].iloc[0]
+        assert old_row["_first_seen"] == original.iloc[0]["_first_seen"]
+        assert old_row["title"] == original.iloc[0]["title"]
+        assert pd.isna(old_row["significant"])
+        if original_effective is None:
+            assert pd.isna(old_row["effective_on"])
+        else:
+            assert old_row["effective_on"] == original_effective
+        assert tape.loc[tape.document_number == "DOC-NEW", "effective_on"].iloc[0] == "2026-12-20"
+

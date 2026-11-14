@@ -5,15 +5,17 @@
     "ca_asset_mgrs",
     "ca_banks",
     "ca_consumer",
-    "ca_gold",
     "ca_insurers",
+    "ca_oil_gas",
+    "ca_pipelines",
+    "ca_rails_ind",
     "ca_tech",
     "ca_utilities"
   ],
   "held": [
-    "ca_banks",
+    "ca_oil_gas",
     "ca_consumer",
-    "ca_gold",
+    "ca_banks",
     "ca_utilities"
   ],
   "leader": "ca_oil_gas",

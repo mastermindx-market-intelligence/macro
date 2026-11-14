@@ -3228,6 +3228,30 @@ def test_native_acquisition_unknown_never_falls_back_or_runs_assertions(monkeypa
     assert result.infrastructure["outcome"]=="unknown"
 
 
+def test_native_settled_apt_failure_fallback_fails_only_this_job_and_not_the_pack(monkeypatch):
+    from scripts import ci_browser_native_setup as native
+    _capture_job_environment(monkeypatch)
+    job=_job("ontology-explorer", [{**_browser_setup_step(),"acquisition":"native_parallel"}, {"name":"assertion","run":"true"}],timeout=10)
+    calls=[];ticks=iter([0.,0.,20.,40.])
+    monkeypatch.setattr(PACK.time,"monotonic",lambda:next(ticks))
+    monkeypatch.setattr(PACK,"_stream_command",lambda c,**k:calls.append(c) or PACK.CommandObservation(outcome="passed",returncode=0))
+    def setup(**kwargs):
+        assert kwargs["deadline"]==600 and len(kwargs["expected_sources"])==7
+        calls.append("native once")
+        # A settled apt failure whose browser-only fallback also failed keeps a
+        # KNOWN settlement: only this logical job fails, never the pack.
+        return dict(outcome="failed",returncode=1,failure_signature=None,timeout_settlement=None,
+                    detail="native cold acquisition settled failure (apt update exited 100 settled with no packages applied); "
+                           "installation=never_started; retained /tmp/ci-apt-fixture; browser-only fallback failed")
+    monkeypatch.setattr(native,"run_native_setup",setup)
+    result=PACK._run_job(job,base_ref="main",head_ref="",command_env={})
+    assert calls==["capture apt","capture playwright","native once"]
+    assert result.timeout_settlement is None
+    assert result.infrastructure["outcome"]=="dependency_failed"
+    assert result.steps[0]["outcome"]=="infrastructure_blocked"
+    assert result.failure is not None and "browser setup failed (exit 1); original outcome retained" in result.failure
+
+
 def test_native_acquisition_normal_success_leaves_only_remaining_total_for_assertions(monkeypatch):
     from scripts import ci_browser_native_setup as native
     _capture_job_environment(monkeypatch)

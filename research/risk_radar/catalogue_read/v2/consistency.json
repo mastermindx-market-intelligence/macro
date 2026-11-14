@@ -1,0 +1,11 @@
+{
+ "window": [
+  "2022-01-03",
+  "2023-12-29"
+ ],
+ "n_sessions": 501,
+ "missing_in_ours": 0,
+ "mismatches": 0,
+ "shipped_loud_share": 0.3852295409181637,
+ "ours_loud_share": 0.3852295409181637
+}

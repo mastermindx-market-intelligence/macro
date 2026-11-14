@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-14",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -16,13 +16,13 @@
     "count_and_clock_minimums_met": false,
     "note": "No interim effect estimates. Informative strata and outcomes are opened only by the separately reviewed sole adjudication.",
     "observed": {
-      "action_date_span_days": 9,
+      "action_date_span_days": 19,
       "distinct_action_months": 2,
       "informative_exact_strata": null,
-      "level_control_rows": 1,
-      "matured_primary_rows": 12,
-      "relief_hazard_rows": 11,
-      "unique_names": 12
+      "level_control_rows": 3,
+      "matured_primary_rows": 15,
+      "relief_hazard_rows": 12,
+      "unique_names": 15
     },
     "required": {
       "action_date_span_days": 365,
@@ -38,20 +38,20 @@
   },
   "family": "pss_rh1_relief_hazard_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-10T11:14:24.363367+00:00",
+  "generated_utc": "2026-11-14T08:08:27.547040+00:00",
   "ledger": {
-    "advanced_today": 0,
-    "appended_today": 0,
+    "advanced_today": 1,
+    "appended_today": 10,
     "earliest_action": "2026-07-29",
-    "events": 326,
-    "latest_action": "2026-11-06",
-    "level_control": 115,
-    "matured": 12,
-    "primary_events": 220,
+    "events": 360,
+    "latest_action": "2026-11-13",
+    "level_control": 141,
+    "matured": 15,
+    "primary_events": 252,
     "rejected_pre_cutoff_today": 0,
-    "relief_hazard": 105,
-    "ungraded": 314,
-    "weak_level_diagnostic": 106
+    "relief_hazard": 111,
+    "ungraded": 345,
+    "weak_level_diagnostic": 108
   },
   "manifest_sha256": "0b07345178592032570aeb57c1c54c1cb24b6463a5836431bc7daf5d44b0cc6b",
   "membership_sha256": "f00c9d70e0c554213d6aa9a82fecc1492bcedc49c04ce36d4a14647f85713baf",
@@ -61,15 +61,14 @@
   "registration_ok": true,
   "scan_census": {
     "anchors": 9809,
-    "detected_post_cutoff_paths": 320,
+    "detected_post_cutoff_paths": 354,
     "frozen_members": 799,
     "loaded_members": 798,
     "missing_members": 1,
-    "prospective_candidate_anchors": 581,
+    "prospective_candidate_anchors": 633,
     "reasons": {
-      "incomplete_formation": 52,
       "missing_ohlcv": 1,
-      "no_subject_recovery": 241,
+      "no_subject_recovery": 259,
       "pre_cutoff_action": 20
     }
   },

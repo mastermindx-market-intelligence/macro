@@ -386,3 +386,27 @@ def test_canonical_keyset_takes_precedence(monkeypatch):
     assert rec["source"] == "engine/x.py"
     assert rec["phase_hint"] == "existing hint"
     assert rec["state"] == "existing state"
+
+
+def test_archived_experiments_retain_history_without_date_only_review(monkeypatch, tmp_path):
+    from admin import experiments
+
+    archived = ["closed", "closed_no_go", "complete", "shipped"]
+    seed = [dict(id=status, name=status, status=status, state="recorded",
+                 come_back_on="2001-02-03") for status in archived + ["accruing"]]
+    fresh = _compute_with_seed(monkeypatch, seed)
+    assert [r["id"] for r in fresh if r["ready"]] == ["accruing"]
+    assert fresh[-1]["ready_reason"] == "review_date"
+
+    legacy = [dict(r, ready=True, state_live=False) for r in seed]
+    legacy += [dict(seed[0], id="advanced", ready=True, state_live=True),
+               dict(seed[0], id="explicit", ready=True, state_live=False, ready_reason="reader_result")]
+    path = tmp_path / "experiments.json"
+    path.write_text(json.dumps({"experiments": legacy}))
+    monkeypatch.setattr(experiments, "_REGISTRY", path)
+    panel = experiments.panel()
+    assert panel["n"] == len(legacy)
+    assert {r["id"] for r in panel["experiments"] if r["ready"]} == {"accruing", "advanced", "explicit"}
+    closed = next(r for r in panel["experiments"] if r["id"] == "closed")
+    assert closed["come_back_on"] == "2001-02-03" and closed["days_until"] is None
+    assert experiments.alert_summary()["ready_count"] == 3

@@ -32,6 +32,7 @@ def run_steps(steps: Iterable[Step]) -> int:
 
 def default_steps() -> list[Step]:
     from scripts import build_baskets
+    from scripts import build_rotation_read
     from scripts import build_sector_action_board
     from scripts import build_sector_central
     from scripts import check_sector_intelligence_freshness
@@ -46,6 +47,7 @@ def default_steps() -> list[Step]:
             "scripts.build_sector_central",
             lambda: build_sector_central.main(strict=True),
         ),
+        ("scripts.build_rotation_read", lambda: build_rotation_read.main([])),
         ("scripts.check_sector_intelligence_freshness",
          lambda: check_sector_intelligence_freshness.main([])),
     ]

@@ -1,18 +1,18 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-11-06",
-  "generated_at": "2026-11-10T12:12:51.158370+00:00",
+  "as_of": "2026-11-12",
+  "generated_at": "2026-11-14T11:08:32.644751+00:00",
   "is_context_only": true,
-  "n_snapshots": 1398,
-  "n_days": 49,
+  "n_snapshots": 1401,
+  "n_days": 50,
   "horizons": {
     "5": {
-      "n_matured": 1353,
+      "n_matured": 1398,
       "by_stage": {
         "running": {
-          "n": 1275,
-          "mean_fwd_rel": -0.0047,
-          "hit_rate": 0.438
+          "n": 1320,
+          "mean_fwd_rel": -0.0048,
+          "hit_rate": 0.433
         },
         "coiling": {
           "n": 36,
@@ -25,18 +25,18 @@
           "hit_rate": 0.595
         }
       },
-      "running_ic": -0.0181,
-      "running_ic_t_hac": -0.308,
+      "running_ic": -0.0251,
+      "running_ic_t_hac": -0.441,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 1328,
+      "n_matured": 1353,
       "by_stage": {
         "running": {
-          "n": 1251,
-          "mean_fwd_rel": -0.0102,
-          "hit_rate": 0.408
+          "n": 1275,
+          "mean_fwd_rel": -0.0096,
+          "hit_rate": 0.419
         },
         "coiling": {
           "n": 36,
@@ -44,23 +44,23 @@
           "hit_rate": 0.417
         },
         "coiling_primed": {
-          "n": 41,
-          "mean_fwd_rel": 0.0142,
-          "hit_rate": 0.488
+          "n": 42,
+          "mean_fwd_rel": 0.0145,
+          "hit_rate": 0.5
         }
       },
-      "running_ic": -0.0424,
-      "running_ic_t_hac": -0.852,
+      "running_ic": -0.042,
+      "running_ic_t_hac": -0.863,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 1313,
+      "n_matured": 1328,
       "by_stage": {
         "running": {
-          "n": 1236,
-          "mean_fwd_rel": -0.0258,
-          "hit_rate": 0.358
+          "n": 1251,
+          "mean_fwd_rel": -0.0248,
+          "hit_rate": 0.365
         },
         "coiling": {
           "n": 36,
@@ -73,23 +73,23 @@
           "hit_rate": 0.61
         }
       },
-      "running_ic": -0.0584,
-      "running_ic_t_hac": -0.94,
+      "running_ic": -0.0578,
+      "running_ic_t_hac": -0.952,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "63": {
-      "n_matured": 618,
+      "n_matured": 688,
       "by_stage": {
         "running": {
-          "n": 546,
-          "mean_fwd_rel": -0.0535,
-          "hit_rate": 0.302
+          "n": 615,
+          "mean_fwd_rel": -0.0538,
+          "hit_rate": 0.306
         },
         "coiling": {
-          "n": 35,
-          "mean_fwd_rel": -0.04,
-          "hit_rate": 0.257
+          "n": 36,
+          "mean_fwd_rel": -0.0356,
+          "hit_rate": 0.278
         },
         "coiling_primed": {
           "n": 37,
@@ -97,8 +97,8 @@
           "hit_rate": 0.459
         }
       },
-      "running_ic": -0.0943,
-      "running_ic_t_hac": -2.089,
+      "running_ic": -0.146,
+      "running_ic_t_hac": -2.095,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     }
@@ -115,6 +115,14 @@
   "verdict": "measuring",
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
+    {
+      "date": "2026-10-20",
+      "id": "subsectors:oil-gas-e-p",
+      "name": "Oil & Gas E&P",
+      "stage": "running",
+      "fwd_rel": -0.07,
+      "horizon_d": 21
+    },
     {
       "date": "2026-10-16",
       "id": "nasdaq:internet-content-information",
@@ -169,14 +177,6 @@
       "name": "Robotics & Automation",
       "stage": "running",
       "fwd_rel": -0.0377,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-10-15",
-      "id": "baskets:crypto-rails",
-      "name": "Crypto & Digital Rails",
-      "stage": "running",
-      "fwd_rel": -0.0342,
       "horizon_d": 21
     }
   ],

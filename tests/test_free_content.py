@@ -382,6 +382,50 @@ class TestBodyScriptValidation:
 # _parse_md
 # ─────────────────────────────────────────────────────────────────────────────
 
+@pytest.mark.parametrize("translated", [True, False])
+def test_crypto_product_continuation_follows_chrome_locale(translated):
+    """The real product action is bilingual without translating its editorial body."""
+    from html.parser import HTMLParser
+    from jinja2 import Environment, FileSystemLoader
+    import scripts.build_free_content as bfc
+
+    fm, body = bfc._parse_md(_CONTENT_DIR / "products/crypto-intelligence.md")
+    body_html, toc = bfc._anchor_h2s(body)
+    page = {"fm": fm, "body_html": body_html, "toc": toc,
+            "url_path": "/products/crypto-intelligence.html"}
+    if not translated:
+        page["fm"]["cta"].pop("label_zh", None)
+    ctx = bfc._build_page_ctx(page, {}, {})
+    env = Environment(loader=FileSystemLoader(str(_TEMPLATES_DIR)), autoescape=True)
+    html = env.get_template("seo_product.html.j2").render(**ctx)
+
+    class Actions(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.actions = []
+
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            if tag == "a" and "gbtn-cta" in attrs.get("class", "").split():
+                self.actions.append(attrs)
+
+    parser = Actions()
+    parser.feed(html)
+    assert len(parser.actions) == 1
+    assert parser.actions[0]["href"] == "../crypto.html"
+    assert "aria-label" not in parser.actions[0]  # No English-only override of visible text.
+    action = html.split('<div class="prod-cta">', 1)[1].split("</div>", 1)[0]
+    if translated:
+        assert '<span class="l-en">Open the Crypto Cockpit</span>' in action
+        assert '<span class="l-zh">打开加密资产情报</span>' in action
+    else:
+        assert '>Open the Crypto Cockpit →</a>' in action
+        assert 'class="l-' not in action
+    assert page["body_html"] in html
+    assert html.count('rel="canonical"') == 1
+    assert 'href="https://www.mastermind-x.com/products/crypto-intelligence.html"' in html
+
+
 class TestParseMd:
     def test_parse_basic(self, tmp_path):
         import scripts.build_free_content as bfc

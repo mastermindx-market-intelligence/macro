@@ -1,0 +1,236 @@
+{
+ "schema": "theme_graph.segment_packet_request/v1",
+ "rows": [
+  {
+   "ticker": "AMAT",
+   "accession": "0001628280-25-056742",
+   "manifest_key": "manifests/0000006951/0001628280-25-056742/ffsec_manifest_10847b66c8f5ff1c8a4041b836d08c90ded7776d6c55f9de82f14f6e4044e945.json",
+   "document_id": "sec_document_2a3d084ab76d5ee13678a630a851ff2b2f77916a94d73259e866936fa3c98d48",
+   "subject_label": "APPLIED MATERIALS, INC.",
+   "disclosed_line": "Semiconductor Systems",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "The Semiconductor Systems segment includes semic",
+   "span_end_anchor": "xt:num-dot-decimal\" scale=\"6\" id=\"f-1388\">28,368",
+   "figures": {
+    "revenue": {
+     "text": "20,798",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "Information for each reportable segment for and as of the end of each fiscal year were as follows"
+    },
+    "revenue_denominator": {
+     "text": "28,368",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "Information for each reportable segment for and as of the end of each fiscal year were as follows"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "CAMT",
+   "accession": "0001178913-26-001561",
+   "manifest_key": "manifests/0001109138/0001178913-26-001561/ffsec_manifest_d070f637d8f16995ee21fd6a686e91911b8bea745cb77d6d2eb79abb2646a349.json",
+   "document_id": "sec_document_252cdc848437e524c7a341fa7d6ee6a91debfcaf395db131a8b9db4d4b8a727f",
+   "subject_label": "Camtek Ltd.",
+   "disclosed_line": "one reporting segment",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "Camtek Ltd. and its subsidiaries</span></span></span></span></div><div style=\"line-height:1.25\">&#160;</div><div style=\"text-align:justify;line-height:1.25;font-weight:bold;margin-bottom:0px\"><p style=\"font-size:10pt;font-family:Times New Roman, Times, serif;margin-top:0pt;margin-bottom:0pt\"><span style=\"font-size:10pt\"><span style=\"font-family:Times New Roman,Times,serif\"><span><span><span><span>Notes to the Consolidated Financial Statements as at December 31, 2025</span></span></span></span></span></span></p><hr style=\"height:2px;width:100%;color:#000000;background-color:#000000;text-align:center;margin-left:auto;margin-right:auto;border:none;margin-bottom:5pt;margin-top:5pt;text-align:center\"/><div style=\"text-align:justify;line-height:1.25;font-weight:bold;margin-top:0px\"><span style=\"font-size:10pt\"><span style=\"font-family:Times New Roman,Times,serif\"><span><span>(Amounts in thousands, except per share data)</span></span></span></span></div><p style=\"margin-top:0pt;margin-bottom:0pt;font-family:Times New Roman,Times,serif\">&#160;</p></div>\n\n  <ix:nonNumeric id=\"Fxbrl_20260316102701707\" name=\"camt:SegmentsAndEntityWideInformation\" contextRef=\"C_20250101to20251231\" escape=\"true\">\n    <div>\n      <div style=\"text-align:justify;line-height:1.25;font-weight:bold\"><span style=\"font-size:10pt\"><span style=\"font-family:Times New Roman,Times,serif\">Note 17 - Segments and Entity-Wide Information</span></span></div>\n      <div style=\"line-height:1.25\">&#160;</div>\n      <div style=\"text-align:justify;margin-left:35.45pt;line-height:1.25\"><span style=\"font-size:10pt\"><span style=\"font-family",
+   "span_end_anchor": "26935_73\" name=\"us-gaap:Revenues\" contextRef=\"C_20250101to20251231\" unitRef=\"USD\" scale=\"3\" decimals=\"-3\" format=\"ixt:num-dot-decimal\">496,072",
+   "figures": {
+    "revenue": {
+     "text": "496,072",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The majority of long-lived assets are located in Israel"
+    },
+    "revenue_denominator": {
+     "text": "496,072",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The majority of long-lived assets are located in Israel"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "FORM",
+   "accession": "0001039399-26-000009",
+   "manifest_key": "manifests/0001039399/0001039399-26-000009/ffsec_manifest_1f4a749c875f83f6fa2e0d158fcf562dd1b0d39181a5a368cb7ba210cb1b22c3.json",
+   "document_id": "sec_document_35d9dc5540e320d754d4a33c255a452d846c7829e0a07b7094be5e6f0c99973b",
+   "subject_label": "FormFactor, Inc.",
+   "disclosed_line": "Probe Cards",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "FormFactor, Inc., headquartered in Livermore, Ca",
+   "span_end_anchor": ";font-size:10pt;font-weight:400;line-height:100%\">Total</span></td><td style=\"background-color:#cceeff;border-bottom:3pt double #000000;border-top:1pt solid #000000;padding:2px 0 2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">$</span></td><td style=\"background-color:#cceeff;border-bottom:3pt double #000000;border-top:1pt solid #000000;padding:2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">784,993",
+   "figures": {
+    "revenue": {
+     "text": "637,898",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "Revenues by Segment"
+    },
+    "revenue_denominator": {
+     "text": "784,993",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "Revenues by Segment"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "KLIC",
+   "accession": "0000056978-25-000081",
+   "manifest_key": "manifests/0000056978/0000056978-25-000081/ffsec_manifest_5b0be2c92e8208fad78e81abb95b5e06519f07564e060d39af9addf3a88bcaab.json",
+   "document_id": "sec_document_878c0b586d9dda01abe46166a0dc09f024a1821bf3340ca61c9e5f7eb170f938",
+   "subject_label": "KULICKE AND SOFFA INDUSTRIES, INC.",
+   "disclosed_line": "Advanced Solutions",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "Reflects the results of the Company from the design, development, manufacture and sale of ball bonding equipment and wafer level bonding equip",
+   "span_end_anchor": "t:num-dot-decimal\" scale=\"3\" id=\"f-1093\">654,081",
+   "figures": {
+    "revenue": {
+     "text": "72,737",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "thermocompression systems and solutions"
+    },
+    "revenue_denominator": {
+     "text": "654,081",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "thermocompression systems and solutions"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "KLIC",
+   "accession": "0000056978-25-000081",
+   "manifest_key": "manifests/0000056978/0000056978-25-000081/ffsec_manifest_5b0be2c92e8208fad78e81abb95b5e06519f07564e060d39af9addf3a88bcaab.json",
+   "document_id": "sec_document_878c0b586d9dda01abe46166a0dc09f024a1821bf3340ca61c9e5f7eb170f938",
+   "subject_label": "KULICKE AND SOFFA INDUSTRIES, INC.",
+   "disclosed_line": "APS",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "Reflects the results of the Company from the design, development, manufacture and sale of ball bonding equipment and wafer level bonding equip",
+   "span_end_anchor": "t:num-dot-decimal\" scale=\"3\" id=\"f-1093\">654,081",
+   "figures": {
+    "revenue": {
+     "text": "156,129",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "tools, spares and services for our equipment"
+    },
+    "revenue_denominator": {
+     "text": "654,081",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "tools, spares and services for our equipment"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "LRCX",
+   "accession": "0000707549-26-000037",
+   "manifest_key": "manifests/0000707549/0000707549-26-000037/ffsec_manifest_c2339594694dd32185544682be00d37245a31a0ad033402f07f59661df1a63e6.json",
+   "document_id": "sec_document_7a2a594b7be0f76be546df8a8b61bf08eac1c07a341032a9b7692e2cd8622dcf",
+   "subject_label": "Lam Research Corporation",
+   "disclosed_line": "Customer support-related revenue and other",
+   "share_scope": "product_line",
+   "fiscal_year": 2026,
+   "span_start_anchor": "Customer support-related revenue includes sales of customer services, spares, upgrad",
+   "span_end_anchor": "9pt;font-weight:400;line-height:100%\">23,232,690",
+   "figures": {
+    "revenue": {
+     "text": "8,347,202",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following table presents our revenue disaggregated between system and customer support-related revenue"
+    },
+    "revenue_denominator": {
+     "text": "23,232,690",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The following table presents our revenue disaggregated between system and customer support-related revenue"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  },
+  {
+   "ticker": "LRCX",
+   "accession": "0000707549-26-000037",
+   "manifest_key": "manifests/0000707549/0000707549-26-000037/ffsec_manifest_c2339594694dd32185544682be00d37245a31a0ad033402f07f59661df1a63e6.json",
+   "document_id": "sec_document_7a2a594b7be0f76be546df8a8b61bf08eac1c07a341032a9b7692e2cd8622dcf",
+   "subject_label": "Lam Research Corporation",
+   "disclosed_line": "one reportable business segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The Company operates in <ix:nonFraction unitRef=\"segment\" contextRef=\"c-1\" decimals=",
+   "span_end_anchor": "um-dot-decimal\" scale=\"3\" id=\"f-1066\">23,232,690",
+   "figures": {
+    "revenue": {
+     "text": "23,232,690",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The table below reconciles the Company's reportable segment to income before income taxes"
+    },
+    "revenue_denominator": {
+     "text": "23,232,690",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "The table below reconciles the Company's reportable segment to income before income taxes"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T12:45:00Z",
+   "policy_recorded_at": "2026-11-14T12:45:00Z",
+   "adopted_at": "2026-11-14T12:45:00Z"
+  }
+ ]
+}

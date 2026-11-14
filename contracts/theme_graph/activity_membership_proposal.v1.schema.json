@@ -859,6 +859,86 @@
               "$ref": "#/$defs/clock"
             }
           }
+        },
+        "exposure": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Shares belong to the disclosed segment or product line, not to the micro-theme. When several micro-themes sit inside one disclosed line, each member row carries the same line and share; no consumer may add them up. revenue_share and profit_share are the writer's exact quotient of two filed figures, each pinned by its own span in the owner fact; they are never entered by hand, and any rounding is for display only (round half up to 2 dp of a percentage). A figure printed in parentheses or with a minus sign is a loss and is carried negative; profit_share is null when the profit figure is negative; a zero or negative denominator is refused.",
+          "required": [
+            "basis",
+            "role",
+            "profit_driver",
+            "disclosed_line",
+            "share_scope",
+            "revenue_share",
+            "revenue_denominator",
+            "fiscal_year",
+            "accession"
+          ],
+          "properties": {
+            "basis": {
+              "const": "house_rule_v1"
+            },
+            "role": {
+              "enum": [
+                "primary",
+                "secondary",
+                "minor"
+              ]
+            },
+            "profit_driver": {
+              "type": "boolean"
+            },
+            "disclosed_line": {
+              "type": "string",
+              "minLength": 1
+            },
+            "share_scope": {
+              "enum": [
+                "segment",
+                "product_line"
+              ]
+            },
+            "revenue_share": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "revenue_denominator": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "profit_share": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "profit_denominator": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "profit_measure": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fiscal_year": {
+              "type": "integer"
+            },
+            "accession": {
+              "type": "string",
+              "pattern": "^[0-9]{10}-[0-9]{2}-[0-9]{6}$"
+            }
+          }
         }
       },
             "allOf": [
@@ -875,6 +955,7 @@
           },
           "then": {
             "properties": {
+              "exposure": false,
               "role": {
                 "enum": [
                   "component_supplier",

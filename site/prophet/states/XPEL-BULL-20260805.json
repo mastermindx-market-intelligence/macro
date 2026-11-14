@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XPEL-BULL-20260805",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.3,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.028,
+    "dist_to_stop_r": -0.076,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 208.9,
-    "p1": -0.6854,
-    "p2": -0.3427,
+    "horizon_pct_used": 220.0,
+    "p1": -0.7171,
+    "p2": -0.3586,
     "p3": null,
-    "move_r": -1.028,
+    "move_r": -1.076,
     "mfe_r": 0.121,
-    "mae_r": -1.028
+    "mae_r": -1.096
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.3800007629394528,
-  "_mae": -11.680000610351563,
+  "_mae": -12.450001068115235,
   "_max_p1": 0.08098596026639981,
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 94,
-  "tau": 2.0889,
+  "days_elapsed": 99,
+  "tau": 2.2,
   "closed": true,
   "outcome": "EXPIRED"
 }

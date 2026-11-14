@@ -248,7 +248,11 @@ def test_supabase_cfg_baked_by_watchlist_builder():
 
 def test_dossier_identifier_membership_and_links():
     src = _read("scripts/build_site.py")
-    assert 'US_SECTOR_PAGE.get(fund, "sectors/" + fund + ".html")' in src
+    # The dossier-link wiring moved to its owner module under the action-board
+    # extraction; build_site.py keeps the US_SECTOR_PAGE compatibility export.
+    assert "US_SECTOR_PAGE" in src
+    board = _read("engine/sector_action_board.py")
+    assert 'US_SECTOR_PAGE.get(fund, "sectors/" + fund + ".html")' in board
     tpl = _read("templates/sector.html.j2")
     assert "../stock.html#" in tpl
     assert '{% include "_site_nav.html.j2" %}' in tpl

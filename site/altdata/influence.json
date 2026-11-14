@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-11-11T00:39:34.553801+00:00",
+  "generated_utc": "2026-11-14T20:44:27.831366+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -749,11 +749,12 @@
       ],
       "n_actors": 6,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.85,
+      "alt_score": 6,
+      "alt_weighted": 2.2,
       "alt_channels": [
         "affiliation",
         "github_momentum",
+        "hf_model_momentum",
         "patent_cluster",
         "retail_buzz",
         "trump"
@@ -799,12 +800,12 @@
       "n_actors": 4,
       "alt_corroborated": true,
       "alt_score": 5,
-      "alt_weighted": 1.8,
+      "alt_weighted": 1.7,
       "alt_channels": [
         "affiliation",
-        "github_momentum",
         "lobbying",
         "material_8k",
+        "special_situation",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -847,11 +848,10 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 5,
-      "alt_weighted": 1.75,
+      "alt_score": 4,
+      "alt_weighted": 1.5,
       "alt_channels": [
         "affiliation",
-        "cnbc_pick",
         "lobbying",
         "special_situation",
         "trump"
@@ -897,13 +897,13 @@
       "n_actors": 4,
       "alt_corroborated": true,
       "alt_score": 5,
-      "alt_weighted": 1.85,
+      "alt_weighted": 1.8,
       "alt_channels": [
         "13f_add",
         "affiliation",
-        "cnbc_pick",
         "lobbying",
-        "patent_cluster"
+        "patent_cluster",
+        "special_situation"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1050,6 +1050,34 @@
       }
     },
     {
+      "ticker": "IEP",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
+        },
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 2,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
+    },
+    {
       "ticker": "GOOGL",
       "actors": [
         {
@@ -1102,10 +1130,11 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 0.8,
+      "alt_score": 4,
+      "alt_weighted": 1.25,
       "alt_channels": [
         "affiliation",
+        "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -1207,11 +1236,10 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.65,
+      "alt_score": 3,
+      "alt_weighted": 1.1,
       "alt_channels": [
         "affiliation",
-        "insider_mspr",
         "patent_cluster",
         "special_situation"
       ],
@@ -1234,12 +1262,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 8,
-      "alt_weighted": 3.65,
+      "alt_score": 7,
+      "alt_weighted": 3.3,
       "alt_channels": [
         "13f_add",
         "affiliation",
-        "analyst_upgrade_cluster",
         "congress_buy",
         "gov_grant_accel",
         "insider_mspr",
@@ -1279,31 +1306,6 @@
       }
     },
     {
-      "ticker": "AXP",
-      "actors": [
-        {
-          "actor": "Warren Buffett",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.05,
-      "alt_channels": [
-        "affiliation",
-        "material_8k"
-      ],
-      "top_holder": {
-        "owner": "BERKSHIRE HATHAWAY INC",
-        "title": "Institution",
-        "shares": 151610700
-      }
-    },
-    {
       "ticker": "KO",
       "actors": [
         {
@@ -1316,10 +1318,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 3,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "congress_buy",
         "special_situation"
       ],
       "top_holder": null
@@ -1337,13 +1340,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 2,
+      "alt_weighted": 0.9,
       "alt_channels": [
         "affiliation",
-        "material_8k",
-        "patent_cluster",
-        "stocktwits_bull"
+        "patent_cluster"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1527,33 +1528,6 @@
       }
     },
     {
-      "ticker": "IEP",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
-        },
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 2,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
-    },
-    {
       "ticker": "ASML",
       "actors": [
         {
@@ -1641,6 +1615,30 @@
       "top_holder": null
     },
     {
+      "ticker": "AXP",
+      "actors": [
+        {
+          "actor": "Warren Buffett",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": false,
+      "alt_score": 1,
+      "alt_weighted": 0.5,
+      "alt_channels": [
+        "affiliation"
+      ],
+      "top_holder": {
+        "owner": "BERKSHIRE HATHAWAY INC",
+        "title": "Institution",
+        "shares": 151610700
+      }
+    },
+    {
       "ticker": "COIN",
       "actors": [
         {
@@ -1689,6 +1687,70 @@
   "n_candidates": 0,
   "filings": [
     {
+      "date": "2026-11-10",
+      "form": "8-K",
+      "company": "Dominari Holdings Inc.",
+      "ticker": "DOMH",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/12239/000121390026117788/ea0311579-8k_dominari.htm"
+    },
+    {
+      "date": "2026-11-10",
+      "form": "8-K",
+      "company": "Dominari Holdings Inc.",
+      "ticker": "DOMH",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/12239/000121390026117788/ea031157901ex99-1.htm"
+    },
+    {
+      "date": "2026-11-10",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926036171/djt20261109c_425.htm"
+    },
+    {
+      "date": "2026-11-10",
+      "form": "S-1/A",
+      "company": "Cryptex Digital Market Cap ETF",
+      "ticker": "BAGZ",
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026117956/ea0311625-s1a7_cryptex.htm"
+    },
+    {
+      "date": "2026-11-09",
+      "form": "8-K",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035886/ex_1007154.htm"
+    },
+    {
+      "date": "2026-11-09",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035888/ex_1041067.htm"
+    },
+    {
+      "date": "2026-11-09",
+      "form": "8-K",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035886/djt20260819_8k.htm"
+    },
+    {
+      "date": "2026-11-09",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035888/djt20261109_425.htm"
+    },
+    {
       "date": "2026-11-06",
       "form": "8-K",
       "company": "HeartSciences Inc.",
@@ -1719,70 +1781,6 @@
       "ticker": null,
       "items": "",
       "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035284/djt20261105_425.htm"
-    },
-    {
-      "date": "2026-11-04",
-      "form": "8-K",
-      "company": "Hut 8 Corp.",
-      "ticker": "HUT",
-      "items": "2.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_8k.htm"
-    },
-    {
-      "date": "2026-11-04",
-      "form": "8-K",
-      "company": "Hut 8 Corp.",
-      "ticker": "HUT",
-      "items": "2.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_ex99-1.htm"
-    },
-    {
-      "date": "2026-11-04",
-      "form": "8-K",
-      "company": "American Bitcoin Corp.",
-      "ticker": "ABTC",
-      "items": "2.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-20261104.htm"
-    },
-    {
-      "date": "2026-11-04",
-      "form": "8-K",
-      "company": "American Bitcoin Corp.",
-      "ticker": "ABTC",
-      "items": "2.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-ex99_1.htm"
-    },
-    {
-      "date": "2026-11-03",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926034541/djt20261103_425.htm"
-    },
-    {
-      "date": "2026-10-28",
-      "form": "6-K",
-      "company": "SunScout Holding Ltd",
-      "ticker": "SNSC",
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/2101240/000121390026113292/ea030983701ex99-1.htm"
-    },
-    {
-      "date": "2026-10-26",
-      "form": "8-K",
-      "company": "Praetorian Acquisition Corp.",
-      "ticker": null,
-      "items": "5.02,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2093912/000121390026112505/ea030946801ex99-1.htm"
-    },
-    {
-      "date": "2026-10-26",
-      "form": "8-K",
-      "company": "Soren Acquisition Corp.",
-      "ticker": null,
-      "items": "5.02,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2086263/000121390026112511/ea030946701ex99-1.htm"
     }
   ]
 }

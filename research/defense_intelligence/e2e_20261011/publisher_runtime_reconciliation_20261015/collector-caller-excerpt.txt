@@ -1,0 +1,50 @@
+    "china_filings": "cninfo",             # www.cninfo.com.cn hisAnnouncement pagination
+    # P1-R1: zero-network DERIVED plane (reads china_filings' parquet only); cninfo
+    # membership is an ORDERING boundary, not a host user — it runs serially inside the
+    # cninfo group immediately AFTER china_filings' same-run refresh (registry order
+    # china_filings → china_visits → china_irm), which keeps the CNInfo concurrent
+    # optimization intact and adds nothing to the serial C0 lane.
+    "china_visits": "cninfo",
+    # W1 CNH interaction/sell-side planes — pure requests + bs4, verified no akshare.
+    # Each carries its own ≥1 rps pacing and a ~100s wall-clock guard.
+    "china_irm": "cninfo",                 # irm.cninfo.com.cn — org-polite: serializes behind china_filings' www.cninfo.com.cn pagination
+    "china_einteraction": "sseinfo",       # sns.sseinfo.com — distinct host, own group
+    "china_reports": "emreport",           # reportapi.eastmoney.com — distinct host, own group
+    # (china_holder_counts deliberately ABSENT: datacenter-web.eastmoney.com is shared
+    #  with the serial akshare/EM adapters, so it stays in the serial phase.)
+    "hk_gdelt": "gdelt",                   # api.gdeltproject.org (rate-limit waits off the serial path)
+    "hk_cbbc": "hkex", "hk_cbbc_sld": "hkex",  # www1.hkexnews.hk / www.hkex.com.hk SLD
+}
+
+
+def _run_one(key: str, cls, full_history: bool):
+    """Run a single adapter through the circuit-breaker runner. Returns (result, secs)
+    or None if the adapter couldn't even be constructed. Pure per-source work — no
+    shared mutable state — so it is safe to call from a worker thread."""
+    log.info("=== running %s ===", key)
+    try:
+        adapter = cls()
+    except Exception as e:  # noqa: BLE001
+        log.error("init %s failed: %s", key, e)
+        return None
+    t0 = time.perf_counter()
+    try:
+        res = run_adapter(adapter, full_history=full_history)
+    except Exception as e:  # noqa: BLE001 — degrade, never crash the pass
+        # run_adapter's internal except is the per-source boundary, but an
+        # exception can still ESCAPE it: its pre-try attribute reads
+        # (adapter.stale_after_days), or a future gap in the handler itself —
+        # the 2026-08-02/03 shape (#4534), where one duck-typing miss killed
+        # the whole collect job and the night's "commit data" step with it.
+        # This net makes _run_one the categorical boundary: any escape becomes
+        # a normal per-source 'failed' (breaker strike, annotated, night kept).
+        log.error("runner crashed on %s (degraded to failed): %s\n%s",
+                  key, e, traceback.format_exc(limit=3))
+        res = FetchResult(key, "failed", error=f"runner: {type(e).__name__}: {e}")
+    dt = time.perf_counter() - t0
+    res.source = key
+    log.info("%s -> %s (%d rows, last %s) [%.1fs]%s", key, res.status, res.rows,
+             res.last_date, dt, f" err={res.error}" if res.error else "")
+    # PIT release-lag recorder (masterplan W1a): append {source, fetch_ts, last_obs_date}
+    # so a first-party release calendar accrues going forward. Wrapped so it can NEVER
+    # break the collect pipeline; the live engine never reads this log.

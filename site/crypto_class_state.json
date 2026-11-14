@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-14",
   "universe_coverage": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-14",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -69,7 +69,7 @@
         "symbol": "ONDO",
         "id": "ondo-finance",
         "source": "CoinGecko",
-        "as_of": "2026-11-06",
+        "as_of": "2026-11-11",
         "reason": "OLDER_SNAPSHOT"
       },
       {
@@ -178,15 +178,15 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-09",
-      "eligible": 44,
+      "as_of": "2026-11-14",
+      "eligible": 46,
       "required": 10,
-      "excluded": 6,
-      "positive": 10,
-      "denominator": 44,
+      "excluded": 4,
+      "positive": 5,
+      "denominator": 46,
       "basis": "reported_30d_return_positive",
       "available": true,
-      "value": 23,
+      "value": 11,
       "state": "Narrow",
       "tone": "bear",
       "state_zh": "狭窄"
@@ -196,7 +196,7 @@
     "stance": "Market cap is lower",
     "total_state": "Falling",
     "dominance_state": "Steady",
-    "fear_state": "Fearful",
+    "fear_state": "Extreme fear",
     "breadth_state": "Narrow",
     "cap_move": "valuation",
     "cap_splices": [
@@ -524,23 +524,49 @@
         "support_after": 7,
         "level_ratio": 0.9940386306533618,
         "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-10",
+        "from_basis": "direct",
+        "to_basis": "derived",
+        "from_label_en": "direct total",
+        "from_label_zh": "直接总量",
+        "to_label_en": "derived total",
+        "to_label_zh": "推算总量",
+        "support_before": 7,
+        "support_after": 1,
+        "level_ratio": 1.1378439081287521,
+        "regime_treatment": "continuity_adjusted"
+      },
+      {
+        "date": "2026-11-11",
+        "from_basis": "derived",
+        "to_basis": "direct",
+        "from_label_en": "derived total",
+        "from_label_zh": "推算总量",
+        "to_label_en": "direct total",
+        "to_label_zh": "直接总量",
+        "support_before": 1,
+        "support_after": 4,
+        "level_ratio": 0.9965644771969134,
+        "regime_treatment": "continuity_adjusted"
       }
     ]
   },
   "flows": {
-    "etf": "Unavailable",
-    "stablecoins": "Unavailable",
+    "etf": "Falling",
+    "stablecoins": "Falling",
     "volume": "Quiet tape"
   },
   "flow_kinds": {
     "etf": {
       "kind": "subscription",
-      "observation": "stale",
+      "observation": "pending",
       "expected_cadence": "us_business_day"
     },
     "stablecoins": {
       "kind": "issuance",
-      "observation": "stale",
+      "observation": "current",
       "expected_cadence": "calendar_day"
     },
     "volume": {
@@ -559,14 +585,14 @@
     "ETH": {
       "trend": "Fading",
       "risk": "Stressed",
-      "relative": "Tracking Bitcoin",
-      "coverage": "3,814 daily observations from Coinbase daily OHLCV."
+      "relative": "Lagging Bitcoin",
+      "coverage": "3,819 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Fading",
       "risk": "Stressed",
-      "relative": "Tracking Bitcoin",
-      "coverage": "1,972 daily observations from Coinbase daily OHLCV."
+      "relative": "Lagging Bitcoin",
+      "coverage": "1,977 daily observations from Coinbase daily OHLCV."
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ROST-BULL-20260721",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.7,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 82.8,
+    "validity": 84.9,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.87,
+    "dist_to_stop_r": 0.886,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 246.7,
-    "p1": -0.087,
-    "p2": -0.0435,
+    "horizon_pct_used": 257.8,
+    "p1": -0.0761,
+    "p2": -0.038,
     "p3": null,
-    "move_r": -0.13,
+    "move_r": -0.114,
     "mfe_r": 0.538,
     "mae_r": -0.321
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 111,
-  "tau": 2.4667,
+  "days_elapsed": 116,
+  "tau": 2.5778,
   "closed": true,
   "outcome": "EXPIRED"
 }

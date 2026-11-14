@@ -308,7 +308,7 @@ def test_start_hub_uses_canonical_product_navigation_and_demotes_clock() -> None
     assert 'class="site-nav"' in rendered
     assert 'body class="hub-page"' in rendered
     assert 'class="hub-snapshot-meta"' in rendered
-    assert 'class="hub-clock-wrap"' in rendered
+    assert 'class="hub-site-status"' in rendered
     assert 'class="hub-top"' not in rendered
 
 

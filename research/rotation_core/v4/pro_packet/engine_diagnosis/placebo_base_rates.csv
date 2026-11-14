@@ -1,0 +1,16 @@
+ledger,h,n_graded_or_matured,n_dates,metric,observed,placebo_p2_5,placebo_p50,placebo_p97_5,naive_base_rate,below_p2_5,period
+self-grader,21,770,70,dir_hit_neutral_incl,0.2519,0.2714,0.2922,0.3104,0.5104,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+self-grader,21,770,70,cond_hit_neutral_excl,0.448,0.4827,0.5196,0.552,0.5,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+self-grader,21,770,70,rank_ic,-0.0785,-0.0706,0.0002,0.0678,0.0,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+self-grader,63,352,32,dir_hit_neutral_incl,0.2926,0.2869,0.3267,0.3693,0.4631,no,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+self-grader,63,352,32,cond_hit_neutral_excl,0.4558,0.4469,0.5088,0.5752,0.5,no,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+self-grader,63,352,32,rank_ic,-0.1474,-0.1099,0.0005,0.1106,0.0,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,5,15593,58,emerging_hit,0.4382,0.4253,0.4626,0.5,,no,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,5,15593,58,score_ic,-0.0006,-0.0155,0.0001,0.016,,no,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,5,15593,58,share_all_rows_fwd_pos (board EW up-rate),0.4628,,,,,,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,21,14517,54,emerging_hit,0.4151,0.4259,0.4645,0.5015,,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,21,14517,54,score_ic,-0.0252,-0.0172,0.0001,0.0168,,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,21,14517,54,share_all_rows_fwd_pos (board EW up-rate),0.4646,,,,,,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,63,9406,35,emerging_hit,0.3214,0.3929,0.4405,0.4857,,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,63,9406,35,score_ic,-0.1354,-0.0198,-0.0002,0.0202,,yes,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11
+track-record,63,9406,35,share_all_rows_fwd_pos (board EW up-rate),0.4417,,,,,,audit period: calls<=2026-11-10 (self-grader ledger ends 2026-10-16); outcomes<=2026-11-11

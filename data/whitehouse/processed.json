@@ -2039,6 +2039,96 @@
       "at": "2026-11-10T23:20:06.147336+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54378": {
+      "id": "wh-2026-11-11-presidential-message-on-national-diabetes-month-a726",
+      "at": "2026-11-11T06:18:00.883166+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54375": {
+      "id": "wh-2026-11-11-presidential-message-on-the-birthday-of-the-united-states-marine-corps",
+      "at": "2026-11-11T06:18:04.000734+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54372": {
+      "id": "wh-2026-11-11-presidential-message-on-national-alzheimers-disease-awareness-month-59dc",
+      "at": "2026-11-11T06:18:06.278001+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54370": {
+      "id": "wh-2026-11-11-presidential-message-on-critical-infrastructure-security-and-resilience-month-aa",
+      "at": "2026-11-11T06:18:08.780056+00:00",
+      "activated": false,
+      "importance": 25
+    },
+    "https://www.whitehouse.gov/?p=54332": {
+      "id": "wh-2026-11-10-first-lady-melania-trumps-fostering-the-future-together-grows-its-international-",
+      "at": "2026-11-11T06:18:12.566031+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=54392": {
+      "id": "wh-2026-11-11-presidential-message-on-victory-day-for-world-war-i-dd1e",
+      "at": "2026-11-11T21:59:14.747254+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54395": {
+      "id": "wh-2026-11-11-we-render-you-the-highest-salute-president-trump-honors-americas-veterans-on-hal",
+      "at": "2026-11-12T03:00:31.586214+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=54614": {
+      "id": "wh-2026-11-12-first-lady-melania-trump-honors-americas-fallen-heroes-at-the-tomb-of-the-unknow",
+      "at": "2026-11-13T00:26:55.449073+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=54610": {
+      "id": "wh-2026-11-12-nominations-sent-to-the-senate-16a6",
+      "at": "2026-11-13T00:26:57.159966+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54603": {
+      "id": "wh-2026-11-12-democrats-will-help-us-caravans-march-north-as-dems-vow-to-reopen-the-border-pre",
+      "at": "2026-11-13T00:27:08.429071+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=54599": {
+      "id": "wh-2026-11-12-presidential-message-on-national-native-american-heritage-month-39c4",
+      "at": "2026-11-13T00:27:26.742152+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54596": {
+      "id": "wh-2026-11-12-presidential-message-on-national-military-families-month",
+      "at": "2026-11-13T00:27:28.727498+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54594": {
+      "id": "wh-2026-11-12-presidential-message-on-national-entrepreneurship-month-bfcb",
+      "at": "2026-11-13T00:27:30.505216+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54591": {
+      "id": "wh-2026-11-12-first-lady-melania-trump-honors-americas-elite-soldiers-and-the-sacrifices-of-mi",
+      "at": "2026-11-13T07:56:38.511201+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54613": {
+      "id": "wh-2026-11-13-trump-administration-delivers-record-setting-results-through-executive-action",
+      "at": "2026-11-13T16:21:29.829823+00:00",
+      "activated": false,
+      "importance": 20
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

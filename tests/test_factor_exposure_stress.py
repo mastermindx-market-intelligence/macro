@@ -12,8 +12,15 @@ smoke-checked opportunistically. (engine/factor_exposure.py::factor_cov_stress.)
 """
 from __future__ import annotations
 
+import html
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+import pytest
 
 from engine import factor_exposure as fe
 
@@ -257,7 +264,7 @@ def test_guard_path_through_compute_exposure_synthetic(monkeypatch):
 
     monkeypatch.setattr(fe, "factor_frame", lambda asof=None: F)
     monkeypatch.setattr(fe, "_closes", lambda: px)
-    monkeypatch.setattr(fe, "_etf_closes", lambda: pd.DataFrame())
+    monkeypatch.setattr(fe, "_etf_panels", lambda: (pd.DataFrame(), pd.DataFrame()))
     monkeypatch.setattr(fe, "_names_sectors", lambda: {})
     # loosen the min-obs floors so betas estimate on the short synthetic window
     monkeypatch.setattr(fe, "_cfg", lambda: {
@@ -271,3 +278,242 @@ def test_guard_path_through_compute_exposure_synthetic(monkeypatch):
     # pre-existing contract intact even on the guard path
     for k in ("factor_cov", "factor_vol_ann", "betas", "factors"):
         assert k in out
+
+
+def test_issue11016_stock_and_covariance_share_factor_window_without_price_dates():
+    rng = np.random.default_rng(11024)
+    idx = _idx(650)
+    m = rng.normal(0, 0.01, len(idx))
+    factors = pd.DataFrame({"mkt": m, "growth": np.linspace(-1, 1, len(idx)) * m
+                            + rng.normal(0, 0.005, len(idx))}, index=idx)
+    closes = pd.DataFrame({"A": 100 * (1 + 0.8*m + 0.3*factors.growth).cumprod()},
+                          index=idx).drop(idx[-60::3])
+    window = factors.tail(252)
+    basis = fe.orthogonalize_factors(window)
+    returns = closes.pct_change(fill_method=None).reindex(window.index)
+    mask = np.isfinite(returns.A)
+    design = np.column_stack([np.ones(mask.sum()), basis.loc[mask].to_numpy()])
+    coef = np.linalg.lstsq(design, returns.loc[mask, "A"], rcond=None)[0]
+    rec = fe.stock_betas(closes, factors, window=252, min_obs=126,
+                         max_abs=5.0)["betas"]["A"]
+    assert [rec["mkt"], rec["growth"]] == [round(float(x), 3) for x in coef[1:]]
+    pd.testing.assert_frame_equal(fe.factor_cov(factors, window=252), basis.cov()*252)
+    stress = fe.factor_cov_stress(factors, fit_window=252, stress_window=600, quantile=.25)
+    history = factors.tail(600)
+    fixed = fe.orthogonalize_apply(history, fe.orthogonalize_fit(window))
+    stress_days = history.mkt <= history.mkt.quantile(.25)
+    pd.testing.assert_frame_equal(stress["cov"], fixed.loc[stress_days].cov()*252)
+
+
+def test_issue11016_covariance_uses_same_finite_factor_rows():
+    rng = np.random.default_rng(11025)
+    factors = pd.DataFrame({"mkt": rng.normal(0, .01, 700),
+                            "growth": rng.normal(0, .005, 700)}, index=_idx(700))
+    factors.iloc[-10, 0] = np.inf
+    factors.iloc[-20, 1] = np.nan
+    clean = factors.replace([np.inf, -np.inf], np.nan).dropna()
+    pd.testing.assert_frame_equal(fe.factor_cov(factors, window=252),
+                                   fe.factor_cov(clean, window=252))
+    a = fe.factor_cov_stress(factors, fit_window=252, stress_window=600, quantile=.25)
+    b = fe.factor_cov_stress(clean, fit_window=252, stress_window=600, quantile=.25)
+    assert a["available"] and a["n_stress"] == b["n_stress"]
+    pd.testing.assert_frame_equal(a["cov"], b["cov"])
+
+
+def _issue11016_native_consumers(data, weights):
+    """Execute complete shipped programs; only external DOM/fetch seams are supplied."""
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node not on PATH: native FactorExposure/RiskCore proof unavailable")
+    script = r"""
+const fs = require('fs');
+const path = require('path');
+const root = process.argv[1];
+const payload = JSON.parse(fs.readFileSync(0, 'utf8'));
+process.on('unhandledRejection', error => { console.error(error); process.exit(1); });
+const RiskCore = require(path.join(root, 'templates/risk_core.js'));
+let language = 'en';
+const panel = {style: {display: ''}, innerHTML: ''};
+const events = [];
+global.window = global;
+global.WS = {prov: () => ({gen: 3})};
+global.document = {
+  documentElement: {getAttribute: k => k === 'data-lang' ? language
+    : k === 'data-ws-mode' ? 'portfolio' : null},
+  getElementById: id => id === 'fx_panel' ? panel : null,
+  addEventListener: () => {},
+  dispatchEvent: e => events.push(e.detail)
+};
+global.CustomEvent = function(type, init) {this.type = type; this.detail = init.detail;};
+global.localStorage = {getItem: () => null, setItem: () => {}};
+global.fetch = async url => {
+  if (url !== 'factor_betas.json') throw Error('unexpected fetch ' + url);
+  return {ok: true, json: async () => payload.data};
+};
+require(path.join(root, 'templates/factor_exposure.js'));
+const flush = () => new Promise(resolve => setImmediate(resolve));
+(async () => {
+  const read = RiskCore.read(payload.data, payload.weights);
+  FX.setAutoWeights(payload.weights); await flush();
+  const en = panel.innerHTML;
+  const populated = FX.currentWeights();
+  language = 'zh'; FX.refresh(); await flush();
+  const zh = panel.innerHTML;
+  const first = Object.keys(payload.weights)[0];
+  FX.setAutoWeights({[first]: 1}); await flush();
+  const thin = {display: panel.style.display, html: panel.innerHTML,
+    weights: FX.currentWeights(), risk: RiskCore.book(payload.data, {[first]: 1}, 'calm')};
+  FX.setAutoWeights({}); await flush();
+  const empty = {display: panel.style.display, html: panel.innerHTML,
+    weights: FX.currentWeights()};
+  process.stdout.write(JSON.stringify({read, en, zh, populated, thin, empty, events}));
+})().catch(error => {console.error(error); process.exit(1);});
+"""
+    result = subprocess.run([node, "-e", script, str(Path(__file__).resolve().parents[1])],
+                            input=json.dumps({"data": data, "weights": weights}, allow_nan=False),
+                            text=True, capture_output=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    return json.loads(result.stdout)
+
+
+@pytest.mark.parametrize("days,gaps", [(700, False), (700, True), (1000, True)])
+def test_issue11016_real_export_and_native_consumers_preserve_market_identity(monkeypatch, days, gaps):
+    rng = np.random.default_rng(11026)
+    idx = _idx(days)
+    spy = pd.DataFrame({"close": 100*(1+rng.normal(.0002, .01, days)).cumprod()}, index=idx)
+    tlt = pd.DataFrame({"close": 100.0}, index=idx)
+    if gaps:
+        tlt.iloc[::4] = np.nan
+    prices = {"SPY": spy, "TLT": tlt}
+    monkeypatch.setattr(fe.store, "read", lambda group, sid: prices.get(sid) if group == "yahoo" else None)
+    monkeypatch.setattr(fe, "_names_sectors", lambda: {})
+    out = fe.compute_exposure(closes=spy.rename(columns={"close": "SAME"}))
+    assert out is not None
+    for ticker in ("SPY", "SAME"):
+        rec = out["betas"][ticker]
+        assert rec["mkt"] == 1.0 and rec["raw"]["mkt"] == 1.0
+        assert rec["r2"] == 1.0 and rec["idio_vol"] == 0.0 and rec["n"] == 252
+    assert out["stress_meta"]["available"] is (not gaps or days == 1000)
+    # JSON serialization is part of the producer→consumer boundary, not a retyped beta fixture.
+    result = _issue11016_native_consumers(json.loads(json.dumps(out, allow_nan=False)),
+                                          {"SPY": 600, "SAME": 400})
+    for lens in ("calm", "stress"):
+        book = result["read"][lens]
+        if lens == "stress" and not out["stress_meta"]["available"]:
+            assert book is None
+            continue
+        covariance = out["factor_cov_stress" if lens == "stress" else "factor_cov"]
+        assert book["ok"] and book["bookBeta"]["mkt"] == 1.0
+        assert book["idioVar"] == 0.0
+        assert book["variance"] == pytest.approx(covariance["mkt"]["mkt"])
+        assert book["coverage"]["unmodeled"] == []
+    for language, label in (("en", "S&P 500 −5%"), ("zh", "标普 −5%")):
+        assert label in html.unescape(result[language]) and "-5.0%" in result[language]
+    assert "Confidence categories are provisional." in result["en"]
+    assert "置信度分类为暂定。" in result["zh"]
+    assert result["populated"]["prov"] == {"scope": "portfolio", "gen": 3}
+    assert result["thin"]["display"] == "none" and result["thin"]["html"] == ""
+    assert result["thin"]["risk"]["reason"] == "thin"
+    assert result["empty"]["display"] == "none" and result["empty"]["html"] == ""
+    assert result["empty"]["weights"]["universe"] == []
+    assert result["events"][-1]["universe"] == []
+
+
+@pytest.mark.parametrize("support_loss", ["collinear", "constant_zero", "constant_nonzero"])
+def test_issue11016_unidentified_record_cannot_become_modeled_zero_risk(support_loss):
+    rng = np.random.default_rng(11027)
+    m = rng.normal(0, .01, 252)
+    raw = pd.DataFrame({"mkt": m, "growth": np.r_[rng.normal(0, .01, 126), 2*m[126:]]},
+                       index=_idx(252))
+    basis = fe.orthogonalize_factors(raw)
+    if support_loss != "collinear":
+        constant = .1 if support_loss == "constant_nonzero" else 0.0
+        basis["growth"] = np.r_[rng.normal(0, .01, 126), np.full(126, constant)]
+    returns = pd.DataFrame({"GOOD": m, "UNIDENTIFIED": np.r_[np.full(126, np.nan), m[126:]]},
+                           index=raw.index)
+    betas = fe._betas_on_window(returns, basis, 126, 5.0)["betas"]
+    covariance = basis.cov()*252
+    data = {"factors": [{"key": k} for k in basis], "betas": betas,
+            "factor_cov": covariance.to_dict(), "stress_meta": {"available": False}}
+    result = _issue11016_native_consumers(data, {"GOOD": 1, "UNIDENTIFIED": 1})
+    assert result["read"]["calm"]["ok"] is False
+    assert result["read"]["calm"]["reason"] == "thin"
+    assert result["read"]["calm"]["coverage"]["unmodeled"] == ["UNIDENTIFIED"]
+    assert result["en"] == result["zh"] == ""
+
+
+def _native_calendar_export(monkeypatch, factor_holes=True):
+    """Source-calendar regression from #11053; execute the native exporter."""
+    rng = np.random.default_rng(316)
+    sessions = pd.bdate_range("2023-01-02", periods=700)
+    days = pd.date_range(sessions.min(), sessions.max())
+    market = pd.Series(100 * np.cumprod(1 + rng.normal(.0003, .009, len(sessions))), index=sessions)
+    btc_returns = rng.normal(.0004, .018, len(days))
+    btc = pd.Series(100 * np.cumprod(1 + btc_returns), index=days)
+    eth = pd.Series(100 * np.cumprod(1 + 1.2 * btc_returns + rng.normal(0, .003, len(days))), index=days)
+    bonds = pd.Series(100.0, index=sessions)
+    if factor_holes:
+        bonds.iloc[1::4] = np.nan
+    inputs = {"SPY": market.to_frame("close"), "TLT": bonds.to_frame("close"),
+              "BTC-USD": btc.to_frame("close"), "ETH-USD": eth.to_frame("close")}
+    monkeypatch.setattr(fe.store, "read", lambda group, name: inputs.get(name) if group == "yahoo" else None)
+    monkeypatch.setattr(fe.config, "load", lambda: {})
+    monkeypatch.setattr(fe, "_names_sectors", lambda: {})
+    out = fe.compute_exposure(closes=pd.DataFrame({"SAME": market, "TWIN": market}))
+    assert out is not None
+    return json.loads(json.dumps(out, allow_nan=False))
+
+
+@pytest.mark.parametrize("factor_holes", [False, True])
+def test_native_export_preserves_equity_and_crypto_return_calendars(monkeypatch, factor_holes):
+    out = _native_calendar_export(monkeypatch, factor_holes)
+    for ticker in ["SAME", "TWIN", "SPY"]:
+        rec = out["betas"][ticker]
+        assert (rec["mkt"], rec["raw"]["mkt"], rec["r2"], rec["idio_vol"], rec["n"]) == (1.0, 1.0, 1.0, 0.0, 252)
+    btc = out["betas"]["BTC-USD"]
+    assert (btc["btc"], btc["raw"]["btc"], btc["r2"], btc["idio_vol"], btc["n"]) == (1.0, 1.0, 1.0, 0.0, 252)
+    assert out["betas"]["ETH-USD"]["idio_vol"] > 0
+    assert list(out["factor_cov"]) == [f["key"] for f in out["factors"]]
+    result = _issue11016_native_consumers(out, {"SAME": 600, "TWIN": 400})
+    for lens in ("calm", "stress"):
+        book = result["read"][lens]
+        if lens == "stress" and not out["stress_meta"]["available"]:
+            assert book is None
+            continue
+        covariance = out["factor_cov_stress" if lens == "stress" else "factor_cov"]
+        assert book["ok"] and book["bookBeta"]["mkt"] == 1.0
+        assert book["idioVar"] == 0.0 and book["variance"] == pytest.approx(covariance["mkt"]["mkt"])
+        assert book["coverage"]["unmodeled"] == []
+    for language, label in (("en", "S&P 500 −5%"), ("zh", "标普 −5%")):
+        assert label in html.unescape(result[language]) and "-5.0%" in result[language]
+    assert result["populated"]["prov"] == {"scope": "portfolio", "gen": 3}
+
+
+@pytest.mark.parametrize("asof_offset", [None, -20])
+def test_native_source_missing_prices_are_not_bridged(monkeypatch, asof_offset):
+    rng = np.random.default_rng(11029)
+    sessions = pd.bdate_range("2023-01-02", periods=400)
+    days = pd.date_range(sessions.min(), sessions.max())
+    market = pd.Series(100 * np.cumprod(1 + rng.normal(.0003, .009, len(sessions))), index=sessions)
+    gapped = market.copy()
+    gapped.iloc[-50] = np.nan
+    btc = pd.Series(100 * np.cumprod(1 + rng.normal(0, .02, len(days))), index=days)
+    inputs = {"SPY": market.to_frame("close"), "IWD": gapped.to_frame("close"),
+              "BTC-USD": btc.to_frame("close")}
+    monkeypatch.setattr(fe.store, "read", lambda group, name: inputs.get(name) if group == "yahoo" else None)
+    monkeypatch.setattr(fe.config, "load", lambda: {})
+    monkeypatch.setattr(fe, "_names_sectors", lambda: {})
+    asof = None if asof_offset is None else sessions[asof_offset]
+    # An explicit stock-panel duplicate must retain the same precedence in both
+    # prices and returns; the complete cached SPY series must not replace it.
+    prices = pd.DataFrame({"STOCK": gapped, "SPY": gapped})
+    out = fe.compute_exposure(closes=prices, asof=asof)
+    assert out is not None
+    json.dumps(out, allow_nan=False)
+    frame = fe.factor_frame(asof=asof).tail(252)
+    expected_returns = gapped.pct_change(fill_method=None).reindex(frame.index)
+    assert expected_returns.isna().sum() == 2
+    for ticker in ("STOCK", "SPY", "IWD"):
+        rec = out["betas"][ticker]
+        assert (rec["mkt"], rec["raw"]["mkt"], rec["r2"], rec["idio_vol"], rec["n"]) == (1.0, 1.0, 1.0, 0.0, 250)
+    assert out["as_of"] == str(frame.index.max().date())

@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 
 import pandas as pd
@@ -206,6 +207,24 @@ def _subsector_factor(entry_weight: float, state: str | None) -> float:
 
 
 _CLASS_ORDER = {"entry_now": 0, "forming": 1, "tailwind": 2, "neutral": 3, "late": 4, "headwind": 5}
+
+
+def _measured_desc(v) -> tuple:
+    """Descending sort component that never reads a missing value as a measured 0.
+
+    Lane 8 (B04): `-(rs_60d or 0)` sorted a missing rs_60d as exactly 0 (between
+    leaders and laggards) and a NaN poisoned the comparison.  A finite real sorts
+    by value (descending); None / NaN / bool sort AFTER every measured value."""
+    ok = (isinstance(v, (int, float)) and not isinstance(v, bool)
+          and math.isfinite(float(v)))
+    return (0, -float(v)) if ok else (1, 0.0)
+
+
+def _board_key(g: dict) -> tuple:
+    """Board order: class, then entry weight (desc), then rs_60d (desc, missing last);
+    remaining ties keep build/roster order (stable sort)."""
+    return (_CLASS_ORDER.get(g["class"], 9), -g["entry"]["weight"],
+            _measured_desc((g.get("regime") or {}).get("rs_60d")))
 
 
 def score_group(key: str, label: str, sector: str, tickers: list[str],
@@ -403,8 +422,7 @@ def compute_subsector_confluence() -> dict:
         if g is not None:
             sectors.append(g)
 
-    subs.sort(key=lambda g: (_CLASS_ORDER.get(g["class"], 9), -g["entry"]["weight"],
-                             -(g["regime"]["rs_60d"] or 0)))
+    subs.sort(key=_board_key)
     ff = funnel(subs)
 
     return {
@@ -478,8 +496,7 @@ def compute_basket_confluence(memberships: dict, *, benchmark: str = "SPY",
     except Exception as e:  # noqa: BLE001 — display-only, never blocks the desk
         log.warning("subsector_confluence: behaves_as annotation failed: %s", e)
 
-    baskets.sort(key=lambda g: (_CLASS_ORDER.get(g["class"], 9), -g["entry"]["weight"],
-                                -(g["regime"]["rs_60d"] or 0)))
+    baskets.sort(key=_board_key)
     ff = funnel(baskets)
     return {
         "ok": True, "universe": universe, "weighting": "equal", "benchmark": benchmark,
@@ -593,10 +610,8 @@ def _compute_partition(subsectors: dict, amalgamations: dict, *, benchmark: str,
         if g is not None:
             sectors.append(g)
 
-    subs.sort(key=lambda g: (_CLASS_ORDER.get(g["class"], 9), -g["entry"]["weight"],
-                             -(g["regime"]["rs_60d"] or 0)))
-    sectors.sort(key=lambda g: (_CLASS_ORDER.get(g["class"], 9), -g["entry"]["weight"],
-                                -(g["regime"]["rs_60d"] or 0)))
+    subs.sort(key=_board_key)
+    sectors.sort(key=_board_key)
     n_total = len(subsectors)
     return {
         "ok": True, "universe": universe, "weighting": "equal", "benchmark": benchmark,

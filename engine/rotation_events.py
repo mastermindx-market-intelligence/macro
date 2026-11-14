@@ -1015,6 +1015,29 @@ def step_cross_pairs(
     return new_state, events_active, created, closed
 
 
+def _cross_pairs_asof(universe: dict, closes: dict) -> str | None:
+    """Latest pair-common (donor ∩ receiver) date across the cross universe.
+
+    Applies the same per-pair rule ``step_cross_pairs`` stamps — dropna index
+    intersection with the 60-session floor — so an empty-night fallback can
+    never pick up a date from a series no pair evaluated (a series one session
+    ahead of the rest, or the bench). Series in no pair and the bench close
+    are deliberately excluded.
+    """
+    pair_dates: list[str] = []
+    for pair_cfg in universe.get("pairs", []):
+        d_cl = closes.get(pair_cfg["donor"])
+        r_cl = closes.get(pair_cfg["receiver"])
+        if d_cl is None or r_cl is None:
+            continue
+        idx = d_cl.dropna().index.intersection(r_cl.dropna().index)
+        if len(idx) < 60:
+            continue
+        pair_dates.append(
+            str(idx[-1].date()) if hasattr(idx[-1], "date") else str(idx[-1]))
+    return max(pair_dates, default=None)
+
+
 # ------------------------------------------------------------------ family E — health ----
 
 def _health(ev: dict, p: dict | None = None) -> dict:
@@ -2148,6 +2171,17 @@ def run_nightly(sectors: dict, data_dir, p: dict = PARAMS,
                 fh.write(json.dumps({"ts": now, "event": "closed", **c},
                                     ensure_ascii=False) + "\n")
 
+    # File-level as-of for the forward recorder (into_strength reads cross_state.json
+    # and needs a date on the file itself). Same value the per-entry ``asof`` fields
+    # carry this run; on a night with no emitted event, fall back to the latest
+    # pair-common (donor ∩ receiver) date, the same rule step_cross_pairs stamps.
+    # Readers use only active/candidates/closed, so the two extra top-level keys
+    # are inert downstream.
+    cross_asof = max((e["asof"] for e in cross_events), default=None)
+    if cross_asof is None:
+        cross_asof = _cross_pairs_asof(universe, closes)
+    new_cross_state["asof"] = cross_asof
+    new_cross_state["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     cross_state_p.write_text(json.dumps(new_cross_state, ensure_ascii=False, indent=1))
 
     # contagion detection

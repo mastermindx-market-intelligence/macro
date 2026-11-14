@@ -39,6 +39,101 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+
+@pytest.fixture
+def insight_delivery_probe(tmp_path, monkeypatch):
+    """Exercise real insight files and cooldowns without git, APIs or messages."""
+    from engine.metabolism import immune, insight_bus
+    from scripts import metabolism_immune as runner
+
+    monkeypatch.setattr(runner.subprocess, "run", MagicMock(return_value=MagicMock(returncode=0)))
+    monkeypatch.setattr(runner, "_get_main_sha", lambda: "a" * 40)
+    monkeypatch.setattr(immune, "load_immune_config", lambda **_kwargs: _MINIMAL_REGISTRY)
+    monkeypatch.setattr(runner, "_fetch_runs_list", lambda: [])
+    monkeypatch.setattr(runner, "_fetch_runners_list", lambda: [])
+    monkeypatch.setattr(runner, "_fetch_key_ledger", lambda _root: [])
+    for name in ("check_dead_cron", "check_queue_stuck", "check_runner_offline", "check_key_pool_degraded"):
+        monkeypatch.setattr(immune, name, lambda *_args: {"found": False})
+    notify = MagicMock()
+    append = MagicMock(wraps=insight_bus.append_row)
+    monkeypatch.setattr(runner, "_notify", notify)
+    monkeypatch.setattr(insight_bus, "append_row", append)
+
+    def run(kind, *, dry_run=False):
+        reds = [{"name": "unmapped-red", "conclusion": "failure"}] if kind == "unknown_red" else []
+        monkeypatch.setattr(
+            runner, "_sense_required_red_checks",
+            lambda *_args, **_kwargs: (reds, {"heartbeat_degraded": False, "sensed_shas": ["a" * 40]}),
+        )
+        monkeypatch.setattr(
+            immune, "check_dead_cron",
+            lambda *_args: {"found": kind == "lane_health", "summary": "Fixture lane needs attention"},
+        )
+        return runner.run_immune_lane(root=tmp_path, dry_run=dry_run)
+
+    return run, append, notify
+
+
+@pytest.mark.parametrize("kind", ["lane_health", "unknown_red"])
+def test_insight_unacknowledged_append_keeps_cooldown_unfired(tmp_path, insight_delivery_probe, kind):
+    from engine.metabolism.immune import has_fired_today
+    from engine.metabolism.insight_bus import BUS_PATH
+
+    # A directory in place of the journal produces a real, definite open failure.
+    (tmp_path / BUS_PATH).mkdir(parents=True)
+    run, append, notify = insight_delivery_probe
+    result = run(kind)
+    key = "immune.lane_health.dead_cron" if kind == "lane_health" else "immune.unknown_red.unmapped-red"
+
+    assert has_fired_today(key, root=tmp_path) is False
+    append.assert_called_once()  # no immediate replay after an unacknowledged append
+    notify.assert_not_called()
+    assert result["lane_health"] == []
+    assert any("insight append unacknowledged" in error for error in result["errors"])
+    assert result["sensing_failed"] is False  # the observation itself was read
+    if kind == "unknown_red":
+        assert result["unknown_reds"] == ["unmapped-red"]  # retain the detection
+
+
+@pytest.mark.parametrize("kind", ["lane_health", "unknown_red"])
+def test_insight_acknowledged_append_retains_daily_dedup(tmp_path, insight_delivery_probe, kind):
+    from engine.metabolism.immune import has_fired_today
+    from engine.metabolism.insight_bus import BUS_PATH
+
+    run, append, notify = insight_delivery_probe
+    first = run(kind)
+    second = run(kind)
+    key = "immune.lane_health.dead_cron" if kind == "lane_health" else "immune.unknown_red.unmapped-red"
+
+    assert has_fired_today(key, root=tmp_path) is True
+    append.assert_called_once()
+    notify.assert_called_once()
+    rows = [json.loads(line) for line in (tmp_path / BUS_PATH).read_text().splitlines()]
+    assert len(rows) == 1
+    assert first["errors"] == second["errors"] == []
+    if kind == "lane_health":
+        assert first["lane_health"] == ["Fixture lane needs attention"]
+        assert second["lane_health"] == []
+    else:
+        assert first["unknown_reds"] == second["unknown_reds"] == ["unmapped-red"]
+
+
+@pytest.mark.parametrize("kind", ["lane_health", "unknown_red"])
+def test_insight_dry_run_previews_without_append_or_cooldown(tmp_path, insight_delivery_probe, kind):
+    from engine.metabolism.immune import has_fired_today
+    from engine.metabolism.insight_bus import BUS_PATH
+
+    run, append, notify = insight_delivery_probe
+    result = run(kind, dry_run=True)
+    key = "immune.lane_health.dead_cron" if kind == "lane_health" else "immune.unknown_red.unmapped-red"
+
+    assert not (tmp_path / BUS_PATH).exists()
+    assert has_fired_today(key, root=tmp_path) is False
+    append.assert_not_called()
+    notify.assert_not_called()
+    assert result["errors"] == []
+    assert result["lane_health" if kind == "lane_health" else "unknown_reds"]
+
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))

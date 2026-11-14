@@ -1,0 +1,3500 @@
+{
+ "summary": {
+  "n_tapes": 11,
+  "verdicts": {
+   "XLK": "PARITY_FAILS",
+   "XLE": "PARITY_FAILS",
+   "XLF": "PARITY_FAILS",
+   "XLV": "PARITY_FAILS",
+   "XLY": "PARITY_FAILS",
+   "XLP": "PARITY_FAILS",
+   "XLI": "PARITY_FAILS",
+   "XLB": "PARITY_FAILS",
+   "XLU": "PARITY_FAILS",
+   "XLRE": "PARITY_FAILS",
+   "XLC": "PARITY_FAILS"
+  },
+  "n_tapes_parity_holds": 0,
+  "failing_union": [
+   "age_b1",
+   "age_b2",
+   "age_b3",
+   "age_b4",
+   "age_b5",
+   "amp_proxy",
+   "basis_epoch",
+   "direction",
+   "log_age_ratio",
+   "mom_score",
+   "osc_slope_s",
+   "pos_osc_s",
+   "rs_63d",
+   "trend_pass",
+   "vol_pctile"
+  ],
+  "failing_every_tape": [
+   "age_b1",
+   "age_b2",
+   "age_b3",
+   "age_b4",
+   "age_b5",
+   "amp_proxy",
+   "basis_epoch",
+   "direction",
+   "log_age_ratio",
+   "mom_score",
+   "osc_slope_s",
+   "pos_osc_s",
+   "rs_63d",
+   "vol_pctile"
+  ],
+  "direction_agree": 1619,
+  "direction_n": 2919,
+  "direction_agree_frac": 0.5546,
+  "n_asofs_both_sides": 2919
+ },
+ "reports": [
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLK",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLK.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.5472,
+     "worst_abs_diff": 0.520051,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 7.5552,
+     "worst_abs_diff": 2.1574,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.6718,
+     "worst_abs_diff": 0.67113,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.3598,
+     "worst_abs_diff": 5.61017,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 165.8386,
+     "worst_abs_diff": 25.9952,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 286.9429,
+     "worst_abs_diff": 26.0372,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9346,
+     "worst_abs_diff": 0.5796,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 167,
+    "disagree": 138,
+    "agree_frac": 0.5475
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLE",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLE.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.7681,
+     "worst_abs_diff": 0.785383,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.0089,
+     "worst_abs_diff": 0.8592,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.7354,
+     "worst_abs_diff": 0.6871,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.9744,
+     "worst_abs_diff": 4.96665,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 231.515,
+     "worst_abs_diff": 46.0576,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 519.464,
+     "worst_abs_diff": 46.0349,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 162,
+    "disagree": 143,
+    "agree_frac": 0.5311
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLF",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLF.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.4655,
+     "worst_abs_diff": 0.503982,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.0485,
+     "worst_abs_diff": 0.8705,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.5333,
+     "worst_abs_diff": 0.57688,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.7768,
+     "worst_abs_diff": 4.63665,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 145.5796,
+     "worst_abs_diff": 28.9616,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 322.8459,
+     "worst_abs_diff": 28.6106,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 178,
+    "disagree": 127,
+    "agree_frac": 0.5836
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLV",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLV.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.8912,
+     "worst_abs_diff": 0.872235,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 5.0051,
+     "worst_abs_diff": 1.4292,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.7357,
+     "worst_abs_diff": 0.68718,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.4586,
+     "worst_abs_diff": 5.7752,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 92.2343,
+     "worst_abs_diff": 18.3491,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 205.5529,
+     "worst_abs_diff": 18.2161,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.0348,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 150,
+    "disagree": 155,
+    "agree_frac": 0.4918
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLY",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLY.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.5265,
+     "worst_abs_diff": 0.470451,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 4.5432,
+     "worst_abs_diff": 1.2988,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.4247,
+     "worst_abs_diff": 0.60905,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.1308,
+     "worst_abs_diff": 5.22789,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 83.4513,
+     "worst_abs_diff": 16.6018,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 185.439,
+     "worst_abs_diff": 16.4336,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.0341,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 178,
+    "disagree": 127,
+    "agree_frac": 0.5836
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLP",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLP.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.9794,
+     "worst_abs_diff": 1.060513,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 6.7985,
+     "worst_abs_diff": 1.9413,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.8862,
+     "worst_abs_diff": 0.56561,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.8542,
+     "worst_abs_diff": 6.07555,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 113.4593,
+     "worst_abs_diff": 22.5716,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 250.237,
+     "worst_abs_diff": 22.176,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 167,
+    "disagree": 138,
+    "agree_frac": 0.5475
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLI",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLI.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.9213,
+     "worst_abs_diff": 0.997564,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.876,
+     "worst_abs_diff": 1.1068,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.4867,
+     "worst_abs_diff": 0.50776,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.8326,
+     "worst_abs_diff": 6.39964,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 73.961,
+     "worst_abs_diff": 14.7138,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 165.3363,
+     "worst_abs_diff": 14.6521,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 178,
+    "disagree": 127,
+    "agree_frac": 0.5836
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLB",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLB.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.6253,
+     "worst_abs_diff": 0.677107,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 4.0699,
+     "worst_abs_diff": 1.1635,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.6758,
+     "worst_abs_diff": 0.67213,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.8703,
+     "worst_abs_diff": 4.7541,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 100.0231,
+     "worst_abs_diff": 19.8986,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 223.4292,
+     "worst_abs_diff": 19.8003,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 170,
+    "disagree": 135,
+    "agree_frac": 0.5574
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLU",
+    "family": "us_sector",
+    "span": [
+     "1998-12-22",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 305,
+    "n_both_sides": 305,
+    "training_rows": 305,
+    "live_records": 305,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLU.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 0.9237,
+     "worst_abs_diff": 0.844496,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 4.2346,
+     "worst_abs_diff": 1.2106,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 2.7983,
+     "worst_abs_diff": 0.54838,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 3.9133,
+     "worst_abs_diff": 6.16866,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 109.3301,
+     "worst_abs_diff": 17.934,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 201.0788,
+     "worst_abs_diff": 17.8196,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 305,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 305,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 305,
+    "agree": 176,
+    "disagree": 129,
+    "agree_frac": 0.577
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLRE",
+    "family": "us_sector",
+    "span": [
+     "2015-10-08",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 103,
+    "n_both_sides": 103,
+    "training_rows": 103,
+    "live_records": 103,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLRE.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 1.5535,
+     "worst_abs_diff": 1.682072,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 2.6871,
+     "worst_abs_diff": 0.7682,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 2.8136,
+     "worst_abs_diff": 0.55138,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 4.4546,
+     "worst_abs_diff": 7.02201,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 71.244,
+     "worst_abs_diff": 11.973,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 135.1783,
+     "worst_abs_diff": 11.9795,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 103,
+     "worst_abs_diff_sd": 1.9359,
+     "worst_abs_diff": 0.58,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 103,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 103,
+    "agree": 57,
+    "disagree": 46,
+    "agree_frac": 0.5534
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "trend_pass",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  },
+  {
+   "schema": "sector_cycles.hazard_parity.v1",
+   "version": 1,
+   "measured_on": "ba77e7d4ca45887bdd89145911dd6f27232619fe",
+   "input": {
+    "kind": "real_yahoo_daily_monthly_asofs",
+    "seed": null,
+    "iid": "XLC",
+    "family": "us_sector",
+    "span": [
+     "2018-06-19",
+     "2026-11-06"
+    ],
+    "warmup_months": 30,
+    "n_month_ends": 71,
+    "n_both_sides": 71,
+    "training_rows": 71,
+    "live_records": 71,
+    "sd_source": "data/hazard/model_price_c4414dcb.json:coefficients[dir].sd (frozen at base)",
+    "family_median_note": "single-instrument panel \u2014 the k=6 family-median pool degenerates to the own median",
+    "benchmark": "SPY",
+    "start_filter": null,
+    "source": "data/yahoo/XLC.parquet + data/yahoo/SPY.parquet"
+   },
+   "features": [
+    {
+     "feature": "age_b1",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b2",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b3",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b4",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "age_b5",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 1.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 age_m = days/30.44 since confirmed_at turn; _age_bucket ratio edges .5/.8/1.1/1.5",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs\u2192engine/hazard_score.py:_age_buckets \u2014 bars = \u0394decimal-yrs\u00d7252; cuts -.19/.45/.99/1.63"
+    },
+    {
+     "feature": "log_age_ratio",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 1.6297,
+     "worst_abs_diff": 1.764571,
+     "training_source": "scripts/build_hazard_panel.py:_log_age_ratio \u2014 ln(age_m / k=6 blended median, months)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 ln(bars/252\u00d712 \u00f7 median_half_yrs\u00d712), proj median/2"
+    },
+    {
+     "feature": "amp_proxy",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 3.8869,
+     "worst_abs_diff": 1.1112,
+     "training_source": "scripts/build_hazard_panel.py:_amp_proxy \u2014 expanding pctile of 63d range/price (TR)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 amp_leg_pct = last swing mag_pct/100 (open leg)"
+    },
+    {
+     "feature": "pos_osc_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 2.4723,
+     "worst_abs_diff": 0.48449,
+     "training_source": "scripts/build_hazard_panel.py:_detrended_osc \u2014 SMA200 dev expanding pctile (TR) \u2192 scripts/fit_cycle_hazard.py:build_design /100",
+     "live_source": "engine/sector_cycles.py:_detrended_osc \u2014 EMA252 detrend, 252-stochastic (price) \u2192 /100"
+    },
+    {
+     "feature": "osc_slope_s",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 2.7365,
+     "worst_abs_diff": 4.56939,
+     "training_source": "scripts/build_hazard_panel.py:_osc_slope \u2014 panel osc.diff(21) \u2192 /10",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 live osc 22-bar diff \u2192 /10"
+    },
+    {
+     "feature": "trend_pass",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_trend_pass \u2014 close>SMA200 min100 (TR)",
+     "live_source": "engine/sector_cycles.py:_record_core \u2014 struct[-1]>mean(struct[-200:]) (price)"
+    },
+    {
+     "feature": "mom_score",
+     "static_class": "PROXY",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 80.3509,
+     "worst_abs_diff": 15.985,
+     "training_source": "scripts/build_hazard_panel.py:_mom_score \u2014 126d\u221221d own TR return (fraction)",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 mom_score = now.rs_63d (percent)"
+    },
+    {
+     "feature": "rs_63d",
+     "static_class": "DIFFERENT_DEFINITION",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 178.7384,
+     "worst_abs_diff": 15.8398,
+     "training_source": "scripts/build_hazard_panel.py:_rs_63d \u2014 rel. return vs bench (fraction)",
+     "live_source": "engine/sector_cycles.py:_leadership \u2014 rs.pct_change(63)\u00d7100 (percent)"
+    },
+    {
+     "feature": "vol_pctile",
+     "static_class": "IMPUTED_CONSTANT",
+     "match": false,
+     "n_asof": 71,
+     "worst_abs_diff_sd": 1.6906,
+     "worst_abs_diff": 0.5065,
+     "training_source": "scripts/build_hazard_panel.py:_rolling_vol_pctile \u2014 expanding pctile of 63d realized vol",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 None \u2192 engine/hazard_score.py:_build_feature_vector 0.42"
+    },
+    {
+     "feature": "quad_Q2",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q3",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "quad_Q4",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime_hist quad asof t",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.quad never set \u2192 0"
+    },
+    {
+     "feature": "liq_expanding",
+     "static_class": "ABSENT_LIVE",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/build_hazard_panel.py:_build_instrument_rows \u2014 regime liquidity == 'expanding'",
+     "live_source": "engine/sector_cycles.py:_live_hazard_inputs \u2014 nw.liq_expanding never set \u2192 0"
+    },
+    {
+     "feature": "fam_country",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='country'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    },
+    {
+     "feature": "fam_cn",
+     "static_class": "SAME_DEFINITION",
+     "match": true,
+     "n_asof": 71,
+     "worst_abs_diff_sd": null,
+     "worst_abs_diff": 0.0,
+     "training_source": "scripts/fit_cycle_hazard.py:build_design \u2014 family=='cn_sector'",
+     "live_source": "engine/hazard_score.py:_FAM_DUMMIES \u2014 family 'sector' \u2192 0"
+    }
+   ],
+   "missing_value_policy": [
+    {
+     "field": "pos (pos_osc_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.pos or 50.0 in _stamp_hazard; scorer refuses only on None"
+    },
+    {
+     "field": "osc_slope (osc_slope_s)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "now.osc_slope or 0.0 in _stamp_hazard"
+    },
+    {
+     "field": "amp_leg_pct (amp_proxy)",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 scorer constant 0.42 (model mu)"
+    },
+    {
+     "field": "mom_score",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "rs_63d",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "None \u2192 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "vol_pctile",
+     "training": "missing \u2192 column median fill (build_design)",
+     "live": "always None live \u2192 constant 0.42 (IMPUTED_CONSTANT)"
+    },
+    {
+     "field": "trend_pass",
+     "training": "missing \u2192 column median fill (build_design fill list)",
+     "live": "now.above200d or 0.0 (scorer `or 0.0`)"
+    },
+    {
+     "field": "age / median_half_yrs (age buckets, log_age_ratio)",
+     "training": "log_age_ratio missing \u2192 b_unknown (all dummies 0) + median fill of the ratio",
+     "live": "age_since_turn_bars None or median_half_yrs \u2264 0 \u2192 scorer REFUSES to score (returns None)"
+    },
+    {
+     "field": "quad / liquidity dummies",
+     "training": "missing regime \u2192 0 via == comparison",
+     "live": "None \u2192 0 (ABSENT_LIVE)"
+    }
+   ],
+   "direction": {
+    "n": 71,
+    "agree": 36,
+    "disagree": 35,
+    "agree_frac": 0.507
+   },
+   "basis_epoch": {
+    "training": {
+     "detector": "engine/cycle_ontology.py:detect_turns (zigzag v2, confirmed_at PIT)",
+     "pct": 14.0,
+     "basis": "close_price",
+     "feature_price_basis": "TR close for features; close_price for turns",
+     "epoch_stamp": "price_c4414dcb"
+    },
+    "live": {
+     "detector": "engine/sector_cycles.py:_detect_swings (zigzag v1 \u2014 no confirmed_at, NP-6 seed fix absent)",
+     "pct": 14.0,
+     "basis": [
+      "price"
+     ],
+     "feature_price_basis": "structure (price) for pos/osc_slope/trend_pass/amp; TR for rs_63d",
+     "epoch_stamp": null
+    },
+    "artifact": {
+     "turn_def_version": "price_c4414dcb"
+    },
+    "training_epoch_matches_artifact": true,
+    "live_epoch_matches_artifact": false,
+    "detector_version_agrees": false,
+    "note": "live turn set is produced by a different detector version with no epoch stamp and no confirmed_at; the score block's epoch is the scorer's own constant, so epoch parity cannot be established live"
+   },
+   "verdict": "PARITY_FAILS",
+   "failing": [
+    "age_b1",
+    "age_b2",
+    "age_b3",
+    "age_b4",
+    "age_b5",
+    "log_age_ratio",
+    "amp_proxy",
+    "pos_osc_s",
+    "osc_slope_s",
+    "mom_score",
+    "rs_63d",
+    "vol_pctile",
+    "direction",
+    "basis_epoch"
+   ]
+  }
+ ]
+}

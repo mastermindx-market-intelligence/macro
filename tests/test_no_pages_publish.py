@@ -79,3 +79,53 @@ def test_pages_workflow_is_retired_or_absent():
                 assert not any(uses.startswith(r) for r in RETIRED_ACTIONS), (
                     f"pages.yml still deploys via {uses!r}"
                 )
+
+
+def test_vps_main_sync_wake_is_main_only_and_least_privilege():
+    """A hosted wake must not turn PR source into an SSH deployment permission."""
+    path = WORKFLOWS_DIR / "vps-main-sync-wake.yml"
+    workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+    triggers = workflow.get("on", workflow.get(True))
+    assert set(triggers) == {"push", "workflow_dispatch"}
+    assert triggers["workflow_dispatch"] == {}
+    assert triggers["push"]["branches"] == ["main"]
+    paths = triggers["push"]["paths"]
+    assert "site/**" in paths and "templates/**" in paths
+    assert "app/**" in paths and "admin/**" in paths
+    assert workflow["permissions"] == {"contents": "read"}
+    assert workflow["concurrency"]["cancel-in-progress"] is False
+    assert list(workflow["jobs"]) == ["wake"]
+    job = workflow["jobs"]["wake"]
+    assert "github.repository == 'mastermindx-market-intelligence/macro'" in job["if"]
+    assert "github.ref == 'refs/heads/main'" in job["if"]
+    assert "continue-on-error" not in path.read_text(encoding="utf-8")
+
+
+def test_vps_main_sync_wake_reuses_pinned_host_and_locked_updater_only():
+    """Wake existing VPS publisher, never create another writer/checkout/rsync."""
+    path = WORKFLOWS_DIR / "vps-main-sync-wake.yml"
+    workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+    steps = workflow["jobs"]["wake"]["steps"]
+    assert len(steps) == 2
+    checkout = steps[0]
+    assert checkout["uses"] == "actions/checkout@v4"
+    assert checkout["with"]["sparse-checkout"] == "app/deploy/ohlc_origin_known_hosts"
+    assert checkout["with"]["persist-credentials"] is False
+    command = steps[1]["run"]
+    assert steps[1]["env"] == {"VPS_DEPLOY_KEY": "${{ secrets.VPS_DEPLOY_KEY }}"}
+    assert command.count("root@146.190.142.17") == 1
+    assert "StrictHostKeyChecking=yes" in command
+    assert 'UserKnownHostsFile="$HOST_PIN"' in command
+    assert "ssh-keyscan" not in command and "accept-new" not in command
+    assert "/usr/local/bin/macro-update" in command
+    assert "/var/log/macro-update.log" in command
+    assert "git -C /opt/macro rev-parse --verify HEAD" in command
+    executable = "\n".join(line for line in command.splitlines()
+                           if not line.lstrip().startswith("#"))
+    assert "git reset" not in executable and "rsync " not in executable
+    assert "git push" not in command and "gh pr merge" not in command
+    assert "workflow_dispatch" not in command
+    assert "|| true" not in command
+    pin = (ROOT / "app" / "deploy" / "ohlc_origin_known_hosts").read_text()
+    assert pin == "146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk\n"
+    assert "grep -qx '146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk'" in command

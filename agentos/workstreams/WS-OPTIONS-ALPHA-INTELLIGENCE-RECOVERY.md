@@ -276,6 +276,8 @@ do_not_redo:
   - "Collapsing Workbench scenario context, Alpha research candidates and Tactical setup timing into one Options confidence/super-score."
   - "The user authorizes revival. A historical closed-owner label is not by itself a prohibition. Preserve the actual live writer, any pending effect, and the required scientific and data-eligibility boundaries. This is not permission to promote a model or to activate a candidate."
 artifacts:
+  - terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md
+  - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-11-14.md
   - reports/artifacts/options_historical_signal_science_20261002.md
   - reports/artifacts/options_historical_signal_science_20261002.json
   - reports/artifacts/options_historical_signal_science_20261002_protocol.json
@@ -299,34 +301,7 @@ artifacts:
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-03-product-delivery.md
   - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md
 next_action: >
-  Latest installed-source checkpoint:
-  agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-04-installed-source.md.
-  Terminal703 was deployed atc298fa1b831509dd3dcb7553aa34c03d69dd0084 and passed
-  Fable's18-case EN/ZH responsive acceptance. Later production readback observed
-  fb6f5cc39e592e7f9967835a85617b4fef427b09 with unchanged Options UI/API source,
-  active service and public HTTP200. These are dated receipts. Draft723 remains with
-  Fable for current-base integration and actual supported-root producer/API/cache proof.
-  Macro8201 merged565f2d70 and matrix spot repair8383 merged2c912268.
-  Existing M1 liveflow and matrix roots accepted exact2c9122681ab44f1a2f928b4dbec90c68f91e99ae
-  at02:13/02:14Z with clean source, sandboxed probes and protected metadata equality;
-  original schedules remain, no manual job. The first liveflow probe-name mistake
-  rolled back cleanly; its receipt/ref remain and the corrected r2 installed.
-  Index/Hub retain201064 and their prior independent installed readback.
-  Natural cycles, separate Hub ThetaData EINTR, two normal post-repair engine
-  survivals7265, publisher7263/broad-writer7193 durability, campaign integrity and
-  runtime effective quarantine7398 remain unearned. Daily37169452721 is an
-  in-progress post-repair candidate, not a natural-success receipt.
-  FS5 methods8377 are source-accepted with no artifact/study/promotion. Draft8385
-  at0234ea19 corrects parent/subset concurrency support and records Fable
-  UNRATIFIED/REVISE;20/200 and block-monotonicity choices remain unratified,
-  and the required Opus review is unavailable. No calibration law is invented.
-  Enrichment7417 has a verified natural derivative publication, not fresh-market
-  or predictive evidence. Sep17/18 measured-source evidence stays accepted.
-  Candidate8358 remains inactive until four prerequisites and an activation receipt;
-  exact-option8318 still needs prospective executable NBBO/lifecycle proof.
-  AD1 admission/capacity and scientific eligibility remain distinct dependencies.
-  Preserve the M1 storage-guard EFFECT_UNKNOWN evidence and all rollback trees.
-  No mission-completion or unattended-continuation claim is supplied by this checkpoint.
+  Continue the Chairman's full Terminal Options suite assignment using the existing November14 handoff and terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md. Screener1551, Flow1556 and OI1555 are protected source; preserve their accepted proof. Consume Discover1553's original new-head CI43646581075 and native auto request at5d43934bd595ae72335b0edfa69c45dce5924823 without reenrollment. Finish the original chart-source-presentation and overview-demand operations, qualify their actual responsive consumers, then use normal protected release and installed/entitled acceptance. Reconcile1266,1248,1554 and other held effects only through their original owners; no replay or alternate carrier. Retain1509/1512 navigation/monitor custody and804 persistence. C1-C7 remain editorial acceptance slices, not new OA waves. Original OA scientific, candidate-activation, exact-option, durability and AD-1T2 obligations remain in their wave rows. UI tests, merges and installation do not grant scoring, probability, trade sizing, candidate activation or programme completion.
 
 ---
 
@@ -340,3 +315,17 @@ The first bounded implementation plan now targets only measured ThetaData trade+
 existing Macro live-flow/event-stage/Flow-ML path. It deliberately does not include Terminal UI,
 research-candidate composition, model promotion, exact-option outcome lifecycle, or Issue Desk
 integration. Those remain separately gated waves.
+
+## Terminal Options suite continuation — 14 November 2026
+
+The current Chairman assignment extends the existing Terminal product journey from discovery
+and exact research through Plan, revisit and monitoring. Its implementation sequence remains
+in [the Terminal plan](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/f77799f69ff227ad3d241cfa3f2c12de554e49d1/docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md).
+The [current handoff](../handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-11-14.md) carries
+source, local proof, release states and original unresolved effects. The session continues;
+this record is not an unattended executor or a claim of completion.
+
+The October 22 R2 handoff supersedes the October 4 file as the latest historical UI context.
+Both retain their original evidence limits. Existing OA waves, owners, scientific gates,
+source clocks and do-not-redo entries are unchanged. Advanced Data retains the separate
+EOD and Lab A–G lineage and its original production obligations.

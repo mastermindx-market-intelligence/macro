@@ -1,0 +1,385 @@
+{
+ "basis": "reconstructed_dated_membership",
+ "basis_note": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+ "no_outcomes": "series only: no outcome relation, no regime assignment, no trading call of any kind, on any period",
+ "scope": "series only: group and universe numbers; no member ticker, row or price; no regime assignment of any kind; archive aggregates and counts only",
+ "set": "full",
+ "start": {
+  "date": "1996-01-02",
+  "note": "first dated membership start; averages and 252-session windows read the member's own earlier archive closes, which may predate its entry"
+ },
+ "floors": {
+  "index": 2,
+  "share_and_statistic": 2,
+  "source": "scripts/build_tree_breadth_and_index.py (COO ruling 34 s2)"
+ },
+ "index": {
+  "rebalance_rule": "engine.baskets._ew_level: each session the index return is the plain mean of the daily total returns of the members priced that session (daily rebalance to equal weight), chained from 1.0 on the group's first valid session",
+  "return": "total return (archive adjusted closes)",
+  "floor_gap": "On a session with fewer than 2 priced members the level is missing (reason below_index_member_floor) and that session carries no return; the chain resumes from the last valid level."
+ },
+ "high_beta_computed": {
+  "rule": "top fifth of universe members by trailing 252-session beta to SPY daily returns (cov/var on 252 paired daily returns, full window required), ranked at each month's last session, held the next month; ties broken by ticker; equal-weight daily rebalance within the held month, same _ew_level chaining from 1.0",
+  "beta_window": 252,
+  "fraction": "top 1/5 (ceil)",
+  "first_selection": "1996-01-31",
+  "cohort_size_min": 42,
+  "cohort_size_max": 98,
+  "cohort_size_last": 97,
+  "months_selected": 370,
+  "selection_set": "dated members at the selection session"
+ },
+ "price_source": "Tiingo EOD archive /Volumes/Mastermind/market-data/tiingo (normalized eod-bars, captures 2026-10-11..16) via scripts/build_tiingo_member_closes.py; member-level, off git",
+ "price_note": "Adjusted closes are the archive's restated values (split and dividend adjustment as of the 2026-10-11..16 capture), not the prices printed at the time. Group-level shares and counts only; no member prices. The Tiingo research reader marks raw views redistribution_admitted=false; member-level history stays off git.",
+ "data_end": "2026-10-09",
+ "inputs": [
+  {
+   "path": "/tmp/qb/tiingo/repo_closes.parquet",
+   "sha256_16": "740e8eb2f5fff02c"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_membership.parquet",
+   "sha256_16": "7b34316c0561619b"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_sectors.parquet",
+   "sha256_16": "cba7fc07da53a623"
+  }
+ ],
+ "missing": "453 dated membership rows have no stored close inside their own membership window and are absent (of these, 144 tickers exist in the store only outside the window, a likely ticker reuse); 484 membership rows carry no sector label and are absent from every sector; labels are as of now, not era-correct. Duplicate-series scan: no two member tickers carry the same price series (identical daily returns or a constant price ratio).",
+ "coverage": {
+  "members_in_map": 1202,
+  "members_priced": 906,
+  "members_unpriced": 296,
+  "membership_rows_unlabeled": 484,
+  "rows_unpriced_in_own_window": 453,
+  "rows_unpriced_in_own_window_ticker_present": 144,
+  "unpriced_in_window_by_start_year": {
+   "1996": 268,
+   "1997": 8,
+   "1998": 22,
+   "1999": 21,
+   "2000": 28,
+   "2001": 15,
+   "2002": 8,
+   "2003": 2,
+   "2004": 6,
+   "2005": 2,
+   "2006": 12,
+   "2007": 7,
+   "2008": 7,
+   "2009": 2,
+   "2010": 2,
+   "2011": 4,
+   "2012": 2,
+   "2013": 3,
+   "2014": 1,
+   "2015": 2,
+   "2016": 2,
+   "2017": 3,
+   "2018": 3,
+   "2019": 5,
+   "2021": 4,
+   "2022": 2,
+   "2023": 3,
+   "2024": 2,
+   "2025": 4,
+   "2026": 3
+  }
+ },
+ "dropped_partial_rows_count": 11,
+ "dropped_partial_rows_rule": "centred 21-row median of priced names; a row under half is dropped. Looks ahead up to 10 rows to decide which rows are sessions; values themselves use only data on or before their date.",
+ "dropped_partial_rows_note": "same archive and rule as the house dated sector history; the session list lives in group_breadth_dated_sp500.meta.json",
+ "duplicate_series_pairs_count": 0,
+ "duplicate_series_rule": "month-by-month hash of daily returns, then pairwise check: >=60 identical returns and >=95% identical between the first and last identical session. Detection and labelling only; no store repaired. Names withheld under the archive rule.",
+ "not_included": "curated basket relative indices (ai_software, non_ai_software, IGV, SOXX and SPHB legs) are not included: no dated membership exists for curated baskets. The computed high-beta group IS included; it is derived from the dated universe.",
+ "universe": {
+  "registry": "sp1500_pit_membership.parquet (src=sp500)",
+  "rows": 1255,
+  "members": 1202,
+  "sectors": 11,
+  "labels": "sp1500_pit_sectors.parquet, as of now, not era-correct"
+ },
+ "etfs": {
+  "SPY": {
+   "path": "data/yahoo/SPY.parquet",
+   "ref": "origin/main",
+   "column": "close",
+   "first_date": "1993-01-29"
+  }
+ },
+ "series": {
+  "diff_pct_above_200_21d": {
+   "definition": "plain difference (points) of the percent-above-200 share, session t minus t-21",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.level_change",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "diff_pct_above_200_63d": {
+   "definition": "plain difference (points) of the percent-above-200 share, session t minus t-63",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.level_change",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "diff_pct_above_50_21d": {
+   "definition": "plain difference (points) of the percent-above-50 share, session t minus t-21",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.level_change",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "diff_pct_above_50_63d": {
+   "definition": "plain difference (points) of the percent-above-50 share, session t minus t-63",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.level_change",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "dispersion_21d": {
+   "definition": "cross-sectional standard deviation (ddof=1, percent) of member simple 21-session returns, universe and per sector; dated members must be in-window at both ends",
+   "source": "Tiingo archive member closes",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "members without both endpoint closes, or outside their membership window at either end, are not counted; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "dispersion_63d": {
+   "definition": "cross-sectional standard deviation (ddof=1, percent) of member simple 63-session returns, universe and per sector; dated members must be in-window at both ends",
+   "source": "Tiingo archive member closes",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "members without both endpoint closes, or outside their membership window at either end, are not counted; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "ew_index": {
+   "definition": "equal-weight total-return index level of the group, chained from 1.0 (daily rebalance)",
+   "source": "Tiingo archive member closes via engine.baskets._ew_level (dated in-window members)",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": [
+    "computed",
+    "house"
+   ]
+  },
+  "ew_vs_spy": {
+   "definition": "EW universe index divided by SPY close, rebased to 100 at the first common session",
+   "source": "dated EW index; SPY close on main",
+   "basis": "dated EW level (Tiingo archive closes) and SPY vendor close on origin/main",
+   "gaps": "different dividend methods between legs shift the long-run ratio level, not the timing of its turns",
+   "first_date": "1996-01-02",
+   "kind": "etf"
+  },
+  "fix_chg_pct_above_200_21": {
+   "definition": "like-for-like change (points) of the percent-above-200 share over 21 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k; the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_200_63": {
+   "definition": "like-for-like change (points) of the percent-above-200 share over 63 sessions: universe members at t with a defined 200-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k; the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_50_21": {
+   "definition": "like-for-like change (points) of the percent-above-50 share over 21 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k; the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "fix_chg_pct_above_50_63": {
+   "definition": "like-for-like change (points) of the percent-above-50 share over 63 sessions: universe members at t with a defined 50-session average at BOTH t and t-k; their share above at t minus the share of the same names at t-k; the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "n_above_200": {
+   "definition": "count of universe members strictly above their own 200-session SMA (n = counted members)",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.member_flags",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "n_above_50": {
+   "definition": "count of universe members strictly above their own 50-session SMA (n = counted members)",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.member_flags",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "n_beat_ew_126d": {
+   "definition": "count of members beating the EW universe index over 126 sessions (n = counted members)",
+   "source": "Tiingo archive member closes and dated EW universe index",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-07-01",
+   "kind": "house"
+  },
+  "n_beat_ew_63d": {
+   "definition": "count of members beating the EW universe index over 63 sessions (n = counted members)",
+   "source": "Tiingo archive member closes and dated EW universe index",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "n_counted_nh": {
+   "definition": "universe members with a close and a full prior 252-session window on the session; the member must be in-window on the session",
+   "source": "Tiingo archive member closes; house high52w_new/low52w_new convention",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "n_fixed_200_21": {
+   "definition": "members counted at both ends of the 21-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k); the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "n_fixed_200_63": {
+   "definition": "members counted at both ends of the 63-session fixed-set change of the percent-above-200 share (defined 200-session average at t and t-k); the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "n_fixed_50_21": {
+   "definition": "members counted at both ends of the 21-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k); the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "n_fixed_50_63": {
+   "definition": "members counted at both ends of the 63-session fixed-set change of the percent-above-50 share (defined 50-session average at t and t-k); the fixed set is the dated members at t with a defined average at both t and t-k; it is not membership at both ends. Rows whose start session precedes the first dated-membership session (1996-01-02) are not produced.",
+   "source": "engine.group_breadth_history.fixed_set_change on Tiingo archive closes",
+   "gaps": "the fixed set is the members at t with a defined average at both ends; a name leaving the universe before t drops out; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "new_highs_252": {
+   "definition": "count of universe members whose close strictly exceeds the prior 252-session maximum (full window); the member must be in-window on the session",
+   "source": "Tiingo archive member closes; house high52w_new/low52w_new convention",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "new_lows_252": {
+   "definition": "count of universe members whose close is strictly below the prior 252-session minimum (full window); the member must be in-window on the session",
+   "source": "Tiingo archive member closes; house high52w_new/low52w_new convention",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "nh_nl_252": {
+   "definition": "new 252-session highs minus new lows (counts); the member must be in-window on the session",
+   "source": "Tiingo archive member closes; house high52w_new/low52w_new convention",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a close and a full prior 252-session window are both required; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "pct_above_200": {
+   "definition": "percent of counted universe members strictly above their own 200-session simple moving average",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.member_flags",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "pct_above_50": {
+   "definition": "percent of counted universe members strictly above their own 50-session simple moving average",
+   "source": "Tiingo archive member closes via engine.group_breadth_history.member_flags",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "the counted set can differ between the two endpoints of a change; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-02",
+   "kind": "house"
+  },
+  "pct_beat_ew_126d": {
+   "definition": "percent of counted members whose simple 126-session return strictly exceeds the EW universe index's over the same window",
+   "source": "Tiingo archive member closes and dated EW universe index",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-07-01",
+   "kind": "house"
+  },
+  "pct_beat_ew_63d": {
+   "definition": "percent of counted members whose simple 63-session return strictly exceeds the EW universe index's over the same window",
+   "source": "Tiingo archive member closes and dated EW universe index",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "membership is required on the session; the return window may span a member's entry date; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  },
+  "rel_high_beta_computed_vs_ew_universe": {
+   "definition": "computed high-beta EW index divided by the EW universe index, rebased to 100 at the first common session",
+   "source": "dated EW levels (Tiingo archive closes)",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct; cohort computed monthly from dated members, not curated",
+   "gaps": "computed, not curated; selection restricted to dated members with a full 252-session window at the selection session; the cohort is held fixed within the month",
+   "first_date": "1996-02-01",
+   "kind": "computed"
+  },
+  "sector_dispersion_21d": {
+   "definition": "standard deviation (ddof=1, percent) across the 11 sector EW index simple 21-session returns (n = sectors with a valid return)",
+   "source": "dated sector EW levels (Tiingo archive closes)",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a sector with fewer than 2 priced members in-window has no EW level that session; n = sectors with a valid return; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-01-31",
+   "kind": "house"
+  },
+  "sector_dispersion_63d": {
+   "definition": "standard deviation (ddof=1, percent) across the 11 sector EW index simple 63-session returns (n = sectors with a valid return)",
+   "source": "dated sector EW levels (Tiingo archive closes)",
+   "basis": "S&P 500 dated membership windows (sp1500_pit_membership, src=sp500); a member counts only on sessions inside its own window; sector labels are as of now, not era-correct",
+   "gaps": "a sector with fewer than 2 priced members in-window has no EW level that session; n = sectors with a valid return; members without a stored close inside their own window are absent; early-year coverage is lean",
+   "first_date": "1996-04-01",
+   "kind": "house"
+  }
+ },
+ "files": [
+  "regime_inputs_dated_sp500_daily.parquet"
+ ],
+ "rows": {
+  "regime_inputs_dated_sp500_daily.parquet": 496497
+ },
+ "bytes": {
+  "regime_inputs_dated_sp500_daily.parquet": 3984688
+ },
+ "columns": [
+  "date",
+  "series",
+  "group",
+  "value",
+  "n",
+  "kind"
+ ],
+ "missing_rule": "a session with no valid value carries no row; n is the counted members (or priced members for a level) beside every value",
+ "dispersion_units": "percent (a 0.01 return reads 1.0); ddof=1",
+ "ratio_rule": "every ratio is rebased to 100 at the first session both legs are valid",
+ "engine": "engine.baskets._ew_level; engine.group_breadth_history.member_flags/group_levels/level_change/fixed_set_change/assign_groups; scripts.build_group_breadth_history cleaning and membership"
+}

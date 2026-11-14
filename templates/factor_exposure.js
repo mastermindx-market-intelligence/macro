@@ -9,10 +9,9 @@
    Weighting: equal by default; the user can set per-holding weights (stored locally in
    mdash.fx_weights.v1, relative + auto-normalized) so the read reflects their actual
    allocation. It is a faithful client port of the validated engine.factor_exposure.
-   portfolio_exposure() (gate: reports/factor-exposure-phase0.md). Confidence styling is
-   driven by the measured tiers in the JSON (factors[].tier/scope) — market/size/growth
-   reliable, oil book-level, USD/BTC low-confidence — so the panel can't imply precision
-   the data doesn't support. */
+   portfolio_exposure(). Historical persistence is measured by the Phase-0 report.
+   Existing tier/scope values organize the display; their reliability has not been
+   requalified after the estimator repair, which the panel visibly discloses. */
 (function () {
   'use strict';
 
@@ -49,9 +48,10 @@
       netb: 'net β', risk: 'share of risk', idio: 'Stock-specific (idiosyncratic)',
       modeled: function (n, m) { return n + ' of ' + m + ' holdings modeled'; },
       notmod: 'not in the factor model', booklvl: 'book',
-      booktip: 'Reliable only at the book level — a single stock’s oil beta is noisy.',
+      booktip: 'Portfolio context; the confidence category has not been requalified.',
       shocks: 'If this happens, your book moves about…',
-      secondary: 'Secondary factors (low confidence — most equity books ≈ 0)',
+      secondary: 'Additional factor exposures',
+      confidence: 'Confidence categories are provisional. Historical persistence does not establish current reliability.',
       editw: '⚖ Edit position weights', wreset: 'Reset to equal',
       wnote: 'Relative weights — normalized automatically. Stored in this browser.',
       legend: 'Risk share = each factor’s contribution to your book’s variance. '
@@ -64,9 +64,10 @@
       netb: '净β', risk: '风险占比', idio: '个股特异风险',
       modeled: function (n, m) { return m + ' 个持仓中 ' + n + ' 个已建模'; },
       notmod: '不在因子模型中', booklvl: '组合',
-      booktip: '仅在组合层面可靠——单只个股的石油贝塔噪声较大。',
+      booktip: '组合层面的参考；置信度分类尚未重新验证。',
       shocks: '若发生以下情况，组合大约变动…',
-      secondary: '次要因子（低置信度——多数股票组合 ≈ 0）',
+      secondary: '其他因子敞口',
+      confidence: '置信度分类为暂定。历史持续性不代表当前可靠性。',
       editw: '⚖ 编辑持仓权重', wreset: '重置为等权',
       wnote: '相对权重——自动归一化。保存在本浏览器中。',
       legend: '风险占比 = 各因子对组合方差的贡献。为测量而非预测。'
@@ -182,6 +183,7 @@
       + '<b style="color:' + (a.bp[a.top] >= 0 ? 'var(--up)' : 'var(--down)') + '">' + esc(topLabel) + '</b> '
       + '(' + S('netb') + ' ' + sgn(a.bp[a.top], 2) + ') — ' + esc(vmap[a.verdict]) + '.</p>'
       + '<p class="muted fx-sub">' + (a.isCustom ? S('subW') : S('sub')) + '</p>'
+      + '<p class="muted fx-cov">' + esc(S('confidence')) + '</p>'
       + '<div class="fx-grid">';
     main.forEach(function (k) {
       var f = fByKey[k], book = (f.scope === 'book');

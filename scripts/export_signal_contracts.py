@@ -600,10 +600,10 @@ ARTIFACT_MANIFEST = [
     # freezes, so a freshness read against it can score green on stale data.
     {"artifact": "site/prophet/index.json",
      "kind": "plan_book",
-     "schema_version": "1.2.0",
+     "schema_version": "1.3.0",
      "schema_fields": [
          "active_count", "active_count_by_age", "asof", "authority_tier", "cadence",
-         "gate_go", "intake", "leader_observation_summary", "ledger_corrections",
+         "computed_at", "gate_go", "intake", "leader_observation_summary", "ledger_corrections",
          "ledger_quarantine", "note",
          "open_count", "plan_count", "plan_integrity", "plans", "plans_sort_key",
          "record", "recorded_at", "schema", "selection_era", "source_asof",

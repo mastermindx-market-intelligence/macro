@@ -1,0 +1,3930 @@
+{
+  "schema": "macro-marketing-publisher-checkout-proof-v1",
+  "issue": 7479,
+  "source_law_pin": "c42e812e4a754d7a95efd954441d3f01607a7fb5",
+  "source_pin": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+  "input_manifest": {
+    "pin": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "files": [
+      {
+        "path": ".github/workflows/marketing-publish.yml",
+        "sha": "36b3f42c32f939e2ddec7bf1d3bb9e350abff908",
+        "bytes": 29109,
+        "sha256": "ec622177363aa47a0a18293dfc0ee3b7a448eb981104fb3bbf00e88041f043aa"
+      },
+      {
+        "path": "config.yml",
+        "sha": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "bytes": 496073,
+        "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      {
+        "path": "config/marketing.yml",
+        "sha": "f4ff5db8e3cd1db9d1a9ab0fe583b14eb616131e",
+        "bytes": 246834,
+        "sha256": "08e8123e29e2d1ee4aad8b5117f1a3c7793474c09169bf9d5ab5abf223aa4e6d"
+      },
+      {
+        "path": "tests/conftest.py",
+        "sha": "b2d40ef0eebddcfa3b4292a0d1cd296563222cdc",
+        "bytes": 34456,
+        "sha256": "ad0b342a4303b5dc098d203530e8e8a83d4b5c3cbc38730309448cac14570425"
+      },
+      {
+        "path": "tests/test_marketing_forward_booking.py",
+        "sha": "54698cbc39474cf3f04860e6f9282200cb8784bf",
+        "bytes": 40347,
+        "sha256": "9b6cabc4fd9b9baefa2b01c8e819dbb60fcfec32f99dc4bf01155e927333024c"
+      },
+      {
+        "path": "tests/test_marketing_outbox.py",
+        "sha": "19e26d716309a0acd7fa11f841ddffd1e4927987",
+        "bytes": 93332,
+        "sha256": "06fb3f2f2c86dd9ddbf75d454410b8bf24c767ef4d811f60df7d4b7653d5f0b4"
+      },
+      {
+        "path": "tests/test_marketing_publisher_autoapprove.py",
+        "sha": "d23cad458b769ad6e0bcfdd19eaf69a986cba2c8",
+        "bytes": 113838,
+        "sha256": "03c38d4a801508d8f3e7109e3e5dd34410c9677ea6f075395b321d2ac4a707c8"
+      },
+      {
+        "path": "tests/test_marketing_social_publisher.py",
+        "sha": "583acf2ce3274571fde4192ba516b7a01bbe36bd",
+        "bytes": 90615,
+        "sha256": "4e78e4f04c7dc7820f9b20924fd2f6f77d6f7edd78a2eef69e6e4e3141479c1a"
+      },
+      {
+        "path": "admin/__init__.py",
+        "sha": "d83f2cd01af36d503de6f1383e2db7b886a3003d",
+        "bytes": 734,
+        "sha256": "3a631511ffa35f0bd96ae654001a1fc2bfb792e3a7998fbe6ae7997171341129"
+      },
+      {
+        "path": "admin/marketing.py",
+        "sha": "01d5829c05ca58a536150a3c8ee4c2f6fd758fea",
+        "bytes": 256004,
+        "sha256": "eb7aaedf322bd3a4237970ef97c22485757fa81176ac61722140756306220507"
+      },
+      {
+        "path": "engine/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "engine/basket_breadth_divergence.py",
+        "sha": "0ad5ecbfc6a0b983d43bf3d591904878e7bb004f",
+        "bytes": 16985,
+        "sha256": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6"
+      },
+      {
+        "path": "engine/gdelt_client.py",
+        "sha": "27f194c1002021331572635b3b9faab1d3b58775",
+        "bytes": 17148,
+        "sha256": "9282e05655b3de93da3046c0fe36d17e6b682d5825237fd68a16017ae788ab6a"
+      },
+      {
+        "path": "engine/marketing/__init__.py",
+        "sha": "43080bba5ba2a0649a4ae0a7a18a1493cb5f39b2",
+        "bytes": 660,
+        "sha256": "6c9056208c0a9c0115eb54b9f8abfd01b36fd168e843b0d5235c9291240bfa5c"
+      },
+      {
+        "path": "engine/marketing/accounts.py",
+        "sha": "8af0b7119cd4cb9e0bcb8591ae6ac216e1aacd8d",
+        "bytes": 5038,
+        "sha256": "868a6f728f177009808c9321416d08a9a8e610ff2c6aa3733bf3cb1c0adcc40f"
+      },
+      {
+        "path": "engine/marketing/chart_render.py",
+        "sha": "2de10f26bfebde3a5baf28756823a8e4a7e19c92",
+        "bytes": 287289,
+        "sha256": "2d8d596c39545c9c0b064a56ec8508b41fb7845ff8fb124902a956896668fbcd"
+      },
+      {
+        "path": "engine/marketing/content_studio.py",
+        "sha": "6e20492071af9afaf5206cd40b44449367f04888",
+        "bytes": 357742,
+        "sha256": "8e223c2ee9856635b945eedf46375bacbb79fd92d9ad888cf323f4edf077716d"
+      },
+      {
+        "path": "engine/marketing/health_monitor.py",
+        "sha": "5a62b0afba073fefc0d815e1a565185cc216d81b",
+        "bytes": 37742,
+        "sha256": "40057a3d2f04331649218ec03d0b1929d4020983d46f492c065a59263f24fe54"
+      },
+      {
+        "path": "engine/marketing/hot_tape.py",
+        "sha": "ed2a8071e14f314cc263e59c764456b3cc1aa99f",
+        "bytes": 110517,
+        "sha256": "036ca9d81878f5c84d6773bffac6b98340e373fc1cab82bfffdf0f6306212a22"
+      },
+      {
+        "path": "engine/marketing/ledgers.py",
+        "sha": "fa7759742dfb9cab8605d8104e93fc9f37951d70",
+        "bytes": 1686,
+        "sha256": "a94a60f25914ff67328c3b54eb46befa81c1b3910a9a0f72c260fb0609c7a3e8"
+      },
+      {
+        "path": "engine/marketing/live_verify.py",
+        "sha": "733ec15acecdbe0885c9e0864a1c0bf57e331c7c",
+        "bytes": 33548,
+        "sha256": "aac087730eff0accb70739e397240e89717ecbcab56c5cb9ea6a7ca4e849da78"
+      },
+      {
+        "path": "engine/marketing/logo_cache.py",
+        "sha": "43685a6ccd37403e93f91e88f4eb845253e5d82e",
+        "bytes": 14389,
+        "sha256": "afc70743c63ba6c7ddc732914876baa38ef0eff384b296b42f249fe09510d0c6"
+      },
+      {
+        "path": "engine/marketing/media_publish.py",
+        "sha": "34103be787c63ca2581de4b56486c1b9a8343b9f",
+        "bytes": 16575,
+        "sha256": "e85cffa088ae0c0844ec12c808d1df7685b1ea26a94943ccf57859d8ea36a5a7"
+      },
+      {
+        "path": "engine/marketing/outbox.py",
+        "sha": "5b6c23f72673fbddb9ad920e1534bcaa8660bb92",
+        "bytes": 157652,
+        "sha256": "0dc1a83c747db0f16ac22f3ddd05079e1aea159b23a92e5afc48b73db848544e"
+      },
+      {
+        "path": "engine/marketing/social_publisher.py",
+        "sha": "c52877511b09b5d4fdb4a120c3d4bd43aa1757b5",
+        "bytes": 57408,
+        "sha256": "fc2c7b4b5daba491ce67f854f495a6a5f601158865a3070ba4882ac4fcf37725"
+      },
+      {
+        "path": "engine/master_brain.py",
+        "sha": "67bf21c6bb387505bd4c8b237804ba664181ff38",
+        "bytes": 142755,
+        "sha256": "9d58cfe754f365206be998d95b29a60cf2a54df46a1cad8ac7788fae66a16b70"
+      },
+      {
+        "path": "scripts/__init__.py",
+        "sha": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+        "bytes": 2217,
+        "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+      },
+      {
+        "path": "scripts/marketing_media_backfill.py",
+        "sha": "fa3933558a1177029d39d505e3ac09fd151ddae8",
+        "bytes": 13468,
+        "sha256": "f9a34a50a56d4796f5c5dfd4dfaed584500be4804b5049da9e255eacf16e5c0d"
+      },
+      {
+        "path": "scripts/marketing_publisher.py",
+        "sha": "a891f90ec025c484cc394c0cc6fd6c1ba04cec5a",
+        "bytes": 225653,
+        "sha256": "3f7ba5383f025f85107f5f3a98fc2a50dc0c1e80bad2dfedc0eeb113ce69b3d6"
+      },
+      {
+        "path": "scripts/worktree_sparse.py",
+        "sha": "75297acb10d0cef4d01730a59fdcad19c7cfd3e6",
+        "bytes": 90878,
+        "sha256": "fc5bd906b117511504a46a79f2ca4c689a496683952972dcf6a9858f9d819d99"
+      },
+      {
+        "path": "tests/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "tests/test_marketing_content.py",
+        "sha": "0d511a3eb753bffa57cd3e15f7a17942099e4e6f",
+        "bytes": 74228,
+        "sha256": "c055c3bf5298ce2e7e210c2ce93a7b45e94cf71fffe2099c3be80034bb0e0c76"
+      },
+      {
+        "path": "admin/allies_store.py",
+        "sha": "e7155522dd4ef4cd6fbf2ed87a2da7d88837c23f",
+        "bytes": 9085,
+        "sha256": "960dc19175813c72e1ca1bbacab083e5f346007c504ac4f58481cd2711f60d8c"
+      },
+      {
+        "path": "admin/github_api.py",
+        "sha": "e8af6a614afe1d2c533077080ccdfa53af0a042b",
+        "bytes": 24265,
+        "sha256": "d7cdfe1fe2f816d599164147ec948bc37372d9d7615e00295f4302bb764d00cd"
+      },
+      {
+        "path": "admin/gitops.py",
+        "sha": "ff3b3b327eb28b952c1468e8b7bdabf5fc0d04bf",
+        "bytes": 16688,
+        "sha256": "f79da0c77754673ab192e12ad8a1429c6e959f178403626e401b31fa248227b8"
+      },
+      {
+        "path": "admin/paths.py",
+        "sha": "358d235e0d97c56962e389079db8f0979f80c39d",
+        "bytes": 1921,
+        "sha256": "021bf8ac10826c6d6bc9804528c998fd8be7881d92c98a49a00c169f58c153fb"
+      },
+      {
+        "path": "admin/settings.py",
+        "sha": "3fa7471d32bd0e3e9f56d34f7b37372df1050635",
+        "bytes": 3846,
+        "sha256": "148e5d6fbe42fbcd09026a9a73dc38cbed1b1d6877180ad2d2ced4302f36cb53"
+      },
+      {
+        "path": "engine/ai_desk.py",
+        "sha": "f171e4e61d5da2cb002e7d5be692ffa31e6f852f",
+        "bytes": 41592,
+        "sha256": "d895b14bdb86db0f536c10ea03a0360de10c440e6b4b8d2c3ba7bc83ae65d94b"
+      },
+      {
+        "path": "engine/catalyst_tone.py",
+        "sha": "0540c15eefbff8944730c3ea6e1df1b9c5fe9b84",
+        "bytes": 31503,
+        "sha256": "1856dc10ea0c9fc480517d50b1b8488303ea29dbc18c7b86cd11d29ea0e7dbb0"
+      },
+      {
+        "path": "engine/china_intel_bus.py",
+        "sha": "366f0284b836a4414fb7db5f45001d164652b6f7",
+        "bytes": 76672,
+        "sha256": "9d1ddab42670f21f0e4b1549f1abb5851c608700531970af1af8703572cafb5b"
+      },
+      {
+        "path": "engine/desk_ledger.py",
+        "sha": "379028a7bf1fbf4ec96c86e39eeb0339b1d69381",
+        "bytes": 6683,
+        "sha256": "9e079f7d26e3a60e75ee651140612c2efd6a9d00a9405ac5c424fe219600dbc2"
+      },
+      {
+        "path": "engine/desk_scorer.py",
+        "sha": "fdffc74187f5f322981a7f39ccb9d5519a1450fc",
+        "bytes": 21038,
+        "sha256": "d1629aa70b66f7bee53d41a4710fc9d5b3ccb062f10bacabc22079b2ae7a6e77"
+      },
+      {
+        "path": "engine/forward_calendar_context.py",
+        "sha": "788e07b751748897a37dfe3ade594874a1ec8d04",
+        "bytes": 17878,
+        "sha256": "3d46426d70f5fdbc93fe8f462ece3099ee2a40d605527e1bf99051cbdd21d60a"
+      },
+      {
+        "path": "engine/indicators_m2.py",
+        "sha": "5645e2612bc31fc2e900844109a445b011b4ab36",
+        "bytes": 28873,
+        "sha256": "dc063cc07206cf94f0bb53f3dfb6bdd83ab0af060e037361740699deb78684e3"
+      },
+      {
+        "path": "engine/llm_auth.py",
+        "sha": "7294dec2759716416059155ba727392064ab99aa",
+        "bytes": 71580,
+        "sha256": "7060d1cabfeaec6ea3c26655a0d4deb41375e2b0f132474642cbefdf2ebb434e"
+      },
+      {
+        "path": "engine/marketing/ad_central.py",
+        "sha": "2cba1648d445307e8e8fe7e8d5491d1b802ef67d",
+        "bytes": 10919,
+        "sha256": "5f38ad6b21da63483c58ea4345b010b0dda77e33590fc2deed281e26bfef6826"
+      },
+      {
+        "path": "engine/marketing/approval_desk.py",
+        "sha": "1ba2c985bae8aee69533762084bb5e22e4120203",
+        "bytes": 61235,
+        "sha256": "10e969e730034d3461b88a9d192ffa2ac0342a85910c1df621039c153d80f87b"
+      },
+      {
+        "path": "engine/marketing/attention_source.py",
+        "sha": "7beec26ea4264e244a35f273acf58e7b52dca85f",
+        "bytes": 42343,
+        "sha256": "a478b1e5c3795b2001f00d4df2426748466a9c81e89262335c4f0907090eb277"
+      },
+      {
+        "path": "engine/marketing/blind_identity.py",
+        "sha": "1243bff734441d942c6bf65bdcd51a794af5eec6",
+        "bytes": 19767,
+        "sha256": "9522ba1b4b71597a1707ee8ca7ffc62fb0f3311e7ab321dabf50c3325a96395e"
+      },
+      {
+        "path": "engine/marketing/cadence_resolver.py",
+        "sha": "6707806f6ece332ef45225e2287338302561592b",
+        "bytes": 26538,
+        "sha256": "0834ec62d9965d889640bea4e7125b4fa7f9e0a70231534981a166bd53094db0"
+      },
+      {
+        "path": "engine/marketing/chart_director.py",
+        "sha": "b66b977d83b7cabd974fc1f010d4162d228d0eac",
+        "bytes": 42917,
+        "sha256": "436ec4034cc0892a8165b63199dab69bf46d2691822c1f3d45ddf7424db8d7a4"
+      },
+      {
+        "path": "engine/marketing/chart_facts.py",
+        "sha": "31457eaf2ac903b6fa0cfddb9c10122e8b289666",
+        "bytes": 78923,
+        "sha256": "3c428547b5b70ce611bcb61cf7aa3f9850e3d95f5f6e2edd9e3e2e0542277b6f"
+      },
+      {
+        "path": "engine/marketing/chart_followups.py",
+        "sha": "9aafc711a741b4073967cd1c6eadacd183366dc1",
+        "bytes": 11977,
+        "sha256": "eb4c3c7e3b7b2f24207065dd01a07e73087341ed401bfcd9a7a9417851f96988"
+      },
+      {
+        "path": "engine/marketing/cold_read.py",
+        "sha": "0350a7b4ee76b533d9a074ef1a8e84115494dc3d",
+        "bytes": 19735,
+        "sha256": "6fddc0015f0b78d88408ba8ba0053702a912763dba07ac480a06589add8ea0cc"
+      },
+      {
+        "path": "engine/marketing/confluence_source.py",
+        "sha": "f63a6c8a3dcb842b26d70231cbac5ff77435667e",
+        "bytes": 12430,
+        "sha256": "a2ef012897a101010ad7c6ea9211fba962e6e44fa820c8e34ef9029dbf1cd3d5"
+      },
+      {
+        "path": "engine/marketing/congress_feed.py",
+        "sha": "322fd229fa805faf310df28a2f9813500c38d5fe",
+        "bytes": 37738,
+        "sha256": "b7edc0fdc49f1f3f199cc35500166765a179b62abaade0acbc1a93207f34853a"
+      },
+      {
+        "path": "engine/marketing/copy_auditor.py",
+        "sha": "df7b7b9f941888a459ed304ce47b3753d3cb3098",
+        "bytes": 16465,
+        "sha256": "e4c6ae43dad5561b3fc5a005ba529e7c270f175e857b83d611a3add4789e23c9"
+      },
+      {
+        "path": "engine/marketing/copywriter.py",
+        "sha": "dd11794380df3cc1278830937c6b97878fd71de5",
+        "bytes": 476083,
+        "sha256": "f3234b40dcfd70f654f5d593a33897aaf2cc4e83257f0df178eb5218077ce8bb"
+      },
+      {
+        "path": "engine/marketing/expression_dial.py",
+        "sha": "b2f3d6a23c24a0103e5be04afef8833856a41f9d",
+        "bytes": 44585,
+        "sha256": "720f1c1d7473839a364a1dd166c7f6b6bab437de2662fec38c30c0ed81586c15"
+      },
+      {
+        "path": "engine/marketing/house_picks.py",
+        "sha": "81ce28bc373461d5faae1324ef069c60b30a7cf3",
+        "bytes": 19353,
+        "sha256": "b6f9353e22a5275dad1dd97143d031b1cc283f3cd9ff6b88f3eff2feb1f0cbc0"
+      },
+      {
+        "path": "engine/marketing/insider_feed.py",
+        "sha": "29e4b213d89850fc763d4258bc76505f7f361a51",
+        "bytes": 33763,
+        "sha256": "6c591f0f79cd903adf96b55f11a93d361e4945e0fcb70731c4291b1f7e7c34e7"
+      },
+      {
+        "path": "engine/marketing/labels.py",
+        "sha": "ab393c801509e3928ebe9b1f87987cf9da28012b",
+        "bytes": 60941,
+        "sha256": "b936fb1714750880b0739370c0513d6783f3bbf34736be8be92edd4184b68c2f"
+      },
+      {
+        "path": "engine/marketing/learned_rules.py",
+        "sha": "03881805e74751ebe2829c4cc0139076e9451bd1",
+        "bytes": 18539,
+        "sha256": "c975a90118fece8e9b4c46a6d0c0785d8e2747ada8b32a5eb73798912cfb0fc7"
+      },
+      {
+        "path": "engine/marketing/links.py",
+        "sha": "718eb80d33e05561bb08132339e981a29904b200",
+        "bytes": 17373,
+        "sha256": "029677dee27dbc721a78ac340be7827da1168762989486b7c5d06e07c7a468c2"
+      },
+      {
+        "path": "engine/marketing/market_clock.py",
+        "sha": "4c370529593936c7561942bce90f860e8be90e96",
+        "bytes": 92860,
+        "sha256": "b621f1f8bc66c23fff2d7ffc91fa8749a42a2cd87ea774b1801f1fab9957e261"
+      },
+      {
+        "path": "engine/marketing/market_facts.py",
+        "sha": "9d1d066b9a66effb1c72a69863f5076716f16df8",
+        "bytes": 60770,
+        "sha256": "04630c74bd292c255f4364952988bed8ab329cc0418780f570f04902b2e2a716"
+      },
+      {
+        "path": "engine/marketing/movers_source.py",
+        "sha": "5e34be106d6a5cd03a7052392a78e0146d4d7bf9",
+        "bytes": 64872,
+        "sha256": "f985ef77133914a260fd050f4b8cad0107ca468c76b3e9384008c7b5d0166e47"
+      },
+      {
+        "path": "engine/marketing/persona_memory.py",
+        "sha": "b80bb6534a5fbd72017e8dda4959f51fcd3d977d",
+        "bytes": 32588,
+        "sha256": "71bd51d84eff4c3290ff6128985fbc1b8349a5baff19b199d4346b4c41b67b2f"
+      },
+      {
+        "path": "engine/marketing/publish_time_content.py",
+        "sha": "294f7acf4130eb59f13c2ac04f48c83cbe212619",
+        "bytes": 158478,
+        "sha256": "128e13b18b939f87c32de6eabee5edd551c94221e77a0ea2777ff96f47e3ade4"
+      },
+      {
+        "path": "engine/marketing/radar_internal.py",
+        "sha": "bc006eedad149de5045f728918a980198526f9d3",
+        "bytes": 54189,
+        "sha256": "cbfc72da816f2a4ca408dff95efbec62bc7e09ebf215b10c944560cc29a49c08"
+      },
+      {
+        "path": "engine/marketing/receipt_source.py",
+        "sha": "84dfa2f6f768e23428629fd1e932614a2ef1d4b7",
+        "bytes": 10321,
+        "sha256": "dadb0b1208ea76291883a84b5181e65117dbf5ab1db6c656253a92fb514c1617"
+      },
+      {
+        "path": "engine/marketing/rejections.py",
+        "sha": "c18280114e0d0eef07ab45043647327af42055eb",
+        "bytes": 8160,
+        "sha256": "56543ef735c4c3b26c39725444f34d2be1fe1d3477565a2ecd2f0cfca60c7cac"
+      },
+      {
+        "path": "engine/marketing/reply_critics.py",
+        "sha": "22b1c9007add9d6122c0a199aaba873b15e2ce01",
+        "bytes": 111923,
+        "sha256": "0e0aa513cd0807b127d94e1de2699fc21fe2fb4850581d25cd9e892acbfc49a4"
+      },
+      {
+        "path": "engine/marketing/reply_discovery.py",
+        "sha": "c832b572aa67acfc192b37e2e3b32ea69318f506",
+        "bytes": 40063,
+        "sha256": "cd79426188c5d3474d9f7e844e6d4545c13dfde2bcd4165acffcd1f3ca2d34f1"
+      },
+      {
+        "path": "engine/marketing/reply_drafter.py",
+        "sha": "971197b7c439cc7ce41a5f34aeb02c7891b71ec7",
+        "bytes": 145256,
+        "sha256": "6dc443fd7b31b9ee6571d0241f8b454400f34802782158bb3a98c00d1e4e223b"
+      },
+      {
+        "path": "engine/marketing/reply_export.py",
+        "sha": "d6dcabf715ccb15fdcbbdd19ec28b6ffcecf31cf",
+        "bytes": 35375,
+        "sha256": "567004f0d9a43ff3a73ec8c7c083642d493e21c8abb591b9fe2aceae7937cb69"
+      },
+      {
+        "path": "engine/marketing/reply_producer.py",
+        "sha": "396429fd5ce5f578c020ff2915e8beafad2ca870",
+        "bytes": 63980,
+        "sha256": "4026fd3a4193f1afd4cbf7d16e99397e420669ad499e1b1edc18139e7bd9f37b"
+      },
+      {
+        "path": "engine/marketing/reply_queue.py",
+        "sha": "ff64bc16066020192cdda406873534e58268ab06",
+        "bytes": 74406,
+        "sha256": "54f61b912585d7491cf6cee8cbf5f094ba7e01eb032df01857a11083151a0dfb"
+      },
+      {
+        "path": "engine/marketing/reply_voice.py",
+        "sha": "fd353aaf26fa91f65e4614cbc8082368daae12f3",
+        "bytes": 62828,
+        "sha256": "cd4986586399cd5553eef5fb36606258446a98c53c94986b17a2e66e6443af05"
+      },
+      {
+        "path": "engine/marketing/rewrite.py",
+        "sha": "cf1765f1fefc32fbf30d25cd69603fb1cbb428e6",
+        "bytes": 8878,
+        "sha256": "e3ce48f3e4f75a9f6c3e02e6996c834c20d04eeff3f4d654becf1fa333366d9a"
+      },
+      {
+        "path": "engine/marketing/sentinel.py",
+        "sha": "17083270180d93c456e10ebb1bc16449652b3889",
+        "bytes": 88023,
+        "sha256": "829ae984adbfc41d5dd315e21260414525c3b5d3acd1fa346fc284a97021b545"
+      },
+      {
+        "path": "engine/marketing/seo_search_console.py",
+        "sha": "25bf29a3ac29fc1f1d33fe75bff4f99b90bb12f7",
+        "bytes": 65597,
+        "sha256": "62a7c10418aadf6cb0cfbfb2633f90eaf38999ef1e91560e2f33d4e3cbb8485d"
+      },
+      {
+        "path": "engine/marketing/share_cards.py",
+        "sha": "7571bfa85e551f3778f1c68d42302b8928cb2e5a",
+        "bytes": 31237,
+        "sha256": "c2ed8416552f0fdede7ef1a7fa91405e9787b8f40529ec6fb60fe6add11e2274"
+      },
+      {
+        "path": "engine/marketing/source_authority.py",
+        "sha": "caa2395e2373c3ec9f0e49760861401251f9a996",
+        "bytes": 23601,
+        "sha256": "320330545aaa6b87725b7072e33893344fe2f8f453649b8829a3d0f1bd24fee0"
+      },
+      {
+        "path": "engine/marketing/state.py",
+        "sha": "4acc5934c0c23316e6893cb50fde0b0199948bab",
+        "bytes": 18901,
+        "sha256": "1b933891c7c3c1d22018ea6b49fbb370a7f6cd5f9e5e9123912405081b81c15b"
+      },
+      {
+        "path": "engine/marketing/story_lock.py",
+        "sha": "6b94fdc96008537433069e0186dd1b68abec3f5b",
+        "bytes": 7475,
+        "sha256": "9485971a69b9eeb3681d5f817550cf5ad42e477bc18846acfb60a3e1e9b33836"
+      },
+      {
+        "path": "engine/marketing/ticker_allocator.py",
+        "sha": "ab5dba1d83f0484c0b4de885514f1c7a8686cda0",
+        "bytes": 27756,
+        "sha256": "788591d869c7b067d9ad07ecc0b857d265989441a341640a9792c2861fc9a35f"
+      },
+      {
+        "path": "engine/marketing/value_gate.py",
+        "sha": "b7de8dbdece9c35c5aab8ec3f12d2d23fcb2f3b7",
+        "bytes": 32043,
+        "sha256": "a7463efd507eb49f4ba68673171349b0961e2581bc56de10bfb5de09fd933bc7"
+      },
+      {
+        "path": "engine/marketing/wire_routing.py",
+        "sha": "3a8f3a643d1e4b41655937922b5d43f4d66cd594",
+        "bytes": 53997,
+        "sha256": "e64b31059b9cd3504c1f2a103e70bbc2cb1d6f0aec88fb4fce6858d0e90f13a5"
+      },
+      {
+        "path": "engine/neuralweb/__init__.py",
+        "sha": "ffdf5aa13745cfc47e2e3e535fcacdc1e8eda10c",
+        "bytes": 1832,
+        "sha256": "b4bb1e4f8374b687034d1d6ff6f303915bc0228ebaae463e12c1b0303284ad8d"
+      },
+      {
+        "path": "engine/neuralweb/brief_context.py",
+        "sha": "fb91c6fc3bf098291e954c0bbd142ff3fe856b43",
+        "bytes": 56282,
+        "sha256": "6ecdfa36c3ec1f1b8a1fd979f581e08d2d991a09bd4821e134931c13f9613014"
+      },
+      {
+        "path": "engine/neuralweb/marketing_governor.py",
+        "sha": "11b805c1a8ba83518e0873acc0966198bedcf439",
+        "bytes": 25041,
+        "sha256": "d9abefbe663b354dd2c0a174c6a669338ed9fc27c481539e217307eda635c53f"
+      },
+      {
+        "path": "engine/prophet_integrity.py",
+        "sha": "3eee55e8ff3c012fe97e3956bee3e1bbcade4bd6",
+        "bytes": 23929,
+        "sha256": "992a0589ef005696159536148b3a0ef11604663bb29d318194050920abd99ab3"
+      },
+      {
+        "path": "engine/regime_label.py",
+        "sha": "fb5a5714694b532d3404938eb4d2e634c9904944",
+        "bytes": 1817,
+        "sha256": "3ade9c6d28daacefb7f31ecf56a01067a572c1ae4f4ea0458347904a6efdbfbf"
+      },
+      {
+        "path": "lib/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "lib/config.py",
+        "sha": "b6fc888269876242597da354aaa726c20ed95802",
+        "bytes": 1131,
+        "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+      },
+      {
+        "path": "lib/nyse_calendar.py",
+        "sha": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+        "bytes": 29814,
+        "sha256": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+      },
+      {
+        "path": "lib/quote_native_metadata.py",
+        "sha": "d81a45aca0ceb691a51c48f0e53890712cfe7839",
+        "bytes": 3068,
+        "sha256": "766e4b41a7fcb86745f0e46367dc5db2ae751889f42902800b67ca93eae696f5"
+      },
+      {
+        "path": "collectors/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "collectors/china_visits.py",
+        "sha": "cec6e1677c32456de3bbc1445b0874585dc38f0b",
+        "bytes": 78061,
+        "sha256": "ed8a1295a2ba3c0dc69d191dcd7b9c9692b2979129e67dcf636677b668c99c3d"
+      },
+      {
+        "path": "engine/china_discovery.py",
+        "sha": "68d76d702c127856be1074c46cfb6ad688b91896",
+        "bytes": 18302,
+        "sha256": "d28d2adf96a66cf7ad8586038d5487065df60291281e815f796b143440c141d9"
+      },
+      {
+        "path": "engine/codex_provider.py",
+        "sha": "09f17919cf7ceaa55425394f1ac7dc6b397e0b05",
+        "bytes": 30985,
+        "sha256": "8dc05bd58187158ee61594efcb9de7956fb28127b8107683ce5fb6c727350d12"
+      },
+      {
+        "path": "engine/event_calendar.py",
+        "sha": "8c611c96a8b3157f5be659215df8b1b38e7894a1",
+        "bytes": 26021,
+        "sha256": "b6b65616575bde5a3d3972304bbcfcd9c1034eee2df83dc7d50c13b7333b700e"
+      },
+      {
+        "path": "engine/marketing/ad_allocator.py",
+        "sha": "fd9b818f4d5f3f0b2773568e8e21d44cfa742214",
+        "bytes": 17415,
+        "sha256": "a06fa28dab2a68cfc47bb68dfa811eac365c39be09f365e2a78ec3e20c7e8d1e"
+      },
+      {
+        "path": "engine/marketing/ad_arena.py",
+        "sha": "ec6d14f51ad108326ab5b842818f31da4b304ce7",
+        "bytes": 24179,
+        "sha256": "278b82d5d5dee2f9d500b47b66e26d4d110d3c953869f891f75b488667d385ef"
+      },
+      {
+        "path": "engine/marketing/ad_stats.py",
+        "sha": "0705cdea2665bdecb8b9accd3e4326aa5eed9310",
+        "bytes": 25214,
+        "sha256": "57bd8d53563aead117057202d12746f6bd88fc9a31918d0a18c217e6b8c32647"
+      },
+      {
+        "path": "engine/marketing/allies.py",
+        "sha": "a0a2a40fbc508f27ebfe00fb72da6e8bd38a5b5a",
+        "bytes": 33305,
+        "sha256": "97d4f9dcf43c6197bc82e03075aef1d7392a4cc9f27c8fe4d02a673e3e5e069b"
+      },
+      {
+        "path": "engine/marketing/authority.py",
+        "sha": "b106235bcbf842dc793680585e9b1f2144910682",
+        "bytes": 5355,
+        "sha256": "0d73e0cdd1bc36b24a6ea45658e63c254094bd3b8ef8878b092020afd1a27368"
+      },
+      {
+        "path": "engine/marketing/charter.py",
+        "sha": "150e34351754dcbc2aad5a796752c2bd88735109",
+        "bytes": 3628,
+        "sha256": "af4bef84e91e4631534e7da7508c4c6eae9b0529272365228339fe7b48ec4f1f"
+      },
+      {
+        "path": "engine/marketing/claims.py",
+        "sha": "ecc812e3cd5d2b0a9675ceed600542e300dfa107",
+        "bytes": 4436,
+        "sha256": "ad6667e71d23ddb4cda28cf5b8d79fc7328a80f94f415540063822c6dd0d9d0b"
+      },
+      {
+        "path": "engine/marketing/cmo.py",
+        "sha": "9c401b07af2080ddb4dcb706de67369d27cf6fd8",
+        "bytes": 10714,
+        "sha256": "f2b124754fb808d1935fcde19bdad3d66f334ada97b1f292fbfc9af0686974f9"
+      },
+      {
+        "path": "engine/marketing/copy_critic.py",
+        "sha": "81c2d0a800df7ed220184d0df3dafd6f99248881",
+        "bytes": 23480,
+        "sha256": "3e045439fd0deeeed5f2716b9f599590a8d14bfe0d96a2c0d5b44b24efe122d2"
+      },
+      {
+        "path": "engine/marketing/departments.py",
+        "sha": "1f3d42cb9afae285cada2606dc4138962d3cd3bc",
+        "bytes": 45779,
+        "sha256": "f42be96b317a040bf28c6dcdb4343aa9d8b83fce0133ef77121448f2015f889f"
+      },
+      {
+        "path": "engine/marketing/economics.py",
+        "sha": "d2b9da7d075f1dc1f1e67cec2ed931e826a055ff",
+        "bytes": 4797,
+        "sha256": "bb4e78bb1251366d536a79aa789a357ce6ece47c32ca4534e920e8ee4d24b3d9"
+      },
+      {
+        "path": "engine/marketing/events.py",
+        "sha": "2773e8872a3f14599d0c6b5c5fd0680b6bbba6fe",
+        "bytes": 2136,
+        "sha256": "f940ba236256f56841cc944fdab5914ee4c5a85a5b9ce774137bcede7c5caace"
+      },
+      {
+        "path": "engine/marketing/exemplar_store.py",
+        "sha": "25550d26d64b14fab722716b7807cc36043f7bd3",
+        "bytes": 24632,
+        "sha256": "d09d031b706263be9175c26d06295ee66ce00e4b800814a452af66636c308ccc"
+      },
+      {
+        "path": "engine/marketing/hot_tape_llm.py",
+        "sha": "1370ac49ea7a108a5748cd821f11db0f3d2847be",
+        "bytes": 54022,
+        "sha256": "8ae918bf019b74d2cebbbd1e8c31b901964fbb3eac58c724175e185232e6bffc"
+      },
+      {
+        "path": "engine/marketing/opportunity_bus.py",
+        "sha": "624fc8d229e61de1f92d2142a34fe56c8382eb30",
+        "bytes": 5350,
+        "sha256": "09f0ce3e55bcbda2e83051c396ba78bdc68d9e7d0fdfb093fdb4b09197f94df2"
+      },
+      {
+        "path": "engine/marketing/persona_model.py",
+        "sha": "9b4dd61a715f15ff62a1e0efdb2fbea22759c756",
+        "bytes": 34050,
+        "sha256": "b67f5770a23ce1e5c0bf5fa5f284a1288b00e50f34a98e316ca696acf85fed8c"
+      },
+      {
+        "path": "engine/marketing/personas.py",
+        "sha": "c859a60fa8b0d2afe6c5b20052d835cb89c43c00",
+        "bytes": 39335,
+        "sha256": "5c2ba520d74517c127807a094e1f2823c93a4e2b98b9818808716bfc0e413976"
+      },
+      {
+        "path": "engine/marketing/publication.py",
+        "sha": "5b466cda88cdb05f37461a2184c07347734aceee",
+        "bytes": 7182,
+        "sha256": "9904f90241f1b236dd88094aa6b388fdf43d627c6117900a3b36ededb6f4beb2"
+      },
+      {
+        "path": "engine/marketing/relay_hygiene.py",
+        "sha": "27c3d08c25de95a6eb34e29b8f0b62841b4d6011",
+        "bytes": 34824,
+        "sha256": "147f9567374fb686d6edca32c2bf3f989aaced58be3f7bbbeda82bbc80a3d1ef"
+      },
+      {
+        "path": "engine/marketing/reply_score.py",
+        "sha": "c8d702f0dbb1189e865dc01c25cc1792f64c4aca",
+        "bytes": 14038,
+        "sha256": "2d6bd9e4ce610d5e3801a4cec7bf3c7d349bf909848b081c155b3b86c312882c"
+      },
+      {
+        "path": "engine/marketing/reply_shape.py",
+        "sha": "4e1cdd7b2c2d7278624e8b8858268446e19fa6df",
+        "bytes": 54970,
+        "sha256": "72ae82f69bcdf49ce799d1d8c76bf94558abf6d1cac57dfd3ca249318a1ae619"
+      },
+      {
+        "path": "engine/marketing/seo_director.py",
+        "sha": "2a666812063bb8f977c4dc49ae986d2f9dbb59d0",
+        "bytes": 63050,
+        "sha256": "1024a33a8e72142a1d249d00cb76371d135cd04c85963c9df11086b7313cec29"
+      },
+      {
+        "path": "engine/marketing/theme_proxy.py",
+        "sha": "d50a6da52f1f26a4215de1c6fb56d66fc08c8d53",
+        "bytes": 20249,
+        "sha256": "17049d4aa0fc8a2be76b66f526b453feafedf18bd1aad2a6daee7295218c98ba"
+      },
+      {
+        "path": "engine/marketing/weekend_levels.py",
+        "sha": "5cbcc76370ddf854cc86318c4a77a408d2e09553",
+        "bytes": 53860,
+        "sha256": "c2965cadab19bf320881652f42deeccb11e398eb71055f09e5ebeaff01914582"
+      },
+      {
+        "path": "engine/marketing/wire_format.py",
+        "sha": "3f54cd0df4befec8d8306794e53aa3bd84d31cad",
+        "bytes": 42206,
+        "sha256": "1425155fe517715381e06dc46b9506af979563bc47db31d917275dbd7e119411"
+      },
+      {
+        "path": "engine/metabolism/__init__.py",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "engine/metabolism/budget_gate.py",
+        "sha": "3b4ba5a2ee35e5effbc1bc03051ac5ba04f5b21e",
+        "bytes": 22360,
+        "sha256": "26c85f9b59bbd3deb3a7f7604f8521b05c4c5dfbcd6b6c11ac266ed0ed605b59"
+      },
+      {
+        "path": "engine/narrative_crossmarket.py",
+        "sha": "5d71faf075d1f3f3735e72498de6214097825761",
+        "bytes": 27483,
+        "sha256": "79b4791012811ec01ed85764c3247db91ddf789e480db2defec4e66e8f008316"
+      },
+      {
+        "path": "engine/neuralweb/capability_broker.py",
+        "sha": "b744dd39c5e025a1085d6865154aa0390197daff",
+        "bytes": 9924,
+        "sha256": "9a1f615c030696fa956b28d994661a3108ff118c3667c2d4c64884ae9c5346a3"
+      },
+      {
+        "path": "engine/neuralweb/envelope.py",
+        "sha": "f51e4db1a1ae37025a7ab7f03934d6bfcfb04e49",
+        "bytes": 16579,
+        "sha256": "4358cf80288fecb2af2b982647d0c6ce117eba7cce6788f344b11fefbdc41671"
+      },
+      {
+        "path": "engine/neuralweb/key_pool.py",
+        "sha": "87a19b9794e19a32ac436ea8fbab7ecb2df528ff",
+        "bytes": 60639,
+        "sha256": "474185c0770422de1a91a817f4568d33133b7c1969262d6cf3af5f45c22b475a"
+      },
+      {
+        "path": "engine/neuralweb/read.py",
+        "sha": "44f4182d4248f3eb854b0607f657a7e6f5de99bd",
+        "bytes": 4780,
+        "sha256": "2e7ca97f6c1d69739292a79fe77f2e3c9a9873e90cc9d6d8f062bc61ceada073"
+      },
+      {
+        "path": "engine/ollama_provider.py",
+        "sha": "5703930982326c17ebbe6a591f68f0b8b2c11f06",
+        "bytes": 11997,
+        "sha256": "fcfe71303e52d4fceca267920dab2da4606a16d21ec0fa2b3efa37968b46114b"
+      },
+      {
+        "path": "engine/passport.py",
+        "sha": "978ce05b9135089469220a81bad24272690e1892",
+        "bytes": 6228,
+        "sha256": "a61ce8b60e2e7fc744cd8756961245498b3c8f19fa3cb522afadf4a641f45a4d"
+      },
+      {
+        "path": "engine/pooling.py",
+        "sha": "a75dfac3814b50296f18272ed845544c5e56d63d",
+        "bytes": 22512,
+        "sha256": "59cbccda6ced77099003fdafa544b8b1dc3ca785c24792612ad3214880ea8fc5"
+      },
+      {
+        "path": "engine/provider_health.py",
+        "sha": "2447897c9a9ae146431a6da976261b86f45a8671",
+        "bytes": 13108,
+        "sha256": "718a813686210ecbc822b0e66eacd7553fcdd9aa173dee92869833d4f5b67258"
+      },
+      {
+        "path": "engine/rebalance_calendar.py",
+        "sha": "4f83cf8366f6fa35f780f597841515abe09d3a5e",
+        "bytes": 11557,
+        "sha256": "330b7d80997e68a5400c63797bdf0812dfd19f4184a373de239ec7987caf8456"
+      },
+      {
+        "path": "engine/spine.py",
+        "sha": "9d1c49373c63618cc4d9ed0f636e73896c9b48d5",
+        "bytes": 27043,
+        "sha256": "95894b11887dd9356d3d3fdf03b623158c5c891268f79802b0118358b3dbfe21"
+      },
+      {
+        "path": "lib/ai_costs.py",
+        "sha": "87e15773e8e235ddf8fd11d39d142301c0c5424e",
+        "bytes": 27961,
+        "sha256": "545fcadd46ebae98d3ea220678faca205df94c193d17bc35b59b14851ce1e076"
+      },
+      {
+        "path": "lib/dataos/__init__.py",
+        "sha": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+        "bytes": 11768,
+        "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30"
+      },
+      {
+        "path": "lib/dataos/identity.py",
+        "sha": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+        "bytes": 111096,
+        "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507"
+      },
+      {
+        "path": "lib/ticker_aliases.py",
+        "sha": "7d1aacd5c32209f9e47461f50287db25e2404a65",
+        "bytes": 3461,
+        "sha256": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
+      },
+      {
+        "path": "collectors/_drip.py",
+        "sha": "552f344b54c4a1a20836c58c63b8613251903b1c",
+        "bytes": 4757,
+        "sha256": "6669ee2ac9121db42f747053978f2095f151f25af4803813e3342ca068e2b2c7"
+      },
+      {
+        "path": "collectors/base.py",
+        "sha": "a958ac264aec6a49b9b971ea103f8c83e29dc6e3",
+        "bytes": 40508,
+        "sha256": "ec4d17cab2efb92a266dce2f89882d6cb7e17d1f495d184661ed3a639568ae7d"
+      },
+      {
+        "path": "collectors/china_filings.py",
+        "sha": "cd19867ab385325025e8f296082687a7f2ad26f7",
+        "bytes": 52702,
+        "sha256": "19eb3b8e497fb88f4bc2606ac09ba376fb9092d3347c08e92ac947119d56f521"
+      },
+      {
+        "path": "engine/altdata_ledger.py",
+        "sha": "a84ea31856ca93503251d086c03d85713b11e6e9",
+        "bytes": 18288,
+        "sha256": "109e024db89f9f83722a80a0d34da715ab6a2e03eceb9a8398d66967355786d2"
+      },
+      {
+        "path": "engine/china_altdata.py",
+        "sha": "1665966a51112807f09b6c7336f49940eb752f32",
+        "bytes": 19189,
+        "sha256": "8fbff00279a62e19fffffdb3b6f6def795facc8d2548836ef19510d3990899c0"
+      },
+      {
+        "path": "engine/china_basket_spine.py",
+        "sha": "800b92b32ec7ba97846cc7c55b2ce002265cb68b",
+        "bytes": 6340,
+        "sha256": "502715bf2faffa1b9d97e32842fdcd7d2b69221c8292a54b029da6dded4c14fd"
+      },
+      {
+        "path": "engine/china_radar.py",
+        "sha": "89021977826ffb7a16aaab48c64bdeee0ee9c149",
+        "bytes": 44190,
+        "sha256": "8e405dd2f131294d1f1696e0ec54d8a9cf811fa29aff7a41dc907012618ddd5a"
+      },
+      {
+        "path": "engine/codex_lane/__init__.py",
+        "sha": "8b5f9690d9dcade48bcf880c6a93efc142a7d368",
+        "bytes": 312,
+        "sha256": "0f3a85941151f49598f1c63066d5578c2b6eb58a836b747b82d8f6c506c80296"
+      },
+      {
+        "path": "engine/codex_lane/runner.py",
+        "sha": "3a298b4f0dde85d42f3e65a7a7412eeda4059b2c",
+        "bytes": 31948,
+        "sha256": "52a67a427b612ce2df5ebb15613f45c4b6f0af4b31eba1e9145258d8979d20ce"
+      },
+      {
+        "path": "engine/marketing/ad_review.py",
+        "sha": "8cb66ff85f4f2cb0fdf6f0dd5eb883e75581dc2c",
+        "bytes": 8839,
+        "sha256": "8a5240ad047b7bce96a0ed9d3e12373482bbd7423e08ad6ed698c06a875e1895"
+      },
+      {
+        "path": "engine/marketing/breaking_summary.py",
+        "sha": "f0bb825581bf2a594aca02a518250f4f30794591",
+        "bytes": 74090,
+        "sha256": "a1dea4d3585ce335f5dece3783f1dff6572f8919f84ed76903aec194e6b7ac94"
+      },
+      {
+        "path": "engine/marketing/campaign_compiler.py",
+        "sha": "dac1dc7c8da5db071700bdce104befc27a97ec81",
+        "bytes": 7111,
+        "sha256": "87f42a8dc7076d6be7d1cf1a44d745fe7e8819e8106823a8c2b677952a55ebc2"
+      },
+      {
+        "path": "engine/marketing/copy_review.py",
+        "sha": "2ac7627f2c9b747c8d2ba035efe6b2652b7b5a32",
+        "bytes": 15691,
+        "sha256": "12f832f82f250dbefbd0da2188b15959f053f517738c04c0cd67ead605e48d80"
+      },
+      {
+        "path": "engine/marketing/wire_voice.py",
+        "sha": "ae93046eedd934fe7879cc1a4c5f9563b3f41934",
+        "bytes": 35655,
+        "sha256": "d3a20878aab8b2c77ef41266e9c6dffa9b19c57e625683ed5a8118541867b699"
+      },
+      {
+        "path": "engine/marketing/x_intel.py",
+        "sha": "0f5d95dff34cf17d785a6b21adba77d6bcbe993d",
+        "bytes": 59194,
+        "sha256": "4489950ebb8595ba7092ae7c685d20845df4cdc50352c85e65ddb711e89145cb"
+      },
+      {
+        "path": "engine/neuralweb/synapse.py",
+        "sha": "ce354519c6c9150d718c92c66b338071e859fe41",
+        "bytes": 17277,
+        "sha256": "d5234e95bc406a48cfec037faf3d93a3f285b4c988980ab34d057b5b856b2217"
+      },
+      {
+        "path": "engine/opex.py",
+        "sha": "2184566e4a478a4eebc0a19e8fa98c4e585dded2",
+        "bytes": 8475,
+        "sha256": "88d3ddf7e271e90eaf914c8c086f2c902913a71a6829046e87abff1693e740b5"
+      },
+      {
+        "path": "lib/cn_calendar.py",
+        "sha": "72a9cf8b4ee4f32a542b77b530d40af8caa99a1a",
+        "bytes": 12262,
+        "sha256": "d51b737c9198782d7c1792a2d744b9d1677306c122752a12031faef05c075f4c"
+      },
+      {
+        "path": "lib/dataos/nulls.py",
+        "sha": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+        "bytes": 7737,
+        "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49"
+      },
+      {
+        "path": "lib/dataos/price.py",
+        "sha": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+        "bytes": 10509,
+        "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15"
+      },
+      {
+        "path": "lib/dataos/quality.py",
+        "sha": "967b943443d9507c5c0078f62848c38c3d2af48a",
+        "bytes": 36845,
+        "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877"
+      },
+      {
+        "path": "lib/dataos/registry.py",
+        "sha": "65b0d69036da97760f20241468f2549b21d9c686",
+        "bytes": 41942,
+        "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404"
+      },
+      {
+        "path": "lib/dataos/temporal.py",
+        "sha": "094b149a8b9158f19cb99c4005568c12db96ed41",
+        "bytes": 12847,
+        "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67"
+      },
+      {
+        "path": "lib/seo.py",
+        "sha": "152c9ff3a3a857ae23df2cfe70e00c1e808d7423",
+        "bytes": 18822,
+        "sha256": "5e09e9e278ddb914cfcb9fa0085c5d0724ecb03789d65eef94ef155d96c74064"
+      },
+      {
+        "path": "collectors/yahoo.py",
+        "sha": "37547ac57dc7f282a8d3d30a3434dd74f926c005",
+        "bytes": 36954,
+        "sha256": "514ea60a4b4a2fb55038c10aa6e73b9da5665041ce99d807fe769f17749283f7"
+      },
+      {
+        "path": "engine/ai_desk_scorer.py",
+        "sha": "d949a7d9deda72bc497f52bae7abd7eca6b59adc",
+        "bytes": 6660,
+        "sha256": "083c2ed200d2771921407e5c792a52962c463fd52eaa3e6b513b9b1b2f348550"
+      },
+      {
+        "path": "engine/altdata_models.py",
+        "sha": "e21181a42a2aeb88235bf1636ae35066b679779b",
+        "bytes": 38599,
+        "sha256": "d5e88545635c3a9b01d05a3e73c8564b6ab720980b42fe3dc3a49620c10d5adc"
+      },
+      {
+        "path": "engine/altdata_signals.py",
+        "sha": "dae7b2db43a0552e8871808f935fc7fd4e280081",
+        "bytes": 15002,
+        "sha256": "b34317607d2c40e81bfe82a6deeed1fb1bfa06e586dbb3319341a28f0e139992"
+      },
+      {
+        "path": "engine/canon.py",
+        "sha": "32116817bbb4c844c2c811905eb8d778482342c6",
+        "bytes": 28632,
+        "sha256": "bdf34dc8a9b851889e9b6beae939867ca4611ad41a78b4b43322f2a8a9b18165"
+      },
+      {
+        "path": "engine/china_conviction.py",
+        "sha": "48979da38779abd67b6ed9b3d836026861ffade3",
+        "bytes": 2746,
+        "sha256": "03ca83dc8e79b8c5a076630157709658e61e18ee98af3b5b5359536d38eadd93"
+      },
+      {
+        "path": "engine/china_crowding.py",
+        "sha": "a9cb119591533a7d7ed870ce28aa28dc5fe0c8ec",
+        "bytes": 18069,
+        "sha256": "69d8e5d123c27d1f75216db2a84a33534309af943d533146fe8baa18f36ea8f0"
+      },
+      {
+        "path": "engine/china_extras.py",
+        "sha": "11219d650fc06f685b5effbd14f809b97cdcad74",
+        "bytes": 22092,
+        "sha256": "136ad143dc88aec330085f00f61e1900b5e0f643870a549a22801861163057f1"
+      },
+      {
+        "path": "engine/china_radar_ledger.py",
+        "sha": "16a7adde202ab6cfdb0e8190ab8d4b3950be3f90",
+        "bytes": 11212,
+        "sha256": "04f9ea02e953eb9a520724614808f8dc7523fa38cd5b53f45da11846451b72e0"
+      },
+      {
+        "path": "engine/china_signal_lab.py",
+        "sha": "9c0c79a02841f432ae556f97790df84071261e21",
+        "bytes": 18148,
+        "sha256": "d1fa5a2d3146f8052e6e7a0e280f6d09d802ae28c0effe8cdd31777d340d2ef7"
+      },
+      {
+        "path": "engine/ledger_lane.py",
+        "sha": "1e519c921d2f2028a6fc2bee5372cdb84133c209",
+        "bytes": 2205,
+        "sha256": "7462536242fc9563f4037c87927c4e5524fd9b6ecbe0b3275528d8ce67d88bf0"
+      },
+      {
+        "path": "engine/press/__init__.py",
+        "sha": "538de9a062e5da0711daed5268110f83cf6604b1",
+        "bytes": 3849,
+        "sha256": "7effb832846bb93c5915d6ddcb6c682ba7efeb7d0d9d7e3d7cd4e8d51cb00aec"
+      },
+      {
+        "path": "engine/press/validators.py",
+        "sha": "455a24e91eddf9fdf7239def4c29cec96799169f",
+        "bytes": 83012,
+        "sha256": "038acf03f193b4bb57ff0e77768f38eab62a137443cdb47482b8ba4f95ff9d0e"
+      },
+      {
+        "path": "engine/validation.py",
+        "sha": "c9a09740cd630f920e52fd21b88ff36ff31366b6",
+        "bytes": 71729,
+        "sha256": "c60623e47089e9eab36c2912b8ae9399fd386440c5c552c726515b7105cea2c8"
+      },
+      {
+        "path": "lib/exchange_holidays.py",
+        "sha": "8b97e9109999754e57f94e10bc1737801878c6a2",
+        "bytes": 19010,
+        "sha256": "cab82a13fbf05ac5aebbd91c307ae49fd7ffe82033676124f22d0929305738e3"
+      },
+      {
+        "path": "lib/market_observations.py",
+        "sha": "fbb2b0bc2779f280f857a8e6169042bfa233e657",
+        "bytes": 4992,
+        "sha256": "697dfe364aa79f0c7317505199cac1d45f3a7c85ef32b68bf006e2558ed8302a"
+      },
+      {
+        "path": "lib/market_session.py",
+        "sha": "fb6e8237796faf704ef5c04561104580a461fc14",
+        "bytes": 11017,
+        "sha256": "adc56cf8af267ba9eeaaa8a4297846786637746b00498a34f52b4d59350baa1e"
+      },
+      {
+        "path": "lib/store.py",
+        "sha": "3a0985944f534be7d771c926d73eb49f53aba140",
+        "bytes": 33048,
+        "sha256": "14907e9d2bd6e7ae6498a7cdd3f28a5764433114d10c50681828446ce7764413"
+      },
+      {
+        "path": "collectors/china_analyst.py",
+        "sha": "a1bcc699a563ef88a92341c7587405761773f29d",
+        "bytes": 6262,
+        "sha256": "4a3be799e86cb1d20d1eb848be6755b9eaa05cbd9ed97075c8fd980b295a9062"
+      },
+      {
+        "path": "engine/altdata_picks.py",
+        "sha": "bb39683083d4b6b929f605d0767fd34a9e0e5b26",
+        "bytes": 9310,
+        "sha256": "f08db2cd80de3271e5e18e7476bc7dee120e00ed81a0940418574f8ea37ad850"
+      },
+      {
+        "path": "engine/china_validation.py",
+        "sha": "dc1d68689858253766576ab6b5513d44ba88f58d",
+        "bytes": 39930,
+        "sha256": "b9f4742da967dcbd47473e36c5a7a348635a519ba6df467070899977b775177b"
+      },
+      {
+        "path": "engine/press/desk_planner.py",
+        "sha": "9f1a2fba4f2fc7988ac7e6eab8ff5865d6efa1b0",
+        "bytes": 78904,
+        "sha256": "abcc87e0a9007b1dc8cf82892368bcda43580313b53a3c4158cf75da915568c3"
+      },
+      {
+        "path": "engine/press/native_plan_scope.py",
+        "sha": "ec4a08255eaf4e88299c9a41d82e9e810156fd1a",
+        "bytes": 22517,
+        "sha256": "5b23e94f93bf156122427b354c4a23cbae80fb47d9e4654f3f6b31e0f47a7a9e"
+      },
+      {
+        "path": "engine/ticker_shape.py",
+        "sha": "bd9e4a25b439fc0d5ea991026148c782b499cec4",
+        "bytes": 4055,
+        "sha256": "8fa5face9a5a8c5cb9ab90910fa0c4a6cae64491c91d81e186ad108bd67d96dc"
+      },
+      {
+        "path": "engine/tushare_freshness.py",
+        "sha": "695b10dedff29ce3ba28b22b4c7958e65624b564",
+        "bytes": 8236,
+        "sha256": "226760d1f0ff904d2b7a6e5587902ab7f8d67479d532892bfcb897ca4a7139ef"
+      },
+      {
+        "path": "lib/delisted_symbols.py",
+        "sha": "8d5f1dd5d19c642deab84f0c823591378eb1d3f6",
+        "bytes": 4880,
+        "sha256": "5a8a25cc4fd3905c6ec470d01773e2bceff43a4ced5d33b3f6807d3e09cc1481"
+      },
+      {
+        "path": "lib/hk_calendar.py",
+        "sha": "5ffb5af434657c3c48cec4dc8f99f1d55cb588f9",
+        "bytes": 14882,
+        "sha256": "1b64405d6843e96cae7388a029d40c63d4f9a88d39ae424539b40e1025c0ef65"
+      },
+      {
+        "path": "lib/stooq.py",
+        "sha": "65849dc261a6618c9ff300a2922a45b63ec12351",
+        "bytes": 3082,
+        "sha256": "0353be96b66ce16933ed2555ba154695a93d03fc999e75d4b10c2d8a2d1cba97"
+      },
+      {
+        "path": "lib/tsx_calendar.py",
+        "sha": "e4db47f618a7e6a0048d25369d2a39460d4f16a6",
+        "bytes": 9068,
+        "sha256": "94e7b167b2f3486f7fd63b22acfed21076a4292c0caae923cab7184b73d9a94e"
+      },
+      {
+        "path": "lib/us_cash_calendar.py",
+        "sha": "08fbfa49293d7fce66581fe998359f6001da8867",
+        "bytes": 2592,
+        "sha256": "a20142031eceec2fdcb5a648dd004face080ad0bb302c02d45f97c6190725922"
+      },
+      {
+        "path": "scripts/build_free_content.py",
+        "sha": "0a4c62997132fad695b09ece309cc10dce5efb40",
+        "bytes": 69243,
+        "sha256": "bad21ba87caf3847c9b5b193da53c15ab104b0e877a6b2ffd296f34dddf0e4ad"
+      },
+      {
+        "path": "engine/china_news.py",
+        "sha": "431584da650851b68302852454d2137c62312e96",
+        "bytes": 74827,
+        "sha256": "5a5cfd151b5820a88bfbf6db2c42dc4898e933dd51ccceaed876e06b57e39135"
+      },
+      {
+        "path": "engine/china_news_intel.py",
+        "sha": "92596a431ee13f507f6f888851ac70b3067e8821",
+        "bytes": 50189,
+        "sha256": "e72a3e0433fdd0f87b97ae02a1cd1144ee3cd7b545503d0171661862e5944d87"
+      },
+      {
+        "path": "engine/chronicle/__init__.py",
+        "sha": "396f0c88203a3ccb7d5c6e13a39eb33285866173",
+        "bytes": 1886,
+        "sha256": "72a7af2e6ca4005df2e4cda0fe3d3487d82de54dd0d289ec9cd24f3fa9ba02ed"
+      },
+      {
+        "path": "engine/chronicle/adapters.py",
+        "sha": "93589d594fd78889222a1a6234a9683f8e6a9451",
+        "bytes": 24820,
+        "sha256": "45057afffa29873cc59d2518cba11a36dd4e2979d922768d1ca601d9654c7166"
+      },
+      {
+        "path": "engine/chronicle/context_pack.py",
+        "sha": "34da8d3baa74c4e3c03043b20791d65c549d242c",
+        "bytes": 11109,
+        "sha256": "18173e7e826901b7e690f6395569061c36dabfa8bb45e671ac4f5900a86567d4"
+      },
+      {
+        "path": "engine/chronicle/earnings_calls.py",
+        "sha": "53aad71c3ec1eadd31d53a396cac256c14698418",
+        "bytes": 33448,
+        "sha256": "b47088267087e4f79439aa056134c10afbd6bb6b756fe7fe075741fb219d536d"
+      },
+      {
+        "path": "engine/press/external_candidate.py",
+        "sha": "cbed7b8c0cca7083f7ee6be50829608e942901b4",
+        "bytes": 17316,
+        "sha256": "0bd43e347e1ccf12b362add33360491c4d56501fc40154bb6bd9c5fb7764d497"
+      },
+      {
+        "path": "engine/press/issuer_release_candidate.py",
+        "sha": "03cda6aa4bfc3156bb74fe698cdaaafc32572906",
+        "bytes": 14834,
+        "sha256": "39ee106ec21236ae89c652b5ff481b60976a8eda7f373eff5540b582e9bb0338"
+      },
+      {
+        "path": "engine/press/research_triage.py",
+        "sha": "dab8f4a4741ca3694a9c3190a3ba1aa83dcbbfab",
+        "bytes": 88243,
+        "sha256": "18b009e7792a85fc6489da26a87e6deda241e90d19c171b5a5b02d973d651861"
+      },
+      {
+        "path": "engine/research_vault/__init__.py",
+        "sha": "c032b731dab34046cc51d36c95c854a279e11b2a",
+        "bytes": 1175,
+        "sha256": "5b35706ac8760796f9ac445b8c1fceda53a058aa64ea46cf6c79d19e420a97f8"
+      },
+      {
+        "path": "engine/research_vault/slugs.py",
+        "sha": "2f76f4f07853d3cd7a99250270d4e23f7fb5c92e",
+        "bytes": 2951,
+        "sha256": "584f6947b4d012bc5f3b7c6a62d046a9f95ab6d0ecd3fb068c54e243cffd7bd7"
+      },
+      {
+        "path": "engine/trial_ledger.py",
+        "sha": "b9b444015549a691b9ab917590cc920ef6c8bb89",
+        "bytes": 37275,
+        "sha256": "bbae41ae765e506f6bcc5c974f82f60da7704d51b0e561089bde8b14d710023d"
+      },
+      {
+        "path": "lib/pages.py",
+        "sha": "db175c463a31828263b57a3287afba661439a765",
+        "bytes": 38933,
+        "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+      },
+      {
+        "path": "scripts/externalize_css.py",
+        "sha": "226d48369b19043d2b841f3acf99bfaeee88100a",
+        "bytes": 15935,
+        "sha256": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c"
+      },
+      {
+        "path": "scripts/inject_data_base.py",
+        "sha": "89eb9400bdc46f39f471432c00b3a99969d18c88",
+        "bytes": 5671,
+        "sha256": "9984ffe5647c4565c929d75d4af98d2e64aea8c798670c07dc626c9e7c5593b1"
+      },
+      {
+        "path": "scripts/optimize_assets.py",
+        "sha": "62d7daf72add439d4880e1f0533b45524d4f141d",
+        "bytes": 11756,
+        "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+      },
+      {
+        "path": "collectors/china_news.py",
+        "sha": "7cabfc92503ffe03092015b0e126bc6b89159342",
+        "bytes": 5792,
+        "sha256": "58fbff43007826549387651fd9207eb3bd9b28314c9b1ac830cdc71c2528dc3b"
+      },
+      {
+        "path": "engine/china_event_calendar.py",
+        "sha": "4c9a4001fba9fe3f298c950967ec95067676fd59",
+        "bytes": 15357,
+        "sha256": "2e1b65e99cf5774a46fab447753d8aef867ae1cfa2125ec6c6f54b3a0d6a2aa8"
+      },
+      {
+        "path": "engine/chronicle/schema.py",
+        "sha": "53cf81e96a73a91ce47c3d6ab3c09aa199361a0d",
+        "bytes": 7273,
+        "sha256": "d6f5bb2dee55f57641d329668b67619928bd3a68bdc09b810311e07b849bdebe"
+      },
+      {
+        "path": "engine/cn_newswires.py",
+        "sha": "1791a5f39bf0e4d3824aa1ade239ecbb32b3e3c2",
+        "bytes": 16455,
+        "sha256": "e6a85e540309a761438295c757f9ddbff97a12c0abe02a360a9f3b0b6c5d974a"
+      },
+      {
+        "path": "engine/earnings_qual.py",
+        "sha": "64d9281d9c1c87b064a1306adfb4b2ce179753a9",
+        "bytes": 145183,
+        "sha256": "d2dbda283e5622c3503361684cad3920694926b8bda984158ceb6af02e1607c9"
+      },
+      {
+        "path": "engine/entity_resolver.py",
+        "sha": "6c21d72d1a15ae01db72562d403940681e3808db",
+        "bytes": 13394,
+        "sha256": "89037a6df4818439088407cae7c4f358a54abcaa9381b127d0a58e3cc0a409a4"
+      },
+      {
+        "path": "engine/marketing/garbage_gate.py",
+        "sha": "bcd9f1801c6c597b7cc696142563e17ef5fcd413",
+        "bytes": 15631,
+        "sha256": "b4f44516dc80c1340635442e169f54ed0b36f51556ef148febfba8b4d2cd2393"
+      },
+      {
+        "path": "engine/marketing/signal_features.py",
+        "sha": "f52ebb0424bb0c7f89fe0fd1da8785641941b88f",
+        "bytes": 41760,
+        "sha256": "24d483c9aed34d029bf59aa638e621191f052fd4965202e66806d1aa8551eaab"
+      },
+      {
+        "path": "engine/marketing/story_spine.py",
+        "sha": "d916affe93ac63b55d884ff1b46c2303387811fc",
+        "bytes": 36127,
+        "sha256": "2a393f9f85c11ae46a7d66c5c5f56781910791097ba8a63668db53c3e29c22c2"
+      },
+      {
+        "path": "engine/neuralweb/ask_brain.py",
+        "sha": "73573f8b270011854de68e03de078c1bc2a6beb6",
+        "bytes": 141040,
+        "sha256": "c400e944a883d91b5ef0086163a67a084d3bff50169b2e132a0d281e79f5976b"
+      },
+      {
+        "path": "engine/news_translate.py",
+        "sha": "fd334ddea268070ad954a21d9f0debb79931f99e",
+        "bytes": 19994,
+        "sha256": "6eb37c00a881f5ed32e52b86694181ff49cd2933a0f6d990105a75dac75dd133"
+      },
+      {
+        "path": "engine/qbus.py",
+        "sha": "11f0948a7f7b54b7c67e502f479daae594a30f97",
+        "bytes": 29048,
+        "sha256": "adc7af4cee209ccfa6d811b02cf1fa94649d894cf54ccc594580d4255bddfa3f"
+      },
+      {
+        "path": "engine/qkernel.py",
+        "sha": "e037e2b1fe6c473a8fc487ee5f54770eb6282d19",
+        "bytes": 14699,
+        "sha256": "4472a4d257f3d843e49a35e057a4b096dbfd7876ceec8ad769e2a289ae25fde5"
+      },
+      {
+        "path": "engine/research_vault/sidecar.py",
+        "sha": "8a038748a45250ead1c6974e247443c43e29124a",
+        "bytes": 21712,
+        "sha256": "892ebc88497b0545ef42107a6f9a69797e71d0e3e428a836cb0ff4b9f34999f2"
+      },
+      {
+        "path": "engine/whitehouse_feed.py",
+        "sha": "de3786eed189f46af45568a8f5971aeab4ba746d",
+        "bytes": 14507,
+        "sha256": "1be31eb229a828aa11554fed50c29c51cdd572e5122469673fb866d9b7fd0c7e"
+      },
+      {
+        "path": "lib/shared_shell.py",
+        "sha": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+        "bytes": 5407,
+        "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c"
+      },
+      {
+        "path": "scripts/check_template_site_sync.py",
+        "sha": "bec2af6bd5abb7a21ebb57b8beb416445bcb0e81",
+        "bytes": 18545,
+        "sha256": "e9ee358c759080169735741df2d0144582841a3e63647da8af488545b4503aef"
+      },
+      {
+        "path": "engine/_text_scrub.py",
+        "sha": "9bb8116753158751c3a88203c03394e858150f4f",
+        "bytes": 4013,
+        "sha256": "3fba1c6cf69ff176f70b2d936c07fb0cb138e363ad768691cea27afad54f20ce"
+      },
+      {
+        "path": "engine/name_resolver.py",
+        "sha": "61913365c8e95021c2079b27cbdc33913dff1fe3",
+        "bytes": 6289,
+        "sha256": "aac70d8f2797f33f8f5058de00d9e9fc80e9d158a3078533f8170fcfabfae8df"
+      },
+      {
+        "path": "engine/neuralweb/analyst_doctrine.py",
+        "sha": "547e6a35877424d868a8b141abfdcf5f1f3cd963",
+        "bytes": 5376,
+        "sha256": "530e97a27b27daec688ff5b09e23ea8363b2db1aeb44c386099dee95e6e813b1"
+      },
+      {
+        "path": "engine/neuralweb/chat_plain_words.py",
+        "sha": "0d0a79c2f0ac3ab1c0502361181f2ede016c80ae",
+        "bytes": 5599,
+        "sha256": "2e7fcad79b6405b124df75a53f98704fbb69d24cea559757454633873c8f0b65"
+      },
+      {
+        "path": "engine/neuralweb/company_intelligence_reader.py",
+        "sha": "feffed2747ecd6823bea49ca287f01d94d6b91eb",
+        "bytes": 66429,
+        "sha256": "7d830a8c6628d43176534d794ef26374526db217c275eeecd1c0e7ba76f720fd"
+      },
+      {
+        "path": "engine/neuralweb/cortex.py",
+        "sha": "65603662a1d5fa3257328286050cd3eb673a9e9b",
+        "bytes": 160382,
+        "sha256": "f92552cc1a20031d648f3762b3eb212f45b820e3b5705bcc32671a6ae117d216"
+      },
+      {
+        "path": "engine/neuralweb/earnings_context_reader.py",
+        "sha": "e1607c44e1dfe72243a2f95051434a6431d6e6b6",
+        "bytes": 9139,
+        "sha256": "85645f2bcec8d0c7a4943cb6fb506a3d6076a4f3845a02b3fd733f44138f9f84"
+      },
+      {
+        "path": "engine/neuralweb/rotation_risk_context.py",
+        "sha": "355ca3a523d56343510e5d9ef995f4b4f68193d9",
+        "bytes": 25723,
+        "sha256": "52fd83990584530b7b4c0bf45027c422224e93fbbbae80f2c58792bd268e8134"
+      },
+      {
+        "path": "engine/neuralweb/theme_state_generation_reader.py",
+        "sha": "d5675345d73089358365ede75b9497e32d8885cf",
+        "bytes": 27670,
+        "sha256": "e0cc1a7acad79a2658150406ad131fa03c20827eb1d4be8b4e38b3f6ef601654"
+      },
+      {
+        "path": "engine/news_common.py",
+        "sha": "71e153136d66dad02239325a6927510a965d7026",
+        "bytes": 54397,
+        "sha256": "9ec74aca5fe280b64d3f8a952d041eec9d6888067490ee18d05ef267c8b6293a"
+      },
+      {
+        "path": "engine/smart_money.py",
+        "sha": "e811b8896bffee82d337f5c392ceb3916b66c7d4",
+        "bytes": 46426,
+        "sha256": "07038b1038e33b656b184b26cf8e4bd6c8819fe4d82c7ae959571d5f171fa5b8"
+      },
+      {
+        "path": "lib/site_assets.py",
+        "sha": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+        "bytes": 7180,
+        "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275"
+      },
+      {
+        "path": "collectors/edgar.py",
+        "sha": "f51e88d60b025de36f7af9af65b0311752be39f2",
+        "bytes": 40532,
+        "sha256": "d6e3be060fc7ade17e31551795f25806ac414fe5ec7988c31039acc9c7dbba7c"
+      },
+      {
+        "path": "collectors/edgar_13f.py",
+        "sha": "12f2888c036b01848f555784ee58275d7ebe3e71",
+        "bytes": 20142,
+        "sha256": "ea8d3d1691ed2dde143d65796994377ae6a444e605161430ebd425210d075c25"
+      },
+      {
+        "path": "collectors/openfigi.py",
+        "sha": "6ef595d1e87f3ae06ba1cebb338e27b7826bfc48",
+        "bytes": 7314,
+        "sha256": "3a9503c5826d80da49aff9ab866b3e7c057b2a34e03dcc882b7a5aea18006113"
+      },
+      {
+        "path": "engine/company_intelligence/__init__.py",
+        "sha": "92b1475e48f8ed483e4d093e8b65e002b4a44857",
+        "bytes": 832,
+        "sha256": "09e8425cdca490d03bece9462af575fddd25802e0ca2aa12be7d24f6ded8b347"
+      },
+      {
+        "path": "engine/company_intelligence/contracts.py",
+        "sha": "750cf16e481e98222e6f078eb6a28ef3e8e45d7f",
+        "bytes": 34222,
+        "sha256": "a9ab0b648e72b7537fc812618adab8325bd9f88410ba1169103929ddccc276ad"
+      },
+      {
+        "path": "engine/company_intelligence/event_workspace.py",
+        "sha": "1c29b43396f077189a008516950a72675d8c7bb5",
+        "bytes": 39017,
+        "sha256": "a27a1461e1c0df17529cee01459f7a5e5b80ecb0749a1a553474c5d006e1dd2d"
+      },
+      {
+        "path": "engine/company_intelligence/events.py",
+        "sha": "9d839a468ba0de2b2ea090bfe7d3ae698d303c44",
+        "bytes": 17937,
+        "sha256": "657fe8010fd3f9450915cd3ac63855a929db67706386de7039da57e6fdb60963"
+      },
+      {
+        "path": "engine/earnings_narrative/__init__.py",
+        "sha": "126da229cb6c0dc74728ebf7ad9f0d2dfe7abca6",
+        "bytes": 1192,
+        "sha256": "08d629c8bb227c7f89878e45bbdb86ff8ed708c1736bc7aab07c206e497ecc27"
+      },
+      {
+        "path": "engine/earnings_narrative/context_packets.py",
+        "sha": "5d50c37e66ce10c46710a7359b6c8d5eb1075816",
+        "bytes": 26322,
+        "sha256": "a43a4565909542a2e864d75a5c7f8b195f8ac0a432ee2eac1239bc40500e4f86"
+      },
+      {
+        "path": "engine/earnings_narrative/private_publication.py",
+        "sha": "4cf09255176553f1a7ae918dbd056ffa5b8eba01",
+        "bytes": 116078,
+        "sha256": "1658233de100cc5ae657c9427dc70e2aa73a0213de541ddf1c0d059f7326cb01"
+      },
+      {
+        "path": "engine/macro_surprise.py",
+        "sha": "fa2f5f086f437b5c46ce0c52a6c56cea7f14a7cb",
+        "bytes": 36792,
+        "sha256": "3ccc8540b9d3190053c307270b6a360363a2be90f6dd6e9be2bb24e3df19fa4f"
+      },
+      {
+        "path": "engine/manager_quality.py",
+        "sha": "1a754add0d605db21324b7f57690b5920c61dd2b",
+        "bytes": 8616,
+        "sha256": "e1c86f3d63c3feae7e087f815573474aeb6038b408fb57c6dabbe628b38af913"
+      },
+      {
+        "path": "engine/manager_trades.py",
+        "sha": "f072775da4a5f2966b10c572f077ca69d7be817d",
+        "bytes": 37855,
+        "sha256": "b944efe0e69443e63fe65cea44a86bff6e76911d1c8def58d0ea42465fb53356"
+      },
+      {
+        "path": "engine/neuralweb/constitution.py",
+        "sha": "c04b835562dd06f580bea37b817a9df77d621221",
+        "bytes": 17338,
+        "sha256": "20581d37f8a13282d2c6694a1b449d854c229cde5973cf0365bfd8386da6a4ac"
+      },
+      {
+        "path": "engine/neuralweb/doctrine.py",
+        "sha": "ce51f48ef0175a0af6704dc7590f6b0da2566179",
+        "bytes": 15810,
+        "sha256": "19e449b1f1c1d316cc7dcb0f54ededf3ca832db9b1fd9dfb732e1bfeb11a7732"
+      },
+      {
+        "path": "engine/neuralweb/metabolism.py",
+        "sha": "a0b46e09ac4e002a77fc58e1774404b09e2c5866",
+        "bytes": 34723,
+        "sha256": "ff2c8d1de86bc6ff2dc109dc0da4e0faca069ed0d5b06263b9d4c6f59e6a8981"
+      },
+      {
+        "path": "engine/neuralweb/query.py",
+        "sha": "69d54b9afd9486f078f1971cedce457a3d5113c9",
+        "bytes": 125417,
+        "sha256": "2038b22a8af02b35e435726d84435c49febb8f5754083bb82758ee89cfa1898f"
+      },
+      {
+        "path": "engine/neuralweb/reflexes.py",
+        "sha": "0789f44d6a7875ebba63b67a4912f10a5d09f27e",
+        "bytes": 10876,
+        "sha256": "8f8e909dbf382a5eaaa773e91ebcdac1c8649ecc573b78288c1b70a94937984c"
+      },
+      {
+        "path": "engine/neuralweb/theme_state_generation.py",
+        "sha": "13fdb849ac39ef0345e439806677a1ef42753934",
+        "bytes": 34772,
+        "sha256": "c23d06116ba09f3f55eaa2bfae88ef0ccb94f5d33978dece0195e5f0ff6ea0c7"
+      },
+      {
+        "path": "engine/research_vault/r2_store.py",
+        "sha": "f416fdc493daf1c45bddd99d14edfabb17032f82",
+        "bytes": 67389,
+        "sha256": "cc82eab29d8d0cac392970f82658e136eb2a53834ab22996e8d19ce081cc7d00"
+      },
+      {
+        "path": "engine/risk_envelope.py",
+        "sha": "f12bbdbd07c1b56034f58cc3d1ed44b05d960b58",
+        "bytes": 40078,
+        "sha256": "5c1fd5377f5f51f3fb15ed2e800189cfd3721f5042c392a84cb9a4d1e9854e51"
+      },
+      {
+        "path": "engine/seasonality/__init__.py",
+        "sha": "3266cd32f12ad8fcabed31fba5492cd8815e3b93",
+        "bytes": 8276,
+        "sha256": "7c6a5b9656f99ad6c35b99b46815fd80e2e2223eda88e494083bcdbddb8111e3"
+      },
+      {
+        "path": "engine/seasonality/contracts.py",
+        "sha": "bcc06b081994b4688a11b29e79340c3e3e3c25c3",
+        "bytes": 87229,
+        "sha256": "309f1143c1ccd4beea5c59dcb25ba78ea1a5f0662b9cd0f75b05cde26230c03c"
+      },
+      {
+        "path": "engine/theme_graph/__init__.py",
+        "sha": "c0c3e2bdb3d4b5baedb4956a84277f6ec617a76a",
+        "bytes": 912,
+        "sha256": "7cb9ef265244b84a034101b2f6dfafc21fb2f355dfb0ef943d7117c0ff2407c1"
+      },
+      {
+        "path": "engine/theme_graph/theme_state.py",
+        "sha": "0b07b4aded63e59a51c3e7d200ee257ad1ee57b3",
+        "bytes": 37095,
+        "sha256": "807db6229dc341733bad622bf97217e02001397756d778eb0c21e5fff8c0252e"
+      },
+      {
+        "path": "engine/theme_graph/theme_state_production.py",
+        "sha": "61952020b56e334676a3aada9985186c40361604",
+        "bytes": 19192,
+        "sha256": "aead513215a671cb92eb9a8a44ddf39d7d9b7ac42711dae7ab0df87d926a3f2b"
+      },
+      {
+        "path": "engine/theme_graph/theme_state_use_reader.py",
+        "sha": "f2f956a2dd3adcf2bc6bc74d86d056994c4bee09",
+        "bytes": 7056,
+        "sha256": "826c1a1556d62c17c99acc1122423606cc560a717929104b65b58e1e84afe3e2"
+      },
+      {
+        "path": "lib/filing_value_units.py",
+        "sha": "40f562467fb3f7cc21fba779a05763a10b9a7cc7",
+        "bytes": 4636,
+        "sha256": "9098e23b45194771905a86469abc90518ab322e67b4dc747449b58d5d4a0565c"
+      },
+      {
+        "path": "collectors/edgar_flow_quality.py",
+        "sha": "ac2350336680b37d63ffdbe68eec374797de284b",
+        "bytes": 49228,
+        "sha256": "5a797cf84903a066dfaa08b31ff95aebb3c6a39f079db15acfcb8d2c50075c1a"
+      },
+      {
+        "path": "collectors/edgar_share_quality.py",
+        "sha": "483257f16bd322d423652ca9979a60b3a49aabc5",
+        "bytes": 29497,
+        "sha256": "79103d61b7ff55e18e1449dc9086910055ec9100f0ea561f1ab370119bae482f"
+      },
+      {
+        "path": "collectors/edgar_stock_quality.py",
+        "sha": "69abe1ffa996df0e1e8a323bca1f8dd45aa01524",
+        "bytes": 60845,
+        "sha256": "a47d2ad862bb47f6b5c265b8cea12d8ab95f363fd9c5f51ea680f7b03e4bb122"
+      },
+      {
+        "path": "collectors/fred.py",
+        "sha": "c0f1cd76733250bf5ee6bcd1b487d781a7ddc98e",
+        "bytes": 22846,
+        "sha256": "cd283e3de968314e620df1b84bd5945106c88f6e357f481f8d2c6be8c244e048"
+      },
+      {
+        "path": "engine/china_standout_track.py",
+        "sha": "79d8da94a2ee8f5e2f5057c13964d310a3c2783c",
+        "bytes": 98545,
+        "sha256": "5f7f5096a56c9e1ca2e9c4eae5f03311d2baafd395b58b8645cc68851fde43aa"
+      },
+      {
+        "path": "engine/company_intelligence/defense_profiles.py",
+        "sha": "f1cfa1f4ed15526194f240819a97d00f0e8dfad6",
+        "bytes": 12215,
+        "sha256": "4f0dce32da62f9435a272c08e813519c3495b2d1fa3fc5b68cf2133e039e3085"
+      },
+      {
+        "path": "engine/company_intelligence/documents.py",
+        "sha": "eda8651bdac1a4bc01c24565cb35f5a13848d179",
+        "bytes": 22903,
+        "sha256": "8a26d11218a12fc4f83ecdb0786c5b804b46d66670629af0510755214e684d47"
+      },
+      {
+        "path": "engine/company_intelligence/event_id_adapter.py",
+        "sha": "068e3186af91d708f49c4ef924ca207efebaa0bf",
+        "bytes": 11604,
+        "sha256": "cfa8a1afaad12b6dbeda3d6f4890f987d3763e2ef64f05aa21cfdb62380a62c9"
+      },
+      {
+        "path": "engine/company_intelligence/gd_profile.py",
+        "sha": "4375c251bf152f7b36f24f3623ef69649f10da02",
+        "bytes": 7312,
+        "sha256": "f8b7fac09f34dd3cac016ad2204558bdd1334c66f90098b759c81991296aaabd"
+      },
+      {
+        "path": "engine/company_intelligence/health.py",
+        "sha": "9faa6e5e4dfe0e6cf4235c33bcff3708c7aee843",
+        "bytes": 7219,
+        "sha256": "db924871e9a49446ebbe6e84c2c9c57a361b903fb8764a5a891a531cdb449210"
+      },
+      {
+        "path": "engine/company_intelligence/identity.py",
+        "sha": "0e3daabeeebad2482e938f4a3949018dac663a29",
+        "bytes": 12689,
+        "sha256": "1466868ae3b9f6461e67c7150be29634b463358dad994093b793685b007416f4"
+      },
+      {
+        "path": "engine/company_intelligence/issuer_profiles.py",
+        "sha": "158fbc00a5094064c2c45246be576ee6564e4f1d",
+        "bytes": 95081,
+        "sha256": "5bb8c4d8cb662d362c0402415544cda44e33d998a688b8ebafbb04c8d44d60a0"
+      },
+      {
+        "path": "engine/company_intelligence/issuer_supplements.py",
+        "sha": "082cbf8cf74d5afa7dd1845c7145f7a326eafc77",
+        "bytes": 15361,
+        "sha256": "6d04881b33077d592d17efcf323bb3babad85a6bf9d8526a925f1e74a9f51ef3"
+      },
+      {
+        "path": "engine/company_intelligence/pg_profile.py",
+        "sha": "ada7b1e45ebadae7a99e0d95862e7cc547a9280e",
+        "bytes": 144636,
+        "sha256": "0dec593e045769e1c8228d07a32b74b46746609c501f1bfeac03f205ba2ee3d3"
+      },
+      {
+        "path": "engine/company_intelligence/qa_exchange.py",
+        "sha": "41f8d1f215120dd71c29d706cff1561fe91c8c8f",
+        "bytes": 25161,
+        "sha256": "6c075213d52adab88df2359ae19ede263ce828fcad196729ad4034a2883a221e"
+      },
+      {
+        "path": "engine/company_intelligence/views.py",
+        "sha": "bfd142ad45d68d28f0e7eaa8f10dc18dbef80151",
+        "bytes": 36392,
+        "sha256": "b5cc18f5722305f841a18b94867edcdd36e6797889136bd807e6a5161cef70f4"
+      },
+      {
+        "path": "engine/earnings_narrative/contracts.py",
+        "sha": "74a22f0b3cec5f0ecd5cbb5149eb07aacce268e4",
+        "bytes": 34802,
+        "sha256": "c9cedf914e13a071945fa419d6a152d654b02e3d4cee63a4b599ea16d4b0a0de"
+      },
+      {
+        "path": "engine/earnings_narrative/digest.py",
+        "sha": "f991d7fe8cba072adb162f9afcff6d79d5d72fea",
+        "bytes": 29243,
+        "sha256": "58ffc25a6db4c15e926b467cc1a126eb49d1e5776cca041b5d1e11f216b33f2f"
+      },
+      {
+        "path": "engine/earnings_narrative/economic_interpretation.py",
+        "sha": "52499130a329e2dc0b0ebc4db3c04a912789961f",
+        "bytes": 43655,
+        "sha256": "675d8332310dd5152c5dede1aa98eebc968e8b5e75f54b6741bdff235e4159a7"
+      },
+      {
+        "path": "engine/earnings_narrative/promotion.py",
+        "sha": "ec9238950fb00b12e2d868b1803de6ad0a701d22",
+        "bytes": 17163,
+        "sha256": "0236973aca18bf078147ae41295c6a67bd37e48a6ab2bc4035be9632f5b2502d"
+      },
+      {
+        "path": "engine/earnings_narrative/public_wire.py",
+        "sha": "d2ed6d41344b72d793335164d73cd78422da6098",
+        "bytes": 32113,
+        "sha256": "29e640a3a197539c074d6c33047272ef25fdd39d9dec3b34d0f32b24e00dabe1"
+      },
+      {
+        "path": "engine/earnings_narrative/story.py",
+        "sha": "bd7e8bd3ea14ce1b835c19fb57699a39a84d8a0d",
+        "bytes": 29793,
+        "sha256": "db9a6bdf536a7a1f5591c6d565e176cf0f68f21f9aa5b83031fa1c9e5449a24e"
+      },
+      {
+        "path": "engine/earnings_narrative/story_packets.py",
+        "sha": "e67d07b5126a0da1459d37e5f9683e0b6bf4c9cd",
+        "bytes": 23257,
+        "sha256": "f60bd3daed8d2620c16963632e3644a3833a226c4539f84f36c734ca2ea05e1e"
+      },
+      {
+        "path": "engine/manager_lag.py",
+        "sha": "245d772414a77b0a2a101f36ca69fd86f816c73c",
+        "bytes": 11297,
+        "sha256": "1c278ee4dcc24e2b5ba6428f4d4393485a712f3814de3bf4f47bd155540eb9f9"
+      },
+      {
+        "path": "engine/neuralweb/governance.py",
+        "sha": "d57ff582bea517fff3afa707c792a465d426366a",
+        "bytes": 9176,
+        "sha256": "87abe1916fb48a51337461410b13034ae64b9df5f4c3e928a62dfc8a211d5e93"
+      },
+      {
+        "path": "engine/neuralweb/thematic_state.py",
+        "sha": "75ce272d059fe1d523b81348881f717318fc2b5e",
+        "bytes": 22169,
+        "sha256": "fa885d4514192a3e16f0f426ed4ea19a2a4c02d143cc00299ff28733763902f3"
+      },
+      {
+        "path": "engine/neuralweb/theme_state_adapter.py",
+        "sha": "c864d568b71324e43c06b1abf8c11ba1e0a607af",
+        "bytes": 88920,
+        "sha256": "c5f8a4a3e4b1a0e9e29dcc8f4bfa558c985d556f6c3aa94b61513f78de2fb2bf"
+      },
+      {
+        "path": "engine/qledger.py",
+        "sha": "24dd479b42901b96d062b2e837eeaa0767966b42",
+        "bytes": 258090,
+        "sha256": "6473c710806b26bc5ee3da3ad781d07b3ca02f208f9789a723186216819c1e00"
+      },
+      {
+        "path": "engine/qledger_store.py",
+        "sha": "b8ac49b2066504cf14126f0ed3e71fb478fe86a8",
+        "bytes": 11615,
+        "sha256": "3a1d30cbd20a09bc428d069fcd9548f17ff94763ffcfdd83041d6c11edd6e3db"
+      },
+      {
+        "path": "engine/seasonality/event_clock.py",
+        "sha": "a053a3bdcd8f6ad6131bd06a34ea74cc12ae3e17",
+        "bytes": 60113,
+        "sha256": "741c2881cf7e9bb6050353afcc22e082f3626b3be0028693e4fd73f3c87615cc"
+      },
+      {
+        "path": "engine/seasonality/model.py",
+        "sha": "04bdb2c17b309f262c2843f818aafa305946d630",
+        "bytes": 66041,
+        "sha256": "3fbe38f992314735b78716ea3b4ffd7cd6b5c0d1d5a4ee449316ff6060693927"
+      },
+      {
+        "path": "engine/seasonality/multiplicity.py",
+        "sha": "d84e081819b97bc6c84c216311418672d644744f",
+        "bytes": 4502,
+        "sha256": "9ec76da246833c6afd93e83cb1ce57eae672ab97a2ad849178806e42f18fc285"
+      },
+      {
+        "path": "engine/seasonality/program_watch.py",
+        "sha": "049dd74697c66e41debfa4c1362bd4456f550405",
+        "bytes": 47339,
+        "sha256": "0c94ef375f570ef3c9cb217a4ab0cde7e87b36b421a2ab7185b5ccd83227d692"
+      },
+      {
+        "path": "engine/seasonality/prophet_bridge.py",
+        "sha": "b50712738798a0ea82f9d5a4aaabe4d6d2fc64cd",
+        "bytes": 40295,
+        "sha256": "e62d8ccb128d2469fbc4ed78f32d7059b53dc981d0e8675c551daa61bf4cee8b"
+      },
+      {
+        "path": "engine/seasonality/regime.py",
+        "sha": "76dad50683b49e8e2f6adfbc2907ca0b4b83fa7f",
+        "bytes": 28135,
+        "sha256": "5e0469835e5cf19c895e0bcbd00b309e8601af8ebbdc0135baba8a266c8c1bb6"
+      },
+      {
+        "path": "engine/seasonality/screener.py",
+        "sha": "1d0e99f86194c3cebe2a757e50e7ff34b06377e8",
+        "bytes": 62748,
+        "sha256": "4c327ec954156d9780a1eebbbee53fd5168d31c3d84f6cd9452f0eafc6803487"
+      },
+      {
+        "path": "engine/seasonality/universe.py",
+        "sha": "beef6ac6a02d29ee3402aa3d8365165be3696549",
+        "bytes": 36979,
+        "sha256": "3ee7c6345107f7e4cd55c7137de5fa43bb5e0f94e9eb260968e6a0a9ec0e0fcd"
+      },
+      {
+        "path": "engine/theme_graph/identity.py",
+        "sha": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+        "bytes": 10722,
+        "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f"
+      },
+      {
+        "path": "engine/theme_graph/rights.py",
+        "sha": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+        "bytes": 16362,
+        "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15"
+      },
+      {
+        "path": "engine/theme_graph/theme_state_gap.py",
+        "sha": "acbae74339f078246df603373e315e7c630b9f04",
+        "bytes": 10891,
+        "sha256": "c6527d6ad2b9af381dc830ec3e32ba99b23b773c368e6241e6dd11c31efab1e2"
+      },
+      {
+        "path": "engine/universe_history.py",
+        "sha": "716543d838fc4d6963c7ede700c8572cdb8be439",
+        "bytes": 6637,
+        "sha256": "f1c26fbb2abfc405916a60e4adc3b09973181fa7e7b3b9d29225cd0e71f9b9d9"
+      },
+      {
+        "path": "lib/closes_panel.py",
+        "sha": "f36b47e9d10590c3d750cbce7f5646f504794b64",
+        "bytes": 25166,
+        "sha256": "70bc2c1bb6a15dc677e88c12ee78b1c492afb2bbf75846860cf9d13fc6518496"
+      },
+      {
+        "path": "scripts/build_thematic_state.py",
+        "sha": "73f9b3641d4548fc6e5db288cf4c96fce8bf4252",
+        "bytes": 20429,
+        "sha256": "7843783d86ddfa0232632910430ec9e9b6d0ed772f74a479172a990f11b28a70"
+      },
+      {
+        "path": "engine/basket_membership_pit.py",
+        "sha": "20074a9eb76ebc73247a0e5a25fa962c56d35d80",
+        "bytes": 55291,
+        "sha256": "2bde0b4d58e42fe114489529a7a61dbacb0c6fcbd9ef4fb0699813a5f611db32"
+      },
+      {
+        "path": "engine/china_regime_store.py",
+        "sha": "1a26bfb921dc45307eb50567e0c5a0b8f7554e8e",
+        "bytes": 10441,
+        "sha256": "c96eef268f4a2ca6440b0fcb63520bcef5d1471bcb98d1ce92e860517e52b5a5"
+      },
+      {
+        "path": "engine/company_intelligence/defense_cash_profiles.py",
+        "sha": "b27459b19a01d5b2ca2bd21fc9c4d2551686570f",
+        "bytes": 20470,
+        "sha256": "59621e511c3f0db6ab3cae907c757c60159ca7df8ed45ed26c38c09f6bba6b6f"
+      },
+      {
+        "path": "engine/company_intelligence/economic_observations.py",
+        "sha": "b7833b0793070a1d361d352b30af5fd6f4ab66f4",
+        "bytes": 43215,
+        "sha256": "3373f342e282ae182ff65900eb051e8664c909f20e9b67ad97febd960cd9db34"
+      },
+      {
+        "path": "engine/company_intelligence/event_workspace_build.py",
+        "sha": "16c7829d537a634fbd693d307670b17c7a2c21c0",
+        "bytes": 26311,
+        "sha256": "155f40c4eac8e5a3d74d1a2a6f459f255b3a53037c22043d46783b535d0007b6"
+      },
+      {
+        "path": "engine/company_intelligence/industrials_profiles.py",
+        "sha": "3b1d9b5a358d827d38ba5827e630ec69a1a37234",
+        "bytes": 3732,
+        "sha256": "485a9054d238465ffc9f5ced0006abdd36be1d9db1e12695eb21e7e64696560b"
+      },
+      {
+        "path": "engine/company_intelligence/pg_envelope.py",
+        "sha": "e9c5c57fbce9f383ede1c48a71611ab2a4f5c568",
+        "bytes": 52049,
+        "sha256": "cc1366ec03af0b362998d66a257229c0a8151514cdd8cd1684cdfffcae73f21b"
+      },
+      {
+        "path": "engine/company_intelligence/qa_reconstruction.py",
+        "sha": "e7437570c5d2b14308bf54c4d72dfb9b2d8f2c11",
+        "bytes": 18233,
+        "sha256": "cec4b85fdf29368d245c61134d7e781a2179bb7dd2abd8c7bbe1ae187fb713f3"
+      },
+      {
+        "path": "engine/company_intelligence/rms_segment_profile.py",
+        "sha": "46ef35147b77cc2d305b6ade926ea51856e1978e",
+        "bytes": 6562,
+        "sha256": "0ffb3e1a9c581b1de552b919a7ddfe4ef48e86e3976ed89fb68c9c579d0d1ed7"
+      },
+      {
+        "path": "engine/earnings_release/__init__.py",
+        "sha": "863a5fa251278b2ea5f961b61a13dded7477aec1",
+        "bytes": 1009,
+        "sha256": "efb8ea9960f8fe2e5e6ab79eff5bef7abde6b7d7fa63f7b5faca17081a9bbe85"
+      },
+      {
+        "path": "engine/earnings_release/binding.py",
+        "sha": "54290bc7373aa1db8a127b8a9e000633efc72d7b",
+        "bytes": 17951,
+        "sha256": "e9384e87cdeddcce364a7736de22ef01d407cafd55aeb2a30f040b64395fb5ab"
+      },
+      {
+        "path": "engine/earnings_release/figures.py",
+        "sha": "d5d312b5b48ce50c1dad01e3810b73d10de50487",
+        "bytes": 34965,
+        "sha256": "ef6cf901828790bd36aad849bc3466c81f3417b38d2190b857c6c66922723309"
+      },
+      {
+        "path": "engine/earnings_release/receipts.py",
+        "sha": "b923868bfa329af0ae02f5a12ad3c9082bda18dc",
+        "bytes": 21297,
+        "sha256": "fa39c07409e363f1302b31ead6cd3221a38bb0a35eca06865250d1cd901a3b38"
+      },
+      {
+        "path": "engine/foresight_divergence.py",
+        "sha": "828137d0d40f7d1f40eb6e46720f13b7ecee0cc3",
+        "bytes": 36726,
+        "sha256": "4ec210d80f4e121e77da7884748c3e8b45f6acb72f7e614e7f22eadb8593e32f"
+      },
+      {
+        "path": "engine/fundamental_forensics/__init__.py",
+        "sha": "4b9e0a31b26f49178d12ca4f8ce68dffb9814b6b",
+        "bytes": 1912,
+        "sha256": "434e76b0d95bf3bd43dccb38022ec404f5118256cc3ea0d7592bf76b1bff16fa"
+      },
+      {
+        "path": "engine/fundamental_forensics/disclosure_diff.py",
+        "sha": "90c3ddc5045935d82078702ee5c7574576cd5d4b",
+        "bytes": 126474,
+        "sha256": "162898d2a33bd369464413aaec32b43b688b646e98d3a556bb987e7475aecfe0"
+      },
+      {
+        "path": "engine/grading.py",
+        "sha": "1208a7aa597159969a0ed7ccd359972bc413941a",
+        "bytes": 48770,
+        "sha256": "5499d3a4f26794c95d0c07f92ae626786a5440dd13c5ec0f641461dc7dc00f68"
+      },
+      {
+        "path": "engine/press/earnings_adapter.py",
+        "sha": "31a08650e5896ff06d2b88ec01f707c58f6b3f6a",
+        "bytes": 10568,
+        "sha256": "7a4196561502252584056be7912d4899926cc7bd1d60e1a55adf6569e5e2b163"
+      },
+      {
+        "path": "engine/qledger_store_native.py",
+        "sha": "389a82802059e776999b7e6dda9ec50d71291b46",
+        "bytes": 30612,
+        "sha256": "936d0579c98d64cb44ebc667736647bb341d7fa05e3195ec8defdac4df2e1221"
+      },
+      {
+        "path": "engine/qledger_store_protocol.py",
+        "sha": "ad60f468fa406b5b5b6a1a3ff302a0ba6a25b5a5",
+        "bytes": 51527,
+        "sha256": "ec2286621e93084c65e8ec37eda6bcc46f6e7044828652c819f756f8ea27b2b3"
+      },
+      {
+        "path": "engine/qledger_validity.py",
+        "sha": "2b27c32c56b679178a3e52e3b609856a13ec2dd8",
+        "bytes": 15575,
+        "sha256": "8076620b1db88e314d617cb80bf6525789d9fd2f532a21263ee8f6d3df20bb23"
+      },
+      {
+        "path": "engine/regime_conditioning_coverage.py",
+        "sha": "60cc734539ac40d1c86e6d00bd2977f2b06fff9d",
+        "bytes": 9331,
+        "sha256": "39665cf47737ce671b8660015fb9d612a36bee03e5818c1effee6bdc5bed02e0"
+      },
+      {
+        "path": "engine/regime_vector.py",
+        "sha": "cc1a8ee066df4230823282dceb5065b1a045df1b",
+        "bytes": 26612,
+        "sha256": "213af00491611c01ec11d4bf48a412d2a0de4b5c8b08121efd39dcbabbbc0beb"
+      },
+      {
+        "path": "engine/session_anchor.py",
+        "sha": "0cfc9857cd240788542f1dc6d94eb55d4a68a513",
+        "bytes": 9996,
+        "sha256": "1da03cb44684e4b0f91710c7279e3fff40d2344e253ab83473a83f7e2afa5c3f"
+      },
+      {
+        "path": "engine/theme_graph/activity_history_bridge.py",
+        "sha": "0dd634cc46295098c93cb7f3b93ebd09fc7ec837",
+        "bytes": 62738,
+        "sha256": "1ebad8d3ad5946c55e5cb572d375455bf1fceeb7e39fc0729bc765bb76f0cc9e"
+      },
+      {
+        "path": "engine/theme_graph/identity_resolution.py",
+        "sha": "e3510e69645a96872e7080efe028633ff6836324",
+        "bytes": 40467,
+        "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7"
+      },
+      {
+        "path": "engine/theme_graph/materialize.py",
+        "sha": "7a7779d2b526cf652f5b99bc756336fee3cc8c18",
+        "bytes": 127592,
+        "sha256": "7a98e828b65d68c042fb0c45dccd0871e5bff93c2933f77f4142998cd1fff2d5"
+      },
+      {
+        "path": "engine/theme_graph/ontology.py",
+        "sha": "8e31cb5276ec436dca44fc4dddba3e140784a1bb",
+        "bytes": 30018,
+        "sha256": "35d6fc6f935af5883780222218e8f2daf041ed4b23978d9af0d6d104c855eb89"
+      },
+      {
+        "path": "engine/theme_graph/store.py",
+        "sha": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+        "bytes": 25211,
+        "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221"
+      },
+      {
+        "path": "engine/theme_graph/theme_state_owner_readers.py",
+        "sha": "471cdfc007ed4916be5f5784abcaeb576ad82e8f",
+        "bytes": 13039,
+        "sha256": "de3da7a581664e9dbfb774e1e04b3f19e12036f25ddd26d2f18ec6652ac2f890"
+      },
+      {
+        "path": "engine/theme_graph/theme_state_w2_qualification.py",
+        "sha": "780b291313651bd1fda5b1a97cd97cc9471651d4",
+        "bytes": 20656,
+        "sha256": "2feb25d0105ca0b0cffe281aa1342a4d1e9b23a3a1dfbbbfc124abd0613ed9f6"
+      },
+      {
+        "path": "engine/company_intelligence/defense_space_profiles.py",
+        "sha": "a03744841ffc7c7bbf866b77c69e892a9dff76ca",
+        "bytes": 8459,
+        "sha256": "8da13b55ff4c09eb7026b041c9487980ebce0aeea43b424e09ce34ebe54a9f0f"
+      },
+      {
+        "path": "engine/earnings_release/filing_key.py",
+        "sha": "c1bf8319f3b24eae5661603c17bc4dc829c975b4",
+        "bytes": 10972,
+        "sha256": "51db5027a9d23a581c5be60fec0ee7452dab0cc689ed6632c056224425817427"
+      },
+      {
+        "path": "engine/foresight_grader.py",
+        "sha": "a6ea4c8a864682e039c7e9db528d455f52dd2883",
+        "bytes": 21877,
+        "sha256": "a1a69f911f0a9464ebb5951d12a44be34b4971775c3979a2b8bb4fde5546277c"
+      },
+      {
+        "path": "engine/fundamental_forensics/filing_attestation.py",
+        "sha": "1fa37122ec7cb05435b996016385ca1c839cbef8",
+        "bytes": 76795,
+        "sha256": "0eedb8cbd7e92c7314d2ccbd65505a3bdbaf946974d8ad55f1431a7402cdbba6"
+      },
+      {
+        "path": "engine/fundamental_forensics/ixbrl_extraction.py",
+        "sha": "377fd294d8e11c54031a91f4732a7c8802d1700c",
+        "bytes": 78576,
+        "sha256": "0511316baf6b06a61bd104ce54a7b872edf7277c6ebfefec39886f12bfc12af0"
+      },
+      {
+        "path": "engine/fundamental_forensics/models.py",
+        "sha": "3fd60a7baf995317ee32808a2b6b9b5c91de4215",
+        "bytes": 14519,
+        "sha256": "cd8e5e62d4e29378453b89ea6b2f5cfd4028ed5ea4502a9d43f98f0819c3aa97"
+      },
+      {
+        "path": "engine/fundamental_forensics/normalize.py",
+        "sha": "42541a0b09b7002de91b4c645b0cae3e97138a2c",
+        "bytes": 12032,
+        "sha256": "b23163c565ad0bd5bc079542538725c56d747a1212346ba74f8f6f9f3ea80487"
+      },
+      {
+        "path": "engine/fundamental_forensics/pipeline.py",
+        "sha": "0f7507734e924a784a2ba3fbd93c5acaab28c903",
+        "bytes": 5129,
+        "sha256": "82b969b1f719c744572c64adf1db9794727360f52101d427d32d232329e2de88"
+      },
+      {
+        "path": "engine/fundamental_forensics/sec_document_spine.py",
+        "sha": "c9391b11697bb923a9dd905de8490e5d18f5d1ee",
+        "bytes": 48206,
+        "sha256": "ee240863943823e598083f45164c6a288e9098292a47a454cc70898c2bdf8366"
+      },
+      {
+        "path": "engine/qledger_store_sources.py",
+        "sha": "fc560b6089e5029cc821f8da7875b05b7faf89c3",
+        "bytes": 35474,
+        "sha256": "c3c6aec38af48416b09b82c82fd88da0079a9a29b02e11509812ee97e2639688"
+      },
+      {
+        "path": "engine/theme_graph/capability.py",
+        "sha": "cdec2ac6d6fe6ecd0246b9e052e72312ad259654",
+        "bytes": 10506,
+        "sha256": "977070a0edf99c28c5a3c078a9dcc26aa0eb1195f88e5a5b1ba016ac078642de"
+      },
+      {
+        "path": "engine/theme_graph/local_sources.py",
+        "sha": "a2345f674afbd6b2bee5a728f142a3b871738f02",
+        "bytes": 16421,
+        "sha256": "6744c2a1a04942876c09716c929d5a4472431b7ae875004d68e90edc58a9a2d5"
+      },
+      {
+        "path": "engine/theme_graph/probation.py",
+        "sha": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+        "bytes": 58797,
+        "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6"
+      },
+      {
+        "path": "lib/symbol_directory_receipts.py",
+        "sha": "0fbbc96c0aff23f639ded960b7031da02b4ffaf7",
+        "bytes": 31034,
+        "sha256": "d5168f920acb7400b8f30527e7e14baf0cdd3363b8b53fca51af8afddb19b1af"
+      },
+      {
+        "path": "scripts/build_security_master.py",
+        "sha": "e8035a9c57b3abed6cffac8833477074a5fcd2d3",
+        "bytes": 325338,
+        "sha256": "3d69be8343e0d02871d53829d77e2c4bc61facfc63bc78d7c93b52f8c4c23030"
+      },
+      {
+        "path": "scripts/probe_theme_exposure_axes.py",
+        "sha": "fb70ffccc67005bd3c74ffe6c643ee719a874252",
+        "bytes": 129195,
+        "sha256": "09f97d72fefe1d2c9d9fec400d79d8637ef8ac010ffe25f0355e043cd238e744"
+      },
+      {
+        "path": "collectors/fundamental_forensics_companyfacts.py",
+        "sha": "0c57fb69f035c48f48219f64c35c537b8e265665",
+        "bytes": 100035,
+        "sha256": "ee288a644b278c22a69e8d442db2de332b6fbbbd45523602252d00f91b6a344b"
+      },
+      {
+        "path": "collectors/sec_filing_parser.py",
+        "sha": "27973659cbbff0e64ded00904532202f5ab55669",
+        "bytes": 142299,
+        "sha256": "08b86cd097f81b0b1fb06a75a5de7a92f2fe6919f1d4c84dfd4d105d1613fb78"
+      },
+      {
+        "path": "engine/entry_radar/__init__.py",
+        "sha": "cf59e85e30e152ac9e0a1a8c599baecd64aebda7",
+        "bytes": 7658,
+        "sha256": "4c04ac3ebdb6d05a9e816eab0fe1bbb888329d55833510bd31acc3e67f488d35"
+      },
+      {
+        "path": "engine/entry_radar/replay/__init__.py",
+        "sha": "71b0d4108d8d930080f680205fbb9fb9ec812f35",
+        "bytes": 1276,
+        "sha256": "a442b452047cda4774c5d2d333854216a108f9a8cfe800407004a4c0f3523a24"
+      },
+      {
+        "path": "engine/entry_radar/replay/identity_observation_snapshot.py",
+        "sha": "7581b22a326ff5a6cc8fcaeed12ccdda470c7538",
+        "bytes": 14803,
+        "sha256": "323b451adabe162ab37b3bc8244e619483b8c4e963e764775a763a8a28405b16"
+      },
+      {
+        "path": "engine/fundamental_forensics/detectors.py",
+        "sha": "7c8e237c06d92e91083015c941b9e34d82950742",
+        "bytes": 23348,
+        "sha256": "657e4fe71da72a9792551c3b06f485fa4047c56e2859c9dd567a9d53a907ab7e"
+      },
+      {
+        "path": "engine/fundamental_forensics/filing_package.py",
+        "sha": "a2e5701c3ce9b35cbe142e65c1782cb1c78ceed4",
+        "bytes": 57231,
+        "sha256": "929de48d3391844f71dc0875d97eddd4372524133de41de90953819a7d5da4d9"
+      },
+      {
+        "path": "engine/fundamental_forensics/sec_companyfacts.py",
+        "sha": "5a8f3fdc4c50f1e7579f8b54d74def2bf56a2798",
+        "bytes": 7430,
+        "sha256": "bf575fdcb307e12efdf9e281697e0fe143e7a373282efde6f1799e2582c89170"
+      },
+      {
+        "path": "engine/fundamental_forensics/source_sync.py",
+        "sha": "1fc246978a13f9bbac203e9de565d5875ac003b1",
+        "bytes": 54924,
+        "sha256": "73ddb5ac6ed910b1f4d9a7d76a944063f3251011e7b2af96d7fbb8306f46776a"
+      },
+      {
+        "path": "engine/neuralweb/market_memory_identity_candidate.py",
+        "sha": "0f1c55f6c344542f3de917babdb5d0a007617b31",
+        "bytes": 9546,
+        "sha256": "6ea7f1f04c9abadba12938b5d2cd9dcf25ba529624f820ad03852ffb5187bdcc"
+      },
+      {
+        "path": "collectors/fundamental_forensics_acquisition.py",
+        "sha": "3c35c093e8d3d27c7d091736805721db287a773d",
+        "bytes": 44829,
+        "sha256": "2a8c6c02e5bb50fee1d16e60554f653817461b69761aa989de0afa022f712112"
+      },
+      {
+        "path": "collectors/sec_document_spine.py",
+        "sha": "5f5ab7b5683bf91d9b8ad35e51ca416e2e4ca097",
+        "bytes": 42860,
+        "sha256": "be7dc1a7b6161bf37508d21e250201e718ae244175367932ff6ec3f00659fe6d"
+      },
+      {
+        "path": "collectors/sec_request_pacer.py",
+        "sha": "b7cee4b11ecd4a31c2c97d7fed28d643fe7acbd1",
+        "bytes": 3028,
+        "sha256": "de67b8080892c141445da65af3745f4ccb2d12f926b62a7f8b4c43d28bb6bdf6"
+      },
+      {
+        "path": "engine/entry_radar/contracts.py",
+        "sha": "e59a07cc28ede82d532a031036eb72110fadc0a3",
+        "bytes": 21009,
+        "sha256": "d8c7d8599d101fb4e764f25b41059eccf1cda8d50311a73e395e428bbae9ab98"
+      },
+      {
+        "path": "collectors/edgar_forensics.py",
+        "sha": "1cbc3bdc9d805e3470fce9a4704faa323f391537",
+        "bytes": 27974,
+        "sha256": "c7bdb7d770c4f36346e454a212bac2039a732564e8ea3cc9f05134fa71c68c79"
+      },
+      {
+        "path": "tests/test_marketing_metrics_poll.py",
+        "sha": "85060e7788c9979534180cdf5ae6b3dd6faf5938",
+        "bytes": 65094,
+        "sha256": "3e4754c906dd7c6414e6799df5ca2016b8ac2159af86c7da17c4b331d177a31a"
+      },
+      {
+        "path": ".github/workflows/marketing-media-backfill.yml",
+        "sha": "443422d1f1368f88a67bc2bf3d5e6512561ef9a0",
+        "bytes": 7789,
+        "sha256": "9e8ae5a18da4949ee603bfe1e5a84a3e0d262d4fb599b867b4c0392e9a0ee9b8"
+      },
+      {
+        "path": "contracts/marketing_publication_receipt.schema.json",
+        "sha": "0b38eed422949323f9019af4bbc6d4a92a435b9a",
+        "bytes": 1042,
+        "sha256": "e9b9ca58d69484c0f0a72531414537b54760569fcdd3192e0aa99717485c12b5"
+      },
+      {
+        "path": "scripts/marketing_actuator.py",
+        "sha": "e3cf74114714ba3e34a381ec253340c706cc00f6",
+        "bytes": 11104,
+        "sha256": "0880ae84700e0471ec762a9b98548f22d30f578bfc107a076e87b76f61440f30"
+      }
+    ]
+  },
+  "tests": {
+    "source_pin": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "candidate": [
+      {
+        "path": ".github/workflows/marketing-publish.yml",
+        "bytes": 30279,
+        "sha": "7fddf835aa8107005ae18926f446e35045f106e6",
+        "sha256": "0ca6f050d5464ffe1fe9fd114368211b3c1796811617e890f8564c759d4cec21"
+      },
+      {
+        "path": "tests/test_marketing_social_publisher.py",
+        "bytes": 104683,
+        "sha": "7d3aae6995246b9bbe85628a12dd650c7b470803",
+        "sha256": "60525be110b098f82fde7dfa1e79c5bf9c5e6fd5e9410b68d60cfc089417cad6"
+      },
+      {
+        "path": "tests/test_marketing_forward_booking.py",
+        "bytes": 40509,
+        "sha": "0dcbbd50e12a7bac426a77ff3179f9946ac05757",
+        "sha256": "4a959e8ad78ab8d3295c1d5f4c630f71d7fdc4e2d7f6b8b6807421cc715a78c4"
+      }
+    ],
+    "green": {
+      "returncode": 0,
+      "seconds": 13.337,
+      "summary": "274 passed in 12.93s",
+      "sha256": "50053309a3731622c56ac2f029ffa21dd7cc19c2edaeb9185d432f521d330f82",
+      "bytes": 341
+    },
+    "red": {
+      "returncode": 1,
+      "seconds": 8.635,
+      "summary": "17 failed, 1 passed in 8.33s",
+      "sha256": "6a2545a279e79922b972eee4b189a5f5436373686da026e8dc7cbfa2bfd9c65e",
+      "bytes": 46085
+    },
+    "suites": [
+      "tests/test_marketing_social_publisher.py",
+      "tests/test_marketing_publisher_autoapprove.py",
+      "tests/test_marketing_outbox.py",
+      "tests/test_marketing_forward_booking.py::TestPublishLaneCheckout::test_checkout_is_shallow",
+      "tests/test_marketing_forward_booking.py::TestPublishLaneCheckout::test_push_loop_deepens_enough_to_rebase",
+      "tests/test_marketing_metrics_poll.py::TestDeliveryReadbackWorkflowIsolation"
+    ],
+    "versions": {
+      "python": "3.14.7",
+      "git": "git version 2.46.1",
+      "pytest": "9.1.1",
+      "yaml": "6.0.3"
+    }
+  },
+  "green_log": "........................................................................ [ 26%]\n........................................................................ [ 52%]\n........................................................................ [ 78%]\n..........................................................               [100%]\n274 passed in 12.93s\n",
+  "counterexample_log": "FFFFFFFFFFFFF.FFFF                                                       [100%]\n=================================== FAILURES ===================================\n_ TestQueuedPublishCheckout.test_delayed_checkout_cannot_resend_a_persisted_acceptance[False-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b259590>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111111250>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r0')\nfirst_post_now = False, second_post_now = False\n\n    @pytest.mark.parametrize(\"first_post_now\", [False, True])\n    @pytest.mark.parametrize(\"second_post_now\", [False, True])\n    def test_delayed_checkout_cannot_resend_a_persisted_acceptance(\n            self, monkeypatch, tmp_path, first_post_now, second_post_now):\n        from engine.marketing import outbox\n    \n        # The ordinary sweep's positive control is genuine queued carryover;\n        # neither this fixture nor the correction deletes carryover items.\n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        assert self._checkout(first, origin, dispatch_sha) == dispatch_sha\n        accepted = _FakePublisher(external_id=\"accepted-by-first-job\")\n        first_args = [\"--live\"] + ([\"--post-now\", item_id] if first_post_now else [])\n        assert _run_publisher(monkeypatch, first, first_args,\n                              fake_publisher=accepted, kill_switch=True) == 0\n        assert len(accepted.calls) == 1\n        state = outbox.fold_state(first)\n        assert state[\"status\"][item_id] == \"posted\"\n        assert state[\"last\"][item_id][\"receipt\"][\"external_id\"] == \"accepted-by-first-job\"\n        original_bytes = self._receipt_bytes(first)\n        posting_day = state[\"last\"][item_id][\"at\"][:10]\n        original_count = outbox.posted_today_by_account(state, posting_day)\n        assert original_count.get(\"flagship\") == 1\n        accepted_sha = self._persist(first)\n        assert accepted_sha != dispatch_sha\n    \n        # B was dispatched at the SAME stale SHA, but acquires its own checkout\n        # only after A's real native receipt is committed to the origin.\n        second = tmp_path / \"second\"\n        actual_checkout = self._checkout(second, origin, dispatch_sha)\n        again = _FakePublisher(external_id=\"must-not-be-created\")\n        second_args = [\"--live\"] + ([\"--post-now\", item_id] if second_post_now else [])\n        rc = _run_publisher(monkeypatch, second, second_args,\n                            fake_publisher=again, kill_switch=True)\n>       assert again.calls == [], \"a queued stale checkout sent the accepted item again\"\nE       AssertionError: a queued stale checkout sent the accepted item again\nE       assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2008: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r0/first/data/earnings/earnings.parquet') — guard open\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r0/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_cannot_resend_a_persisted_acceptance[False-True] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b259810>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111440490>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r1')\nfirst_post_now = True, second_post_now = False\n\n    @pytest.mark.parametrize(\"first_post_now\", [False, True])\n    @pytest.mark.parametrize(\"second_post_now\", [False, True])\n    def test_delayed_checkout_cannot_resend_a_persisted_acceptance(\n            self, monkeypatch, tmp_path, first_post_now, second_post_now):\n        from engine.marketing import outbox\n    \n        # The ordinary sweep's positive control is genuine queued carryover;\n        # neither this fixture nor the correction deletes carryover items.\n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        assert self._checkout(first, origin, dispatch_sha) == dispatch_sha\n        accepted = _FakePublisher(external_id=\"accepted-by-first-job\")\n        first_args = [\"--live\"] + ([\"--post-now\", item_id] if first_post_now else [])\n        assert _run_publisher(monkeypatch, first, first_args,\n                              fake_publisher=accepted, kill_switch=True) == 0\n        assert len(accepted.calls) == 1\n        state = outbox.fold_state(first)\n        assert state[\"status\"][item_id] == \"posted\"\n        assert state[\"last\"][item_id][\"receipt\"][\"external_id\"] == \"accepted-by-first-job\"\n        original_bytes = self._receipt_bytes(first)\n        posting_day = state[\"last\"][item_id][\"at\"][:10]\n        original_count = outbox.posted_today_by_account(state, posting_day)\n        assert original_count.get(\"flagship\") == 1\n        accepted_sha = self._persist(first)\n        assert accepted_sha != dispatch_sha\n    \n        # B was dispatched at the SAME stale SHA, but acquires its own checkout\n        # only after A's real native receipt is committed to the origin.\n        second = tmp_path / \"second\"\n        actual_checkout = self._checkout(second, origin, dispatch_sha)\n        again = _FakePublisher(external_id=\"must-not-be-created\")\n        second_args = [\"--live\"] + ([\"--post-now\", item_id] if second_post_now else [])\n        rc = _run_publisher(monkeypatch, second, second_args,\n                            fake_publisher=again, kill_switch=True)\n>       assert again.calls == [], \"a queued stale checkout sent the accepted item again\"\nE       AssertionError: a queued stale checkout sent the accepted item again\nE       assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2008: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r1/first/data/earnings/earnings.parquet') — guard open\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r1/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_cannot_resend_a_persisted_acceptance[True-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b234e90>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111615590>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r2')\nfirst_post_now = False, second_post_now = True\n\n    @pytest.mark.parametrize(\"first_post_now\", [False, True])\n    @pytest.mark.parametrize(\"second_post_now\", [False, True])\n    def test_delayed_checkout_cannot_resend_a_persisted_acceptance(\n            self, monkeypatch, tmp_path, first_post_now, second_post_now):\n        from engine.marketing import outbox\n    \n        # The ordinary sweep's positive control is genuine queued carryover;\n        # neither this fixture nor the correction deletes carryover items.\n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        assert self._checkout(first, origin, dispatch_sha) == dispatch_sha\n        accepted = _FakePublisher(external_id=\"accepted-by-first-job\")\n        first_args = [\"--live\"] + ([\"--post-now\", item_id] if first_post_now else [])\n        assert _run_publisher(monkeypatch, first, first_args,\n                              fake_publisher=accepted, kill_switch=True) == 0\n        assert len(accepted.calls) == 1\n        state = outbox.fold_state(first)\n        assert state[\"status\"][item_id] == \"posted\"\n        assert state[\"last\"][item_id][\"receipt\"][\"external_id\"] == \"accepted-by-first-job\"\n        original_bytes = self._receipt_bytes(first)\n        posting_day = state[\"last\"][item_id][\"at\"][:10]\n        original_count = outbox.posted_today_by_account(state, posting_day)\n        assert original_count.get(\"flagship\") == 1\n        accepted_sha = self._persist(first)\n        assert accepted_sha != dispatch_sha\n    \n        # B was dispatched at the SAME stale SHA, but acquires its own checkout\n        # only after A's real native receipt is committed to the origin.\n        second = tmp_path / \"second\"\n        actual_checkout = self._checkout(second, origin, dispatch_sha)\n        again = _FakePublisher(external_id=\"must-not-be-created\")\n        second_args = [\"--live\"] + ([\"--post-now\", item_id] if second_post_now else [])\n        rc = _run_publisher(monkeypatch, second, second_args,\n                            fake_publisher=again, kill_switch=True)\n>       assert again.calls == [], \"a queued stale checkout sent the accepted item again\"\nE       AssertionError: a queued stale checkout sent the accepted item again\nE       assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2008: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r2/first/data/earnings/earnings.parquet') — guard open\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r2/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_cannot_resend_a_persisted_acceptance[True-True] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b235e00>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11168a650>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r3')\nfirst_post_now = True, second_post_now = True\n\n    @pytest.mark.parametrize(\"first_post_now\", [False, True])\n    @pytest.mark.parametrize(\"second_post_now\", [False, True])\n    def test_delayed_checkout_cannot_resend_a_persisted_acceptance(\n            self, monkeypatch, tmp_path, first_post_now, second_post_now):\n        from engine.marketing import outbox\n    \n        # The ordinary sweep's positive control is genuine queued carryover;\n        # neither this fixture nor the correction deletes carryover items.\n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        assert self._checkout(first, origin, dispatch_sha) == dispatch_sha\n        accepted = _FakePublisher(external_id=\"accepted-by-first-job\")\n        first_args = [\"--live\"] + ([\"--post-now\", item_id] if first_post_now else [])\n        assert _run_publisher(monkeypatch, first, first_args,\n                              fake_publisher=accepted, kill_switch=True) == 0\n        assert len(accepted.calls) == 1\n        state = outbox.fold_state(first)\n        assert state[\"status\"][item_id] == \"posted\"\n        assert state[\"last\"][item_id][\"receipt\"][\"external_id\"] == \"accepted-by-first-job\"\n        original_bytes = self._receipt_bytes(first)\n        posting_day = state[\"last\"][item_id][\"at\"][:10]\n        original_count = outbox.posted_today_by_account(state, posting_day)\n        assert original_count.get(\"flagship\") == 1\n        accepted_sha = self._persist(first)\n        assert accepted_sha != dispatch_sha\n    \n        # B was dispatched at the SAME stale SHA, but acquires its own checkout\n        # only after A's real native receipt is committed to the origin.\n        second = tmp_path / \"second\"\n        actual_checkout = self._checkout(second, origin, dispatch_sha)\n        again = _FakePublisher(external_id=\"must-not-be-created\")\n        second_args = [\"--live\"] + ([\"--post-now\", item_id] if second_post_now else [])\n        rc = _run_publisher(monkeypatch, second, second_args,\n                            fake_publisher=again, kill_switch=True)\n>       assert again.calls == [], \"a queued stale checkout sent the accepted item again\"\nE       AssertionError: a queued stale checkout sent the accepted item again\nE       assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2008: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r3/first/data/earnings/earnings.parquet') — guard open\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_cannot_r3/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[False-posting] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b1b32f0>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111689c50>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects0')\ncanonical_status = 'posting', post_now = False\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects0/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[False-quarantined] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b305150>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1116a47d0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects1')\ncanonical_status = 'quarantined', post_now = False\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects1/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[False-recalled] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b3045a0>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1116a4aa0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects2')\ncanonical_status = 'recalled', post_now = False\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects2/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[True-posting] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10c34b050>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10c36c3d0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects3')\ncanonical_status = 'posting', post_now = True\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects3/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[True-quarantined] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10c34b350>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11175be70>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects4')\ncanonical_status = 'quarantined', post_now = True\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects4/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_new_inflight_or_terminal_state[True-recalled] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b28fa70>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111693790>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects5')\ncanonical_status = 'recalled', post_now = True\n\n    @pytest.mark.parametrize(\"canonical_status\", [\"posting\", \"quarantined\", \"recalled\"])\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_new_inflight_or_terminal_state(\n            self, monkeypatch, tmp_path, canonical_status, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        if canonical_status == \"recalled\":\n            assert outbox.transition(item_id, \"posted\", actor=\"fixture\", root=first,\n                                     receipt={\"external_id\": \"recalled-receipt\"})\n        assert outbox.transition(item_id, canonical_status, actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2039: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects5/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_a_new_operator_hold[False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b28f890>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x1113ed6d0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects6')\npost_now = False\n\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_a_new_operator_hold(\n            self, monkeypatch, tmp_path, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        assert outbox.record_decision(item_id, \"hold\", actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2062: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects6/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_checkout_respects_a_new_operator_hold[True] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10c36e430>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111638dd0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects7')\npost_now = True\n\n    @pytest.mark.parametrize(\"post_now\", [False, True])\n    def test_delayed_checkout_respects_a_new_operator_hold(\n            self, monkeypatch, tmp_path, post_now):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path, queued=True)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        assert outbox.record_decision(item_id, \"hold\", actor=\"fixture\", root=first)\n        canonical_bytes = self._receipt_bytes(first)\n        canonical_sha = self._persist(first)\n        second = tmp_path / \"second\"\n        checkout_sha = self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        args = [\"--live\"] + ([\"--post-now\", item_id] if post_now else [])\n        rc = _run_publisher(monkeypatch, second, args,\n                            fake_publisher=fake, kill_switch=True)\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2062: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_checkout_respects7/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_delayed_ordinary_checkout_does_not_retry_a_new_failure _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10c36def0>\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x111426990>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_ordinary_checkout0')\n\n    def test_delayed_ordinary_checkout_does_not_retry_a_new_failure(\n            self, monkeypatch, tmp_path):\n        from engine.marketing import outbox\n    \n        origin, dispatch_sha, item_id = self._seed_origin(tmp_path)\n        first = tmp_path / \"first\"\n        self._checkout(first, origin, dispatch_sha)\n        assert outbox.transition(item_id, \"posting\", actor=\"fixture\", root=first)\n        assert outbox.transition(item_id, \"failed\", actor=\"fixture\", root=first,\n                                 note=\"explicit provider rejection\")\n        canonical_bytes = self._receipt_bytes(first)\n        self._persist(first)\n        second = tmp_path / \"second\"\n        self._checkout(second, origin, dispatch_sha)\n        fake = _FakePublisher()\n        assert _run_publisher(monkeypatch, second, [\"--live\"],\n                              fake_publisher=fake, kill_switch=True) == 0\n>       assert fake.calls == []\nE       AssertionError: assert [{'text': '$P...': None, ...}] == []\nE         \nE         Left contains one more item: {'text': '$PLTR reclaimed the 50-day. Watching the soldiers now.', 'channel_id': 'buf-chan-123', 'media_paths': None, 'link': None, ...}\nE         Use -v to get more diff\n\ntests/test_marketing_social_publisher.py:2086: AssertionError\n----------------------------- Captured stdout call -----------------------------\n::warning title=publisher-dark-desk::accounts model unavailable — dark-desk park INERT this run (see the log line above for the error); desk liveness is NOT enforced at dispatch.\n------------------------------ Captured log call -------------------------------\nWARNING  marketing_publisher:marketing_publisher.py:159 dark-desk park: desk_network resolved ZERO accounts — liveness UNKNOWN (no roster to check against), the gate stands down INERT for this run\nWARNING  engine.marketing.live_verify:live_verify.py:514 live_verify: earnings calendar unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-5927/test_delayed_ordinary_checkout0/second/data/earnings/earnings.parquet') — guard open\n_ TestQueuedPublishCheckout.test_actual_admission_shell_requires_the_exact_canonical_ref[refs/heads/Main-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b197050>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_actual_admission_shell_re1')\nevent_ref = 'refs/heads/Main', allowed = False\n\n    @pytest.mark.parametrize(\"event_ref, allowed\", [\n        (\"refs/heads/main\", True),\n        (\"refs/heads/Main\", False),\n        (\"refs/heads/MAIN\", False),\n        (\"refs/heads/main-fix\", False),\n        (\"refs/tags/main\", False),\n    ])\n    def test_actual_admission_shell_requires_the_exact_canonical_ref(\n            self, tmp_path, event_ref, allowed):\n        code, output = self._admission(tmp_path / \"step-output\", event_ref)\n>       assert (code == 0) is allowed\nE       assert (0 == 0) is False\n\ntests/test_marketing_social_publisher.py:2102: AssertionError\n_ TestQueuedPublishCheckout.test_actual_admission_shell_requires_the_exact_canonical_ref[refs/heads/MAIN-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b1971d0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_actual_admission_shell_re2')\nevent_ref = 'refs/heads/MAIN', allowed = False\n\n    @pytest.mark.parametrize(\"event_ref, allowed\", [\n        (\"refs/heads/main\", True),\n        (\"refs/heads/Main\", False),\n        (\"refs/heads/MAIN\", False),\n        (\"refs/heads/main-fix\", False),\n        (\"refs/tags/main\", False),\n    ])\n    def test_actual_admission_shell_requires_the_exact_canonical_ref(\n            self, tmp_path, event_ref, allowed):\n        code, output = self._admission(tmp_path / \"step-output\", event_ref)\n>       assert (code == 0) is allowed\nE       assert (0 == 0) is False\n\ntests/test_marketing_social_publisher.py:2102: AssertionError\n_ TestQueuedPublishCheckout.test_actual_admission_shell_requires_the_exact_canonical_ref[refs/heads/main-fix-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b342620>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_actual_admission_shell_re3')\nevent_ref = 'refs/heads/main-fix', allowed = False\n\n    @pytest.mark.parametrize(\"event_ref, allowed\", [\n        (\"refs/heads/main\", True),\n        (\"refs/heads/Main\", False),\n        (\"refs/heads/MAIN\", False),\n        (\"refs/heads/main-fix\", False),\n        (\"refs/tags/main\", False),\n    ])\n    def test_actual_admission_shell_requires_the_exact_canonical_ref(\n            self, tmp_path, event_ref, allowed):\n        code, output = self._admission(tmp_path / \"step-output\", event_ref)\n>       assert (code == 0) is allowed\nE       assert (0 == 0) is False\n\ntests/test_marketing_social_publisher.py:2102: AssertionError\n_ TestQueuedPublishCheckout.test_actual_admission_shell_requires_the_exact_canonical_ref[refs/tags/main-False] _\n\nself = <tests.test_marketing_social_publisher.TestQueuedPublishCheckout object at 0x10b3422b0>\ntmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-5927/test_actual_admission_shell_re4')\nevent_ref = 'refs/tags/main', allowed = False\n\n    @pytest.mark.parametrize(\"event_ref, allowed\", [\n        (\"refs/heads/main\", True),\n        (\"refs/heads/Main\", False),\n        (\"refs/heads/MAIN\", False),\n        (\"refs/heads/main-fix\", False),\n        (\"refs/tags/main\", False),\n    ])\n    def test_actual_admission_shell_requires_the_exact_canonical_ref(\n            self, tmp_path, event_ref, allowed):\n        code, output = self._admission(tmp_path / \"step-output\", event_ref)\n>       assert (code == 0) is allowed\nE       assert (0 == 0) is False\n\ntests/test_marketing_social_publisher.py:2102: AssertionError\n17 failed, 1 passed in 8.33s\n",
+  "self_check": {
+    "diff": {
+      ".github/workflows/marketing-publish.yml": {
+        "added_lines": 28,
+        "removed_lines": 2,
+        "bytes": 3461,
+        "sha256": "e6981a1c8d718e07887fbe00d1b03b0144cc103332aab243e5714f64cb15e194"
+      },
+      "tests/test_marketing_social_publisher.py": {
+        "added_lines": 284,
+        "removed_lines": 0,
+        "bytes": 14631,
+        "sha256": "8aa2d60cd62ae6808091deeb1a5bccec34428b5650b144ceec5d47f9311c94b4"
+      },
+      "tests/test_marketing_forward_booking.py": {
+        "added_lines": 4,
+        "removed_lines": 1,
+        "bytes": 806,
+        "sha256": "3621279cb665cc2580b726b8902207695f43adc55fbd5a0362a902cc3174e795"
+      }
+    },
+    "other_source_changes": [],
+    "expression_sha256": "2fa6ff404b3102a346c3a51f0078f1c4374b080c22c025fcec3b2e953d8485c4",
+    "expression_bytes": 18363,
+    "expression_package": {
+      "version": "0.3.61",
+      "resolved": "https://registry.npmjs.org/@actions/expressions/-/expressions-0.3.61.tgz",
+      "integrity": "sha512-Ig+tXELvTjlqxQAWBQnLNn2dPpNraLMdSnT+vDzDPmJtbNUhIAH/Z9kVT8pZ8UtJi9vUGs8hwHE8JFJmbOnLEA==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 20"
+      }
+    },
+    "exact_source_pin": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e"
+  },
+  "official_sources": [
+    {
+      "repo": "actions/checkout",
+      "pin": "11d5960a326750d5838078e36cf38b85af677262",
+      "path": "src/input-helper.ts",
+      "blob": "2ded955533070ad5a1cd5fd4b3f29e0b15e13833",
+      "sha256": "0bcab16b2b550f1b92c6176b5f842500febee3ae8c8051cb62a95264d40db0af",
+      "bytes": 7286
+    },
+    {
+      "repo": "actions/checkout",
+      "pin": "11d5960a326750d5838078e36cf38b85af677262",
+      "path": "src/ref-helper.ts",
+      "blob": "925be86614ded8ed4057bbbed4b3d15170f6e445",
+      "sha256": "711c01895acdc63a9c2d94c5c632cb77f9d0ec78602de713855410c8269553fb",
+      "bytes": 7487
+    },
+    {
+      "repo": "actions/checkout",
+      "pin": "11d5960a326750d5838078e36cf38b85af677262",
+      "path": "src/git-source-provider.ts",
+      "blob": "2d3513897655e0ea2eb4efc2b2c9d6132a69549f",
+      "sha256": "b1bf57713d94302decc7f440a1cd7daa24f205ddf677c52debeb654a5565d1a7",
+      "bytes": 11050
+    },
+    {
+      "repo": "actions/languageservices",
+      "pin": "4043eda158e16579cc5fb1b0b07a4bce2a76f0b5",
+      "path": "expressions/README.md",
+      "blob": "2076adad6af2236b5f3eb61f3cab9165b546179a",
+      "sha256": "d9d032d57395f5618f2000a1eb2d6ba7dd3cf89ca35559241e56b12a4090fda3",
+      "bytes": 2513
+    },
+    {
+      "repo": "actions/languageservices",
+      "pin": "4043eda158e16579cc5fb1b0b07a4bce2a76f0b5",
+      "path": "expressions/package.json",
+      "blob": "9810378be7e909dfe2cfe08c4e9f90bfed882511",
+      "sha256": "5928b57b08e88ff454789be3060a222f720ec5fdac8e84ccd66c11845e6e9790",
+      "bytes": 1598
+    }
+  ],
+  "expression_input": {
+    "publish": "${{ github.ref == 'refs/heads/main'\n    && (github.event_name != 'workflow_dispatch' || inputs.delivery_readback_item == '') }}",
+    "readback": "${{ github.event_name == 'workflow_dispatch' && inputs.delivery_readback_item != '' }}",
+    "sender": "${{ !(github.event_name == 'workflow_dispatch' && inputs.recall_pending) }}",
+    "recall": "${{ github.event_name == 'workflow_dispatch' && inputs.recall_pending }}",
+    "commit": "${{ always()\n    && steps.main_ref.outputs.canonical_main == 'true'\n    && steps.publisher_checkout.outcome == 'success'\n    && (env.MARKETING_PUBLISH_ENABLED == '1'\n        || (github.event_name == 'workflow_dispatch' && inputs.recall_pending)) }}",
+    "liveness": "${{ always() && steps.main_ref.outputs.canonical_main == 'true'\n    && steps.publisher_checkout.outcome == 'success'\n    && !(github.event_name == 'workflow_dispatch' && inputs.recall_pending) }}",
+    "before_publish": "${{ github.event_name != 'workflow_dispatch' || inputs.delivery_readback_item == '' }}",
+    "before_readback": "${{ github.event_name == 'workflow_dispatch' && inputs.delivery_readback_item != '' }}",
+    "admission_shell": "# Actions expression equality ignores case; the Git ref must be exact.\nif [ \"$PUBLISH_EVENT_REF\" != 'refs/heads/main' ]; then\n  echo \"::error::marketing-publish requires the canonical main ref\"\n  exit 1\nfi\necho \"canonical_main=true\" >> \"$GITHUB_OUTPUT\"\n",
+    "cases": [
+      {
+        "name": "main schedule",
+        "github": {
+          "event_name": "schedule",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {},
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main dispatch",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main post-now",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "post_now_item": "synthetic-item"
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          true,
+          false,
+          false,
+          true,
+          true,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main readback plus recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "feature dispatch",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "feature recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "tag named main",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "other tag",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/v1"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "feature readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "tag readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "case variant Main",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/Main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "case variant MAIN",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/MAIN"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "case variant recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/Main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "case variant readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/MAIN"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main checkout failure",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "failure",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main checkout skipped",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "skipped",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main publisher failure finalizers",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "prior_failure": true,
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main disarmed recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          true,
+          false,
+          false,
+          true,
+          true,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "0",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      {
+        "name": "main dark sweep",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          false,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "0",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        }
+      }
+    ]
+  },
+  "expression_result": {
+    "package": "@actions/expressions",
+    "version": "0.3.61",
+    "cases": [
+      {
+        "name": "main schedule",
+        "github": {
+          "event_name": "schedule",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {},
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": true,
+        "recall_step": false,
+        "commit_step": true,
+        "liveness_step": true,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main dispatch",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": true,
+        "recall_step": false,
+        "commit_step": true,
+        "liveness_step": true,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main post-now",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "post_now_item": "synthetic-item"
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": true,
+        "recall_step": false,
+        "commit_step": true,
+        "liveness_step": true,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          true,
+          false,
+          false,
+          true,
+          true,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": true,
+        "commit_step": true,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": true,
+        "canonical_execution": false,
+        "readback": true,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": false,
+          "readback": true
+        }
+      },
+      {
+        "name": "main readback plus recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": true,
+        "canonical_execution": false,
+        "readback": true,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": false,
+          "readback": true
+        }
+      },
+      {
+        "name": "feature dispatch",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "feature recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "tag named main",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "other tag",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/v1"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "feature readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/feature"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": true,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": false,
+          "readback": true
+        }
+      },
+      {
+        "name": "tag readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/tags/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": true,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": false,
+          "readback": true
+        }
+      },
+      {
+        "name": "case variant Main",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/Main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "case variant MAIN",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/MAIN"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "case variant recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/Main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "case variant readback",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/MAIN"
+        },
+        "inputs": {
+          "delivery_readback_item": "synthetic-item"
+        },
+        "expected": [
+          false,
+          true,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "admission": {
+          "returncode": 1,
+          "output": "",
+          "stdout": "::error::marketing-publish requires the canonical main ref\n",
+          "stderr": ""
+        },
+        "job_filter": false,
+        "admitted": false,
+        "canonical_execution": false,
+        "readback": true,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": false,
+          "readback": true
+        }
+      },
+      {
+        "name": "main checkout failure",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "failure",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main checkout skipped",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "checkout_outcome": "skipped",
+        "armed": "1",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": false,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main publisher failure finalizers",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          true,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "1",
+        "prior_failure": true,
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": true,
+        "recall_step": false,
+        "commit_step": true,
+        "liveness_step": true,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main disarmed recall",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": "",
+          "recall_pending": true
+        },
+        "expected": [
+          true,
+          false,
+          false,
+          true,
+          true,
+          false
+        ],
+        "checkout_outcome": "success",
+        "armed": "0",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": false,
+        "recall_step": true,
+        "commit_step": true,
+        "liveness_step": false,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      },
+      {
+        "name": "main dark sweep",
+        "github": {
+          "event_name": "workflow_dispatch",
+          "ref": "refs/heads/main"
+        },
+        "inputs": {
+          "delivery_readback_item": ""
+        },
+        "expected": [
+          true,
+          false,
+          true,
+          false,
+          false,
+          true
+        ],
+        "checkout_outcome": "success",
+        "armed": "0",
+        "admission": {
+          "returncode": 0,
+          "output": "canonical_main=true\n",
+          "stdout": "",
+          "stderr": ""
+        },
+        "job_filter": true,
+        "admitted": true,
+        "canonical_execution": true,
+        "readback": false,
+        "sender_step": true,
+        "recall_step": false,
+        "commit_step": false,
+        "liveness_step": true,
+        "prior": {
+          "publish": true,
+          "readback": false
+        }
+      }
+    ],
+    "all_passed": true,
+    "limitation": "Actual extracted shell and official expression evaluator; default-success prerequisites are represented by successful admission and checkout. Not hosted Actions execution."
+  },
+  "expression_harness": "import fs from \"node:fs\";\nimport assert from \"node:assert/strict\";\nimport { Lexer, Parser, Evaluator, data } from \"@actions/expressions\";\nconst input=JSON.parse(fs.readFileSync(new URL(\"./expressions-exact-ref.json\",import.meta.url),\"utf8\"));\nfunction datum(x) {\n if(typeof x===\"string\")return new data.StringData(x);\n if(typeof x===\"boolean\")return new data.BooleanData(x);\n return new data.Dictionary(...Object.entries(x).map(([key,value])=>({key,value:datum(value)})));\n}\nconst always={name:\"always\",minArgs:0,maxArgs:0,call:()=>new data.BooleanData(true)};\nfunction evaluate(source,context) {\n const raw=source.trim().replace(/^\\$\\{\\{\\s*/,\"\").replace(/\\s*\\}\\}$/,\"\");\n const expression=new Parser(new Lexer(raw).lex().tokens,[\"github\",\"inputs\",\"steps\",\"env\"],[always]).parse();\n return new Evaluator(expression,datum(context),new Map([[\"always\",always]])).evaluate().coerceString()===\"true\";\n}\nconst results=[];\nfor(const c of input.cases){\n const output=c.admission.output.trim();\n const admitted=c.admission.returncode===0 && output===\"canonical_main=true\";\n const context={github:c.github,inputs:c.inputs,env:{MARKETING_PUBLISH_ENABLED:c.armed},\n  steps:{main_ref:{outputs:{canonical_main:admitted?\"true\":\"\"}},\n         publisher_checkout:{outcome:c.checkout_outcome}}};\n const job=evaluate(input.publish,context),read=evaluate(input.readback,context);\n const execution=job&&admitted&&c.checkout_outcome===\"success\";\n const sends=execution&&evaluate(input.sender,context),recalls=execution&&evaluate(input.recall,context);\n const commit=job&&evaluate(input.commit,context),liveness=job&&evaluate(input.liveness,context);\n const actual=[execution,read,sends,recalls,commit,liveness];\n assert.deepEqual(actual,c.expected,c.name);\n const prior={publish:evaluate(input.before_publish,context),readback:evaluate(input.before_readback,context)};\n assert.equal(read,prior.readback,c.name+\" readback parity\");\n results.push({...c,job_filter:job,admitted,canonical_execution:execution,readback:read,\n               sender_step:sends,recall_step:recalls,commit_step:commit,liveness_step:liveness,prior});\n}\nconst result={package:\"@actions/expressions\",version:\"0.3.61\",cases:results,all_passed:true,\n limitation:\"Actual extracted shell and official expression evaluator; default-success prerequisites are represented by successful admission and checkout. Not hosted Actions execution.\"};\nfs.writeFileSync(new URL(\"./result-exact-ref.json\",import.meta.url),JSON.stringify(result,null,2)+\"\\n\");\nconsole.log(JSON.stringify({cases:results.length,all_passed:true,readback_unchanged:true,\n  case_variants_blocked:results.filter(x=>x.name.startsWith(\"case variant\")&&!x.readback).every(x=>!x.canonical_execution&&!x.commit_step&&!x.liveness_step)}));\n",
+  "expression_shell_driver": "from pathlib import Path\nimport hashlib,json,os,subprocess,yaml\nroot=Path(\"/tmp/macro-delivery7479-proof-20261111-2140\")\na=yaml.safe_load((root/\"after/.github/workflows/marketing-publish.yml\").read_text())\nb=yaml.safe_load((root/\"before/.github/workflows/marketing-publish.yml\").read_text())\nsteps=a[\"jobs\"][\"publish\"][\"steps\"]\ndef condition(command):\n return next(s[\"if\"] for s in steps if command in str(s.get(\"run\",\"\")))\nguard=next(s for s in steps if s.get(\"id\")==\"main_ref\")\nassert steps[0] is guard and not guard.get(\"continue-on-error\")\ncheckout=next(s for s in steps if s.get(\"id\")==\"publisher_checkout\")\nassert checkout[\"with\"][\"ref\"]==\"refs/heads/main\" and not checkout.get(\"continue-on-error\")\ncases=json.loads((root/\"expression-proof/cases-exact-ref.json\").read_text())\noutdir=root/\"expression-proof/admission-outputs\";outdir.mkdir(exist_ok=True)\nfor i,c in enumerate(cases):\n out=outdir/str(i);out.write_text(\"\")\n env=dict(os.environ,PUBLISH_EVENT_REF=c[\"github\"][\"ref\"],GITHUB_OUTPUT=str(out))\n env.pop(\"BASH_ENV\",None);env.pop(\"ENV\",None)\n r=subprocess.run([\"bash\",\"--noprofile\",\"--norc\",\"-e\",\"-o\",\"pipefail\",\"-c\",guard[\"run\"]],env=env,capture_output=True,text=True,timeout=10)\n c[\"admission\"]={\"returncode\":r.returncode,\"output\":out.read_text(),\"stdout\":r.stdout,\"stderr\":r.stderr}\nj={\"publish\":a[\"jobs\"][\"publish\"][\"if\"],\"readback\":a[\"jobs\"][\"delivery-readback\"][\"if\"],\n\"sender\":condition(\"python -m scripts.marketing_publisher\"),\"recall\":condition(\"python -m scripts.marketing_recall\"),\n\"commit\":condition(\"git commit\"),\"liveness\":condition(\"python -m scripts.marketing_liveness_tripwire\"),\n\"before_publish\":b[\"jobs\"][\"publish\"][\"if\"],\"before_readback\":b[\"jobs\"][\"delivery-readback\"][\"if\"],\n\"admission_shell\":guard[\"run\"],\"cases\":cases}\n(root/\"expression-proof/expressions-exact-ref.json\").write_text(json.dumps(j,indent=2)+\"\\n\")\nr=subprocess.run([\"node\",str(root/\"expression-proof/check-exact-ref.mjs\")],capture_output=True,text=True,timeout=30)\nprint(r.stdout+r.stderr);assert r.returncode==0,\"expression assertion failed\"\nraw=(root/\"expression-proof/result-exact-ref.json\").read_bytes()\nprint(json.dumps({\"bytes\":len(raw),\"sha256\":hashlib.sha256(raw).hexdigest()}))\n",
+  "custody": {
+    "frontier": "2026-11-11T21:34:04Z",
+    "retained_identities": 638,
+    "complete": 631,
+    "partial_qualified": 7,
+    "partial_path_comparisons": 28,
+    "latest100_reused": 86,
+    "latest100_fresh": 14,
+    "fresh_entries": 681,
+    "fresh_target_hits": 0,
+    "known_overlap": {
+      "pr": 11026,
+      "head": "2286f6fdd83f0c71d09895e9a31a03115aafe9a1",
+      "scope": "runner/bootstrap only; checkout/admission unchanged"
+    },
+    "final_delta": [
+      {
+        "pr": 10851,
+        "head": "d0f2b7fbb9fccb703544687a8f9266bb7e33607d",
+        "files": 10
+      },
+      {
+        "pr": 7466,
+        "head": "d31d31f56b27448f08fe6ff385e86143224417c3",
+        "files": 64
+      },
+      {
+        "pr": 10221,
+        "head": "7c042f544f7de662cb442d3edf85be2bd469b724",
+        "files": 9
+      }
+    ],
+    "final_heads_stable": true,
+    "final_target_or_rename_hits": 0
+  },
+  "limits": [
+    "No production provider invocation, workflow dispatch, recall or historical-ledger change.",
+    "Real local Git and publisher main with synthetic identity and recording provider; not hosted workflow execution.",
+    "Pre-existing queued workflow definitions and acceptance-without-persistence are not repaired retroactively."
+  ],
+  "publication_base": {
+    "source_pin": "8d6a5e115a72ef93cfa779e15c1689957c27cc9e",
+    "parent": "dce366adcf109daa9a2f0bf99ed68120da6b7957",
+    "tree": "95294eb2840c15bd3ea05a7a4a994b09d9508f36",
+    "changed_root_entries": [
+      {
+        "path": "data",
+        "before": "49bc12bf6f7be3cc55e97a0fe7ec0cb48406d1dd",
+        "after": "483a03ea32868bf6954b0d3ed7d508ed97c35720"
+      },
+      {
+        "path": "site",
+        "before": "621e2f8f2d46f8feb795582dff748b3320386633",
+        "after": "6d20f8dda9901d83e576bcb1db97850d963fa559"
+      }
+    ],
+    "all_input_root_entries_equal": true,
+    "input_root_entries": [
+      {
+        "path": ".github",
+        "before": "ec402e5518e567dee7c2231a7612a0993570b721",
+        "after": "ec402e5518e567dee7c2231a7612a0993570b721",
+        "equal": true
+      },
+      {
+        "path": "config.yml",
+        "before": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "after": "5be75249c98033d7ee0fbe55928713b1f50af627",
+        "equal": true
+      },
+      {
+        "path": "config",
+        "before": "92f117f67e19f919001aefef280aaa998f3445b2",
+        "after": "92f117f67e19f919001aefef280aaa998f3445b2",
+        "equal": true
+      },
+      {
+        "path": "tests",
+        "before": "aec07f3e6e3be556bc0c8d4379f325e95f950513",
+        "after": "aec07f3e6e3be556bc0c8d4379f325e95f950513",
+        "equal": true
+      },
+      {
+        "path": "admin",
+        "before": "3186b13c9daa7baa386b8c8649fd8c5f033199d3",
+        "after": "3186b13c9daa7baa386b8c8649fd8c5f033199d3",
+        "equal": true
+      },
+      {
+        "path": "engine",
+        "before": "07e13ee2fcead2bf1f43f1ad7ec9cba1b1b7163a",
+        "after": "07e13ee2fcead2bf1f43f1ad7ec9cba1b1b7163a",
+        "equal": true
+      },
+      {
+        "path": "scripts",
+        "before": "acbe7f767d98d3df71b1251b509ebbe933a5601d",
+        "after": "acbe7f767d98d3df71b1251b509ebbe933a5601d",
+        "equal": true
+      },
+      {
+        "path": "lib",
+        "before": "829af95dc42f067a2043ffeac2f207a55be73d8f",
+        "after": "829af95dc42f067a2043ffeac2f207a55be73d8f",
+        "equal": true
+      },
+      {
+        "path": "collectors",
+        "before": "60dc2d12dd31b5cfa46ddb1ff43c580e4bda0636",
+        "after": "60dc2d12dd31b5cfa46ddb1ff43c580e4bda0636",
+        "equal": true
+      },
+      {
+        "path": "contracts",
+        "before": "052ea4463c266720eec553ebe7d765157a29330e",
+        "after": "052ea4463c266720eec553ebe7d765157a29330e",
+        "equal": true
+      }
+    ]
+  }
+}

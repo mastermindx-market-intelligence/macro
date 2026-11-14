@@ -2,31 +2,31 @@
   "0eb865a47792": {
     "name_en": "Cross-sector cluster \u00b7 Consumer Discretionary + Financials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Consumer Discretionary + Financials",
-    "score": 72.7
+    "score": 73.0
   },
-  "371cc5c41ef7": {
-    "name_en": "Cross-sector cluster \u00b7 Industrials + Information Technology",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Industrials + Information Technology",
-    "score": 55.1
+  "1a1073d7d88e": {
+    "name_en": "Cross-sector cluster \u00b7 Health Care + Real Estate",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Real Estate",
+    "score": 59.4
   },
-  "94f59441b5c0": {
-    "name_en": "Cross-sector cluster \u00b7 Health Care + Industrials",
-    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Industrials",
-    "score": 60.3
+  "5552a088ce81": {
+    "name_en": "Cross-sector cluster \u00b7 Health Care + Communication Services",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Health Care + Communication Services",
+    "score": 64.4
   },
-  "9613cc76c040": {
+  "c72d3f8b5da8": {
     "name_en": "Cross-sector cluster \u00b7 Communication Services + Consumer Discretionary",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Communication Services + Consumer Discretionary",
-    "score": 74.3
+    "score": 74.2
   },
   "d12449c6191e": {
     "name_en": "Cross-sector cluster \u00b7 Financials + Materials",
     "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Financials + Materials",
-    "score": 69.1
+    "score": 68.4
   },
-  "e6499a7b78a9": {
-    "name_en": "Emerging Energy cluster",
-    "name_zh": "\u65b0\u5174 Energy \u96c6\u7fa4",
-    "score": 56.3
+  "e9f3046261f8": {
+    "name_en": "Cross-sector cluster \u00b7 Energy + Industrials",
+    "name_zh": "\u8de8\u677f\u5757\u96c6\u7fa4 \u00b7 Energy + Industrials",
+    "score": 66.3
   }
 }

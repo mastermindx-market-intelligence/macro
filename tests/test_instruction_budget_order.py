@@ -71,7 +71,7 @@ class InstructionBudgetOrderTests(unittest.TestCase):
         raw = (ROOT / "AGENTS.md").read_bytes()
         for item in [b"templates/_site_nav.html.j2", b"templates/_public_nav.html.j2",
                      b"DEC:SOL-HOLD-IS-A-MERGE-BARRIER", b"EFFECT_UNKNOWN",
-                     b"explicit safety/permission refusal", b"config/sparse_worktree.json"]:
+                     b"Classify the observed error", b"config/sparse_worktree.json"]:
             self.assertIn(item, raw)
 
 

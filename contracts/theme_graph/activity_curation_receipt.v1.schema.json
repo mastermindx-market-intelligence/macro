@@ -62,6 +62,27 @@
                     }
                 }
             }
+        },
+        "exposure": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "The curator restates the proposed exposure role and profit-driver judgment. Required on an ACCEPT of a proposal whose evidence carries exposure, and it must equal the evidence's role and profit_driver; refused on a proposal whose evidence carries no exposure.",
+            "required": [
+                "role",
+                "profit_driver"
+            ],
+            "properties": {
+                "role": {
+                    "enum": [
+                        "primary",
+                        "secondary",
+                        "minor"
+                    ]
+                },
+                "profit_driver": {
+                    "type": "boolean"
+                }
+            }
         }
     }
 }

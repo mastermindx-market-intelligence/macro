@@ -406,48 +406,399 @@ SUPPORTED_PLAN_ROLE_EVENTS = frozenset({
     ("main", "schedule"),
 })
 
-PACK_TARGET_SECONDS = 600
+# Weight scale of the 2026-11-11 refresh below. The planner's weights moved
+# from the old modeled units to measured hosted seconds; across the whole
+# 401-job manifest (the population packing probes select from) total weight
+# went 15,670 -> 29,934. Every weight-denominated threshold that was tuned on
+# the old scale (this pack target and the packing-probe weight ceilings in
+# tests/test_ci_pack.py) is the old value times this one ratio, so the
+# probes' ratchets keep their meaning instead of being re-picked by hand.
+WEIGHT_RESCALE_NUMERATOR = 29_934
+WEIGHT_RESCALE_DENOMINATOR = 15_670
+LEGACY_PACK_TARGET_SECONDS = 600
+
+
+def rescale_legacy_weight(value: int) -> int:
+    """Map a pre-2026-11-11 weight threshold onto the measured-seconds scale."""
+    return (
+        value * WEIGHT_RESCALE_NUMERATOR + WEIGHT_RESCALE_DENOMINATOR // 2
+    ) // WEIGHT_RESCALE_DENOMINATOR
+
+
+PACK_TARGET_SECONDS = rescale_legacy_weight(LEGACY_PACK_TARGET_SECONDS)
+# Hosted command seconds per logical job, refreshed 2026-11-11 (planner weights).
+#
+# Each value is the MEDIAN of that job's command time across every pack log of
+# 17 successful ci.yml runs, 2026-11-11T03:12Z..12:04Z (3 full-suite main
+# dispatches + 14 pull_request runs; 170 pack logs, all hosted runners):
+#   42951153661, 42960439096, 42991355198, 42998348717, 42998797937
+#   43000052928, 43000837818, 43002866064, 43004792424, 43005257190
+#   43008251603, 43008266839, 43008938063, 43009039492, 43009509641
+#   43009603295, 43017224918
+# A job's command time is the span from its first `::group::<job> — <step>`
+# marker to the next job's marker (or the pack's first post-run `Run ` step),
+# i.e. its semantic steps only; its dependency-environment install is excluded
+# exactly as before. The trailing comment gives the sample count and p75.
+#
+# Why: the previous table (2026-08..10) priced fif-kernel-guards at 1,630 s
+# against a measured 4,444 s median (7 runs), and the heuristic below priced the
+# other 317 code jobs at 5,238 s total against 14,058 s measured, so packs the
+# planner thought were balanced straggled by 2-3x. Every code-gated job that
+# ci.yml selects now has a measured weight; the heuristic only prices new jobs
+# and the data-gated jobs (data-health.yml), which ci.yml never selects.
+# Data-gated entries kept from the older table (not re-measurable from ci.yml):
+#   capability-broker, capital-structure-intelligence, engine-render-guards, express-render-guards
+#   flow-surface, hub-a11y, inline-js, market-memory-contract
+#   marketing-engine, neural-web, neural-web-core, unrun-government-revenue-grader
+#   unrun-market-plumbing, unrun-picks-boards, unrun-subsector-themes, validated-claims
+# Re-measure with the same method when a job's suite changes materially; the
+# weights are balancing estimates, never elapsed-time or speedup guarantees.
 OBSERVED_COMMAND_SECONDS = {
+    "fif-kernel-guards": 4444,  # n=7 p75=4577
+    "international-workspace-browser": 1021,  # n=6 p75=1102
+    "ci-control-plane-contracts": 891,  # n=10 p75=1160
+    "earnings-economic-dossier": 875,  # n=6 p75=1026
+    "nw-lobe-unfreeze": 594,  # n=8 p75=820
+    "defense-rail-laws": 455,  # n=11 p75=483
+    "international-dislocation-explorer": 448,  # n=6 p75=481
+    "ci-control-plane-census": 441,  # n=10 p75=560
+    "ontology-explorer": 436,  # n=9 p75=456
+    "biocatalyst-contracts": 426,  # n=17 p75=526
+    "dashboard-render-contract": 394,  # n=12 p75=463
+    "unrun-government-revenue-candidate-projection": 385,  # n=8 p75=482
+    "research-vault": 352,  # n=7 p75=413
+    "agentos-knowledge-contracts": 348,  # n=7 p75=396
+    "sni-acceptance-evidence": 327,  # n=6 p75=377
+    "biocatalyst-serving": 314,  # n=8 p75=350
+    "unrun-brain-gateway": 312,  # n=17 p75=373
+    "washout-turn-organ": 303,  # n=10 p75=336
+    "synapse-read-gate": 249,  # n=17 p75=267
+    "unrun-grading-board": 219,  # n=17 p75=290
+    "research-price-panel": 205,  # n=7 p75=234
+    "ci-control-plane-structure": 204,  # n=10 p75=210
+    "biocatalyst-worker": 180,  # n=7 p75=229
+    "unrun-factor-research": 176,  # n=17 p75=246
+    "conviction-profile": 174,  # n=7 p75=191
+    "china-native-collectors": 174,  # n=17 p75=180
+    "international-transmission-board": 171,  # n=6 p75=220
+    "earnings-economic-private-publication": 168,  # n=6 p75=221
+    "biocatalyst-history": 165,  # n=8 p75=196
+    "market-os-macro-suite-pages": 159,  # n=6 p75=165
+    "ric-e0-retrospective-runners": 147,  # n=6 p75=152
+    "company-intelligence-relationships": 144,  # n=6 p75=185
+    "finance-intelligence": 143,  # n=6 p75=175
+    "self-mod-fence": 138,  # n=17 p75=229
+    "ticker-news-qbus": 131,  # n=11 p75=143
+    "unrun-import-hygiene": 123,  # n=17 p75=127
+    "cycle-forward-log": 122,  # n=16 p75=128
+    "prophet-lab": 121,  # n=17 p75=145
+    "marketing-social-publisher": 119,  # n=17 p75=132
+    "push-retry-policy": 116,  # n=7 p75=128
+    "signal-gate-pair-coherence": 116,  # n=14 p75=263
+    "intelligence-registry": 114,  # n=11 p75=124
+    "unrun-brain-desks": 110,  # n=17 p75=142
+    "nyse-calendar-freshness": 103,  # n=17 p75=110
+    "news-impact-contracts": 103,  # n=6 p75=122
+    "earnings-economic-source-selection": 96,  # n=6 p75=105
+    "biocatalyst-evidence": 96,  # n=17 p75=122
+    "unrun-scoring-engine": 96,  # n=17 p75=103
+    "stock-dashboard-first-frame": 86,  # n=6 p75=96
+    "research-factory-authority": 85,  # n=17 p75=95
+    "semiconductor-b-boundary": 84,  # n=11 p75=89
+    "validated-claims-contract": 80,  # n=8 p75=82
+    "crypto-vector-r2-organs": 77,  # n=7 p75=79
+    "site-access-boundary": 75,  # n=10 p75=98
+    "dataos-prospective-reference": 72,  # n=10 p75=80
+    "sni-s1-residual": 70,  # n=9 p75=101
+    "forex-r26-consumer": 69,  # n=6 p75=76
+    "research-codegen-runtime-qualification": 65,  # n=6 p75=249
+    "crypto-shelves": 65,  # n=6 p75=266
+    "global-liquidity-transmission-contracts": 64,  # n=6 p75=91
+    "path-prune-lint": 59,  # n=14 p75=69
+    "international-workspace-foundation": 59,  # n=6 p75=70
+    "leadership-rotation-science": 58,  # n=6 p75=65
+    "gmi-explorer": 58,  # n=6 p75=69
+    "robotics-theme-research": 57,  # n=6 p75=60
+    "wri-risk-core": 55,  # n=17 p75=72
+    "unrun-dark-guards": 54,  # n=17 p75=60
+    "bea-gvc-current-descriptive-consumer": 53,  # n=7 p75=57
+    "prelaunch-hardening": 53,  # n=17 p75=57
+    "dataos-verification": 52,  # n=10 p75=64
+    "news-v91-vertical-proofs": 52,  # n=9 p75=52
+    "collector-registry": 51,  # n=17 p75=59
+    "data-base-shim": 50,  # n=17 p75=60
+    "no-module-leak": 50,  # n=17 p75=55
+    "house-law-registry-code": 50,  # n=17 p75=55
+    "workflow-yaml": 48,  # n=17 p75=55
+    "qledger-cluster-honest-ci": 47,  # n=8 p75=56
+    "healthcare-fda-supply": 46,  # n=6 p75=51
+    "attested-history-guards": 45,  # n=17 p75=49
+    "grey-deer-pullback-stage1": 44,  # n=6 p75=49
+    "biocatalyst-deploy-integration": 42,  # n=17 p75=47
+    "leader-radar-unit": 41,  # n=6 p75=45
+    "biocatalyst-regulatory": 40,  # n=15 p75=49
+    "unrun-template-chips": 39,  # n=17 p75=44
+    "catalyst-loop-integrated": 39,  # n=7 p75=41
+    "reference-integrity": 39,  # n=17 p75=47
+    "options-matrix-code": 38,  # n=7 p75=44
+    "design-governance": 37,  # n=15 p75=182
+    "price-basis-census": 36,  # n=17 p75=42
+    "commodities-research-workspace": 34,  # n=6 p75=36
+    "eval-os-a1": 33,  # n=8 p75=36
+    "breakdown-control-seed-determinism": 33,  # n=17 p75=48
+    "hk-robustness-w5": 33,  # n=17 p75=33
+    "sni-program-guards": 32,  # n=6 p75=38
+    "dag-conformance": 31,  # n=17 p75=38
+    "skew-accrual-lane": 31,  # n=6 p75=34
+    "company-relationship-candidates": 29,  # n=6 p75=37
+    "billing-emails": 29,  # n=17 p75=35
+    "session-anchor-era": 28,  # n=6 p75=32
+    "dataos-foundation": 28,  # n=10 p75=30
+    "options-skew-engine": 27,  # n=6 p75=28
+    "flow-signal-cohorts": 26,  # n=17 p75=35
+    "validated-claims-source": 25,  # n=16 p75=31
+    "product-experience-registry": 24,  # n=15 p75=27
+    "integrated-answer-v0": 24,  # n=17 p75=25
+    "hkrv-w3-banner": 23,  # n=6 p75=29
+    "public-render-fastlane": 23,  # n=17 p75=27
+    "gmi-source-diagnostic-kernel": 22,  # n=6 p75=24
+    "market-os-macro-workspaces": 22,  # n=6 p75=27
+    "options-pilot-chronology-code": 22,  # n=6 p75=28
+    "research-vault-source-lineage": 22,  # n=6 p75=24
+    "earnings-release-identity": 22,  # n=7 p75=23
+    "dislocation-p0-a1-blind-harvest": 21,  # n=10 p75=27
+    "bot-session-recovery-browser": 20,  # n=6 p75=26
+    "options-alpha-candidate-feed": 20,  # n=6 p75=24
+    "dataos-identity-seams": 19,  # n=17 p75=23
+    "signal-builder-fail-closed": 19,  # n=6 p75=24
+    "ruling-graph": 19,  # n=17 p75=25
+    "sanctions-map-page": 19,  # n=6 p75=23
+    "grey-deer-pullback-forward": 19,  # n=6 p75=21
+    "options-catalyst-links": 18,  # n=10 p75=22
+    "ew-p4-descriptive-ui": 18,  # n=12 p75=21
+    "regime-outlook-mapping": 17,  # n=6 p75=20
+    "options-nbbo-cohort": 17,  # n=6 p75=22
+    "research-vault-api": 16,  # n=17 p75=19
+    "c19-wp31-incremental-information": 16,  # n=6 p75=17
+    "cn-standout-audit": 16,  # n=14 p75=17
+    "ccw-w4-credit-desk": 15,  # n=14 p75=20
+    "ird-substrate-engines": 15,  # n=17 p75=21
+    "unrun-oracle-desk": 15,  # n=17 p75=19
+    "industrials-result-cash": 15,  # n=6 p75=16
+    "global-liquidity-transmission": 15,  # n=6 p75=18
+    "rotation-observation-delivery": 14,  # n=6 p75=17
+    "deploy-git-store-maintenance": 14,  # n=6 p75=16
+    "group-read-surface": 14,  # n=13 p75=15
+    "market-memory-e0-contract": 14,  # n=6 p75=18
+    "international-global-universe": 14,  # n=6 p75=14
+    "sni-s2-event-response": 14,  # n=6 p75=17
+    "gdelt-news-leaves": 14,  # n=6 p75=16
+    "metab-throttle-ux": 14,  # n=17 p75=15
+    "admin-js-no-undef": 14,  # n=15 p75=16
+    "pb-d-event-quality": 13,  # n=6 p75=15
+    "dataos-web-workspace": 13,  # n=10 p75=16
+    "ccw-w3-credit-momentum": 13,  # n=11 p75=14
+    "china-native-w2": 13,  # n=17 p75=16
+    "china-radar-record": 12,  # n=6 p75=14
+    "information-to-price-eval-receipts": 12,  # n=6 p75=13
+    "am-edition-producer": 12,  # n=6 p75=15
+    "options-signal-campaign-v2": 12,  # n=10 p75=13
+    "k3d-economic-propagation-contracts": 12,  # n=6 p75=14
+    "local-projections": 12,  # n=6 p75=12
+    "board-shadow-substrate": 12,  # n=17 p75=13
+    "basket-staleness-warn": 12,  # n=17 p75=12
+    "mining-economic-dossier": 12,  # n=6 p75=15
+    "unrun-marketing-desk": 11,  # n=17 p75=12
+    "codex-research-engine": 11,  # n=17 p75=12
+    "china-sector-desk-gate": 11,  # n=6 p75=15
+    "entry-radar-rs-pullback-calendar": 11,  # n=6 p75=13
+    "yahoo-daily-archive-refresh": 11,  # n=12 p75=13
+    "pick-lab-liquidity": 10,  # n=14 p75=13
+    "cn-reversal-sleeve-display": 10,  # n=6 p75=12
+    "live-flow-recovery-guards": 10,  # n=6 p75=12
+    "regime-history-surfaces": 10,  # n=7 p75=11
+    "regional-baskets-scorecard": 10,  # n=6 p75=12
+    "quant-q01-arbfree-surface": 10,  # n=6 p75=11
+    "gh-annotation-line-start": 10,  # n=17 p75=11
+    "technology-ex-semis-boundary": 10,  # n=6 p75=12
+    "momoedge-browser-observe": 10,  # n=10 p75=10
+    "sni-shared-and-drafts": 10,  # n=6 p75=12
+    "ratio-lens": 10,  # n=6 p75=12
+    "ccw-w1-data-spine": 10,  # n=7 p75=11
+    "group-earnings-pulse": 9,  # n=6 p75=11
+    "macro-signals-conditions": 9,  # n=6 p75=12
+    "quant-q10-offex-residual": 9,  # n=6 p75=10
+    "regen-hk-g1-fixture-guard": 9,  # n=6 p75=10
+    "rc-r14-china-rotation-events": 9,  # n=15 p75=11
+    "zh-filing-term": 9,  # n=17 p75=10
+    "gmi-classification-axes": 9,  # n=6 p75=11
+    "flow-signals-ledger": 9,  # n=17 p75=11
+    "mastermindx-selector-capture-attestation": 9,  # n=14 p75=10
+    "quant-q20-spa-challenger": 9,  # n=6 p75=9
+    "narrative-radar-display": 9,  # n=6 p75=10
+    "china-search-universe": 9,  # n=6 p75=10
+    "marketing-media-pipeline": 9,  # n=17 p75=10
+    "billing-offers": 9,  # n=17 p75=11
+    "consumer-cyclical-economic-change": 9,  # n=6 p75=11
+    "pick-lab-cn-render": 8,  # n=6 p75=10
+    "options-scenario-contract": 8,  # n=6 p75=9
+    "markets-regime-strip": 8,  # n=6 p75=10
+    "research-record-claims": 8,  # n=6 p75=10
+    "china-altdata-catalysts": 8,  # n=6 p75=10
+    "cycle-pattern-authority": 8,  # n=17 p75=9
+    "ths-factorwatch-build-notes": 8,  # n=6 p75=10
+    "leadership-rotation-countercases": 8,  # n=6 p75=8
+    "chart-render": 8,  # n=17 p75=9
+    "chart-render-data": 8,  # n=17 p75=9
+    "all-exports-resolve": 8,  # n=14 p75=9
+    "ftr-tape-surfaces": 8,  # n=7 p75=9
+    "market-ontology-f09-petroleum-flow": 8,  # n=6 p75=9
+    "stock-liquidity-profile": 8,  # n=6 p75=8
+    "sector-cycles-page": 7,  # n=6 p75=8
+    "fif-saved-research-notifications": 7,  # n=6 p75=8
+    "options-r1-sector-holdings-coverage": 7,  # n=6 p75=8
+    "admin-analytics-pages": 7,  # n=12 p75=8
+    "china-board-breadth": 7,  # n=17 p75=8
+    "rebase-css-autoresolve": 7,  # n=15 p75=8
+    "c19-wp32-integrated-answer-correction-denial-pins": 7,  # n=7 p75=8
+    "c19-wp22-dhi-traversal": 7,  # n=7 p75=9
+    "options-payoff-lab-consumer": 7,  # n=6 p75=7
+    "quant-q05-exec-sensitivity": 7,  # n=6 p75=7
+    "ric-y0-yield-momentum": 6,  # n=6 p75=8
+    "uk-policy-desk": 6,  # n=14 p75=7
+    "public-site-figma-baseline-contracts": 6,  # n=6 p75=8
+    "lr-rotation-evidence-modes": 6,  # n=6 p75=7
+    "no-client-supplied-identity": 6,  # n=11 p75=8
+    "govrev-program-ontology": 6,  # n=6 p75=7
+    "site-gate": 6,  # n=17 p75=7
+    "c19-wp28-cs-leg-qualification": 6,  # n=17 p75=7
+    "single-name-coverage-profiles": 6,  # n=6 p75=6
+    "altdata-new-sources": 6,  # n=6 p75=7
+    "leadership-rotation-contract": 6,  # n=6 p75=6
+    "leadership-measured-read": 6,  # n=10 p75=6
+    "options-r1-rotation-relative-trend": 6,  # n=6 p75=7
+    "quant-q02-american-exercise": 6,  # n=6 p75=6
+    "sa-w4-improvement-lanes": 6,  # n=17 p75=8
+    "research-screener": 6,  # n=6 p75=6
+    "market-ontology-f09-usgs-mcs": 6,  # n=6 p75=7
+    "unrun-cell-b-v2-buyback-census": 6,  # n=9 p75=6
+    "c19-wp11-reader-pins": 6,  # n=9 p75=7
+    "unrun-inline-js-guard": 6,  # n=12 p75=6
+    "crypto-assistant-context": 6,  # n=7 p75=6
+    "collect-identity": 6,  # n=17 p75=7
+    "ric-y1-curve-accounting": 6,  # n=6 p75=6
+    "recurring-briefs": 6,  # n=13 p75=6
+    "c19-wp19-integrated-answer-pins": 6,  # n=17 p75=6
+    "institutional-13f-ingestion-contracts": 6,  # n=6 p75=6
+    "hk-cycle-ontology": 5,  # n=16 p75=6
+    "govrev-company-bridge": 5,  # n=6 p75=6
+    "broad-etf-flows": 5,  # n=6 p75=6
+    "catalyst-opportunity": 5,  # n=12 p75=6
+    "international-gs-closure": 5,  # n=6 p75=6
+    "quant-q16-delayed-aci": 5,  # n=6 p75=5
+    "group-pulse": 5,  # n=6 p75=6
+    "font-ui-defined": 5,  # n=11 p75=7
+    "altdata-brain-govern": 5,  # n=17 p75=6
+    "microstructure-pressure-response-r0": 5,  # n=6 p75=5
+    "international-global-replay": 5,  # n=6 p75=6
+    "admin-research-tools": 5,  # n=10 p75=6
+    "entry-radar-identity-snapshot": 5,  # n=6 p75=6
+    "flow-cohorts": 5,  # n=14 p75=6
+    "marketing-scoring-optional": 5,  # n=17 p75=6
+    "c19-wp29-hk-southbound-two-period": 5,  # n=6 p75=6
+    "c19-short-pressure-availability": 5,  # n=10 p75=5
+    "china-mechanics-display": 5,  # n=6 p75=5
+    "ohlc-origin-delivery": 5,  # n=6 p75=6
+    "stock-identity-method-projection": 5,  # n=6 p75=5
+    "quant-q19-first-passage-ambiguity": 5,  # n=6 p75=5
+    "c19-wp24-consumer-states": 5,  # n=17 p75=5
+    "quant-q15-noise-robust-rv": 5,  # n=6 p75=6
+    "cbf-regime": 5,  # n=6 p75=5
+    "c19-wp15-operating-driver-pins": 5,  # n=6 p75=5
+    "deploy-git-history": 5,  # n=6 p75=5
+    "c19-wp24-superseded-generations": 5,  # n=7 p75=5
+    "ccw-w6-study-s1": 5,  # n=6 p75=5
+    "grader-manifest": 5,  # n=7 p75=5
+    "dataos-acceptance": 4,  # n=10 p75=5
+    "ric-f0-a10-canonical-calendar": 4,  # n=17 p75=6
+    "china-strategies-income-tile": 4,  # n=6 p75=6
+    "p08-synthetic-composition": 4,  # n=6 p75=6
+    "group-linked-outsiders": 4,  # n=6 p75=5
+    "c19-wp24-dtc-map": 4,  # n=6 p75=5
+    "cycle-grading-stats": 4,  # n=17 p75=6
+    "quant-q03-share-basis": 4,  # n=6 p75=6
+    "quant-q18-async-session-cov": 4,  # n=6 p75=5
+    "calculator-input-integrity": 4,  # n=13 p75=4
+    "hk-leadership": 4,  # n=7 p75=5
+    "grey-deer-observed-moves": 4,  # n=6 p75=4
+    "quant-q13-rn-tail-density": 4,  # n=6 p75=4
+    "grey-deer-pboc-liquidity": 4,  # n=6 p75=4
+    "sni-public-exposure-scan": 4,  # n=13 p75=6
+    "ccw-w2-gspread-engine": 4,  # n=7 p75=4
+    "covenant-headroom": 4,  # n=6 p75=4
+    "commodity-strategies-grid-fields": 4,  # n=6 p75=4
+    "earnings-worker-systemd": 3,  # n=6 p75=4
+    "quant-q17-stable-whitening": 3,  # n=6 p75=4
+    "c19-wp13-debt-maturity-as-of": 3,  # n=6 p75=4
+    "quant-q06-sparse-cal": 3,  # n=6 p75=4
+    "hk-integration-seams": 3,  # n=6 p75=3
+    "product-experience-capture": 3,  # n=14 p75=4
+    "grey-deer-ew-forecast-reader": 3,  # n=6 p75=4
+    "rlt-rebalance-calendar-pulse": 3,  # n=6 p75=3
+    "aibrief-countdown-pr": 3,  # n=6 p75=3
+    "quant-q07-fitted-har-vol": 3,  # n=6 p75=3
+    "ric-w2-surface": 3,  # n=7 p75=4
+    "international-workspace-pure-js": 3,  # n=6 p75=3
+    "regwall-boundary": 3,  # n=6 p75=3
+    "quant-q12-parity-forward": 3,  # n=6 p75=4
+    "hk-context-chips": 3,  # n=6 p75=3
+    "hk-confirming-turn": 3,  # n=6 p75=3
+    "theme-research-shared-shell": 3,  # n=6 p75=4
+    "international-transmission-evidence": 3,  # n=6 p75=4
+    "p0b-receipt-closure": 3,  # n=14 p75=4
+    "admin-live-runs": 3,  # n=17 p75=3
+    "international-global-watch": 3,  # n=6 p75=3
+    "board-contradictions": 3,  # n=12 p75=268
+    "quant-q11-episode-duration": 3,  # n=6 p75=4
+    "quant-q08-cov-shrinkage": 3,  # n=6 p75=3
+    "retirement-nearzero": 3,  # n=4 p75=3
+    "site20-s4-chart-brief-js": 3,  # n=6 p75=3
+    "lens-tap-boundary": 3,  # n=7 p75=3
+    "sector-basket-links": 3,  # n=6 p75=4
+    "quant-q09-venue-concentration": 3,  # n=6 p75=3
+    "meta-ceo-fabric-contracts": 3,  # n=6 p75=3
+    "ric-d0-fed-path-provenance": 3,  # n=6 p75=3
+    "xguerrilla-identity-registry": 3,  # n=6 p75=3
+    "press-account-claim-consumer": 3,  # n=12 p75=3
+    "quant-q04-sign-uncertainty": 3,  # n=6 p75=3
+    "geo-enrich-credential-boundary": 3,  # n=6 p75=3
+    "company-intelligence-private-runtime": 3,  # n=6 p75=3
+    "quant-q14-horizon-vrp": 3,  # n=6 p75=3
+    "international-global-correction": 2,  # n=6 p75=3
+    "inflation-finite-outputs": 2,  # n=6 p75=2
+    "serving-observability": 2,  # n=6 p75=2
+    "conflict-markers": 2,  # n=17 p75=3
+    "prophet-us-b4-prereg-registration": 2,  # n=6 p75=2
+    "cycle-ontology-js": 2,  # n=17 p75=2
+    "cycles-payload-split": 2,  # n=6 p75=2
+    "xguerrilla-admission": 1,  # n=6 p75=2
+    # data-gated, retained from the 2026-08..10 measurements:
     "engine-render-guards": 875,
-    "express-render-guards": 150,
-    "attested-history-guards": 60,
-    # 2026-09-25 split of workflow-yaml. On a hosted pack (data-health run
-    # 36097809562, pack 1) the "hosted-runner packing contract" step took 1,122 s
-    # and the structure step 25 s (0.84x and 0.51x their local times). The later
-    # steps never ran there because the packing step failed first, so they are
-    # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
-    # render-lane contracts and the options/sparse suites: about 90 s including
-    # its data-stack install.
-    # 2026-11-04 (#917): ci-control-plane-contracts split three ways; hosted group
-    # timings from runs 41806511589 / 41803222742 (median of the two).
-    "ci-control-plane-contracts": 815,
-    "ci-control-plane-census": 530,
-    "ci-control-plane-structure": 150,
-    # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
-    # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
-    # These calibrate balancing only; install/checkout/queue are excluded.
-    # Evidence and sensitivity replay: research/ci_pack_throughput_20261019/.
-    "fif-kernel-guards": 1630,
-    "earnings-economic-dossier": 1070,
-    "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
-    "biocatalyst-worker": 274,
-    "biocatalyst-serving": 272,
     "flow-surface": 267,
-    "capital-structure-intelligence": 247,
     "marketing-engine": 250,
+    "capital-structure-intelligence": 247,
     "unrun-picks-boards": 245,
-    "biocatalyst-history": 172,
+    "express-render-guards": 150,
     "unrun-subsector-themes": 134,
     "inline-js": 124,
     "unrun-market-plumbing": 114,
-    "font-ui-defined": 96,
     "neural-web-core": 89,
     "capability-broker": 74,
     "validated-claims": 39,
-    "neural-web": 37,
     "hub-a11y": 37,
+    "neural-web": 37,
 }
 
 
@@ -1685,7 +2036,15 @@ def _job_weight(job_id: str, definition: dict[str, Any]) -> int:
     text = "\n".join(commands)
     # Explicit test paths correlate more closely with duration than line count.
     # Every command still costs at least one unit so static guards are balanced.
-    return max(1, len(commands) + text.count("tests/test_") * 2 + len(text) // 800)
+    # Coefficients refit 2026-11-11 against the 328 measured code jobs above:
+    # the old 1/2/1 form ranked jobs about as well (Spearman 0.73 vs 0.74) but
+    # summed to 5,761 s against 21,670 s measured and under-priced 62% of jobs,
+    # so a new job landed far lighter than the measured jobs it is packed with.
+    # 3/5/4 sums to 15,046 s and under-prices 21%.
+    return max(
+        1,
+        3 * len(commands) + text.count("tests/test_") * 5 + 4 * (len(text) // 800),
+    )
 
 
 def load_legacy_jobs(path: Path, *, gate: str | None = None) -> list[LegacyJob]:

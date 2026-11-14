@@ -14,12 +14,15 @@ records by value.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scripts import build_reports
 
 _PRODUCER = Path(__file__).resolve().parents[1] / "scripts" / "build_reports.py"
 _TAGS = [{"key": "macro", "en": "Macro", "zh": "宏观", "count": 2}]
@@ -122,3 +125,20 @@ def test_strip_span_is_bilingual():
     assert '<span class="l-en">span</span>' in head
     assert '<span class="l-zh">跨度</span>' in head
     assert "JUN 17" in span
+
+
+def test_published_archive_matches_the_editorial_index(tmp_path):
+    reports = sorted(build_reports.REPORTS, key=lambda report: report["date"], reverse=True)
+    build_reports.write_archive_manifest(tmp_path, reports)
+    path = Path("research/editorial-reports.json")
+    actual = (tmp_path / path).read_bytes()
+    site = Path(__file__).resolve().parents[1] / "site"
+    assert actual == (site / path).read_bytes()
+    manifest = json.loads(actual)
+    assert manifest["version"] == 1
+    assert len(manifest["reports"]) == len(reports)
+    for article, source in zip(manifest["reports"], reports, strict=True):
+        assert article == {key: source[key] for key in (
+            "slug", "date", "read_min", "title_en", "title_zh", "dek_en", "dek_zh", "tags"
+        )}
+        assert (site / (article["slug"] + ".html")).is_file()

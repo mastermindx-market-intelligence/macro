@@ -1,23 +1,22 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": -0.844,
+  "roro": -0.717,
   "cap_recent": true,
-  "fear_built": 0.741,
-  "roro_velocity": 0.657,
-  "vel_pctile": 0.992,
-  "legs_up": 2,
+  "fear_built": 0.739,
+  "roro_velocity": -0.216,
+  "vel_pctile": 0.137,
+  "legs_up": 1,
   "legs_total": 7,
   "flipped_legs": [
-    "vix",
-    "vix_term"
+    "hy_oas"
   ],
-  "days_since_last_snap": 13,
-  "fear_rebuilding": true,
-  "vix_term": 0.955,
-  "status": "building",
+  "days_since_last_snap": 17,
+  "fear_rebuilding": false,
+  "vix_term": 0.936,
+  "status": "dormant",
   "gates": {
-    "velocity": true,
+    "velocity": false,
     "legs": false,
     "fear": true,
     "washout": true
@@ -25,32 +24,10 @@
   "min_legs": 4,
   "flipped_legs_named": [
     {
-      "key": "vix",
-      "en": "VIX",
-      "zh": "\u6ce2\u52a8\u7387 VIX"
-    },
-    {
-      "key": "vix_term",
-      "en": "VIX term structure",
-      "zh": "VIX \u671f\u9650\u7ed3\u6784"
+      "key": "hy_oas",
+      "en": "HY credit spread",
+      "zh": "\u9ad8\u6536\u76ca\u4fe1\u7528\u5229\u5dee"
     }
   ],
-  "magnitude_band": null,
-  "veto": {
-    "schema": "regime_snap_veto.v1",
-    "is_context_only": true,
-    "lean": "unclear",
-    "confidence": "low",
-    "checks": {
-      "catalyst": "No legible structural or verbal catalyst for durable relief; the stated driver is an oil decline, while the headlines provide no signed deal, actual policy shift, or hard-data surprise explaining the snap.",
-      "premium": "Little fear premium appears unwound: only 2 of 7 legs have flipped, the snap is still building, and fear is rebuilding.",
-      "washout": "A real recent washout is indicated by capitulation present and elevated fear built, although the current move has not matured into a confirmed snap.",
-      "follow_through": "Follow-through looks doubtful because confirmation is confined to VIX and its term structure, with most cross-asset legs unconfirmed and fear rebuilding."
-    },
-    "read": "The setup comes out of a genuine washout, but the relief remains narrow and its catalyst is not legible. Without broader confirmation or a structural catalyst, next-session durability cannot be judged confidently.",
-    "model": "deepseek-v4-pro",
-    "generated_at": "2026-11-10T12:06:59.907388+00:00",
-    "degraded_reason": null,
-    "disclaimer": "AI durability read \u2014 context only, never scored or sized. The snap detector is coincident; this is a fallible judgement on whether the relief is structural or a dead-cat, not a trade recommendation."
-  }
+  "magnitude_band": null
 }

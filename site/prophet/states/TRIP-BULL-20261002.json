@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TRIP-BULL-20261002",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 18.4,
@@ -14,17 +14,17 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": -4.41,
+    "dist_to_stop_r": -3.55,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -3.6064,
-    "p2": -1.8032,
+    "horizon_pct_used": 95.6,
+    "p1": -3.0332,
+    "p2": -1.5166,
     "p3": null,
-    "move_r": -5.41,
+    "move_r": -4.55,
     "mfe_r": 4.156,
     "mae_r": -5.41
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-03",
   "_first_t1_ts": "2026-10-09",
   "_first_t2_ts": "2026-10-20",
-  "days_elapsed": 38,
-  "tau": 0.8444,
+  "days_elapsed": 43,
+  "tau": 0.9556,
   "closed": true,
   "outcome": "T1_HIT"
 }

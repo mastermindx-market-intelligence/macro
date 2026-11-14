@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-14",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -38,20 +38,20 @@
   },
   "family": "pss_cd1_correlation_dispersion_prospective",
   "gate_open": true,
-  "generated_utc": "2026-11-10T11:14:31.294596+00:00",
+  "generated_utc": "2026-11-14T08:08:34.471503+00:00",
   "ledger": {
-    "advanced_today": 0,
-    "appended_today": 0,
+    "advanced_today": 1,
+    "appended_today": 4,
     "crowding_hazard": 3,
     "earliest_action": "2026-08-04",
-    "events": 105,
-    "latest_action": "2026-11-06",
-    "matured": 11,
-    "mixed_diagnostic": 59,
+    "events": 111,
+    "latest_action": "2026-11-13",
+    "matured": 12,
+    "mixed_diagnostic": 65,
     "primary_events": 46,
     "rejected_pre_cutoff_today": 0,
     "uncrowded_control": 43,
-    "ungraded": 94
+    "ungraded": 99
   },
   "manifest_sha256": "4bb7383cc48dfc11a92061a778225107490971213b5f29abb70ae573ceeaf242",
   "membership_sha256": "f00c9d70e0c554213d6aa9a82fecc1492bcedc49c04ce36d4a14647f85713baf",
@@ -60,9 +60,11 @@
   "program_id": "PSS-CD1",
   "registration_ok": true,
   "scan_census": {
-    "derived_events": 0,
-    "eligible_future_rh1_sources": 0,
-    "reasons": {}
+    "derived_events": 4,
+    "eligible_future_rh1_sources": 4,
+    "reasons": {
+      "group_mixed_diagnostic": 4
+    }
   },
   "schema": "personality_crowding_hazard.state/v1",
   "status": "prospective_accrual_only"

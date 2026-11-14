@@ -628,6 +628,31 @@ def _hermetic_master_brain_reply_cache(request, monkeypatch):
 
 
 # --------------------------------------------------------------------------- #
+# FABRIC_ROUTER_TOKEN is LIVE OPERATOR STATE — the M2 render host exports it so
+# the nightly brief can reach the Capacity Fabric router on loopback.
+#
+# engine/master_brain.py::_call_model routes the BRIEF WRITER through
+# lib.fabric_client whenever that token is present (Chairman order 2026-11-12).
+# A developer shell or a self-hosted runner that exports it would therefore flip
+# every existing brief test onto the fabric branch, bypassing the
+# `build_providers` stubs those tests install — measured 2026-11-12:
+# test_master_brain_ladder.py::test_synthesize_records_served_by_and_serving_model
+# went red with the token exported and green without it. Same failure mode as
+# the marketing overrides above: unit tests must assert what the CODE does,
+# never which router the operator happened to have configured.
+#
+# Only the ENV VAR is neutralized. Tests that exercise the cutover monkeypatch
+# lib.fabric_client.is_configured / .complete directly (the seam the code reads),
+# so they are unaffected and stay hermetic.
+# --------------------------------------------------------------------------- #
+@pytest.fixture(autouse=True)
+def _hermetic_fabric_router_token(monkeypatch):
+    monkeypatch.delenv("FABRIC_ROUTER_TOKEN", raising=False)
+    monkeypatch.delenv("FABRIC_ROUTER_BASE_URL", raising=False)
+    yield
+
+
+# --------------------------------------------------------------------------- #
 # data/marketing/account_overrides.json is LIVE OPERATOR STATE — the admin
 # panel's per-account ARM/DISARM toggle commits it straight to main. Unit tests
 # must assert what the CODE does, never which desks the operator happened to

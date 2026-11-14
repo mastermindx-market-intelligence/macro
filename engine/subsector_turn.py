@@ -70,8 +70,11 @@ way from excess returns) supply those preconditions, so a theme whose leadership
 three months ago can be read as rolling over even while its price grinds sideways.
 
 Breadth is measured from member horizon returns (``member_perf``, ~1.0 median coverage of
-the 941-name universe) and is a *today-only* measurement — member perf is deliberately not
-archived, so breadth cannot be replayed. A turn where 8 of 10 members pull away from the
+the 941-name universe). This engine measures it for TODAY only — it does not replay member
+history — but an archive now exists (``data/themes_heatmap/member_perf_archive/``, one
+compressed file per session, first date 2026-11-11), so breadth inside a group can be
+studied historically offline; no earlier member history exists. A turn where 8 of 10
+members pull away from the
 tape is a rotation; one where a single name carries the magnitude is disclosed as
 ``concentrated`` — shown, not punished.
 
@@ -359,7 +362,7 @@ def _noise_w(paces: Mapping[str, float | None], vol_w: float | None) -> tuple[fl
     return PARAMS["noise_floor_w"], "floor"
 
 
-# ── 3. breadth from member horizon returns (today only — never replayed) ─────────
+# ── 3. breadth from member horizon returns (measured today; archived since 2026-11-11) ──
 def member_breadth(members: Iterable[str],
                    member_perf: Mapping[str, Mapping[str, float | None]],
                    market_pace: Mapping[str, float | None] | None = None) -> dict | None:

@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+    "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "ca",
@@ -16084,33 +16084,5 @@
       "screenshot_width": 390,
       "pass": true
     }
-  ],
-  "source_composition": {
-    "recorded_at": "2026-11-07",
-    "kind": "metadata_only",
-    "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
-    "source_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-      "git_blob_sha": "276d8eba684549179b5ee5b8ea26cfb5b54c823f",
-      "sha256": "513c2cbbfda1e44f02fa598e39d9e6252b0e52fc8974df8313d1cf2505346727"
-    },
-    "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
-    "captured_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
-    },
-    "captured_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
-    },
-    "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
-    "current_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
-    },
-    "current_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
-    },
-    "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
-    "new_browser_execution": false
-  }
+  ]
 }

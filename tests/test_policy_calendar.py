@@ -32,6 +32,7 @@ from engine.policy_calendar import (
     _compute_entity_list_events,
     _compute_latency,
     compute_policy_calendar,
+    format_policy_reg_chip,
 )
 
 
@@ -160,6 +161,7 @@ def test_forward_dating_excludes_past(tmp_path, monkeypatch):
     # the REAL data/foresight ledger — it did once: the committed
     # 2026-07-04T00:30:49Z solar row is this fixture.
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
 
     today = date(2026, 7, 3)
     past_date = "2026-07-01"   # 2 days ago
@@ -243,7 +245,7 @@ def test_entity_list_precision():
 # 6. Stage byte-identical regression: policy_reg present vs absent
 # ---------------------------------------------------------------------------
 
-def test_stage_byte_identical_with_policy_reg():
+def test_stage_byte_identical_with_policy_reg(tmp_path, monkeypatch):
     """compute_foresight_cascade with policy_reg present vs absent must produce
     byte-identical stage, bottleneck_band, revision_breadth, and glut_band fields
     for every theme row.
@@ -251,6 +253,11 @@ def test_stage_byte_identical_with_policy_reg():
     This verifies that policy_reg NEVER changes cascade stages (only rationale text).
     """
     from engine.foresight_cascade import compute_foresight_cascade
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path / "data")
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    monkeypatch.delenv("US_LANE", raising=False)
 
     # Minimal synthetic inputs — avoid any real file IO
     synthetic_bottleneck = {
@@ -363,3 +370,109 @@ def test_latency_no_equal_fixture():
     would not catch a wrong-basket assignment bug. This test asserts the fixture creates
     genuinely different values — 180 != 540."""
     assert 180 != 540, "fixture sanity: latency values must differ"
+
+# Effective dates and comment deadlines are separate source facts.
+@pytest.fixture
+def effective_calendar(monkeypatch):
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    monkeypatch.delenv("US_LANE", raising=False)
+
+    def compute(rows):
+        frame = _make_df(rows)
+        before = frame.copy(deep=True)
+        result = compute_policy_calendar(frame, today=date(2026, 11, 2))
+        pd.testing.assert_frame_equal(frame, before)
+        return result
+
+    return compute
+
+
+def _effective_doc(number, effective_on, *, comments_close="2026-11-20",
+                   stage="final_rule"):
+    return dict(_doc(number, "solar", stage, "2026-10-01",
+                     comments_close_on=comments_close), effective_on=effective_on)
+
+
+def test_effective_date_is_distinct_from_comment_deadline(effective_calendar):
+    result = effective_calendar([_effective_doc("DISTINCT", "2026-12-15")])
+    row = result["themes"]["solar"]
+    assert (row["next_comment_close_date"], row["days_to_next_comment_close"]) == ("2026-11-20", 18)
+    assert (row["next_rule_effective_date"], row["days_to_next_rule_effective"]) == ("2026-12-15", 43)
+    chip = format_policy_reg_chip(row, "solar")
+    assert "comment close in 18d (2026-11-20)" in chip["summary"]
+    assert "rule effective in 43d (2026-12-15)" in chip["summary"]
+    assert chip["next_rule_effective_date"] == "2026-12-15"
+    assert chip["next_rule_effective_title"] == row["next_rule_effective_title"]
+    assert [(e["date"], e["event_type"], e["document_number"]) for e in result["upcoming_events"]] == [
+        ("2026-11-20", "comment_close", "DISTINCT")
+    ]
+    assert "proxy" not in result["note"]
+
+
+@pytest.mark.parametrize("comment_close", [None, "", "2026-10-15"])
+def test_effective_date_does_not_require_future_comment_close(effective_calendar, comment_close):
+    result = effective_calendar([_effective_doc("EFFECTIVE", "2026-12-15",
+                                                comments_close=comment_close)])
+    row = result["themes"]["solar"]
+    assert row["days_to_next_rule_effective"] == 43
+    assert row["next_rule_effective_date"] == "2026-12-15"
+    assert row["days_to_next_comment_close"] is None
+    assert result["upcoming_events"] == []
+
+
+@pytest.mark.parametrize("invalid", [
+    None, "", "unknown", "2026-02-30", "2026-13-01", "20261215",
+    "2026-W51-2", "2026-12-15T00:00:00Z", 20261215, True, float("nan"),
+])
+def test_invalid_effective_date_stays_unknown(effective_calendar, invalid):
+    result = effective_calendar([_effective_doc("INVALID", invalid)])
+    row = result["themes"]["solar"]
+    assert row["next_rule_effective_date"] is None
+    assert row["next_rule_effective_title"] is None
+    assert row["days_to_next_rule_effective"] is None
+    assert row["days_to_next_comment_close"] == 18
+    assert "rule effective" not in format_policy_reg_chip(row, "solar")["summary"]
+
+
+def test_legacy_tape_without_effective_column_stays_unknown(effective_calendar):
+    result = effective_calendar([
+        _doc("LEGACY", "solar", "final_rule", "2026-10-01", comments_close_on="2026-11-20")
+    ])
+    row = result["themes"]["solar"]
+    assert row["next_rule_effective_date"] is None
+    assert row["days_to_next_rule_effective"] is None
+    assert row["next_comment_close_date"] == "2026-11-20"
+
+
+def test_effective_candidates_use_their_own_valid_dates_and_preserve_stage(effective_calendar):
+    result = effective_calendar([
+        _effective_doc("LATER", "2026-12-20", comments_close="2026-11-03"),
+        _effective_doc("EARLIER", "2026-12-15", comments_close="2026-12-01"),
+        _effective_doc("MALFORMED", "2026-11-00", comments_close="2026-11-04"),
+        _effective_doc("PAST", "2026-10-30"),
+        _effective_doc("PROPOSAL", "2026-11-05", stage="proposed_rule"),
+        _effective_doc("INTERIM", "2026-11-06", stage="interim_final_rule"),
+    ])
+    row = result["themes"]["solar"]
+    assert row["next_rule_effective_date"] == "2026-12-15"
+    assert row["next_rule_effective_title"] == "Title for EARLIER"
+    assert row["next_comment_close_date"] == "2026-11-03"
+    events = {e["document_number"]: e for e in result["upcoming_events"]}
+    assert events["PROPOSAL"]["reg_stage"] == "proposed_rule"
+    assert events["INTERIM"]["reg_stage"] == "interim_final_rule"
+
+
+def test_effective_today_is_zero_and_past_effective_is_excluded(effective_calendar):
+    today_result = effective_calendar([_effective_doc("TODAY", "2026-11-02")])
+    assert today_result["themes"]["solar"]["days_to_next_rule_effective"] == 0
+    past_result = effective_calendar([_effective_doc("PAST", "2026-11-01")])
+    assert past_result["themes"]["solar"]["next_rule_effective_date"] is None
+
+
+def test_equal_deadlines_keep_both_meanings_in_chip(effective_calendar):
+    result = effective_calendar([_effective_doc("SAME-DAY", "2026-11-20")])
+    chip = format_policy_reg_chip(result["themes"]["solar"], "solar")
+    assert "comment close in 18d (2026-11-20)" in chip["summary"]
+    assert "rule effective in 18d (2026-11-20)" in chip["summary"]
+
+

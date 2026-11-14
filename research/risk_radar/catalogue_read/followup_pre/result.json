@@ -1,0 +1,590 @@
+{
+ "id": "rr-roff-confluence-k3-followup",
+ "label": "selected after seeing D; decisive PRE read; next: desk attack seat; forward candidate only (no hold-out)",
+ "pins": {
+  "start": {
+   "bm_ref.py": "c5130e9e2f80c9da3ff85d66a9f3070367f02e71c10d3e411205a97f12a9f066",
+   "adapter.py": "504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1"
+  },
+  "end": {
+   "bm_ref.py": "c5130e9e2f80c9da3ff85d66a9f3070367f02e71c10d3e411205a97f12a9f066",
+   "adapter.py": "504257977843e0894a97ed53415475eab76d8fc91fa9fc9cb0bbdcb9d24929c1"
+  }
+ },
+ "scorer_module": "<desk>/pivot/radar_eval/engine/risk_radar_eval/pivots.py",
+ "window": {
+  "start": "2006-01-03",
+  "end": "2019-12-31",
+  "pre": 21,
+  "post": 5,
+  "k": 3,
+  "n_draws": 2000,
+  "seed": 20261112,
+  "tol": 0.01,
+  "min_off": 10,
+  "dry": false
+ },
+ "series": [
+  "BAA_10Y",
+  "CYC/DEF",
+  "DIA",
+  "EEM/SPY",
+  "HYG/IEF",
+  "HY_OAS",
+  "IGV/EWDEF",
+  "IWM",
+  "IWM/SPY",
+  "MDY",
+  "QQQ",
+  "QQQ/EWDEF",
+  "RSP",
+  "RSP/SPY",
+  "RSPT/EWDEF",
+  "SMH/EWDEF",
+  "SPHB/SPLV",
+  "SPY",
+  "SPY/GLD",
+  "SPY/TLT",
+  "XLK/EWDEF"
+ ],
+ "turns": {
+  "n": 472,
+  "min": "2006-01-11",
+  "max": "2019-12-31"
+ },
+ "clusters": {
+  "n": 127,
+  "flagged": 57,
+  "min_turn_date": "2006-01-11",
+  "max_turn_date": "2019-12-20"
+ },
+ "candidate": {
+  "turns_scored": 471,
+  "turns_flagged": 198,
+  "turn_share": 0.4204,
+  "turn_share_ci90": [
+   0.382,
+   0.459
+  ],
+  "clusters_scored": 127,
+  "clusters_flagged": 57,
+  "cluster_share": 0.4488,
+  "cluster_share_ci90": [
+   0.374,
+   0.526
+  ],
+  "median_delay": -12.0,
+  "censored": 1,
+  "false_per_asset_year": 2.9264,
+  "alert_budget": 0.18373387954269568,
+  "_runtime_s": 0.0
+ },
+ "references": {
+  "dd": {
+   "turns_scored": 471,
+   "turns_flagged": 49,
+   "turn_share": 0.104,
+   "turn_share_ci90": [
+    0.082,
+    0.13
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 28,
+   "cluster_share": 0.2205,
+   "cluster_share_ci90": [
+    0.161,
+    0.29
+   ],
+   "median_delay": -14.0,
+   "censored": 1,
+   "false_per_asset_year": 0.7116,
+   "alert_budget": 0.18393829540656753,
+   "_runtime_s": 0.7
+  },
+  "near": {
+   "turns_scored": 471,
+   "turns_flagged": 96,
+   "turn_share": 0.2038,
+   "turn_share_ci90": [
+    0.174,
+    0.237
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 41,
+   "cluster_share": 0.3228,
+   "cluster_share_ci90": [
+    0.254,
+    0.398
+   ],
+   "median_delay": -10.0,
+   "censored": 1,
+   "false_per_asset_year": 2.9507,
+   "alert_budget": 0.18378794601742637,
+   "_runtime_s": 0.7
+  }
+ },
+ "reference_match": {
+  "dd": {
+   "x": {
+    "BAA_10Y": 0.6347402597402599,
+    "CYC/DEF": 0.3526962650689854,
+    "DIA": 0.13145992395207776,
+    "EEM/SPY": 0.5822754469911647,
+    "HYG/IEF": 0.16909288675831127,
+    "HY_OAS": 0.8185151237396885,
+    "IGV/EWDEF": 0.34247341195145803,
+    "IWM": 0.16875681770331177,
+    "IWM/SPY": 0.1428361488580571,
+    "MDY": 0.12995314644953085,
+    "QQQ": 0.6191521987052423,
+    "QQQ/EWDEF": 0.7530638435681218,
+    "RSP": 0.1493580165239358,
+    "RSP/SPY": 0.0627404439201671,
+    "RSPT/EWDEF": 0.28150040653037306,
+    "SMH/EWDEF": 0.828411400460803,
+    "SPHB/SPLV": 0.2886819271675039,
+    "SPY": 0.1663390752208014,
+    "SPY/GLD": 0.6443533715500146,
+    "SPY/TLT": 0.416215235395693,
+    "XLK/EWDEF": 0.7668504004860827
+   },
+   "achieved_share": {
+    "BAA_10Y": 0.18762418393414704,
+    "CYC/DEF": 0.18284424379232506,
+    "DIA": 0.18284424379232506,
+    "EEM/SPY": 0.18284424379232506,
+    "HYG/IEF": 0.19750390015600625,
+    "HY_OAS": 0.18127381600435494,
+    "IGV/EWDEF": 0.18284424379232506,
+    "IWM": 0.18284424379232506,
+    "IWM/SPY": 0.18284424379232506,
+    "MDY": 0.18284424379232506,
+    "QQQ": 0.18284424379232506,
+    "QQQ/EWDEF": 0.18284424379232506,
+    "RSP": 0.18284424379232506,
+    "RSP/SPY": 0.18284424379232506,
+    "RSPT/EWDEF": 0.19135429262394196,
+    "SMH/EWDEF": 0.18284424379232506,
+    "SPHB/SPLV": 0.1794401101422671,
+    "SPY": 0.18284424379232506,
+    "SPY/GLD": 0.18284424379232506,
+    "SPY/TLT": 0.18284424379232506,
+    "XLK/EWDEF": 0.18284424379232506
+   },
+   "target_budget": {
+    "BAA_10Y": 0.18251490207209764,
+    "CYC/DEF": 0.18284424379232506,
+    "DIA": 0.18284424379232506,
+    "EEM/SPY": 0.18284424379232506,
+    "HYG/IEF": 0.19750390015600625,
+    "HY_OAS": 0.18209036472509527,
+    "IGV/EWDEF": 0.18284424379232506,
+    "IWM": 0.18284424379232506,
+    "IWM/SPY": 0.18284424379232506,
+    "MDY": 0.18284424379232506,
+    "QQQ": 0.18284424379232506,
+    "QQQ/EWDEF": 0.18284424379232506,
+    "RSP": 0.18284424379232506,
+    "RSP/SPY": 0.18284424379232506,
+    "RSPT/EWDEF": 0.19135429262394196,
+    "SMH/EWDEF": 0.18284424379232506,
+    "SPHB/SPLV": 0.1794401101422671,
+    "SPY": 0.18284424379232506,
+    "SPY/GLD": 0.18284424379232506,
+    "SPY/TLT": 0.18284424379232506,
+    "XLK/EWDEF": 0.18284424379232506
+   }
+  },
+  "near": {
+   "x": {
+    "BAA_10Y": 0.4724025974025975,
+    "CYC/DEF": 0.19942267042024375,
+    "DIA": 0.002388418268330361,
+    "EEM/SPY": 0.04561555857829491,
+    "HYG/IEF": 0.022736684117507844,
+    "HY_OAS": 0.6526122823098075,
+    "IGV/EWDEF": 0.18249275002269427,
+    "IWM": 0.010416672227763102,
+    "IWM/SPY": 0.04859872900647888,
+    "MDY": 0.005645244008938066,
+    "QQQ": 0.019636867019333093,
+    "QQQ/EWDEF": 0.6744138918929459,
+    "RSP": 0.0034721277608060763,
+    "RSP/SPY": 0.006603686293941369,
+    "RSPT/EWDEF": 0.09680846071148819,
+    "SMH/EWDEF": 0.7417885652639921,
+    "SPHB/SPLV": 0.13558030126097975,
+    "SPY": 0.0029117939797774772,
+    "SPY/GLD": 0.14638427539017262,
+    "SPY/TLT": 0.056972931492424106,
+    "XLK/EWDEF": 0.7262804007139101
+   },
+   "achieved_share": {
+    "BAA_10Y": 0.18365029804144195,
+    "CYC/DEF": 0.18284424379232506,
+    "DIA": 0.18284424379232506,
+    "EEM/SPY": 0.18284424379232506,
+    "HYG/IEF": 0.19750390015600625,
+    "HY_OAS": 0.18209036472509527,
+    "IGV/EWDEF": 0.18284424379232506,
+    "IWM": 0.18284424379232506,
+    "IWM/SPY": 0.18284424379232506,
+    "MDY": 0.18284424379232506,
+    "QQQ": 0.18284424379232506,
+    "QQQ/EWDEF": 0.18284424379232506,
+    "RSP": 0.18284424379232506,
+    "RSP/SPY": 0.18284424379232506,
+    "RSPT/EWDEF": 0.19135429262394196,
+    "SMH/EWDEF": 0.18284424379232506,
+    "SPHB/SPLV": 0.1794401101422671,
+    "SPY": 0.18284424379232506,
+    "SPY/GLD": 0.18284424379232506,
+    "SPY/TLT": 0.18284424379232506,
+    "XLK/EWDEF": 0.18284424379232506
+   },
+   "target_budget": {
+    "BAA_10Y": 0.18251490207209764,
+    "CYC/DEF": 0.18284424379232506,
+    "DIA": 0.18284424379232506,
+    "EEM/SPY": 0.18284424379232506,
+    "HYG/IEF": 0.19750390015600625,
+    "HY_OAS": 0.18209036472509527,
+    "IGV/EWDEF": 0.18284424379232506,
+    "IWM": 0.18284424379232506,
+    "IWM/SPY": 0.18284424379232506,
+    "MDY": 0.18284424379232506,
+    "QQQ": 0.18284424379232506,
+    "QQQ/EWDEF": 0.18284424379232506,
+    "RSP": 0.18284424379232506,
+    "RSP/SPY": 0.18284424379232506,
+    "RSPT/EWDEF": 0.19135429262394196,
+    "SMH/EWDEF": 0.18284424379232506,
+    "SPHB/SPLV": 0.1794401101422671,
+    "SPY": 0.18284424379232506,
+    "SPY/GLD": 0.18284424379232506,
+    "SPY/TLT": 0.18284424379232506,
+    "XLK/EWDEF": 0.18284424379232506
+   }
+  }
+ },
+ "better_reference": "near",
+ "placebo_p90": {
+  "kind": "top",
+  "near": "high",
+  "post": 5,
+  "n_draws": 2000,
+  "n_valid_draws": 2000,
+  "observed_cluster_share": 0.4488,
+  "placebo_mean": 0.36024529999999994,
+  "placebo_median": 0.3622,
+  "p90": 0.3701,
+  "_runtime_s": 347.4
+ },
+ "singles": {
+  "credit_oas_roc": {
+   "turns_scored": 471,
+   "turns_flagged": 116,
+   "turn_share": 0.2463,
+   "turn_share_ci90": [
+    0.214,
+    0.281
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 35,
+   "cluster_share": 0.2756,
+   "cluster_share_ci90": [
+    0.211,
+    0.348
+   ],
+   "median_delay": -15.0,
+   "censored": 1,
+   "false_per_asset_year": 1.3886,
+   "alert_budget": 0.13528859597183263,
+   "_runtime_s": 0.0
+  },
+  "credit_hyg_tlt": {
+   "turns_scored": 471,
+   "turns_flagged": 96,
+   "turn_share": 0.2038,
+   "turn_share_ci90": [
+    0.174,
+    0.237
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 36,
+   "cluster_share": 0.2835,
+   "cluster_share_ci90": [
+    0.218,
+    0.357
+   ],
+   "median_delay": -15.0,
+   "censored": 1,
+   "false_per_asset_year": 1.8433,
+   "alert_budget": 0.09508544797635123,
+   "_runtime_s": 0.1
+  },
+  "rates_move": {
+   "turns_scored": 471,
+   "turns_flagged": 122,
+   "turn_share": 0.259,
+   "turn_share_ci90": [
+    0.226,
+    0.294
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 26,
+   "cluster_share": 0.2047,
+   "cluster_share_ci90": [
+    0.148,
+    0.273
+   ],
+   "median_delay": -12.5,
+   "censored": 1,
+   "false_per_asset_year": 1.2081,
+   "alert_budget": 0.11465970565641208,
+   "_runtime_s": 0.0
+  },
+  "rates_realrate": {
+   "turns_scored": 471,
+   "turns_flagged": 380,
+   "turn_share": 0.8068,
+   "turn_share_ci90": [
+    0.774,
+    0.836
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 101,
+   "cluster_share": 0.7953,
+   "cluster_share_ci90": [
+    0.727,
+    0.852
+   ],
+   "median_delay": -11.0,
+   "censored": 1,
+   "false_per_asset_year": 4.9745,
+   "alert_budget": 0.09713744086984417,
+   "_runtime_s": 0.1
+  },
+  "bubble_ext": {
+   "turns_scored": 471,
+   "turns_flagged": 86,
+   "turn_share": 0.1826,
+   "turn_share_ci90": [
+    0.154,
+    0.214
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 30,
+   "cluster_share": 0.2362,
+   "cluster_share_ci90": [
+    0.175,
+    0.306
+   ],
+   "median_delay": -5.0,
+   "censored": 1,
+   "false_per_asset_year": 2.5619,
+   "alert_budget": 0.1266814611357096,
+   "_runtime_s": 0.1
+  },
+  "bubble_leadership": {
+   "turns_scored": 471,
+   "turns_flagged": 139,
+   "turn_share": 0.2951,
+   "turn_share_ci90": [
+    0.261,
+    0.332
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 42,
+   "cluster_share": 0.3307,
+   "cluster_share_ci90": [
+    0.262,
+    0.406
+   ],
+   "median_delay": -16.0,
+   "censored": 1,
+   "false_per_asset_year": 2.916,
+   "alert_budget": 0.12650219950360056,
+   "_runtime_s": 0.1
+  },
+  "growth_defensives": {
+   "turns_scored": 471,
+   "turns_flagged": 95,
+   "turn_share": 0.2017,
+   "turn_share_ci90": [
+    0.172,
+    0.235
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 40,
+   "cluster_share": 0.315,
+   "cluster_share_ci90": [
+    0.247,
+    0.389
+   ],
+   "median_delay": -15.0,
+   "censored": 1,
+   "false_per_asset_year": 1.9058,
+   "alert_budget": 0.10911118183043805,
+   "_runtime_s": 0.1
+  },
+  "growth_cyc_def": {
+   "turns_scored": 471,
+   "turns_flagged": 110,
+   "turn_share": 0.2335,
+   "turn_share_ci90": [
+    0.202,
+    0.268
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 47,
+   "cluster_share": 0.3701,
+   "cluster_share_ci90": [
+    0.299,
+    0.446
+   ],
+   "median_delay": -8.5,
+   "censored": 1,
+   "false_per_asset_year": 2.0724,
+   "alert_budget": 0.1076961291059402,
+   "_runtime_s": 0.1
+  },
+  "vol_term": {
+   "turns_scored": 471,
+   "turns_flagged": 66,
+   "turn_share": 0.1401,
+   "turn_share_ci90": [
+    0.114,
+    0.169
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 38,
+   "cluster_share": 0.2992,
+   "cluster_share_ci90": [
+    0.233,
+    0.373
+   ],
+   "median_delay": -8.0,
+   "censored": 1,
+   "false_per_asset_year": 1.8051,
+   "alert_budget": 0.060293943114079394,
+   "_runtime_s": 0.1
+  },
+  "global_breadth": {
+   "turns_scored": 471,
+   "turns_flagged": 104,
+   "turn_share": 0.2208,
+   "turn_share_ci90": [
+    0.19,
+    0.255
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 27,
+   "cluster_share": 0.2126,
+   "cluster_share_ci90": [
+    0.155,
+    0.281
+   ],
+   "median_delay": -10.5,
+   "censored": 1,
+   "false_per_asset_year": 1.4024,
+   "alert_budget": 0.35689407923365146,
+   "_runtime_s": 0.0
+  },
+  "jpy_carry": {
+   "turns_scored": 471,
+   "turns_flagged": 217,
+   "turn_share": 0.4607,
+   "turn_share_ci90": [
+    0.422,
+    0.5
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 67,
+   "cluster_share": 0.5276,
+   "cluster_share_ci90": [
+    0.451,
+    0.603
+   ],
+   "median_delay": -14.0,
+   "censored": 1,
+   "false_per_asset_year": 3.4749,
+   "alert_budget": 0.11207548069429642,
+   "_runtime_s": 0.1
+  },
+  "corr_floor_break": {
+   "turns_scored": 471,
+   "turns_flagged": 17,
+   "turn_share": 0.0361,
+   "turn_share_ci90": [
+    0.023,
+    0.054
+   ],
+   "clusters_scored": 127,
+   "clusters_flagged": 11,
+   "cluster_share": 0.0866,
+   "cluster_share_ci90": [
+    0.049,
+    0.139
+   ],
+   "median_delay": 2.0,
+   "censored": 1,
+   "false_per_asset_year": 0.5693,
+   "alert_budget": 0.01767087914245256,
+   "_runtime_s": 0.0
+  }
+ },
+ "best_single": "rates_realrate",
+ "verdict": {
+  "a": true,
+  "b": true,
+  "c": false,
+  "criteria_met": [
+   "a",
+   "b"
+  ],
+  "nomination": false
+ },
+ "alert_share_by_year": {
+  "2006": 0.0598,
+  "2007": 0.3147,
+  "2008": 0.5692,
+  "2009": 0.0635,
+  "2010": 0.0119,
+  "2011": 0.1627,
+  "2012": 0.052,
+  "2013": 0.0238,
+  "2014": 0.3095,
+  "2015": 0.3175,
+  "2016": 0.1865,
+  "2017": 0.0,
+  "2018": 0.3147,
+  "2019": 0.1865
+ },
+ "available_legs_by_year": {
+  "2006": 10.0,
+  "2007": 10.0,
+  "2008": 10.66,
+  "2009": 11.0,
+  "2010": 11.0,
+  "2011": 11.0,
+  "2012": 12.0,
+  "2013": 12.0,
+  "2014": 12.0,
+  "2015": 12.0,
+  "2016": 12.0,
+  "2017": 12.0,
+  "2018": 12.0,
+  "2019": 12.0
+ },
+ "deviations": [
+  "bm_ref.build_context hard-codes block='D' via _family_rows, so turns_in_window(build_context(...)['turns'], 2006, 2019) would be empty. The PRE context is built directly: A.select(..., block='PRE') on the catalogue truncated at 2019-12-31, swing episodes from the same truncated rows, bm_ref.build_turns + turns_in_window.",
+  "bm_ref.reference_result does not forward start_d/end_d; build_reference + score_alerts are called directly with start_d=2006-01-03, end_d=2019-12-31.",
+  "Episodes are built from catalogue rows truncated at 2019-12-31, so no post-2019 trough or recovery can define an in-episode span (the PRE analogue of the catalogue's own 2023-12-29 truncation).",
+  "The alert is built on the engine's SPY-session calendar and reindexed onto each series' own level index with method='ffill' (r1g/v2 windowing).",
+  "score_alerts bounds outcomes_through at the adapter's END_D (2023-12-29); the bound is inert here because every scored alert, turn, price and episode date is <= 2019-12-31 (asserted).",
+  "Two-phase import fix: Macro's `engine` is purged and the Macro root + cwd are dropped from sys.path before the desk kit loads, so pivots resolves under the desk (the dead worker's run had it resolving to the worktree copy).",
+  "The window's first 21 sessions precede 2006-01-03, so the FRED legs there are the engine's pre-start (one-session-shifted) values, not the PIT replay, which begins 2006-01-03 per the ledger row."
+ ],
+ "runtime_s": 358.5
+}

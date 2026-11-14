@@ -110,3 +110,11 @@
 {"run_date": "2026-11-09", "degraded": true, "produced_at": "2026-11-09T10:19:40.116727+00:00", "reasons_count": 14}
 {"run_date": "2026-11-10", "degraded": true, "produced_at": "2026-11-10T12:27:11.109594+00:00", "reasons_count": 18}
 {"run_date": "2026-11-10", "degraded": true, "produced_at": "2026-11-10T14:59:54.211444+00:00", "reasons_count": 18}
+{"run_date": "2026-11-11", "degraded": true, "produced_at": "2026-11-11T11:41:13.855944+00:00", "reasons_count": 21}
+{"run_date": "2026-11-11", "degraded": true, "produced_at": "2026-11-11T12:52:20.946671+00:00", "reasons_count": 21}
+{"run_date": "2026-11-12", "degraded": true, "produced_at": "2026-11-12T11:56:15.920157+00:00", "reasons_count": 23}
+{"run_date": "2026-11-12", "degraded": true, "produced_at": "2026-11-12T14:03:30.073713+00:00", "reasons_count": 21}
+{"run_date": "2026-11-13", "degraded": true, "produced_at": "2026-11-13T11:11:13.696505+00:00", "reasons_count": 16}
+{"run_date": "2026-11-13", "degraded": true, "produced_at": "2026-11-13T14:38:41.977431+00:00", "reasons_count": 12}
+{"run_date": "2026-11-14", "degraded": true, "produced_at": "2026-11-14T11:07:36.380163+00:00", "reasons_count": 18}
+{"run_date": "2026-11-14", "degraded": true, "produced_at": "2026-11-14T11:59:13.585134+00:00", "reasons_count": 16}

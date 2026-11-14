@@ -55,3 +55,19 @@ is not critical, or a forbidden key or word. Editing any pinned input changes it
 and fails the CI comparison. Once GLM output exists, a change means a new
 `registration_version` with a DEC record that says why; the committed file is never
 regenerated in place to match new inputs.
+
+## Report
+
+`engine/news_impact/section11_report.py` (ni-section11-report-1) assembles the section 11
+quality/cost report from this registration and one scratch inputs file:
+
+    python -m engine.news_impact.section11_report --inputs <scratch json> --out <scratch path>
+
+It refuses unless the loaded code matches every registered component
+(`require_registered_implementation`) and the a3 endpoints sha256 matches the registry.
+The inputs file carries `sut_rows` (case_id, construction, disposition, novelty,
+quantities by critical field), `gold_slots` (case_id, field, status agreed /
+adjudicated / null_printed, quantity, null_reason), `case_groups`, `case_issuers`,
+`routing_items`, `transfer_items`, `costs`, `gold_calibration` and `w2_extraction`.
+Every value stays in scratch; the report prints counts, rates, intervals, enums, ids and
+null reasons only, and `--out` is never overwritten.

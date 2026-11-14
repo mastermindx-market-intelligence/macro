@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "FUL-BULL-20261016",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 37.6,
-  "raw_confidence": 35.8,
-  "delta_vs_base": -22.4,
+  "management_confidence": 31.5,
+  "raw_confidence": 28.2,
+  "delta_vs_base": -28.5,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 66.2,
+    "validity": 44.5,
     "progress": 0.0,
-    "pace": 24.9,
+    "pace": 8.2,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.737,
+    "dist_to_stop_r": 0.549,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 42.2,
-    "p1": -0.1754,
-    "p2": -0.0877,
+    "horizon_pct_used": 53.3,
+    "p1": -0.3004,
+    "p2": -0.1502,
     "p3": null,
-    "move_r": -0.263,
+    "move_r": -0.451,
     "mfe_r": 0.245,
-    "mae_r": -0.362
+    "mae_r": -0.451
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "",
+  "change_reason": "Falling Behind Schedule",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.7449987792968784,
-  "_mae": -1.099998626708981,
+  "_mae": -1.3699990844726528,
   "_max_p1": 0.1633769252844031,
   "_first_trigger_ts": "2026-10-22",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 19,
-  "tau": 0.4222
+  "days_elapsed": 24,
+  "tau": 0.5333
 }

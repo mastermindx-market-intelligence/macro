@@ -1,0 +1,225 @@
+{
+ "rights_class": "house",
+ "title": "Dated S&P 400 and S&P 600 sector price indexes (COO ruling 38 Part B, continuation Fix 3)",
+ "price_note": "Total return = the dividend-adjusted close already used in the breadth history. Adjusted closes are today's restated values (split and dividend adjustment as of the Tiingo archive capture 2026-10-11..16), not the prices printed at the time. Data end 2026-10-09.",
+ "redistribution_note": "Group-level index levels and counts only; no member prices, tickers or per-security dates. Member-level history stays off git.",
+ "index": {
+  "rebalance_rule": "engine.baskets._ew_level: equal-weight daily total-return level, cumprod of (1 + EW daily return) from 1.0 at the first active session; a member counts only inside its membership window",
+  "return": "total return (dividend-adjusted close)",
+  "floor": 5,
+  "floor_rule": "first date per key = earliest session with at least 5 priced members; rows below 5 keep n_priced_members with a blank index",
+  "floor_gap": "below-floor sessions are blank; the chain stays flat across the gap and resumes from the last valid level"
+ },
+ "never_pooled": "The S&P 500, 400 and 600 indexes are never pooled.",
+ "file": {
+  "name": "group_index_daily_dated_sp400_sp600.parquet",
+  "basis": "reconstructed_dated_membership",
+  "levels": [
+   "sector"
+  ],
+  "rows": 59598,
+  "index_universe_values": [
+   "sp400",
+   "sp600"
+  ],
+  "membership": "dated S&P 400 / S&P 600 membership (sp1500_pit_membership src=sp400 / src=sp600) x as-of-now GICS sector classification (sp1500_pit_sectors); each universe is indexed separately and never combined with sp500 or with each other"
+ },
+ "universes": {
+  "sp400": {
+   "basis": "reconstructed_dated_membership",
+   "levels": [
+    "sector"
+   ],
+   "rows": 40766,
+   "span": {
+    "start": "2012-01-13",
+    "end": "2026-10-09"
+   },
+   "first_start": "2012-01-13",
+   "labels": "as-of-now GICS sector classification (sp1500_pit_sectors); NOT era-correct",
+   "first_valid_index": {
+    "Communication Services": "2012-01-13",
+    "Consumer Discretionary": "2012-01-13",
+    "Consumer Staples": "2012-01-13",
+    "Energy": "2012-01-13",
+    "Financials": "2012-01-13",
+    "Health Care": "2012-01-13",
+    "Industrials": "2012-01-13",
+    "Information Technology": "2012-01-13",
+    "Materials": "2012-01-13",
+    "Real Estate": "2012-01-13",
+    "Utilities": "2012-01-13"
+   },
+   "n_priced_at_last_date": {
+    "Communication Services": 3,
+    "Consumer Discretionary": 57,
+    "Consumer Staples": 15,
+    "Energy": 15,
+    "Financials": 62,
+    "Health Care": 32,
+    "Industrials": 84,
+    "Information Technology": 46,
+    "Materials": 24,
+    "Real Estate": 27,
+    "Utilities": 14
+   },
+   "below_floor_sessions_per_sector": {
+    "Communication Services": 390,
+    "Consumer Discretionary": 0,
+    "Consumer Staples": 0,
+    "Energy": 0,
+    "Financials": 0,
+    "Health Care": 0,
+    "Industrials": 0,
+    "Information Technology": 0,
+    "Materials": 0,
+    "Real Estate": 0,
+    "Utilities": 0
+   },
+   "sectors_never_reaching_floor": [],
+   "coverage": {
+    "members_in_map": 930,
+    "members_priced": 828,
+    "membership_rows": 969,
+    "membership_rows_open": 400,
+    "membership_rows_unlabeled": 204,
+    "rows_unpriced_in_own_window": 121,
+    "rows_unpriced_in_own_window_ticker_present": 12,
+    "unpriced_in_window_by_start_year": {
+     "2012": 75,
+     "2013": 3,
+     "2014": 5,
+     "2015": 1,
+     "2016": 5,
+     "2017": 9,
+     "2018": 2,
+     "2019": 3,
+     "2020": 3,
+     "2021": 3,
+     "2023": 3,
+     "2024": 3,
+     "2025": 4,
+     "2026": 2
+    }
+   },
+   "duplicate_series_pairs_count": 0
+  },
+  "sp600": {
+   "basis": "reconstructed_dated_membership",
+   "levels": [
+    "sector"
+   ],
+   "rows": 18832,
+   "span": {
+    "start": "2019-12-17",
+    "end": "2026-10-09"
+   },
+   "first_start": "2019-12-17",
+   "labels": "as-of-now GICS sector classification (sp1500_pit_sectors); NOT era-correct",
+   "first_valid_index": {
+    "Communication Services": "2019-12-17",
+    "Consumer Discretionary": "2019-12-17",
+    "Consumer Staples": "2019-12-17",
+    "Energy": "2019-12-17",
+    "Financials": "2019-12-17",
+    "Health Care": "2019-12-17",
+    "Industrials": "2019-12-17",
+    "Information Technology": "2019-12-17",
+    "Materials": "2019-12-17",
+    "Real Estate": "2019-12-17",
+    "Utilities": "2019-12-17"
+   },
+   "n_priced_at_last_date": {
+    "Communication Services": 22,
+    "Consumer Discretionary": 84,
+    "Consumer Staples": 23,
+    "Energy": 26,
+    "Financials": 107,
+    "Health Care": 74,
+    "Industrials": 86,
+    "Information Technology": 66,
+    "Materials": 23,
+    "Real Estate": 41,
+    "Utilities": 13
+   },
+   "below_floor_sessions_per_sector": {
+    "Communication Services": 0,
+    "Consumer Discretionary": 0,
+    "Consumer Staples": 0,
+    "Energy": 0,
+    "Financials": 0,
+    "Health Care": 0,
+    "Industrials": 0,
+    "Information Technology": 0,
+    "Materials": 0,
+    "Real Estate": 0,
+    "Utilities": 0
+   },
+   "sectors_never_reaching_floor": [],
+   "coverage": {
+    "members_in_map": 1048,
+    "members_priced": 948,
+    "membership_rows": 1062,
+    "membership_rows_open": 603,
+    "membership_rows_unlabeled": 221,
+    "rows_unpriced_in_own_window": 114,
+    "rows_unpriced_in_own_window_ticker_present": 13,
+    "unpriced_in_window_by_start_year": {
+     "2019": 74,
+     "2020": 3,
+     "2021": 5,
+     "2022": 5,
+     "2023": 6,
+     "2024": 6,
+     "2025": 6,
+     "2026": 9
+    }
+   },
+   "duplicate_series_pairs_count": 0
+  }
+ },
+ "known_gaps": {
+  "dropped_partial_rows": {
+   "repo_closes": [
+    "1970-02-23",
+    "1972-11-07",
+    "1972-12-28",
+    "1973-01-25",
+    "1976-11-02",
+    "1977-07-14",
+    "2026-02-16",
+    "2026-10-12",
+    "2026-10-13",
+    "2026-10-14",
+    "2026-10-15"
+   ]
+  },
+  "dropped_partial_rows_rule": "centred 21-row median of priced names; a row under half is dropped (data cleaning, not a signal rule)",
+  "below_floor_rule": "sessions with fewer than 5 priced in-window members keep n_priced_members with a blank index; per-universe per-sector counts are in universes.<src>.below_floor_sessions_per_sector",
+  "unlabeled_rows_rule": "membership rows with no sector classification are absent from every sector index (counts in universes.<src>.coverage)",
+  "unpriced_in_window_rule": "membership rows with no stored close inside their own [start_date, end_date) window contribute nothing (counts in universes.<src>.coverage); a ticker present in the store only outside its window is a likely ticker reuse"
+ },
+ "price_input": {
+  "path": "/tmp/qb/tiingo/repo_closes.parquet",
+  "sha256_16": "740e8eb2f5fff02c",
+  "note": "the same closes the dated sp500 sector index uses"
+ },
+ "inputs": [
+  {
+   "path": "/tmp/qb/tiingo/repo_closes.parquet",
+   "sha256_16": "740e8eb2f5fff02c"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_membership.parquet",
+   "sha256_16": "7b34316c0561619b"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_sectors.parquet",
+   "sha256_16": "cba7fc07da53a623"
+  }
+ ],
+ "duplicate_series_rule": "month-by-month hash of daily returns, then pairwise check: >=60 identical returns and >=95% identical between first and last identical session; the second ticker is counted once over the span. Detection and labelling only; no store repaired. Pair tickers are not committed (group-level counts only).",
+ "no_outcomes": "Data only. Descriptive group levels and counts. No outcome relation, no backtest, no hit rate, no signal, ranking or score column.",
+ "build_time_utc": "2026-11-12T16:38:23+00:00",
+ "engine": "engine.baskets._ew_level; scripts/build_group_breadth_history.py membership_dated / drop_partial_rows / duplicate_series_pairs / unpriced_in_window; prior-round method /tmp/r38b/build_house.py dated_index"
+}

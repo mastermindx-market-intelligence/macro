@@ -502,8 +502,8 @@ def test_live_signal_facet_count_still_sums_both_lanes_and_now_matches_the_grid(
 def test_grid_key_line_states_the_two_axis_rule_once():
     html = render_board(v2_setups())
     assert html.count('<p class="cn-gridkey">') == 1
-    assert "Glowing = act today." in html
-    assert "发光卡＝今天可动手。" in html
+    assert "Glow marks a featured setup." in html
+    assert "发光代表精选形态。" in html
 
 
 def _words(text: str) -> int:
@@ -696,3 +696,27 @@ def test_the_cn_grid_key_dot_uses_the_prophet_bullish_token():
 @pytest.mark.parametrize("banned", ["证伪", "falsifier", "thesis refuted"])
 def test_no_refutation_language_reaches_this_surface(banned):
     assert banned not in render_board(v2_setups())
+
+
+def test_peer_disclosure_renders_the_stock_and_group_observation_separately():
+    setups = v2_setups()
+    setups["as_of"] = "2026-11-02"
+    setups["ranking"]["ordering"] = {"order_mode": "v3_coverage_fallback"}
+    setups["ranking"]["input_coverage"] = {"intel_interest": {"n_measured": 10, "n_rows": 11}}
+    setups["buy"][0]["peer_context"] = {
+        "as_of": "2026-11-02", "central_as_of": "2026-10-30", "market_tone": "off",
+        "stock_state": "falling", "stock_5d_pct": -3, "stock_20d_pct": -6,
+        "interpretation": "falling_watch", "groups": [
+            {"kind": "sector", "id": "801780", "name": "Banks", "state": "stock_falling",
+             "observed": 8, "total": 9, "breadth_pct": 75, "breadth_change_5d_pp": 25,
+             "peer_vs_csi300_20d_pp": 3, "stock_vs_peer_20d_pp": -9},
+        ]}
+    html = render_board(setups)
+    assert 'id="cn-peer-context"' in html and 'href="sector_central_china.html#overview"' in html
+    for visible in ("Stock still falling", "10 / 11", "8/9", "+25.0", "-9.0", "2026-10-30",
+                    "Price has yet to confirm the technical turn."):
+        assert visible in html
+    setups["buy"][0]["peer_context"]["as_of"] = "2026-11-03"
+    html = render_board(setups)
+    assert "Comparable peer evidence unavailable" in html
+    assert "Price has yet to confirm the technical turn." not in html

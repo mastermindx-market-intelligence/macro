@@ -25,6 +25,8 @@ on:
       - "scripts/build_sector_action_board.py"
       - "scripts/build_sector_central.py"
       - "scripts/build_sector_intelligence.py"
+      - "scripts/build_rotation_read.py"
+      - "data/breadth/history/basket_breadth_weekly_current.parquet"
       - "scripts/check_sector_intelligence_freshness.py"
       - "engine/baskets.py"
       - "engine/theme_scoring.py"
@@ -152,6 +154,9 @@ jobs:
           # `git add a b` exits 128 when either pathspec matches nothing.
           git add --ignore-removal site/assets/css 2>/dev/null || true
           git add --ignore-removal site/assets/js 2>/dev/null || true
+          # The rotation read is not written when its input has no history (by
+          # contract), so it is staged on its own line and never fails the publish.
+          git add --ignore-removal site/sectordata/rotation_read.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No Sector Intelligence changes to publish."
             exit 0

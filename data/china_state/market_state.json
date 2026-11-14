@@ -1,7 +1,7 @@
 {
   "schema": "china_market_state.v1",
-  "as_of": "2026-11-09",
-  "generated_utc": "2026-11-09T16:54:24Z",
+  "as_of": "2026-11-14",
+  "generated_utc": "2026-11-14T15:33:58Z",
   "authority": {
     "tier": "context_only",
     "why": [
@@ -43,57 +43,52 @@
     ]
   },
   "participation": {
-    "as_of": "2026-11-05",
-    "regime": "forced_deleveraging",
+    "as_of": "2026-11-12",
+    "regime": "unclear",
     "who_controls": "mixed",
-    "risk": "fire_sale",
-    "turnover_z20": 2.2384540913123945,
-    "turnover_z60": 0.7250361734020667,
-    "margin_balance": 23073.3367739,
-    "margin_chg_5d": -3.254858102225977,
-    "margin_to_mcap": 2.496354,
+    "risk": "normal",
+    "turnover_z20": 1.3132557347212703,
+    "turnover_z60": 0.39950053084906706,
+    "margin_balance": 23028.64590917,
+    "margin_chg_5d": -0.19369051458802966,
+    "margin_to_mcap": 2.519195,
     "zt_breadth": null,
     "failed_seal_ratio": null,
-    "southbound_net": -21326.2,
-    "southbound_z": -3.2892060526531735,
-    "qvix": null,
-    "qvix_z": null,
+    "southbound_net": 5846.37,
+    "southbound_z": 0.7801273691034377,
+    "qvix": 17.31,
+    "qvix_z": -0.884249827704619,
     "evidence": [
-      "turnover_z20=2.24",
-      "fin_pct_float=2.50%",
-      "broker_rs=0.0430 (positive, sector leading)"
+      "turnover_z20=1.31",
+      "fin_pct_float=2.52%",
+      "broker_rs=0.0509 (positive, sector leading)",
+      "qvix_z=-0.88 (inverted-semantics: high=stress)"
     ],
-    "contradictions": [
-      {
-        "a": "southbound_z=-3.29 (outflow)",
-        "b": "turnover_z20=2.24 (hot)",
-        "detail": "offshore selling into retail-driven volume — potential distribution"
-      }
-    ]
+    "contradictions": []
   },
   "microstructure": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-13",
     "aggregate": {
-      "date": "2026-11-09",
-      "limit_up_count": 15.0,
-      "limit_down_count": 0.0,
-      "sealed_up_close": 4.0,
-      "failed_up_seal_count": 11.0,
+      "date": "2026-11-13",
+      "limit_up_count": 5.0,
+      "limit_down_count": 2.0,
+      "sealed_up_close": 3.0,
+      "failed_up_seal_count": 2.0,
       "lianban_2plus": 0.0,
       "lianban_max": 1.0,
       "universe_n": 1891.0,
-      "limit_up_breadth_pct": 0.7932,
-      "limit_down_breadth_pct": 0.0
+      "limit_up_breadth_pct": 0.2644,
+      "limit_down_breadth_pct": 0.1058
     },
     "name_summary": {
-      "n_packets": 355,
-      "chase_veto_count": 15,
-      "fillable_count": 353
+      "n_packets": 148,
+      "chase_veto_count": 7,
+      "fillable_count": 148
     },
     "names_ref": "site/chinastatedata/microstructure.json#name_packets"
   },
   "policy": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-14",
     "policy_impulse": "neutral",
     "transmission_channel": [],
     "recent_event_count": 10,
@@ -131,15 +126,15 @@
     ],
     "staleness": {
       "per_source_days": {
-        "lpr": 20,
-        "rrr": 551,
-        "fr007": 0,
-        "communiques": 195
+        "lpr": 25,
+        "rrr": 556,
+        "fr007": 1,
+        "communiques": 200
       }
     }
   },
   "rotation": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-14",
     "sector_phase_distribution": {
       "Bottoming": 39,
       "Topping": 7,
@@ -163,57 +158,57 @@
       "LAGGARD: Agriculture ranked #29/31 (-26.3%) — among the weakest this leg"
     ],
     "ths_heat": {
-      "as_of": "2026-11-09",
+      "as_of": "2026-11-14",
       "basket_count": 237,
       "above_200d_pct": 0.4,
       "hot_baskets": [
         {
-          "id": "ths_baijiu",
-          "ret_60d": 0.0317
-        },
-        {
           "id": "thsc300451",
-          "ret_60d": 0.0312
+          "ret_60d": -0.0027
         },
         {
-          "id": "thsc306750",
-          "ret_60d": -0.0041
+          "id": "thsc308630",
+          "ret_60d": -0.0084
         },
         {
-          "id": "thsc307550",
-          "ret_60d": -0.0111
+          "id": "ths_baijiu",
+          "ret_60d": -0.0172
         },
         {
-          "id": "thsc301576",
-          "ret_60d": -0.0114
+          "id": "thsc300917",
+          "ret_60d": -0.0193
+        },
+        {
+          "id": "thsc309086",
+          "ret_60d": -0.0268
         }
       ],
       "cold_baskets": [
         {
-          "id": "ths_aidc",
-          "ret_60d": -0.299
+          "id": "ths_cpo",
+          "ret_60d": -0.2972
+        },
+        {
+          "id": "thsc302174",
+          "ret_60d": -0.2989
         },
         {
           "id": "thsc309030",
-          "ret_60d": -0.3027
-        },
-        {
-          "id": "ths_cpo",
-          "ret_60d": -0.3101
+          "ret_60d": -0.3139
         },
         {
           "id": "thsc309151",
-          "ret_60d": -0.3118
+          "ret_60d": -0.3161
         },
         {
           "id": "ths_nuclear",
-          "ret_60d": -0.3549
+          "ret_60d": -0.373
         }
       ]
     }
   },
   "macro": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-13",
     "quad": "Q3",
     "quad_name": "Stagflation",
     "liquidity_overlay": "contracting",
@@ -223,97 +218,94 @@
     "confirming": [
       "growth_pmi_mfg",
       "growth_cyclical_defensive",
-      "growth_smallcap_largecap",
-      "inflation_ppi_direction",
-      "inflation_inflation_beta_basket"
+      "inflation_ppi_direction"
     ],
     "contradicting": [
       "growth_indpro_trend",
-      "growth_breadth_direction",
       "inflation_cpi_direction"
     ],
     "conditions": {
       "roro": {
-        "roro": -0.314,
-        "roro_raw": -0.325,
+        "roro": -0.056,
+        "roro_raw": -0.056,
         "roro_state": "neutral",
-        "china_roro_copper_gold": 0.99,
-        "china_roro_breadth": 1.008,
-        "china_roro_southbound": 0.009,
-        "china_roro_m1_m2": -0.562,
-        "china_roro_turnover": -1.167,
-        "china_roro_qvix": -0.479,
-        "china_roro_usdcnh": -0.869,
-        "china_roro_margin": -0.225,
-        "china_roro_ah_premium": -1.632,
+        "china_roro_copper_gold": 1.162,
+        "china_roro_breadth": 0.033,
+        "china_roro_southbound": 0.068,
+        "china_roro_m1_m2": 1.586,
+        "china_roro_turnover": -0.7,
+        "china_roro_qvix": 0.642,
+        "china_roro_usdcnh": -1.278,
+        "china_roro_margin": -0.239,
+        "china_roro_ah_premium": -1.781,
         "legs": [
           {
             "key": "copper_gold",
             "name_en": "Copper / Gold",
             "name_zh": "铜／金 比",
-            "value": 0.99,
+            "value": 1.162,
             "lean": "risk-on"
           },
           {
             "key": "breadth",
             "name_en": "Breadth (% > 50d)",
             "name_zh": "市场宽度（>50日）",
-            "value": 1.008,
+            "value": 0.033,
             "lean": "risk-on"
           },
           {
             "key": "southbound",
             "name_en": "Southbound smart-money",
             "name_zh": "南向资金",
-            "value": 0.009,
+            "value": 0.068,
             "lean": "risk-on"
           },
           {
             "key": "m1_m2",
             "name_en": "M1−M2 scissors",
             "name_zh": "M1−M2 剪刀差",
-            "value": -0.562,
-            "lean": "risk-off"
+            "value": 1.586,
+            "lean": "risk-on"
           },
           {
             "key": "turnover",
             "name_en": "Turnover band",
             "name_zh": "成交活跃度",
-            "value": -1.167,
+            "value": -0.7,
             "lean": "risk-off"
           },
           {
             "key": "qvix",
             "name_en": "QVIX fear (300)",
             "name_zh": "QVIX 恐慌（300）",
-            "value": -0.479,
-            "lean": "risk-off"
+            "value": 0.642,
+            "lean": "risk-on"
           },
           {
             "key": "usdcnh",
             "name_en": "Offshore yuan (20d)",
             "name_zh": "离岸人民币（20日）",
-            "value": -0.869,
+            "value": -1.278,
             "lean": "risk-off"
           },
           {
             "key": "margin",
             "name_en": "Margin froth",
             "name_zh": "融资拥挤度",
-            "value": -0.225,
+            "value": -0.239,
             "lean": "risk-off"
           },
           {
             "key": "ah_premium",
             "name_en": "AH premium",
             "name_zh": "AH 溢价",
-            "value": -1.632,
+            "value": -1.781,
             "lean": "risk-off"
           }
         ]
       },
       "recession": {
-        "score": 46.8,
+        "score": 55.7,
         "label": "high",
         "legs": [
           {
@@ -321,9 +313,9 @@
             "label": "Credit impulse (社融)",
             "label_zh": "信用脉冲（社融）",
             "weight": 1.4,
-            "active": false,
-            "value": null,
-            "points": null
+            "active": true,
+            "value": 87.4,
+            "points": 22.7
           },
           {
             "key": "ppi",
@@ -341,7 +333,7 @@
             "weight": 1.2,
             "active": true,
             "value": 61.7,
-            "points": 18.5
+            "points": 13.7
           },
           {
             "key": "m1_m2",
@@ -349,8 +341,8 @@
             "label_zh": "M1−M2 剪刀差",
             "weight": 0.8,
             "active": true,
-            "value": 66.7,
-            "points": 13.3
+            "value": 55.8,
+            "points": 8.3
           },
           {
             "key": "property",
@@ -368,7 +360,7 @@
             "weight": 1.0,
             "active": true,
             "value": 60.0,
-            "points": 15.0
+            "points": 11.1
           }
         ],
         "uncalibrated": false,
@@ -385,7 +377,7 @@
         "note_zh": "已用20年A股前瞻数据校准：无前瞻回撤优势（A股均值回归 —— 高读数偏平/逆向）；区间为历史分位锚定。描述性背景，从不计入评分。"
       },
       "drawdown_risk": {
-        "score": 14.8,
+        "score": 28.1,
         "band": "low",
         "uncalibrated": false,
         "calibrated": true,
@@ -400,36 +392,36 @@
   },
   "external": {
     "yield_curve": {
-      "as_of": "2026-11-09",
-      "staleness_days": 0,
-      "cn_10y": 1.5874,
-      "cn_2y": 1.2157,
-      "cn_slope_10_2": 0.3716999999999999,
-      "cn_us_10y_spread": null
+      "as_of": "2026-11-13",
+      "staleness_days": 1,
+      "cn_10y": 1.6123,
+      "cn_2y": 1.2319,
+      "cn_slope_10_2": 0.38040000000000007,
+      "cn_us_10y_spread": -3.5377
     },
     "cgb_curve": {
-      "as_of": "2026-11-09",
-      "staleness_days": 0,
-      "m3": 1.1603,
-      "y1": 1.1667,
-      "y5": 1.3053,
-      "y10": 1.5874,
-      "y30": 2.028,
-      "slope_10y_3m": 0.4271
+      "as_of": "2026-11-13",
+      "staleness_days": 1,
+      "m3": 1.165,
+      "y1": 1.1742,
+      "y5": 1.3307,
+      "y10": 1.6123,
+      "y30": 2.0595,
+      "slope_10y_3m": 0.4473
     },
     "usdcnh": {
-      "quote": 6.6555,
-      "chg_pct": -0.2,
-      "as_of": "Nov 09, 2026"
+      "quote": 6.6565,
+      "chg_pct": 0.0,
+      "as_of": "Nov 13, 2026"
     },
     "dxy": {
-      "quote": 102.16,
-      "chg": -0.4,
+      "quote": 103.17,
+      "chg": 1.2,
       "label": "DXY"
     }
   },
   "allocation": {
-    "as_of": "2026-11-09",
+    "as_of": "2026-11-13",
     "variant": "balanced",
     "label_en": "Balanced",
     "label_zh": "均衡",
@@ -441,11 +433,11 @@
     "macro: quad=Q3 (Stagflation) liquidity=contracting",
     "macro_confirming: growth_pmi_mfg",
     "macro_confirming: growth_cyclical_defensive",
-    "macro_confirming: growth_smallcap_largecap",
+    "macro_confirming: inflation_ppi_direction",
     "policy: impulse=neutral",
-    "participation: regime=forced_deleveraging who_controls=mixed risk=fire_sale",
-    "participation_evidence: turnover_z20=2.24",
-    "participation_evidence: fin_pct_float=2.50%",
+    "participation: regime=unclear who_controls=mixed risk=normal",
+    "participation_evidence: turnover_z20=1.31",
+    "participation_evidence: fin_pct_float=2.52%",
     "phase: REPAIR confidence=0.667",
     "phase_evidence: turnover_z20_null"
   ],
@@ -468,10 +460,9 @@
     }
   ],
   "data_gaps": [
-    "participation: zt_breadth:null on 2026-11-05",
-    "participation: qvix_z:null on 2026-11-05",
-    "participation: etf_share_chg:null on 2026-11-05",
+    "participation: zt_breadth:null on 2026-11-12",
+    "participation: etf_share_chg:null on 2026-11-12",
     "participation: northbound:DEAD post-2024-08-16 SLF-050",
-    "participation: snapshot_staleness:published row 2026-11-05 is 4d behind tape tail 2026-11-09; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
+    "participation: snapshot_staleness:published row 2026-11-12 is 1d behind tape tail 2026-11-13; tail row missing core legs (turnover_z20, margin_chg_5d) — union-index freshness lag"
   ]
 }

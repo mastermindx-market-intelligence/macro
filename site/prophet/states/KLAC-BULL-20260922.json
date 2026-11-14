@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "KLAC-BULL-20260922",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 39.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.933,
+    "dist_to_stop_r": -0.392,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 80.4,
-    "p1": -1.2887,
-    "p2": -0.6444,
+    "horizon_pct_used": 89.3,
+    "p1": -0.928,
+    "p2": -0.464,
     "p3": null,
-    "move_r": -1.933,
+    "move_r": -1.392,
     "mfe_r": 0.743,
     "mae_r": -2.273
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 45,
-  "tau": 0.8036,
+  "days_elapsed": 50,
+  "tau": 0.8929,
   "closed": true,
   "outcome": "INVALIDATED"
 }

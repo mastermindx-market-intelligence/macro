@@ -13,12 +13,12 @@
     "evidence_sources": {
       "cn": {
         "dataset": "data/china_filings/filings.parquet",
-        "newest_observation": "2026-11-06",
+        "newest_observation": "2026-11-11",
         "provenance": "CNInfo (\u5de8\u6f6e\u8d44\u8baf\u7f51) SSE+SZSE disclosure metadata (collectors/china_filings.py)"
       },
       "hk": {
         "dataset": "data/hk_shorts/positions.parquet + data/hk_shorts/turnover.parquet",
-        "newest_observation": "2026-11-06",
+        "newest_observation": "2026-11-09",
         "provenance": "SFC official Short Position Reports + HKEX official turnover statistics (collectors/hk_shorts.py)"
       }
     },
@@ -58,11 +58,11 @@
     "target_population_source": "data/theme_graph/nodes.parquet (kind=company, market_scope in cn/hk)"
   },
   "cik_map_snapshot": "2026-11-09",
-  "code_version": "01de061e44666b6be101315bbf03f61e3d2573b9",
+  "code_version": "e7f8565ca26b74b9ae0d637b336e9985d513ff9d",
   "coverage": {
-    "resolved": 1619,
+    "resolved": 1618,
     "total": 1636,
-    "unresolved": 17,
+    "unresolved": 18,
     "unresolved_names": [
       "ACA",
       "ANGPY",
@@ -80,7 +80,8 @@
       "MAG",
       "PSKY",
       "RAMP",
-      "RHHBY"
+      "RHHBY",
+      "TCBI"
     ]
   },
   "dataset_ids": [
@@ -163,7 +164,7 @@
     "QQQ": "CURRENT",
     "SPY": "CURRENT"
   },
-  "generated_at": "2026-11-09T05:54:22",
+  "generated_at": "2026-11-12T07:39:00",
   "identity_exceptions": [
     {
       "evidence": "SEC Barnes Group 2025-01-27 8-K/Form 25; Barrick Mining 2025-05-07 Form 6-K Exhibit 99.2; Gold.com 2025-11-12 AMRK->NYSE GOLD transfer announcement; config/theme_graph_identity_breaks.yml GOLD",
@@ -183,13 +184,13 @@
     "config/delisted_symbols.yml": "c83b53d39a934fdcbe82f655f1979d1a4c14f8c45fb35474e2dc666bec539b5e",
     "data/baskets/membership.json": "2f9e553cb856e906e2c6971022b7a4dc89fb8b1716e2605f327b6740a4ac4fae",
     "data/breadth/constituents.parquet": "99f071b19a24cb6783e8ff061d07ae3006fb833af595602425e2a1eebc5aec2f",
-    "data/china_filings/filings.parquet": "bc22cf4630b03bf7199a82258d5eb375c4c78d285ebfa75a1cfa27afa880b84b",
+    "data/china_filings/filings.parquet": "625e5a8d721e5611851654a2cf4fece208c57ae68cb0aab36ba0a678d436a827",
     "data/hk_shorts/positions.parquet": "bfc80935d48b3ce68da23a1c809eea54178421f74f8ae9656440be662bd2a0ea",
-    "data/hk_shorts/turnover.parquet": "538bd52ca97f9cf4306561e4bcb314341c0fee910458f42e1e08ded2557f1145",
-    "data/midcap_breadth/constituents.parquet": "95a9e2d6aab4147dade2bf6d864f2b65e5b88c143eaed56a764c57cf4d78352b",
+    "data/hk_shorts/turnover.parquet": "15eb072023cc1d2587791bb9816f5dc7df4c03bf320d21d6dfd994a9d92dc9f6",
+    "data/midcap_breadth/constituents.parquet": "568c43fa4c46eca44f3486baf2d550df9a0c94fb32caf51673be0afd7bfe5220",
     "data/smallcap_breadth/constituents.parquet": "1edd67ea32517cf674c06b6fc5d1be5b16510b4b68534c548b107ad1f1ca9b93",
     "data/symbol_directory/cik_map": "2e3d5b5721a33e12d814f6d6eabdf43eaceee46cbc0408dd098feca66bc9e839",
-    "data/symbol_directory/snapshots": "05e9075c26791889bffce76ae56d6230c23e4c99d9cfc3d7158e2f5b6490ddfb",
+    "data/symbol_directory/snapshots": "4e3f63c72574271d3e788827fe839884aa952cb16e9426ec59605aedfd326c55",
     "data/theme_graph/nodes.parquet": "2edf86b9c0dfe0ec7b7c61fdaf0de267c10545047b682df604a812d2540f52d9",
     "lib/ticker_aliases.py": "6a6da16e40de28e9ac3eb9f319ca6b1a137a479656101b590b9264211e3e70fd"
   },
@@ -238,7 +239,7 @@
     "state_counts": {
       "DEFERRED_IDENTITY_EXCEPTION": 1,
       "NO_ISSUER_EVIDENCE": 1171,
-      "RESOLVED": 1934
+      "RESOLVED": 1935
     }
   },
   "listing_continuity": [
@@ -255,6 +256,8 @@
     "MLEC",
     "MSGS",
     "RAMP",
+    "ROKU",
+    "TCBI",
     "YFOR",
     {
       "code": "GOLD",
@@ -266,11 +269,13 @@
     {
       "listing_key": "US-TXSE-CECO",
       "lost_rows": [
+        "SEC:US-TXSE-TCBI",
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-INDV",
         "SEC:US-XNAS-MLEC",
+        "SEC:US-XNAS-ROKU",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -281,18 +286,20 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 14 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 16 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-09",
       "symbol": "CECO"
     },
     {
       "listing_key": "US-XNAS-HLT",
       "lost_rows": [
+        "SEC:US-TXSE-TCBI",
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-INDV",
         "SEC:US-XNAS-MLEC",
+        "SEC:US-XNAS-ROKU",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -303,18 +310,20 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 14 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 16 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-09",
       "symbol": "HLT"
     },
     {
       "listing_key": "US-TXSE-IBOC",
       "lost_rows": [
+        "SEC:US-TXSE-TCBI",
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-INDV",
         "SEC:US-XNAS-MLEC",
+        "SEC:US-XNAS-ROKU",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -325,18 +334,20 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 14 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 16 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-09",
       "symbol": "IBOC"
     },
     {
       "listing_key": "US-XNYS-MSGK",
       "lost_rows": [
+        "SEC:US-TXSE-TCBI",
         "SEC:US-XNAS-CECO",
         "SEC:US-XNAS-DOMO",
         "SEC:US-XNAS-IBOC",
         "SEC:US-XNAS-INDV",
         "SEC:US-XNAS-MLEC",
+        "SEC:US-XNAS-ROKU",
         "SEC:US-XNAS-YYGH",
         "SEC:US-XNYS-ACA",
         "SEC:US-XNYS-CSAN",
@@ -347,7 +358,7 @@
         "SEC:US-XNYS-MSGS",
         "SEC:US-XNYS-RAMP"
       ],
-      "reason": "pending-transition fence: 14 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
+      "reason": "pending-transition fence: 16 committed row(s) unaccounted for this build and no independent registrant evidence for the candidate symbol (\u00a75.2)",
       "snapshot_date": "2026-11-09",
       "symbol": "MSGK"
     }
@@ -787,25 +798,25 @@
   ],
   "resurrection_refusals": [],
   "row_counts": {
-    "issuer_master": 1933,
+    "issuer_master": 1934,
     "issuer_migrations": 5,
-    "security_master": 3107,
+    "security_master": 3108,
     "security_migrations": 1,
-    "vendor_alias_rows_readable": 8930,
-    "vendor_aliases": 8930
+    "vendor_alias_rows_readable": 8934,
+    "vendor_aliases": 8934
   },
   "security": {
     "era": "security_supersession_duplicate_mint_v1",
     "era_migrations_total": 1,
     "migrations_this_run": 0,
     "state_counts": {
-      "ACTIVE": 3106,
+      "ACTIVE": 3107,
       "SUPERSEDED_DUPLICATE_MINT": 1
     }
   },
   "seed_counts": {
     "delisted_keys": 11,
-    "directory_symbols": 13276,
+    "directory_symbols": 13282,
     "gmi_seed_keys": 1241,
     "ticker_fixups": 2,
     "ticker_key_migrations": 1,
@@ -891,7 +902,7 @@
     "valid_to": "2026-10-16",
     "vendor": "thetadata"
   },
-  "symbol_directory_snapshot": "2026-11-09",
+  "symbol_directory_snapshot": "2026-11-12",
   "undated_renames": [
     {
       "evidence": "lib/ticker_aliases.py YAHOO_FETCH_ALIASES FI->FISV (vendor LAGS the rename); config.yml breadth.ticker_fixups FISV->FI; no in-repo date for the 2023 change",
@@ -1093,6 +1104,10 @@
       {
         "code": "PSKY",
         "security_id": "SEC:US-XNAS-PSKY"
+      },
+      {
+        "code": "ROKU",
+        "security_id": "SEC:US-XNAS-ROKU"
       },
       {
         "code": "YYGH",

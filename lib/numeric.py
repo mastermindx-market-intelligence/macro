@@ -83,3 +83,41 @@ def finite(value: Any) -> float | None:
     if not math.isfinite(f):
         return None
     return f
+
+
+def finite_json_value(obj: Any) -> Any:
+    """Recursively map every non-finite float (and pandas NA/NaT) to ``None``.
+
+    Producer-side normalization for strict JSON: missing stays *missing* (null),
+    never 0 or a fill value; every finite value, ``0``/``0.0`` included, is
+    returned unchanged. Containers are rebuilt; the input is not mutated. Pair
+    with ``json.dumps(..., allow_nan=False)`` so anything this misses raises
+    instead of being written.
+    """
+    if isinstance(obj, dict):
+        return {k: finite_json_value(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [finite_json_value(v) for v in obj]
+    if isinstance(obj, bool) or obj is None or isinstance(obj, (str, int)):
+        return obj
+    if pd is not None:
+        try:
+            if obj is pd.NA or obj is pd.NaT:
+                return None
+        except (TypeError, ValueError):
+            pass
+    try:
+        import numpy as np  # noqa: PLC0415
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            obj = float(obj)
+        elif isinstance(obj, np.ndarray):
+            return [finite_json_value(v) for v in obj.tolist()]
+    except ImportError:
+        pass
+    if isinstance(obj, float):
+        return obj if math.isfinite(obj) else None
+    return obj

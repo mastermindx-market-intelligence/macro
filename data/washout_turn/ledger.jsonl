@@ -638,3 +638,4 @@
 {"session": "2026-11-06", "symbol": "WULF", "state": "TURN_WATCH", "prior_state": "NONE", "since": null, "depth_pctile": 0.7, "line": -12.402, "hist": -1.163, "data_through": "2026-11-06", "reason": null}
 {"session": "2026-11-06", "symbol": "WY", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-11-06", "reason": "graduated"}
 {"session": "2026-11-06", "symbol": "WYNN", "state": "WASHOUT_TURN", "prior_state": "TURN_WATCH", "since": "2026-11-06", "depth_pctile": 10.0, "line": -9.029, "hist": 0.032, "data_through": "2026-11-06", "reason": null}
+{"session": "2026-11-12", "symbol": "STT", "state": "NONE", "prior_state": "TURN_WATCH", "since": null, "depth_pctile": null, "line": null, "hist": null, "data_through": "2026-11-12", "reason": "graduated"}

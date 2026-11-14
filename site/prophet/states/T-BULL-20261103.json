@@ -1,31 +1,31 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "T-BULL-20261103",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 69.4,
-  "raw_confidence": 69.1,
-  "delta_vs_base": 9.4,
+  "management_confidence": 76.6,
+  "raw_confidence": 79.7,
+  "delta_vs_base": 16.6,
   "recommended_action": "hold",
-  "human_state": "Needs Follow-Through",
+  "human_state": "Advancing Cleanly",
   "components": {
     "validity": 100.0,
-    "progress": 22.7,
+    "progress": 55.5,
     "pace": 100.0,
     "retention": 50.0,
-    "overlay": 33.0
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.348,
-    "dist_to_t1_r": 1.152,
-    "dist_to_t2_r": 2.652,
-    "horizon_pct_used": 13.3,
-    "p1": 0.2319,
-    "p2": 0.1159,
+    "dist_to_stop_r": 2.145,
+    "dist_to_t1_r": 0.355,
+    "dist_to_t2_r": 1.855,
+    "horizon_pct_used": 24.4,
+    "p1": 0.7633,
+    "p2": 0.3816,
     "p3": null,
-    "move_r": 0.348,
-    "mfe_r": 0.623,
+    "move_r": 1.145,
+    "mfe_r": 1.145,
     "mae_r": -0.0
   },
   "rr_ratio": 1.5,
@@ -39,12 +39,12 @@
     "recommended_action": "display \u2014 narrate, not authoritative order",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
-  "_mfe": 0.4299996948242182,
+  "_mfe": 0.7900003051757807,
   "_mae": -6.103515630684342e-07,
-  "_max_p1": 0.4154586423422397,
+  "_max_p1": 0.763285319010416,
   "_first_trigger_ts": "2026-11-06",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 6,
-  "tau": 0.1333
+  "days_elapsed": 11,
+  "tau": 0.2444
 }

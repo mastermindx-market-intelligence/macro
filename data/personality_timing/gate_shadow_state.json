@@ -3,8 +3,8 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-11-10",
- "generated_utc": "2026-11-10T11:13:36.908364+00:00",
+ "as_of": "2026-11-14",
+ "generated_utc": "2026-11-14T08:07:46.484712+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
  "gate_open": true,
  "uniform_rung": "2W",
@@ -19,36 +19,36 @@
    "2W": 346
   },
   "classes": {
-   "both": 30,
-   "fired_uniform_only": 128,
-   "fired_tailored_only": 43,
-   "neither": 1428
+   "both": 23,
+   "fired_uniform_only": 138,
+   "fired_tailored_only": 104,
+   "neither": 1364
   },
-  "disagreements": 171,
-  "agree_by_construction": 21
+  "disagreements": 242,
+  "agree_by_construction": 23
  },
  "ledger": {
-  "fire_rows": 8860,
-  "appended_today": 201,
-  "graded": 1460,
-  "grades_advanced_today": 0
+  "fire_rows": 9684,
+  "appended_today": 265,
+  "graded": 2114,
+  "grades_advanced_today": 36
  },
  "timing": {
   "uniform": {
-   "n_graded": 711,
-   "n_timing_labeled": 711,
-   "confirmed_reset": 498,
-   "called_low": 26,
-   "early": 187,
-   "median_fwd63": 0.68
+   "n_graded": 1285,
+   "n_timing_labeled": 1285,
+   "confirmed_reset": 824,
+   "called_low": 32,
+   "early": 429,
+   "median_fwd63": -6.73
   },
   "tailored": {
-   "n_graded": 994,
-   "n_timing_labeled": 994,
-   "confirmed_reset": 470,
+   "n_graded": 1204,
+   "n_timing_labeled": 1204,
+   "confirmed_reset": 575,
    "called_low": 85,
-   "early": 439,
-   "median_fwd63": -9.0
+   "early": 544,
+   "median_fwd63": -9.37
   }
  },
  "note": "PSS-W3 reset-confirmer shadow (masterplan §W3, ruling R-W1T-2). Logs uniform-gate (2W Stoch-RSI) vs tailored-gate (Stoch-RSI at the codex structure-derived rung) disagreements both directions; graded later under dual rulers (fwd63 + timing). Display/shadow tier only: it NEVER gates, ranks, sizes, or alters any Prophet, washout, or board decision. Promotion of any gate change needs its own prereg + ruling. First quarterly miss-rate readout ≈ 3 months post-ship."

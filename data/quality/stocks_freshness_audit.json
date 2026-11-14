@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-09",
+ "asof": "2026-11-14",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -42,12 +42,12 @@
     {
      "name": "EA",
      "kind": "stale_live",
-     "detail": "last bar 2026-08-04 (97d stale)"
+     "detail": "last bar 2026-08-04 (102d stale)"
     },
     {
      "name": "KVUE",
      "kind": "stale_live",
-     "detail": "last bar 2026-10-30 (10d stale)"
+     "detail": "last bar 2026-10-30 (15d stale)"
     },
     {
      "name": "WBD",
@@ -57,7 +57,7 @@
    ]
   }
  ],
- "expected_session": "2026-11-06",
+ "expected_session": "2026-11-13",
  "threshold_calendar_days": 7,
  "totals": {
   "fresh": 253,
@@ -70,13 +70,13 @@
   {
    "ticker": "EA",
    "last_bar": "2026-08-04",
-   "lag_days": 97,
+   "lag_days": 102,
    "in_union": false
   },
   {
    "ticker": "KVUE",
    "last_bar": "2026-10-30",
-   "lag_days": 10,
+   "lag_days": 15,
    "in_union": false
   }
  ],
@@ -84,7 +84,7 @@
   {
    "ticker": "AVB",
    "last_bar": "2026-08-24",
-   "lag_days": 77,
+   "lag_days": 82,
    "in_union": false,
    "delisted_ledger": true,
    "contradiction": true
@@ -92,7 +92,7 @@
   {
    "ticker": "WBD",
    "last_bar": "2026-10-06",
-   "lag_days": 34,
+   "lag_days": 39,
    "in_union": false,
    "delisted_ledger": true,
    "contradiction": true

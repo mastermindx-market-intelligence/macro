@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-11-09",
-  "data_session": "2026-11-06",
-  "built": "2026-11-09T09:16:15Z",
+  "asof": "2026-11-13",
+  "data_session": "2026-11-12",
+  "built": "2026-11-13T13:51:26Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -20,8 +20,8 @@
     "unknown": 0,
     "total": 2759,
     "current_coverage_pct": 97.9,
-    "data_session": "2026-11-06",
-    "data_session_all": "2026-11-06",
+    "data_session": "2026-11-12",
+    "data_session_all": "2026-11-12",
     "week_histogram": [
       {
         "week": "2026-11-06",
@@ -77,56 +77,56 @@
   },
   "top_stage2": [
     {
-      "ticker": "FOXA",
-      "company": "Fox Corporation (Class A)",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-11-06",
+      "ticker": "DJCO",
+      "company": "Daily Journal Corp",
+      "sector": "Technology",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 7,
+      "weeks_in_stage": 8,
       "fresh": true,
-      "sga_score": 71,
-      "ma30_slope_pct5w": 1.649,
-      "pct_vs_ma30": 6.76,
-      "mansfield_rs": 2.06,
-      "vol_ratio": 1.25,
+      "sga_score": 72,
+      "ma30_slope_pct5w": 3.597,
+      "pct_vs_ma30": 10.76,
+      "mansfield_rs": 12.97,
+      "vol_ratio": 0.92,
       "event": "pullback_resume",
-      "gate_tier": "T2",
+      "gate_tier": "T1",
       "blackout": false,
-      "arc_pos": 0.3375,
+      "arc_pos": 0.35,
       "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 8.0,
-        "tone_word": "confident",
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
         "tags": [],
-        "quarter": "Q1",
-        "summary": "Fox reported record fiscal Q1 revenue of $4.6 billion, up 22%, and record EBITDA of $1.64 billion, up 54%, with adjusted EPS of $2.54 up 68% from $1.51. Advertising revenue rose 47% on the FIFA Men's World Cup, over $350 million in record midterm political advertising, and Tub…"
+        "quarter": null,
+        "summary": null
       },
       "why": [
-        "Early in its climb — 7 weeks up so far",
+        "Early in its climb — 8 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 7 周",
+        "上升初期 — 已上行 8 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 4.7401,
-      "atr_ext": 0.89,
-      "atr_pct_price": 0.07113,
-      "sata_score": 6,
+      "atr_14w": 50.2793,
+      "atr_ext": 1.241,
+      "atr_pct_price": 0.07829,
+      "sata_score": 7,
       "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 52.6
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": null
     },
     {
       "ticker": "MXCT",
       "company": "MaxCyte Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -170,62 +170,112 @@
       "industry_percentile": null
     },
     {
-      "ticker": "COMP",
-      "company": "Compass Inc",
-      "sector": "Real Estate",
-      "stage_source_asof": "2026-11-06",
+      "ticker": "EGHT",
+      "company": "8X8 Inc",
+      "sector": "Technology",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 1,
+      "weeks_in_stage": 3,
       "fresh": true,
-      "sga_score": 65,
-      "ma30_slope_pct5w": 3.508,
-      "pct_vs_ma30": 2.36,
-      "mansfield_rs": -1.06,
-      "vol_ratio": 1.1,
-      "event": "trendline_recapture",
-      "gate_tier": "T1",
+      "sga_score": 67,
+      "ma30_slope_pct5w": 2.307,
+      "pct_vs_ma30": 4.41,
+      "mansfield_rs": 2.12,
+      "vol_ratio": 0.85,
+      "event": null,
+      "gate_tier": "T2",
       "blackout": false,
-      "arc_pos": 0.2625,
+      "arc_pos": 0.2875,
       "earnings": {
         "present": true,
-        "sentiment": -0.1,
-        "performance": 6.5,
-        "tone_word": "mixed",
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
         "tags": [
-          "guidance_lowered",
-          "margin_expansion",
-          "demand_slowdown",
-          "buyback_or_dividend",
-          "macro_sensitivity"
+          "guidance_raised",
+          "beat_and_raise",
+          "margin_contraction",
+          "demand_acceleration",
+          "new_product"
         ],
-        "quarter": "Q3",
-        "summary": "Compass reported record Q3 revenue of $3.9 billion and record Q3 Adjusted EBITDA of $306 million, above the high end of guidance, with GAAP net income of $62 million (first positive Q3 net income) and record free cash flow of $240 million on $841 million of cash. Organic broke…"
+        "quarter": "Q2",
+        "summary": "8x8 reported Q2 FY2027 total revenue of $192.0 million (up 4.3% YoY) and service revenue of $187.8 million (up 4.9% YoY), with platform usage revenue up ~51% YoY. Non-GAAP operating margin was 10.8% ($20.7 million operating income) and EPS was $0.12, with the company stating i…"
       },
       "why": [
-        "Early in its climb — 1 weeks up so far",
+        "Early in its climb — 3 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 1 周",
+        "上升初期 — 已上行 3 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 1.2089,
-      "atr_ext": 0.195,
-      "atr_pct_price": 0.11841,
+      "atr_14w": 0.2771,
+      "atr_ext": 0.325,
+      "atr_pct_price": 0.13011,
       "sata_score": 5,
-      "sata_change_1w": 1,
+      "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 90.0
+      "industry_percentile": null
+    },
+    {
+      "ticker": "FLGT",
+      "company": "Fulgent Genetics Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-11-12",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 65,
+      "ma30_slope_pct5w": 5.281,
+      "pct_vs_ma30": 23.66,
+      "mansfield_rs": 9.99,
+      "vol_ratio": 0.87,
+      "event": "pullback_resume",
+      "gate_tier": "T1",
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.0,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "margin_expansion",
+          "guidance_lowered",
+          "buyback_or_dividend"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 revenue was $90.4M, up 8% YoY and 6% QoQ, with $21.8M from Bako/StrataDx versus $16.4M in Q2; Anatomic Pathology grew 57% YoY to $40.9M while Precision Diagnostics fell 18% YoY to $41.8M. GAAP gross margin was 35.3% and non-GAAP 36.3%, with GAAP operating margin -24.…"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest",
+        "Also shows a strong confirmation from our other checks"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "已明显高于 30 周均线 — 可能需要回踩",
+        "其他多项验证同样给出强确认"
+      ],
+      "atr_14w": 1.9519,
+      "atr_ext": 2.327,
+      "atr_pct_price": 0.08222,
+      "sata_score": 8,
+      "sata_change_1w": 2,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": 41.3
     },
     {
       "ticker": "KMTS",
       "company": "Kestra Medical Technologies Ltd",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -274,7 +324,7 @@
       "ticker": "TBCH",
       "company": "Turtle Beach Corp",
       "sector": "Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -315,56 +365,10 @@
       "industry_percentile": 73.3
     },
     {
-      "ticker": "IRWD",
-      "company": "Ironwood Pharmaceuticals Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 64,
-      "ma30_slope_pct5w": 1.728,
-      "pct_vs_ma30": 10.2,
-      "mansfield_rs": 9.87,
-      "vol_ratio": 0.89,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6,
-        "performance": 8.5,
-        "tone_word": "confident",
-        "tags": [],
-        "quarter": "Q3",
-        "summary": "Ironwood reported Q3 FY2026 total revenue of $133 million with LINZESS U.S. net sales of $325 million, GAAP net income of $60 million and record adjusted EBITDA of $98 million; YTD LINZESS sales of $880 million already exceed full-year 2025. Management raised full-year 2026 LI…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.4864,
-      "atr_ext": 0.835,
-      "atr_pct_price": 0.1108,
-      "sata_score": 6,
-      "sata_change_1w": 3,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
       "ticker": "BOOM",
       "company": "DMC Global Inc.",
       "sector": "Energy",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -414,7 +418,7 @@
       "ticker": "COOK",
       "company": "COOK",
       "sector": "Unknown",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -431,17 +435,18 @@
       "arc_pos": 0.325,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
+        "sentiment": 0.1,
+        "performance": 2.0,
+        "tone_word": "reassuring",
         "tags": [
-          "guidance_lowered",
-          "miss_and_cut",
-          "margin_expansion",
-          "demand_slowdown"
+          "margin_contraction",
+          "demand_slowdown",
+          "supply_constraint",
+          "new_product",
+          "guidance_lowered"
         ],
-        "quarter": "Q2",
-        "summary": "Traeger reported Q2 FY26 revenue of $120 million (down 17% YoY) and a net loss of $9 million versus a prior year loss of $7 million. Management lowered full-year 2026 revenue guidance to $435-$465 million from the original range of $465-$485 million, citing softness in MEATER …"
+        "quarter": "Q3",
+        "summary": "Q3 revenue fell 40% YoY to $75 million (grills -48%, consumables -23%, accessories -34%) and adjusted EBITDA swung to a $3 million loss from $14 million income; GAAP net loss was $29 million, or $10.33 per diluted share. Gross margin contracted 520 bps to 33.5% on trade spend …"
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
@@ -460,61 +465,10 @@
       "industry_percentile": null
     },
     {
-      "ticker": "FOX",
-      "company": "Fox Corporation (Class B)",
-      "sector": "Communication Services",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 7,
-      "fresh": true,
-      "sga_score": 63,
-      "ma30_slope_pct5w": 1.465,
-      "pct_vs_ma30": 6.54,
-      "mansfield_rs": 1.62,
-      "vol_ratio": 0.7,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3375,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.7,
-        "performance": 9.0,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q1",
-        "summary": "Fox reported Q1 FY2027 revenue up 22% to $4.6 billion and EBITDA up 54% to $1.64 billion, both first-quarter records, with advertising revenue up 47% on the FIFA Men's World Cup and political advertising surpassing $350 million. Adjusted EPS rose 68% to $2.54 from $1.51, cable…"
-      },
-      "why": [
-        "Early in its climb — 7 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 7 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 4.0304,
-      "atr_ext": 0.907,
-      "atr_pct_price": 0.06774,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": null
-    },
-    {
       "ticker": "BWMN",
       "company": "Bowman Consulting Group Ltd",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-09",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -558,7 +512,7 @@
       "ticker": "DIN",
       "company": "Dine Brands Global Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -575,15 +529,17 @@
       "arc_pos": 0.275,
       "earnings": {
         "present": true,
-        "sentiment": -0.2,
-        "performance": 4.5,
-        "tone_word": "cautious",
+        "sentiment": 0.0,
+        "performance": 5.0,
+        "tone_word": "mixed",
         "tags": [
-          "demand_slowdown",
-          "margin_contraction"
+          "margin_contraction",
+          "macro_sensitivity",
+          "new_product",
+          "buyback_or_dividend"
         ],
-        "quarter": "Q2",
-        "summary": "Dine Brands reported Q2 FY26 revenue of $240.9 million (up 4.4% YoY) and adjusted EBITDA of $54.2 million (down from $56.2m), driven by a mix of positive IHOP comp sales (+1.5%) offsetting Applebee's decline (-1.8%). Management maintained full-year financial guidance despite h…"
+        "quarter": "Q3",
+        "summary": "Dine Brands reported Q3 FY2026 total revenues of $248.9 million, up 15.1% from $216.2 million, driven by a $36.9 million increase in company-owned restaurant revenues from acquisitions; adjusted EBITDA was flat at $49 million and adjusted diluted EPS rose to $0.82 from $0.73. …"
       },
       "why": [
         "Early in its climb — 2 weeks up so far",
@@ -605,7 +561,7 @@
       "ticker": "CD",
       "company": "Chaince Digital Holdings Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -649,7 +605,7 @@
       "ticker": "HURN",
       "company": "Huron Consulting Group Inc",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -666,28 +622,17 @@
       "arc_pos": 0.3375,
       "earnings": {
         "present": true,
-        "sentiment": 0.7222222222222222,
-        "performance": 8.75,
+        "sentiment": 0.4,
+        "performance": 7.0,
         "tone_word": "confident",
         "tags": [
-          "ai",
-          "managed_services",
-          "guidance_raise",
+          "guidance_raised",
           "margin_expansion",
-          "healthcare",
-          "digital_transformation",
-          "m&a",
-          "bookings_growth",
-          "professional_services",
-          "it_consulting",
-          "healthcare_consulting",
-          "education_services",
-          "ai_services",
-          "business_process_outsourcing",
-          "management_consulting"
+          "demand_acceleration",
+          "buyback_or_dividend"
         ],
-        "quarter": "Q2",
-        "summary": "Significant portion of the health care provider market continues to be financially challenged, which in turn leads to continued growth tailwinds for our business."
+        "quarter": "Q3",
+        "summary": "Huron reported record Q3 FY2026 RBR of $482.5M, up 11.6% YoY, with organic growth in all three segments; adjusted EPS rose 24.8% to $2.62 and adjusted EBITDA margin hit 16%, the highest in eight years. Full-year guidance was updated: RBR narrowed to $1.855B-$1.885B, adjusted E…"
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
@@ -706,61 +651,10 @@
       "industry_percentile": 69.4
     },
     {
-      "ticker": "NEM",
-      "company": "Newmont",
-      "sector": "Materials",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 61,
-      "ma30_slope_pct5w": 0.994,
-      "pct_vs_ma30": 8.93,
-      "mansfield_rs": 7.58,
-      "vol_ratio": 0.93,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.2,
-        "performance": 5.0,
-        "tone_word": "mixed",
-        "tags": [
-          "buyback_or_dividend",
-          "margin_expansion",
-          "macro_sensitivity",
-          "new_product"
-        ],
-        "quarter": "Q3",
-        "summary": "Newmont reported Q3 2026 gold production of ~1.3 Moz plus 23,000 tons copper and 11 Moz silver, with $1.9 billion free cash flow, $2.20 adjusted EPS (a Q3 record), and $4 billion adjusted EBITDA at a realized gold price of $4,317/oz; AISC was $1,454/oz. Full-year production, c…"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 10.4366,
-      "atr_ext": 0.95,
-      "atr_pct_price": 0.08632,
-      "sata_score": 6,
-      "sata_change_1w": 2,
-      "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 90.5
-    },
-    {
       "ticker": "RYZ",
       "company": "Ryerson Holding Corp",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -808,7 +702,7 @@
       "ticker": "HRI",
       "company": "Herc Holdings Inc",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -858,7 +752,7 @@
       "ticker": "PI",
       "company": "Impinj, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -907,7 +801,7 @@
       "ticker": "SVV",
       "company": "Savers Value Village Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -927,9 +821,13 @@
         "sentiment": 0.5,
         "performance": 7.5,
         "tone_word": "confident",
-        "tags": [],
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
         "quarter": "Q3",
-        "summary": "Savers Value Village reported Q3 net sales up 8.5% to $463 million (8.9% constant currency) with comps +4.2%, U.S. net sales +12.2% on a 5.9% comp, and Canada net sales +2.5% with comps +1.5%. Adjusted EBITDA rose 8% to $76 million (16.4% of sales), gross margin expanded 100 b…"
+        "summary": "Savers Value Village reported Q3 FY2026 net sales of $463 million (up 8.5% YoY) and Adjusted EBITDA of $76 million (up 8%). Management raised full-year 2026 guidance for comparable store sales growth to 3.5%-4.0% and adjusted net income to $76-$83 million, citing strong U.S. m…"
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
@@ -951,7 +849,7 @@
       "ticker": "LFCR",
       "company": "Lifecore Biomedical Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -999,7 +897,7 @@
       "ticker": "CBLL",
       "company": "Ceribell Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1048,7 +946,7 @@
       "ticker": "DNA",
       "company": "Ginkgo Bioworks Holdings Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1068,9 +966,13 @@
         "sentiment": 0.3,
         "performance": 2.5,
         "tone_word": "confident",
-        "tags": [],
+        "tags": [
+          "demand_slowdown",
+          "margin_expansion",
+          "new_product"
+        ],
         "quarter": "Q3",
-        "summary": "Q3 FY2026 revenue was $28M, down 6% YoY, with the sequential increase driven largely by a cumulative catch-up on a modified long-term contract; nine-month revenue fell 37% YoY (about 32% ex the prior-year $7.5M BiomEdit non-cash item). Net loss from continuing operations narro…"
+        "summary": "Q3 FY2026 revenue was $28M, down 6% YoY, though up sequentially on a cumulative catch-up from a modified long-term contract; nine-month revenue of $67M fell 37% YoY (about 32% excluding the $7.5M BiomEdit termination revenue in 2025). Net loss from continuing operations narrow…"
       },
       "why": [
         "Early in its climb — 6 weeks up so far",
@@ -1092,7 +994,7 @@
       "ticker": "SCL",
       "company": "Stepan Company",
       "sector": "Materials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1141,7 +1043,7 @@
       "ticker": "EAF",
       "company": "GrafTech International Ltd",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1192,7 +1094,7 @@
       "ticker": "IRON",
       "company": "Disc Medicine Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1236,7 +1138,7 @@
       "ticker": "NVAX",
       "company": "Novavax Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1253,16 +1155,18 @@
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
-        "sentiment": 0.5,
+        "sentiment": 0.3,
         "performance": 7.5,
         "tone_word": "confident",
         "tags": [
           "guidance_raised",
           "margin_expansion",
-          "demand_slowdown"
+          "demand_slowdown",
+          "new_product",
+          "competitor_threat"
         ],
         "quarter": "Q3",
-        "summary": "Novavax reported Q3 FY2026 revenue of $68 million, a decrease from $70 million in the prior year, driven by reduced R&D reimbursement offset by product sales growth and a $125 million milestone. The company raised its full-year 2026 adjusted revenue guidance to a midpoint of $…"
+        "summary": "Q3 2026 total revenue of $68 million was roughly flat versus $70 million a year ago, with growth in multiple categories offset by a $42 million reduction in R&D reimbursement as Novavax nears completion of Sanofi support activities. Net loss narrowed to $31 million from $202 m…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -1284,7 +1188,7 @@
       "ticker": "NXPI",
       "company": "NXP Semiconductors",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1335,7 +1239,7 @@
       "ticker": "APOG",
       "company": "Apogee Enterprises, Inc.",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1383,7 +1287,7 @@
       "ticker": "KMB",
       "company": "Kimberly-Clark",
       "sector": "Consumer Staples",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1432,7 +1336,7 @@
       "ticker": "RYTM",
       "company": "Rhythm Pharmaceuticals Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1449,16 +1353,12 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.8,
-        "performance": 8.0,
+        "sentiment": 0.6,
+        "performance": 7.5,
         "tone_word": "confident",
-        "tags": [
-          "new_product",
-          "demand_acceleration",
-          "margin_expansion"
-        ],
-        "quarter": "Q2",
-        "summary": "Q2 2026 marked the first full quarter of the U.S. launch of IMCIVREE for acquired hypothalamic obesity, with strong early demand: over 400 start forms from ~300 unique prescribers in 14 weeks, and positive payer access. Management highlighted encouraging RM-718 phase II data s…"
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Global IMCIVREE net product sales were $92.1 million in Q3, up 29% sequentially from $71.3 million, with U.S. revenue of $67.5 million (73% of total) driven by the acquired HO launch; reimbursed patients rose 20% globally. GAAP net loss was $0.61 per share, cash used in operat…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -1480,7 +1380,7 @@
       "ticker": "SHOP",
       "company": "SHOP",
       "sector": "Unknown",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1497,15 +1397,17 @@
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
-        "sentiment": 1.0,
-        "performance": 9.5,
+        "sentiment": 0.5,
+        "performance": 7.5,
         "tone_word": "confident",
         "tags": [
-          "beat_and_raise",
+          "margin_expansion",
+          "buyback_or_dividend",
+          "new_product",
           "demand_acceleration"
         ],
-        "quarter": "Q2",
-        "summary": "Shopify reported Q2 FY26 revenue of $3.6 billion (up 34% YoY) and GMV of $116 billion (up 32%), with free cash flow margin expanding to just over 18%. Management raised guidance for Q3, expecting revenue growth in the low 30s and gross profit growth in the mid-to-high 20s. The…"
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 revenue grew 32% to $3.7 billion (32% in constant currency), GMV rose 29.5% to $119 billion, and free cash flow margin was 22%. Gross profit grew 28% with gross margin at 47.6%, consistent with Q2, while subscription solutions gross margin compressed year-over-year o…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -1527,7 +1429,7 @@
       "ticker": "ZS",
       "company": "Zscaler, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1579,7 +1481,7 @@
       "ticker": "BDN",
       "company": "Brandywine Realty Trust",
       "sector": "Real Estate",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1628,7 +1530,7 @@
       "ticker": "BKH",
       "company": "Black Hills Corporation",
       "sector": "Utilities",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1646,14 +1548,17 @@
       "earnings": {
         "present": true,
         "sentiment": 0.5,
-        "performance": 7.5,
+        "performance": 5.0,
         "tone_word": "confident",
         "tags": [
-          "beat_and_raise",
-          "guidance_raised"
+          "regulatory_headwind",
+          "demand_acceleration",
+          "new_product",
+          "buyback_or_dividend",
+          "margin_expansion"
         ],
-        "quarter": "Q2",
-        "summary": "Black Hills Corporation reported Q2 FY2026 adjusted EPS of $0.54 (up from $0.38 in the prior year), driven by new rates and rider recovery that offset higher financing costs and depreciation. Management reaffirmed full-year guidance for adjusted EPS between $4.25-$4.45, repres…"
+        "quarter": "Q3",
+        "summary": "Black Hills reported Q3 2026 GAAP EPS of $0.54 including $0.03 of merger costs, or $0.57 adjusted vs $0.45 in Q3 2025; YTD adjusted EPS was $2.89 vs $2.68. The company reaffirmed 2026 adjusted EPS guidance of $4.25-$4.45 (about 6% growth at the midpoint) and said it expects to…"
       },
       "why": [
         "Early in its climb — 3 weeks up so far",
@@ -1675,7 +1580,7 @@
       "ticker": "EMR",
       "company": "Emerson Electric",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1725,7 +1630,7 @@
       "ticker": "MGRC",
       "company": "McGrath Rentcorp",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1769,7 +1674,7 @@
       "ticker": "SHLS",
       "company": "Shoals Technologies Group Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1818,7 +1723,7 @@
       "ticker": "VGZ",
       "company": "Vista Gold Corp",
       "sector": "Basic Materials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1862,7 +1767,7 @@
       "ticker": "VSTM",
       "company": "Verastem Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1880,15 +1785,15 @@
       "earnings": {
         "present": true,
         "sentiment": 0.3,
-        "performance": 2.5,
-        "tone_word": "reassuring",
+        "performance": 5.0,
+        "tone_word": "mixed",
         "tags": [
           "demand_slowdown",
           "new_product",
           "buyback_or_dividend"
         ],
         "quarter": "Q3",
-        "summary": "Verastem reported Q3 FY2026 net product revenue of $24.0 million for the AVMAPKI/FAKZYNJA CO-PACK, up 114% year over year but with new patient starts moderating after significant Q2 growth, which management attributed to late-summer seasonality; refills drove the quarter. Adju…"
+        "summary": "Verastem reported Q3 FY2026 net product revenue of $24.0 million for the AVMAPKI/FAKZYNJA CO-PACK, up 114% YoY; revenue was supported by strong refills while new patient starts moderated after significant Q2 growth and late-summer seasonality. Non-GAAP adjusted net loss widene…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -1910,7 +1815,7 @@
       "ticker": "AI",
       "company": "C3.ai Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1958,7 +1863,7 @@
       "ticker": "ARHS",
       "company": "Arhaus Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -1975,18 +1880,16 @@
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
-        "sentiment": -0.25,
-        "performance": 7.8,
-        "tone_word": "cautious",
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
         "tags": [
           "beat_and_raise",
-          "margin_contraction",
-          "demand_acceleration",
-          "supply_constraint",
-          "macro_sensitivity"
+          "margin_expansion",
+          "demand_acceleration"
         ],
-        "quarter": "Q2",
-        "summary": "Arhaus reported record Q2 net revenue of $385 million (up 7.4% YoY) and adjusted EBITDA of $70 million, both beating the high end of prior guidance due to a one-time IEEPA tariff refund benefit of approximately $24 million recognized in gross profit. Excluding this discrete it…"
+        "quarter": "Q3",
+        "summary": "Arhaus reported record third quarter net revenue of $368 million, up 6.8% year-over-year, with gross margin expanding 50 basis points to 39.2%. Management raised full-year net revenue guidance to a range of $1.465 billion-$1.485 billion and maintained profitability expectation…"
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
@@ -2008,7 +1911,7 @@
       "ticker": "BMBL",
       "company": "Bumble Inc",
       "sector": "Communication Services",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2057,7 +1960,7 @@
       "ticker": "CSTL",
       "company": "Castle Biosciences Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2074,16 +1977,17 @@
       "arc_pos": 0.3375,
       "earnings": {
         "present": true,
-        "sentiment": 0.7,
+        "sentiment": 0.5,
         "performance": 8.5,
         "tone_word": "confident",
         "tags": [
           "guidance_raised",
+          "margin_expansion",
           "demand_acceleration",
-          "margin_expansion"
+          "regulatory_headwind"
         ],
         "quarter": "Q3",
-        "summary": "Castle Biosciences reported Q3 FY2026 revenue of $102.9 million, up 24% YoY, driven by TissueCypher test report volume growth of 47% to 15,574 reports. Full-year 2026 revenue guidance was raised to $385-395 million from $365-375 million, a $20 million increase at the midpoint,…"
+        "summary": "Castle reported Q3 FY2026 revenue of $102.9 million, up 24% YoY, driven by TissueCypher test volume growth of 47% to 15,574 reports, while DecisionDx-Melanoma delivered 10,177 reports (+5% YTD). Full-year 2026 revenue guidance was raised to $385-395 million from $365-375 milli…"
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
@@ -2105,7 +2009,7 @@
       "ticker": "HNI",
       "company": "HNI Corporation",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2122,24 +2026,18 @@
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
-        "sentiment": 0.7222222222222222,
-        "performance": 8.333333333333334,
+        "sentiment": 0.5,
+        "performance": 7.5,
         "tone_word": "confident",
         "tags": [
-          "m&a_integration",
-          "synergies",
-          "demand_recovery",
           "margin_expansion",
-          "workplace_furniture",
-          "building_products",
-          "office_furniture",
-          "commercial_real_estate",
-          "home_remodeling",
-          "residential_construction",
-          "corporate_interiors"
+          "demand_acceleration",
+          "guidance_raised",
+          "new_product",
+          "macro_sensitivity"
         ],
-        "quarter": "Q2",
-        "summary": "We project double-digit EPS growth again next year, driven by expected synergies from Steelcase and legacy network optimization projects."
+        "quarter": "Q3",
+        "summary": "HNI reported Q3 FY2026 non-GAAP EPS of $1.62, up nearly 50% year-over-year and ahead of internal expectations, on organic net sales growth of 6% (total net sales up 133% including Steelcase). Legacy Workplace Furnishings non-GAAP segment operating margin expanded 390 bps to a …"
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
@@ -2161,7 +2059,7 @@
       "ticker": "HRMY",
       "company": "Harmony Biosciences Holdings, Inc.",
       "sector": "Health Care",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2178,17 +2076,17 @@
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
-        "sentiment": 0.9,
-        "performance": 8.5,
-        "tone_word": "confident",
+        "sentiment": 0.2,
+        "performance": 5.0,
+        "tone_word": "steady",
         "tags": [
-          "guidance_raised",
+          "margin_contraction",
           "demand_acceleration",
           "new_product",
-          "margin_expansion"
+          "regulatory_headwind"
         ],
-        "quarter": "Q2",
-        "summary": "Harmony Biosciences reported record Q2 2026 WAKIX net revenue of $261.3 million, up 30% year-over-year and 21% sequentially, and reiterated full-year guidance of $1.0-$1.04 billion, on track to exceed $1 billion. The company disclosed encouraging phase I SAD data for BP-205, a…"
+        "quarter": "Q3",
+        "summary": "WAKIX net revenue was $269M vs $239M a year ago (+12.6% YoY) with 400 net patient adds and ~9,350 average patients, described as in line with internal expectations; full-year guidance of $1.0-1.04B was reiterated, not raised. Net income fell to $48M ($0.81 diluted) from $51M (…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -2210,7 +2108,7 @@
       "ticker": "IT",
       "company": "Gartner",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2227,18 +2125,12 @@
       "arc_pos": 0.35,
       "earnings": {
         "present": true,
-        "sentiment": 0.6,
-        "performance": 7.0,
-        "tone_word": "confident",
-        "tags": [
-          "guidance_raised",
-          "margin_expansion",
-          "demand_acceleration",
-          "buyback_or_dividend",
-          "macro_sensitivity"
-        ],
-        "quarter": "Q2",
-        "summary": "Gartner's Q2 2026 revenue was $1.7 billion, up 3% as reported and 2% FX neutral, with EBITDA of $466 million up 6% and adjusted EPS of $4.37 up 24% year-over-year. Contract value grew 2% year-over-year, accelerating from Q1, and free cash flow rose 9% to $378 million. Manageme…"
+        "sentiment": 0.2,
+        "performance": 6.5,
+        "tone_word": "steady",
+        "tags": [],
+        "quarter": "Q3",
+        "summary": "Gartner reported Q3 FY2026 revenue of $1.5 billion, up 2% reported and 3% FX-neutral, with adjusted EPS of $3.59 up 30% and EBITDA of $364 million up 8%. Full-year guidance was raised across revenue (at or above $6.405 billion), EBITDA (at or above $1.615 billion, up $45 milli…"
       },
       "why": [
         "Early in its climb — 8 weeks up so far",
@@ -2260,7 +2152,7 @@
       "ticker": "NWE",
       "company": "NorthWestern Energy",
       "sector": "Utilities",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2308,7 +2200,7 @@
       "ticker": "ONL",
       "company": "Orion Properties Inc",
       "sector": "Real Estate",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2325,16 +2217,15 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
+        "sentiment": 0.1,
+        "performance": 5.5,
+        "tone_word": "mixed",
         "tags": [
           "guidance_raised",
-          "demand_acceleration",
-          "buyback_or_dividend"
+          "margin_expansion"
         ],
         "quarter": "Q3",
-        "summary": "Orion Properties reported Q3 FY2026 total revenues of $35.4 million, a decline from $37.1 million in the prior year quarter, alongside a net loss of $3.3 million compared to a profit of $69 million last year. Management raised the 2026 Core FFO guidance range to $0.75-$0.78 pe…"
+        "summary": "Orion reported Q3 2026 total revenues of $35.4 million, down from $37.1 million a year earlier, with a net loss of $3.3 million ($0.06/share) versus $69 million ($1.23/share) in Q3 2025. Core FFO rose to $11.4 million ($0.20/share) from $11 million ($0.19/share), and full-year…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -2356,7 +2247,7 @@
       "ticker": "PACB",
       "company": "Pacific Biosciences of California Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2404,7 +2295,7 @@
       "ticker": "PRG",
       "company": "PROG Holdings, Inc.",
       "sector": "Financials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2454,7 +2345,7 @@
       "ticker": "PRGS",
       "company": "Progress Software Corporation",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2502,7 +2393,7 @@
       "ticker": "SPSC",
       "company": "SPS Commerce, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2550,7 +2441,7 @@
       "ticker": "AEYE",
       "company": "AudioEye, Inc.",
       "sector": "Information Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2599,7 +2490,7 @@
       "ticker": "ENR",
       "company": "Energizer",
       "sector": "Consumer Staples",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2612,7 +2503,7 @@
       "vol_ratio": 1.0,
       "event": "pullback_resume",
       "gate_tier": null,
-      "blackout": false,
+      "blackout": true,
       "arc_pos": 0.3125,
       "earnings": {
         "present": true,
@@ -2629,11 +2520,13 @@
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
-        "Trading above its 30-week line — the trend is with it"
+        "Trading above its 30-week line — the trend is with it",
+        "Earnings soon — wait, don't chase"
       ],
       "why_zh": [
         "上升初期 — 已上行 5 周",
-        "位于 30 周均线之上 — 趋势向好"
+        "位于 30 周均线之上 — 趋势向好",
+        "财报临近 — 先等待，不要追高"
       ],
       "atr_14w": 1.9883,
       "atr_ext": 1.55,
@@ -2647,7 +2540,7 @@
       "ticker": "MATV",
       "company": "Mativ Holdings Inc",
       "sector": "Basic Materials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2666,17 +2559,16 @@
         "present": true,
         "sentiment": 0.1,
         "performance": 2.5,
-        "tone_word": "reassuring",
+        "tone_word": "mixed",
         "tags": [
           "margin_contraction",
           "demand_slowdown",
           "supply_constraint",
           "new_product",
-          "regulatory_headwind",
-          "macro_sensitivity"
+          "regulatory_headwind"
         ],
         "quarter": "Q3",
-        "summary": "Q3 net sales were $500 million, down ~2% organically and ~3% as reported, with adjusted EBITDA of $62 million down 7% and margin contracting 50 bps to 12.5%. FAM delivered record organic growth of over 11% and EBITDA up 20% with 150 bps margin expansion to 18.1%, while SAS sal…"
+        "summary": "Mativ reported Q3 FY2026 net sales of $500 million, down nearly 3% as reported and more than 2% organically, with adjusted EBITDA of $62 million down 7% and margin contracting 50 bps to 12.5%. FAM delivered record organic growth of more than 11% (sales $219 million, EBITDA $40…"
       },
       "why": [
         "Early in its climb — 5 weeks up so far",
@@ -2698,7 +2590,7 @@
       "ticker": "PCVX",
       "company": "Vaxcyte Inc",
       "sector": "Healthcare",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2756,7 +2648,7 @@
       "ticker": "REAL",
       "company": "Therealreal Inc",
       "sector": "Consumer Cyclical",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2801,60 +2693,10 @@
       "industry_percentile": 69.6
     },
     {
-      "ticker": "USPH",
-      "company": "U.S. Physical Therapy, Inc.",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-11-06",
-      "stage_week_end": "2026-11-06",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 51,
-      "ma30_slope_pct5w": 3.355,
-      "pct_vs_ma30": 31.78,
-      "mansfield_rs": 26.22,
-      "vol_ratio": 0.9,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "margin_expansion",
-          "demand_acceleration",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q3",
-        "summary": "Revenue rose 13% to $223 million with PT visits up 8%, adjusted EPS of $0.80 up $0.14, and EBITDA of $28 million up 16%, driven largely by hospital affiliations (revenue share from <5% in Q2 to >13% in Q3) pushing revenue per visit up $5 to $111. Adjusted PT margin expanded 60…"
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 6.0589,
-      "atr_ext": 3.96,
-      "atr_pct_price": 0.0609,
-      "sata_score": 9,
-      "sata_change_1w": 1,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": null
-    },
-    {
       "ticker": "VALU",
       "company": "Value Line Inc",
       "sector": "Financial",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2898,7 +2740,7 @@
       "ticker": "WK",
       "company": "Workiva Inc",
       "sector": "Technology",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2947,7 +2789,7 @@
       "ticker": "HCSG",
       "company": "Healthcare Services Group, Inc.",
       "sector": "Industrials",
-      "stage_source_asof": "2026-11-06",
+      "stage_source_asof": "2026-11-12",
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
@@ -2991,6 +2833,153 @@
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 69.2
+    },
+    {
+      "ticker": "MHK",
+      "company": "Mohawk Industries",
+      "sector": "Consumer Discretionary",
+      "stage_source_asof": "2026-11-12",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 5,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 4.609,
+      "pct_vs_ma30": 26.14,
+      "mansfield_rs": 25.72,
+      "vol_ratio": 1.55,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3125,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.2,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "margin_contraction",
+          "demand_slowdown",
+          "buyback_or_dividend",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 sales were $2.8 billion, up 1% as reported and essentially flat adjusting for FX and an extra shipping day; volumes fell 4% while price/mix rose 4%. Adjusted EPS was $2.72, adjusted operating income $200 million (down $5 million YoY), and adjusted EBITDA margin 12.7%…"
+      },
+      "why": [
+        "Early in its climb — 5 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 5 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 11.5693,
+      "atr_ext": 2.696,
+      "atr_pct_price": 0.07686,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": 90.5
+    },
+    {
+      "ticker": "MLKN",
+      "company": "MillerKnoll, Inc.",
+      "sector": "Industrials",
+      "stage_source_asof": "2026-11-12",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 4.612,
+      "pct_vs_ma30": 9.16,
+      "mansfield_rs": 11.31,
+      "vol_ratio": 0.64,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": -0.2,
+        "performance": 5.0,
+        "tone_word": "cautious",
+        "tags": [
+          "guidance_lowered",
+          "margin_contraction",
+          "demand_slowdown",
+          "macro_sensitivity"
+        ],
+        "quarter": "Q1",
+        "summary": "First quarter sales were $923 million, down 3.4% year-over-year, while adjusted EPS of $0.53 beat the guidance range due to a one-time $0.11 per share benefit from IEPA tariff refunds. Management reduced its full-year net sales guidance to a midpoint of 3% growth and maintaine…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.6215,
+      "atr_ext": 1.113,
+      "atr_pct_price": 0.07545,
+      "sata_score": 6,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 65.4
+    },
+    {
+      "ticker": "PKG",
+      "company": "Packaging Corporation of America",
+      "sector": "Materials",
+      "stage_source_asof": "2026-11-12",
+      "stage_week_end": "2026-11-06",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 4,
+      "fresh": true,
+      "sga_score": 50,
+      "ma30_slope_pct5w": 2.848,
+      "pct_vs_ma30": 7.21,
+      "mansfield_rs": 8.76,
+      "vol_ratio": 1.21,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.4,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "margin_expansion",
+          "buyback_or_dividend",
+          "macro_sensitivity",
+          "demand_slowdown"
+        ],
+        "quarter": "Q3",
+        "summary": "Q3 FY2026 adjusted EPS of $3.04 beat prior guidance of $2.91, up from $2.73 a year ago, on net sales of $2.6 billion versus $2.3 billion. Packaging EBITDA rose to $578 million at a 23.9% margin (from 23.1%), and roughly $0.24 of the $0.31 EPS improvement came from the acquired…"
+      },
+      "why": [
+        "Early in its climb — 4 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 4 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 11.8612,
+      "atr_ext": 1.416,
+      "atr_pct_price": 0.0475,
+      "sata_score": 7,
+      "sata_change_1w": -1,
+      "stage_detailed": "2X_fallback_bullish",
+      "industry_percentile": 100.0
     }
   ],
   "warnings_stage3": [
@@ -3001,46 +2990,16 @@
       "sga_score": 40
     },
     {
-      "ticker": "BNL",
-      "company": "Broadstone Net Lease, Inc.",
-      "weeks_in_stage": 5,
-      "sga_score": 40
-    },
-    {
       "ticker": "DNTH",
       "company": "Dianthus Therapeutics Inc",
       "weeks_in_stage": 2,
       "sga_score": 40
     },
     {
-      "ticker": "EQIX",
-      "company": "Equinix",
+      "ticker": "FOXF",
+      "company": "Fox Factory",
       "weeks_in_stage": 2,
       "sga_score": 40
-    },
-    {
-      "ticker": "CGON",
-      "company": "Cg Oncology Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 39
-    },
-    {
-      "ticker": "EFC",
-      "company": "Ellington Financial, Inc.",
-      "weeks_in_stage": 1,
-      "sga_score": 37
-    },
-    {
-      "ticker": "ARE",
-      "company": "Alexandria Real Estate Equities",
-      "weeks_in_stage": 13,
-      "sga_score": 36
-    },
-    {
-      "ticker": "SWBI",
-      "company": "Smith & Wesson Brands Inc",
-      "weeks_in_stage": 2,
-      "sga_score": 36
     },
     {
       "ticker": "TDAY",
@@ -3049,9 +3008,21 @@
       "sga_score": 36
     },
     {
-      "ticker": "SGHC",
-      "company": "Super Group (SGHC) Limited",
-      "weeks_in_stage": 2,
+      "ticker": "CF",
+      "company": "CF Industries",
+      "weeks_in_stage": 3,
+      "sga_score": 35
+    },
+    {
+      "ticker": "ANTX",
+      "company": "AN2 Therapeutics Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 33
+    },
+    {
+      "ticker": "LOB",
+      "company": "Live Oak Bancshares Inc",
+      "weeks_in_stage": 9,
       "sga_score": 32
     },
     {
@@ -3061,33 +3032,45 @@
       "sga_score": 32
     },
     {
-      "ticker": "VRTS",
-      "company": "Virtus Investment Partners, Inc.",
-      "weeks_in_stage": 7,
-      "sga_score": 32
-    },
-    {
-      "ticker": "RUSHA",
-      "company": "Rush Enterprises",
-      "weeks_in_stage": 6,
-      "sga_score": 31
-    },
-    {
-      "ticker": "AURA",
-      "company": "Aura Biosciences Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 30
-    },
-    {
       "ticker": "RIOT",
       "company": "Riot Platforms Inc",
       "weeks_in_stage": 1,
       "sga_score": 29
     },
     {
+      "ticker": "ACRS",
+      "company": "Aclaris Therapeutics Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 27
+    },
+    {
+      "ticker": "DLR",
+      "company": "Digital Realty",
+      "weeks_in_stage": 5,
+      "sga_score": 27
+    },
+    {
+      "ticker": "NRIM",
+      "company": "Northrim Bancorp Inc",
+      "weeks_in_stage": 1,
+      "sga_score": 27
+    },
+    {
       "ticker": "ACEL",
       "company": "Accel Entertainment Inc",
       "weeks_in_stage": 8,
+      "sga_score": 25
+    },
+    {
+      "ticker": "CBAN",
+      "company": "Colony Bankcorp Inc",
+      "weeks_in_stage": 4,
+      "sga_score": 25
+    },
+    {
+      "ticker": "FLR",
+      "company": "Fluor",
+      "weeks_in_stage": 3,
       "sga_score": 25
     },
     {
@@ -3097,15 +3080,9 @@
       "sga_score": 25
     },
     {
-      "ticker": "LXRX",
-      "company": "Lexicon Pharmaceuticals Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 25
-    },
-    {
-      "ticker": "RNAC",
-      "company": "Cartesian Therapeutics Inc",
-      "weeks_in_stage": 4,
+      "ticker": "SPCE",
+      "company": "Virgin Galactic Holdings Inc",
+      "weeks_in_stage": 1,
       "sga_score": 25
     },
     {
@@ -3113,6 +3090,18 @@
       "company": "Supernus, Inc.",
       "weeks_in_stage": 8,
       "sga_score": 20
+    },
+    {
+      "ticker": "COCO",
+      "company": "The Vita Coco Company",
+      "weeks_in_stage": 8,
+      "sga_score": 19
+    },
+    {
+      "ticker": "GRNT",
+      "company": "Granite Ridge Resources Inc",
+      "weeks_in_stage": 7,
+      "sga_score": 19
     }
   ],
   "sectors": [

@@ -9,6 +9,7 @@ public rendered HTML. They may appear only in the separate server-protected
 """
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
@@ -75,6 +76,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-15",
                     "fires_per_year": 3.5,
                     "edge_wr_test": 0.20,
+                    "edge_wr_train": 0.10,
                     "consistent": True,
                 },
                 # Rank 2 (gated)
@@ -91,6 +93,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-14",
                     "fires_per_year": 2.8,
                     "edge_wr_test": 0.15,
+                    "edge_wr_train": -0.02,
                     "consistent": False,
                 },
                 # Rank 3 (gated)
@@ -107,6 +110,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-13",
                     "fires_per_year": 2.0,
                     "edge_wr_test": 0.10,
+                    "edge_wr_train": 0.08,
                     "consistent": True,
                 },
                 # Rank 4 — would be rank 4 if there were more
@@ -123,6 +127,7 @@ def _make_raw(*, free_active=("FREEAA",), gated2_active=("GATEDBB",),
                     "last_fire": "2026-07-12",
                     "fires_per_year": 1.5,
                     "edge_wr_test": 0.05,
+                    "edge_wr_train": -0.01,
                     "consistent": False,
                 },
                 # Inactive combo (should NOT count toward n_active_total)
@@ -209,7 +214,9 @@ def test_build_context_sort_by_rank_score():
 def test_build_context_none_raw():
     ctx = build_context(None, {})
     assert ctx["combos"] == []
-    assert ctx["n_active_total"] == 0
+    assert ctx["n_active_total"] is None
+    assert ctx["source_status"] == "unavailable"
+    assert ctx["source_generation"] is None
     assert ctx["asof"] is None
 
 
@@ -337,6 +344,9 @@ def test_shipped_shell_and_protected_payload_are_paired():
     assert payload["gated"] is True
     assert payload["required_tier"] == "essential"
     assert PAYLOAD_URL in html
+    assert payload["source_status"] == "available"
+    assert payload["source_generation"]["sha256"] in html
+    assert payload["source_generation"]["generated_utc"] == payload["built"]
     for combo in payload["combos"]:
         assert combo["active_count"] == len(combo["active_tickers"])
         assert f'data-confluence-combo="{combo["combo_id"]}"' in html
@@ -348,177 +358,112 @@ def test_shipped_shell_and_protected_payload_are_paired():
 # the synthetic context so a fixture change cannot silently green a paraphrase.
 _TIPS = {
     "T1": (
-        "How many proven signal line-ups are firing across the large-cap list today. A line-up only appears here if it cleared the history gates below.",
-        "今日在大盘股名单中触发的、且已通过历史门槛的信号组合数量。未达门槛的组合不会出现在这里。",
+        "Eligible active signal combinations in this source snapshot, not stocks. The list below shows up to three combinations in source rank order.",
+        "此数据快照中符合条件的活跃信号组合数，不是股票数。下方最多展示按源数据排名的前三组。",
     ),
     "T2": (
-        "Ranked by the cautious end of its recent win rate — a line-up with fewer months behind it is pushed down, not up.",
-        "按近年胜率的保守下限排序——历史月份越少的组合排名越靠后，而非靠前。",
+        "Source ordering uses recent monthly win averages and a small-sample penalty relative to random entry. This ranking heuristic does not establish statistical significance.",
+        "源数据按近年月均胜率、样本量惩罚和随机入场基准排序。这是排序方法，不代表统计显著性。",
     ),
     "T3": (
-        "Every time all of this line-up's signals were true for a stock on the same day counts as one sighting. The yearly figure is those sightings spread over the span between the first and the last.",
-        "该组合的全部信号在同一天对同一只股票同时成立，即计为一次出现。「每年约 N 次」是把这些次数摊到首末两次之间的年数上。",
-    ),
-    "T4": (
-        "Out of the recent months where this line-up fired, the share that ended higher 21 trading days later — about a calendar month. Each month counts once, so a busy month can't inflate it.",
-        "在近年触发过的月份中，21 个交易日（约一个自然月）后收高的月份占比。每个月只计一次，密集触发不会虚增。",
-    ),
-    "T5": (
-        "The same reading on the years before the split — the out-of-sample check. A line-up that only works after the split is the one to distrust.",
-        "同一读数应用于分割日之前的年份——即样本外检验。只在分割日之后才有效的组合最值得怀疑。",
+        "A sighting starts when a stock's full signal combination changes from false to true. Consecutive days that stay true do not add sightings. The yearly figure averages sightings over the first-to-last span.",
+        "某只股票的完整信号组合由不成立变为成立，计为一次触发。连续成立的日期不重复计数。年均次数按首次至末次的时间跨度计算。",
     ),
     "T6a": (
-        "Read on daily bars — this signal has to be true on the day.",
-        "按日线读取——该信号须在当日成立。",
+        "This leg is evaluated on daily bars. The indicator itself may use a longer lookback.",
+        "此条件在日线数据上计算；指标本身可能使用更长的回看窗口。",
     ),
     "T6b": (
-        "Read on weekly bars — a slower leg that only changes a few times a year.",
-        "按周线读取——变化较慢的一条，一年只切换几次。",
+        "This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties.",
+        "此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。",
     ),
     "T7": (
-        "Ten blocks, one per win in ten. Filled blocks are the recent win rate rounded to the nearest whole win.",
-        "十个方块代表十次中的胜负。填充的方块数是近年胜率四舍五入到整数的结果。",
+        "Ten blocks summarize the recent monthly win average, rounded to the nearest tenth. They are not ten individual trades.",
+        "十格概括近年月均胜率，四舍五入到十分之一；并非十笔独立交易。",
     ),
     "T8": (
         "Against a baseline of entering the same stocks on random dates over the same period. Points are percentage points of win rate, not return.",
         "对照基准为：同期在相同股票上随机选日入场。此处的「个百分点」指胜率的百分点，而非收益率。",
     ),
-    "T9a": (
-        "It beat random entry in the older years as well as the recent ones. Both halves had to clear the bar, not just the recent one.",
-        "在更早年份与近年，它都跑赢了随机入场。两段样本须同时达标，而非只看近年。",
-    ),
-    "T9b": (
-        "It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it.",
-        "它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。",
-    ),
     "T10": (
-        "How many of today's large-cap names this line-up matches right now. The names sit behind the trial; the count does not.",
-        "该组合当前匹配的大盘股数量。具体名称需试用后查看，数量本身不设限。",
+        "Matching large-cap stocks in this source snapshot. Their count is public; names require an entitled response for this same snapshot.",
+        "此源数据快照中匹配的大盘股数量。数量公开；名称须来自有权限访问的同一快照。",
     ),
 }
 
 
-def test_render_html_lens_tips_exact_en_zh():
-    """Every frozen T1–T10 pair is present verbatim on the rendered page."""
+def test_render_html_retained_lens_tips_en_zh():
+    """Retained legacy tips remain bilingual; rates use native disclosure."""
     html = _rendered_html()
     for key, (en, zh) in _TIPS.items():
-        assert f'data-tip-en="{en}"' in html, f"{key} EN missing or paraphrased"
-        assert f'data-tip-zh="{zh}"' in html, f"{key} ZH missing or paraphrased"
+        assert f'data-tip-en="{en}"' in html, f"{key} EN missing"
+        assert f'data-tip-zh="{zh}"' in html, f"{key} ZH missing"
+    assert html.count('<details class="lc-method">') == 3
+    assert "How these readings are calculated" in html
+    assert "这些读数如何计算" in html
+    assert "not the fraction of winning months or the pooled win rate" in html
+    assert "这不是盈利月份占比，也不是所有触发次数合并后的胜率" in html
 
-
-def test_render_html_lens_receipts_carry_counts_from_context():
-    """T1/T2/T4/T5/T8 receipt pairs interpolate live context, not placeholders."""
+def test_render_html_receipts_and_visible_samples_carry_context():
+    """Population/rank receipts and visible sample counts use source values."""
     raw = _make_raw()
+    raw["split_date"] = "2019-06-01"
     ctx = build_context(raw, {})
     html = render_html(_ROOT, ctx)
-    c0 = ctx["combos"][0]
-    split = ctx["split_date"]
-    asof = ctx["asof"]
-
-    assert (
-        f'data-tip-rc-en="Gates: ≥40 fires pooled · ≥24 distinct months pooled · ≥10 tickers · ≥15 fires and ≥12 distinct months since {split} · horizon 21 trading days"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-zh="门槛：合计触发 ≥40 次 · 合计 ≥24 个不同月份 · ≥10 只股票 · {split} 起触发 ≥15 次且覆盖 ≥12 个不同月份 · 持有期 21 个交易日"'
-        in html
-    )
-    assert (
-        'data-tip-rc-en="Wilson lower bound on the month-collapsed win rate, minus the random-entry baseline, 21-day horizon, recent half"'
-        in html
-    )
-    assert (
-        'data-tip-rc-zh="按月合并胜率的 Wilson 置信下限，减去随机入场基准 · 21 日持有期 · 近期样本"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-en="{c0["months_test"]} months · {c0["n_test"]} fires · {split} → {asof} · win = up after 21 trading days"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-zh="{c0["months_test"]} 个月 · 触发 {c0["n_test"]} 次 · {split} 至 {asof} · 胜 = 21 个交易日后上涨"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-en="{c0["months_train"]} months · {c0["n_train"]} fires · first fire {c0["first_fire"]} → {split}"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-zh="{c0["months_train"]} 个月 · 触发 {c0["n_train"]} 次 · 首次触发 {c0["first_fire"]} 至 {split}"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-en="Random-entry baseline, month-collapsed win rate, 21-day horizon, {split} → {asof}"'
-        in html
-    )
-    assert (
-        f'data-tip-rc-zh="随机入场基准 · 按月合并胜率 · 21 日持有期 · {split} 至 {asof}"'
-        in html
-    )
-    # BMV-4: rendered combos have a real train sample, so the empty-era
-    # receipt is not the branch this artifact supports.
+    c0, split = ctx["combos"][0], ctx["split_date"]
+    assert f"≥15 fires and ≥12 distinct months since {split}" in html
+    assert f"{split} 起触发 ≥15 次且覆盖 ≥12 个不同月份" in html
+    assert "Wilson-based ranking heuristic on the monthly win average" in html
+    for half in ("test", "train"):
+        assert f'{c0["months_" + half]} months · {c0["n_" + half]} fires' in html
+        assert f'{c0["months_" + half]} 个月 · {c0["n_" + half]} 次触发' in html
+    assert f"Recent is the test period, with fire dates from {split}" in html
+    assert f"近年为测试期，触发日期自 {split} 起" in html
+    assert "Older is the training period, before that date" in html
+    assert "Random-entry monthly win average · 21 trading days" in html
+    assert '<span class="l-en">unavailable</span>' in html
+    assert '<span class="l-zh">暂无数据</span>' in html
     assert "No older-era readings for this line-up" not in html
-    assert "该组合没有更早年份的读数" not in html
 
-
-def test_render_html_honesty_promise_and_hardcoded_2018_gone():
-    """Line-590 four-part ruling: healed promise, no coin-flip, no hardcoded 2018."""
+def test_render_html_honesty_promise_and_dynamic_split():
     html = _rendered_html()
     assert "The exact counts sit next to every rate." not in html
-    assert "具体次数就标在每个胜率旁边。" not in html
-    assert "Hover or tap any win rate to see how many months it rests on." in html
-    assert "将鼠标移到任一胜率上（手机端点按），即可看到它基于多少个月的读数。" in html
+    assert "Months and fires are shown beside each rate; open “How these readings are calculated” for definitions." in html
+    assert "月份与触发次数列在各读数旁；打开「这些读数如何计算」可查看定义。" in html
     assert "coin-flip" not in html
-    assert "points better than entering at random" in html
-    assert "较随机入场高" in html
-    assert "recent read only — thinner older record" not in html
-    assert "仅近年数据 — 更早记录较薄" not in html
-    assert "older years didn't back it up" in html
-    assert "更早年份未能印证" in html
-
+    assert "percentage points vs random entry" in html
+    assert "Above baseline only in the recent period" in html
+    assert "仅近年高于基准" in html
     src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(encoding="utf-8")
-    assert "wins recently (2018+)" not in src
-    assert "近年胜率 (2018起)" not in src
+    assert "Recent (2018+)" not in src and "近年（2018起）" not in src
     assert "split_date[:4]" in src
-
 
 def test_render_html_split_year_is_derived_not_hardcoded():
     """A non-2018 split_date must appear in the unit label; 2018 must not."""
     raw = _make_raw()
     raw["split_date"] = "2020-06-15"
     html = render_html(_ROOT, build_context(raw, {}))
-    assert "wins recently (2020+)" in html
-    assert "近年胜率 (2020起)" in html
-    assert "wins recently (2018+)" not in html
-    assert "近年胜率 (2018起)" not in html
+    assert "Recent (2020+)" in html
+    assert "近年（2020起）" in html
+    assert "Recent (2018+)" not in html
+    assert "近年（2018起）" not in html
 
 
-def test_render_html_lens_hosts_and_no_leg_text_tip():
-    """Tips sit on the specified hosts; leg display names are not invented into tips."""
+def test_render_html_rate_disclosure_and_retained_lens_hosts():
+    """Rate definitions have a native summary; leg names gain no invented tips."""
     html = _rendered_html()
     assert 'class="hero-state" tabindex="0"' in html
     assert "lc-rank cs-tipped" in html
-    assert "lc-wr-big mono cs-tipped" in html
-    assert "lc-wr-old cs-tipped" in html
-    assert 'class="lc-since" tabindex="0"' in html
-    assert "cs-tipped" not in html.split('class="hero-state"', 1)[1].split(">", 1)[0]
-    assert "cs-tipped" not in html.split('class="lc-since"', 1)[1].split(">", 1)[0]
+    assert 'class="lc-wr-big mono"' in html and 'class="lc-wr-old"' in html
+    assert "lc-wr-big mono cs-tipped" not in html
+    assert "lc-wr-old cs-tipped" not in html
+    assert '<details class="lc-method">' in html and "<summary>" in html
     assert 'class="leg-tf w" tabindex="0"' in html
     assert 'class="leg-tf d" tabindex="0"' in html
-    # BMV-3: no tip on the leg text span itself.
-    assert "leg-txt" in html
     for chunk in html.split('class="leg-txt"')[1:]:
-        assert not chunk.lstrip().startswith("data-tip-")
-        opening = chunk.split(">", 1)[0]
-        assert "data-tip-en" not in opening
-    # Tipped hosts must not carry title= (CI-guarded i18n rule).
-    assert "data-tip-en=" in html
-    assert not any(
-        "title=" in tag and "data-tip-en=" in tag
-        for tag in html.split("<")
-        if "data-tip-en=" in tag
-    )
-
+        assert "data-tip-en" not in chunk.split(">", 1)[0]
+    assert not any("title=" in tag and "data-tip-en=" in tag
+                   for tag in html.split("<") if "data-tip-en=" in tag)
 
 def test_gates_receipt_literals_match_minerconfig_defaults():
     """T1 Gates numbers are literals; they must track MinerConfig defaults."""
@@ -549,61 +494,238 @@ def test_gates_receipt_literals_match_minerconfig_defaults():
     )
 
 
-def test_render_html_t9b_sign_conditional_and_edge_chip_sign():
-    """M1+m1: two-part T9b only when edge_test_pp > 0; edge chip never '+-'."""
-    src = (_ROOT / "templates" / "confluence_screener.html.j2").read_text(
-        encoding="utf-8"
-    )
-    assert "+{{ _edge }}" not in src
-    assert "+{{" not in src.split("points better than entering at random", 1)[0][-40:]
-
+def test_render_html_measured_comparison_sign_and_period_support():
     html_pos = _rendered_html()
-    assert (
-        'data-tip-en="It beat random entry recently, but not in the older years — so the recent reading is the only one supporting it."'
-        in html_pos
-    )
-    assert (
-        "data-tip-zh=\"它近年跑赢了随机入场，但在更早年份没有——因此只有近年读数在支持它。\""
-        in html_pos
-    )
-    assert "older years didn't back it up" in html_pos
-    assert "更早年份未能印证" in html_pos
-    assert "Hasn't beaten random entry in the recent half" not in html_pos
-    assert "近段未能跑赢随机入场" not in html_pos
-    assert "+20 points better than entering at random" in html_pos
-    assert "较随机入场高 20 个百分点" in html_pos
-    assert "+-" not in html_pos
+    assert "Above baseline in both periods" in html_pos
+    assert "两期均高于基准" in html_pos
+    assert "Above baseline only in the recent period" in html_pos
+    assert "仅近年高于基准" in html_pos
+    assert "Not above baseline recently" not in html_pos
+    assert "+20.0 percentage points vs random entry" in html_pos
+    for value in (-0.02, 0):
+        raw = copy.deepcopy(_make_raw())
+        for combo in raw["combos"]["long"]:
+            if not combo.get("consistent"):
+                combo["edge_wr_test"] = value
+        html = render_html(_ROOT, build_context(raw, {}))
+        assert "Not above baseline recently" in html
+        assert "近年未高于基准" in html
+        assert "Above baseline only in the recent period" not in html
+        assert f"{value * 100:+.1f} percentage points vs random entry" in html
+        assert "+-" not in html
 
-    raw_neg = _make_raw()
-    for combo in raw_neg["combos"]["long"]:
-        if not combo.get("consistent"):
-            combo["edge_wr_test"] = -0.02
-    html_neg = render_html(_ROOT, build_context(raw_neg, {}))
-    assert "Hasn't beaten random entry in the recent half" in html_neg
-    assert "近段未能跑赢随机入场" in html_neg
-    assert (
-        "data-tip-en=\"Hasn't beaten random entry in the recent half — so the recent reading is not supporting it.\""
-        in html_neg
-    )
-    assert (
-        "data-tip-zh=\"近段未能跑赢随机入场——因此近年读数并不支持它。\""
-        in html_neg
-    )
-    assert "beat random entry recently" not in html_neg
-    assert "它近年跑赢了随机入场，但在更早年份没有" not in html_neg
-    assert "older years didn't back it up" not in html_neg
-    assert "更早年份未能印证" not in html_neg
-    assert "-2 points better than entering at random" in html_neg
-    assert "较随机入场 -2 个百分点" in html_neg
-    assert "+-" not in html_neg
-    assert "+-2" not in html_neg
+def test_eligible_population_is_not_the_display_limit():
+    ctx = build_context(_make_raw(), {})
+    html = render_html(_ROOT, ctx)
+    assert ctx["n_active_total"] == 4
+    assert len(ctx["combos"]) == 3
+    assert '<span class="n">4</span> active line-ups' in html
+    assert "Showing 3 of 4 eligible line-ups." in html
+    assert "Two more are lining up behind it" not in html
+    assert "12 months · 15 fires" in html
+    assert "36 months · 40 fires" in html
 
-    raw_zero = _make_raw()
-    for combo in raw_zero["combos"]["long"]:
-        if not combo.get("consistent"):
-            combo["edge_wr_test"] = 0
-    html_zero = render_html(_ROOT, build_context(raw_zero, {}))
-    assert "Hasn't beaten random entry in the recent half" in html_zero
-    assert "近段未能跑赢随机入场" in html_zero
-    assert "beat random entry recently" not in html_zero
-    assert "+-" not in html_zero
+
+@pytest.mark.parametrize("count", [1, 2, 3])
+def test_display_scope_and_cta_follow_available_rows(count):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"] = raw["combos"]["long"][:count]
+    ctx = build_context(raw, {})
+    html = render_html(_ROOT, ctx)
+    assert f"Showing {count} of {count} eligible line-ups." in html
+    assert ('id="confluence-paid-cta"' in html) == (count > 1)
+    assert len(build_premium_payload(raw, {})["combos"]) == count - 1
+
+
+def test_verified_zero_and_unavailable_are_different_states():
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"] = []
+    ctx = build_context(raw, {})
+    assert ctx["source_status"] == "available"
+    assert ctx["n_active_total"] == 0
+    html = render_html(_ROOT, ctx)
+    assert 'data-source-state="available-empty"' in html
+    assert "No eligible line-ups" in html
+    missing = render_html(_ROOT, build_context(None, {}))
+    assert 'data-source-state="unavailable"' in missing
+    assert "number of matching line-ups is unknown" in missing
+    assert "No eligible line-ups" not in missing
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda raw: raw.update(generated_utc="2026-07-19"),
+    lambda raw: raw.update(generated_utc="not-a-clock"),
+    lambda raw: raw.update(universe_n=True),
+    lambda raw: raw.update(combos={"long": {}}),
+    lambda raw: raw["combos"]["long"].append(None),
+    lambda raw: raw["combos"]["long"][0].update(active_now="FREEAA"),
+    lambda raw: raw["combos"]["long"][0].update(active_now=["FREEAA", "FREEAA"]),
+    lambda raw: raw["combos"]["long"][0].update(active_now=["../private"]),
+    lambda raw: raw["combos"]["long"][0].update(h21=[]),
+    lambda raw: raw["combos"]["long"][0].update(rank_score=float("nan")),
+    lambda raw: raw["combos"]["long"][0]["h21"].update(wr_mc_test=1.1),
+    lambda raw: raw["combos"]["long"][0]["h21"].update(months_test=None),
+    lambda raw: raw["combos"]["long"][0].update(legs=[999]),
+    lambda raw: raw["combos"]["long"][1].update(id="L0001"),
+])
+def test_malformed_source_cannot_claim_verified_zero(mutation):
+    raw = copy.deepcopy(_make_raw())
+    mutation(raw)
+    ctx = build_context(raw, {})
+    paid = build_premium_payload(raw, {})
+    assert ctx["source_status"] == paid["source_status"] == "unavailable"
+    assert ctx["n_active_total"] is None
+    assert ctx["combos"] == paid["combos"] == []
+    assert ctx["source_generation"] is paid["source_generation"] is None
+
+
+def test_both_projections_bind_exact_artifact_content_not_only_its_clock():
+    a = _make_raw()
+    b = copy.deepcopy(a)
+    b["combos"]["long"][1]["active_now"] = ["DIFFERENT"]
+    public_a = build_context(a, {})
+    paid_a = build_premium_payload(a, {})
+    paid_b = build_premium_payload(b, {})
+    assert public_a["source_generation"] == paid_a["source_generation"]
+    assert paid_a["built"] == paid_b["built"]
+    assert paid_a["source_generation"]["sha256"] != paid_b["source_generation"]["sha256"]
+    reordered = dict(reversed(list(a.items())))
+    assert build_context(reordered, {})["source_generation"] == public_a["source_generation"]
+    public_text = render_html(_ROOT, public_a)
+    assert "GATEDBB" not in public_text
+    assert "GATEDCC" not in public_text
+    assert "DIFFERENT" not in public_text
+
+
+def test_stable_ties_and_all_four_daily_weekly_legs_survive():
+    raw = copy.deepcopy(_make_raw())
+    raw["legs"].append({"display_en": "Fourth daily condition", "display_zh": "第四个日线条件", "tf": "D"})
+    raw["combos"]["long"][0]["legs"] = [0, 1, 2, 3]
+    for combo in raw["combos"]["long"][:4]:
+        combo["rank_score"] = 0.25
+    ctx = build_context(raw, {})
+    assert [c["combo_id"] for c in ctx["combos"]] == ["L0001", "L0002", "L0003"]
+    assert [leg["tf"] for leg in ctx["combos"][0]["legs"]] == ["D", "W", "D", "D"]
+    assert ctx["combos"][0]["is_free"]
+    assert not ctx["combos"][1]["active_tickers"]
+    assert "Fourth daily condition" in render_html(_ROOT, ctx)
+
+
+def test_month_mean_is_not_pooled_or_winning_month_incidence():
+    import numpy as np
+    from engine.tech_confluence import _month_collapsed_wr
+    wins = np.array([True, True] + [False] * 8)
+    months = np.array([1] + [2] * 9)
+    rate, count = _month_collapsed_wr(wins, months)
+    assert count == 2
+    assert rate == pytest.approx((1 + 1 / 9) / 2)
+    assert rate != pytest.approx(wins.mean())
+    assert rate != 1
+    html = _rendered_html()
+    assert "not the fraction of winning months or the pooled win rate" in html
+    assert "Older is the training period, before that date" in html
+    assert "out-of-sample check" not in html
+    assert "Consecutive days that stay true do not add sightings" in html
+
+
+def test_source_build_clock_is_not_presented_as_market_observation_time():
+    html = _rendered_html()
+    assert "Source built 2026-07-19T04:00:00Z" in html
+    assert "market observation time not supplied" in html
+    assert "Data as of 2026-07-19" not in html
+
+
+def test_baseline_readings_come_from_source_not_derived_edge():
+    raw = copy.deepcopy(_make_raw())
+    raw["base"] = {"long": {"h21": {"wr_mc_test": 0.5669, "wr_mc_train": 0.5583}}}
+    ctx = build_context(raw, {})
+    assert ctx["baseline_test_pct"] == pytest.approx(56.69)
+    html = render_html(_ROOT, ctx)
+    assert "5.7/10" in html and "5.6/10" in html
+    assert "随机入场月均胜率 · 21 个交易日" in html
+
+
+@pytest.mark.parametrize("field,value", [
+    ("edge_wr_test", None), ("edge_wr_test", "0.2"), ("edge_wr_test", True),
+    ("edge_wr_test", 1.5), ("consistent", None), ("consistent", "false"),
+    ("edge_wr_train", None), ("edge_wr_train", "0.1"), ("edge_wr_train", True),
+    ("edge_wr_train", 1.5),
+    ("n_fires", None), ("n_fires", 0), ("first_fire", None),
+    ("first_fire", "2005-02-30"), ("last_fire", None),
+    ("fires_per_year", None), ("fires_per_year", -1),
+])
+def test_optional_evidence_missingness_does_not_erase_valid_rates(field, value):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0][field] = value
+    ctx = build_context(raw, {})
+    first = ctx["combos"][0]
+    assert ctx["source_status"] == "available"
+    assert ctx["n_active_total"] == 4 and len(ctx["combos"]) == 3
+    assert first["wr_test_pct"] == 70 and first["wr_train_pct"] == 60
+    html = render_html(_HERE, ctx)
+    card = html.split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    if field == "edge_wr_test":
+        assert first["edge_test_pp"] is None
+        assert "Random-entry comparison unavailable" in card
+        assert "Not above baseline recently" not in card
+        assert "Above baseline in both periods" not in card
+    elif field == "consistent":
+        assert first["consistent"] is None
+        # Known positive comparisons in both periods remain readable even when
+        # the optional producer flag is absent or malformed.
+        assert "Above baseline in both periods" in card
+        assert "Above baseline only in the recent period" not in card
+    elif field == "edge_wr_train":
+        assert first["edge_train_pp"] is None
+        assert "Older-period comparison unavailable" in card
+        assert "Above baseline only in the recent period" not in card
+        assert "Above baseline in both periods" not in card
+    else:
+        assert not first["history_complete"]
+        assert "Historical frequency details unavailable" in card
+        assert "Seen 0 times" not in card
+
+
+def test_absent_optional_evidence_is_not_negative_evidence():
+    raw = copy.deepcopy(_make_raw())
+    for field in ("edge_wr_test", "edge_wr_train", "consistent", "n_fires", "first_fire", "last_fire", "fires_per_year"):
+        raw["combos"]["long"][0].pop(field)
+    ctx = build_context(raw, {})
+    assert ctx["source_status"] == "available"
+    first = ctx["combos"][0]
+    assert first["edge_test_pp"] is None and first["consistent"] is None
+    assert first["n_fires"] is None and not first["history_complete"]
+    card = render_html(_HERE, ctx).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    assert "Random-entry comparison unavailable" in card
+    assert "Historical frequency details unavailable" in card
+    assert "Not above baseline recently" not in card
+
+
+@pytest.mark.parametrize("edge", [0, -0.001, 0.001])
+def test_measured_zero_and_small_signed_comparison_remain_distinct(edge):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0].update(edge_wr_test=edge, consistent=False)
+    first = build_context(raw, {})["combos"][0]
+    assert first["edge_test_pp"] == edge * 100
+    card = render_html(_HERE, build_context(raw, {})).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    assert f"{edge * 100:+.1f} percentage points vs random entry" in card
+    assert ("Not above baseline recently" in card) == (edge <= 0)
+    assert "Random-entry comparison unavailable" not in card
+
+
+def test_missing_rank_is_not_silently_ranked_as_zero():
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0].pop("rank_score")
+    assert build_context(raw, {})["source_status"] == "unavailable"
+
+
+@pytest.mark.parametrize("flag", [True, False])
+def test_consistency_flag_cannot_supply_missing_older_comparison(flag):
+    raw = copy.deepcopy(_make_raw())
+    raw["combos"]["long"][0].update(consistent=flag, edge_wr_train=None)
+    ctx = build_context(raw, {})
+    assert ctx["combos"][0]["edge_test_pp"] > 0
+    card = render_html(_HERE, ctx).split('<div class="lc free">', 1)[1].split('<div class="lc gated">', 1)[0]
+    assert "Older-period comparison unavailable" in card
+    assert "Above baseline only in the recent period" not in card
+    assert "Above baseline in both periods" not in card

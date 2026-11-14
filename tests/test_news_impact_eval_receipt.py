@@ -548,7 +548,7 @@ class TestErrorCodes:
         asserted = {
             "PROSPECTIVE_FOLD_REFUSED", "SEALED_FOLD_REFUSED", "ENDPOINTS_SHA_MISMATCH",
             "CLUSTER_ID_MISSING", "UNKNOWN_FOLD_SLICE", "UNKNOWN_BASELINE",
-            "DUPLICATE_GRADED_ITEM", "BAD_REGISTRY", "BAD_REGISTRATION",
+            "DUPLICATE_GRADED_ITEM", "BAD_REGISTRY", "BAD_REGISTRATION", "BAD_ACCOUNTING_MAP",
             "BAD_COVERAGE", "BAD_METRIC_VALUE", "DISPLAY_FORBIDDEN_WORD",
         }
         assert asserted == set(er.CODES)
@@ -749,3 +749,125 @@ class TestWorkedCases:
         assert f5["n"] == 0 and f5["value"] is None  # deferred case out of the 98% denom
         assert row(r, "defer_disposition_match", slice_label="f5")["value"] == 1.0
         assert row(r, "disposition_accounting_complete")["value"] == 1.0  # deferred +1 counted
+
+
+class TestConstructionAccounting:
+    def test_accounting_and_thresholds_are_local_but_cost_median_is_shared(self):
+        cheap = ("cheap_extractor_no_frontier", "full")
+        cascade = ("proposed_cascade", "full")
+        items = [gi(case_id(i), f"f{i + 1}", "material_routing", "hit") for i in range(4)]
+        cm, im = maps_for(4)
+        complete = er.AccountingInput(manifest_n=4, deferred=4)
+        partial = er.AccountingInput(manifest_n=4, deferred=1)
+        receipt = er.build_receipt(
+            graded_by_construction={cheap: items, cascade: items},
+            cluster_map=cm, issuer_map=im, accounting=complete, registration=make_reg(),
+            accounting_by_construction={cheap: complete, cascade: partial},
+            costs=[
+                er.CostRecord(*cheap, 600, 400),
+                er.CostRecord(*cascade, 5000, 4000),
+            ],
+        )
+        for baseline, expected, crossing in (
+            (cheap[0], True, "meets"), (cascade[0], False, "below")
+        ):
+            metric = row(receipt, "disposition_accounting_complete", baseline=baseline)
+            assert metric["value"] == float(expected) and metric["n"] == 4
+            thresholds = [
+                t for t in receipt["threshold_evaluations"]
+                if t["metric_id"] == "disposition_accounting_complete"
+                and t["baseline_id"] == baseline and t["fold_slice"] == "all_historical"
+            ]
+            assert len(thresholds) == 1
+            assert thresholds[0]["observed"] is expected
+            assert thresholds[0]["n"] == 4 and thresholds[0]["crossing"] == crossing
+            cost = row(receipt, "cost_at_fixed_recall", "f5", baseline=baseline)
+            assert cost["value"] == 5000.0 and cost["n"] == 2
+        # The optional map does not change the v1 envelope or its schema.
+        jsonschema.validate(receipt, json.loads(RECEIPT_SCHEMA_PATH.read_text(encoding="utf-8")))
+
+    @pytest.mark.parametrize("bad_map", [
+        {},
+        {("cheap_extractor_no_frontier", "full"): er.AccountingInput(manifest_n=0)},
+        {
+            ("cheap_extractor_no_frontier", "full"): er.AccountingInput(manifest_n=0),
+            ("proposed_cascade", "full"): er.AccountingInput(manifest_n=0),
+            ("current_news_stack", "full"): er.AccountingInput(manifest_n=0),
+        },
+        {
+            ("cheap_extractor_no_frontier", "full"): er.AccountingInput(manifest_n=0),
+            ("proposed_cascade", "full"): {},
+        },
+        ["cheap_extractor_no_frontier", "proposed_cascade"],
+        {
+            "cheap_extractor_no_frontier": er.AccountingInput(manifest_n=0),
+            ("proposed_cascade", "full"): er.AccountingInput(manifest_n=0),
+        },
+        {
+            ("cheap_extractor_no_frontier", "full"): er.AccountingInput(manifest_n=0),
+            ("proposed_cascade", "minus_novelty"): er.AccountingInput(manifest_n=0),
+        },
+    ])
+    def test_accounting_map_must_cover_every_emitted_construction(self, bad_map):
+        with pytest.raises(er.EvalReceiptError) as exc:
+            receipt_for(
+                [], baselines_run=("cheap_extractor_no_frontier", "proposed_cascade"),
+                ablations_run=("full",), accounting_by_construction=bad_map,
+            )
+        assert exc.value.code == "BAD_ACCOUNTING_MAP"
+
+    def test_uniform_map_preserves_legacy_bytes_across_baselines_and_ablations(self):
+        accounting = er.AccountingInput(manifest_n=2, deferred=2)
+        baselines = ("cheap_extractor_no_frontier", "proposed_cascade")
+        ablations = ("full", "minus_novelty")
+        common = dict(
+            accounting=accounting, baselines_run=baselines, ablations_run=ablations,
+        )
+        legacy = receipt_for([], **common)
+        mapped = receipt_for(
+            [], **common,
+            accounting_by_construction={(b, a): accounting for b in baselines for a in ablations},
+        )
+        assert json.dumps(mapped, sort_keys=True, separators=(",", ":")) == json.dumps(
+            legacy, sort_keys=True, separators=(",", ":")
+        )
+
+    def test_map_keeps_ablation_and_identity_completeness_distinct(self):
+        baseline = "cheap_extractor_no_frontier"
+        declared = "proposed_cascade"
+        good = er.AccountingInput(manifest_n=2, deferred=2)
+        partial = er.AccountingInput(manifest_n=2, deferred=1)
+        wrong_ids = er.AccountingInput(
+            manifest_n=2, deferred=2,
+            manifest_case_ids=(case_id(0), case_id(1)),
+            output_case_ids=(case_id(0), case_id(2)),
+        )
+        receipt = receipt_for(
+            [], accounting=good, baselines_run=(baseline, declared),
+            ablations_run=("full", "minus_novelty"),
+            accounting_by_construction={
+                (baseline, "full"): good, (baseline, "minus_novelty"): partial,
+                (declared, "full"): wrong_ids, (declared, "minus_novelty"): good,
+            },
+        )
+        metrics = {
+            (m["baseline_id"], m["ablation_id"]): m
+            for m in receipt["metrics"]
+            if m["metric_id"] == "disposition_accounting_complete" and m["fold_slice"] == "all_historical"
+        }
+        thresholds = {
+            (t["baseline_id"], t["ablation_id"]): t
+            for t in receipt["threshold_evaluations"]
+            if t["metric_id"] == "disposition_accounting_complete" and t["fold_slice"] == "all_historical"
+        }
+        assert set(metrics) == set(thresholds) == {
+            (baseline, "full"), (baseline, "minus_novelty"),
+            (declared, "full"), (declared, "minus_novelty"),
+        }
+        for key, complete in (
+            ((baseline, "full"), True), ((baseline, "minus_novelty"), False),
+            ((declared, "full"), False), ((declared, "minus_novelty"), True),
+        ):
+            assert (metrics[key]["value"], metrics[key]["n"]) == (float(complete), 2)
+            assert thresholds[key]["observed"] is complete
+            assert thresholds[key]["crossing"] == ("meets" if complete else "below")

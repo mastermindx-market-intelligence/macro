@@ -258,3 +258,12 @@ def test_holding_research_code_assets_public_without_private_response_exemption(
         for name in ("@public_static", "@public_versioned"):
             assert not any(fnmatchcase(path, public) for public in
                            _path_tokens(_extract_block(text, name))), (name, path)
+
+
+def test_archive_uses_the_existing_public_teaser_prefix():
+    path = "/research/editorial-reports.json"
+    prefix = "/research/*"
+    assert path.startswith(prefix[:-1])
+    assert prefix in _public_policy_tokens()
+    for matcher in ("@reg_asset", "@reg_asset_err"):
+        assert prefix in _path_tokens(_extract_block(_read_caddyfile(), matcher))

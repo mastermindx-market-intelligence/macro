@@ -1,8 +1,8 @@
 {
-  "as_of": "2026-11-09",
+  "as_of": "2026-11-14",
   "state": "lean_in",
-  "dispersion_pctile": 0.94,
-  "avg_corr": 0.09,
+  "dispersion_pctile": 0.96,
+  "avg_corr": 0.11,
   "shadow_gross_mult": 1.2,
   "gross_mult_live": 1.0,
   "passport": {
@@ -543,17 +543,35 @@
       "state": "lean_in",
       "dispersion_pctile": 0.94,
       "avg_corr": 0.09
+    },
+    {
+      "as_of": "2026-11-12",
+      "state": "lean_in",
+      "dispersion_pctile": 0.99,
+      "avg_corr": 0.11
+    },
+    {
+      "as_of": "2026-11-13",
+      "state": "lean_in",
+      "dispersion_pctile": 0.98,
+      "avg_corr": 0.11
+    },
+    {
+      "as_of": "2026-11-14",
+      "state": "lean_in",
+      "dispersion_pctile": 0.96,
+      "avg_corr": 0.11
     }
   ],
   "label": "Selection pays \u2014 high dispersion",
   "label_zh": "\u9009\u80a1\u6709\u6548 \u2014 \u9ad8\u79bb\u6563\u5ea6",
   "eigen": {
     "basis": "trailing_252d_fixed",
-    "n_names_used": 1469,
+    "n_names_used": 1467,
     "n_days_used": 252,
-    "dominant_equity_pc_share": 0.1765,
-    "effective_universe_bets_pr": 21.48,
-    "idio_dispersion_share": 0.552,
+    "dominant_equity_pc_share": 0.1801,
+    "effective_universe_bets_pr": 20.85,
+    "idio_dispersion_share": 0.5241,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

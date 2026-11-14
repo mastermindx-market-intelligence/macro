@@ -86,8 +86,20 @@
       <div class="aib2-hdr-sub">
         {%- if _asof %}<span class="aib2-hdr-date num">{{ _asof }}</span>{%- endif -%}
         {#-- cadence micro-chip from refresh_days; absent → no chip (v1 fail-open) --#}
-        {%- set _rd = b.get('refresh_days') -%}
-        {%- if _rd %}
+        {%- set _fr = b.get('_freshness') -%}
+        {#-- Annotated briefs consume the NORMALIZED cadence (C2 2026-11-10): a
+            corrupt raw value (NaN/inf/bool/oversized) must never reach the visible
+            caption when the receipt already normalized it to the lens default.
+            Raw consumers (no `_freshness`) keep reading the raw value (v1 scope). --#}
+        {%- set _rd = (_fr.get('refresh_days') if _fr is mapping and _fr.get('refresh_days') else b.get('refresh_days')) -%}
+        {#-- `_freshness` (set by scripts/build_aibrief, 2026-10-19→11-09 freeze):
+            stale → stale chip REPLACES the cadence claim; known-fresh (stale is false)
+            → cadence chip stands; UNKNOWN age (stale is none) → NO chip — an
+            unverifiable age must not claim "Updated daily". Briefs without
+            `_freshness` (raw copies passed by other pages) keep the v1 chip. --#}
+        {%- if _fr is mapping and _fr.get('stale') %}
+        <span class="aib2-cadence aib2-cadence--stale"><span class="l-en">Stale — last generated {{ _fr.get('generated_date') }}</span><span class="l-zh">已过期 — 上次生成 {{ _fr.get('generated_date') }}</span></span>
+        {%- elif _rd and (_fr is not mapping or _fr.get('stale') is false) %}
         <span class="aib2-cadence">
           {%- if _rd == 1 -%}<span class="l-en">Updated daily</span><span class="l-zh">每日更新</span>
           {%- else -%}<span class="l-en">Updated every {{ _rd }} days</span><span class="l-zh">每{{ _rd }}天更新</span>{%- endif -%}

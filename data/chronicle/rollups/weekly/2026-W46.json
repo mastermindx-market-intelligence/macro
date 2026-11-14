@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-14",
   "coverage": {
-    "end": "2026-11-10",
-    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W46; 13 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-08-11"
+    "end": "2026-11-14",
+    "note": "weekly rollup spans up to 13 ISO weeks ending 2026-W46; 14 week(s) have events so far; chronicle event store begins 2008-03-25; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-08-15"
   },
   "iso_week": "2026-W46",
   "schema": "chronicle.rollup.weekly/v1",
@@ -11,7 +11,36 @@
     {
       "clusters": [
         {
-          "n_events": 801,
+          "n_events": 303,
+          "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 247,
+          "source": "research_vault",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 20,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "regime_flip",
+          "theme": "regime",
+          "top_events": []
+        }
+      ],
+      "iso_week": "2026-W46"
+    },
+    {
+      "clusters": [
+        {
+          "n_events": 1147,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -23,9 +52,27 @@
           "top_events": []
         },
         {
+          "n_events": 41,
+          "source": "research_vault",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 3,
+          "source": "research_vault",
+          "theme": "Nick Savone",
+          "top_events": []
+        },
+        {
           "n_events": 1,
           "source": "regime_flip",
           "theme": "regime",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "research_vault",
+          "theme": "G&F",
           "top_events": []
         }
       ],
@@ -63,13 +110,19 @@
           "top_events": []
         },
         {
+          "n_events": 101,
+          "source": "research_vault",
+          "theme": null,
+          "top_events": []
+        },
+        {
           "n_events": 38,
           "source": "prophet_ledger",
           "theme": null,
           "top_events": []
         },
         {
-          "n_events": 1,
+          "n_events": 3,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -78,6 +131,18 @@
           "n_events": 1,
           "source": "research_vault",
           "theme": "cybersecurity",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "research_vault",
+          "theme": "agriculture",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "research_vault",
+          "theme": "G&F",
           "top_events": []
         }
       ],
@@ -100,6 +165,12 @@
         {
           "n_events": 48,
           "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 2,
+          "source": "earnings",
           "theme": "earnings",
           "top_events": []
         },
@@ -163,7 +234,7 @@
           "top_events": []
         },
         {
-          "n_events": 2,
+          "n_events": 6,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -204,7 +275,7 @@
           "top_events": []
         },
         {
-          "n_events": 10,
+          "n_events": 12,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -351,7 +422,7 @@
           "top_events": []
         },
         {
-          "n_events": 24,
+          "n_events": 25,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -519,7 +590,38 @@
           "n_events": 487,
           "source": "research_vault",
           "theme": null,
-          "top_events": []
+          "top_events": [
+            {
+              "date": "2026-08-19",
+              "id": "cev-research_vault-8d809004022b",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-iufhbreqa5u-c4615f",
+              "tickers": [],
+              "title": "Goldman Sachs: GS Early Morning Research Recap Ratings and Target Price Changes August 19, 2026 as of 5 30 AM ET",
+              "weight_hint": 3
+            },
+            {
+              "date": "2026-08-22",
+              "id": "cev-research_vault-a45893b7bba7",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-fkwg03orkqd-7a785b",
+              "tickers": [],
+              "title": "Morgan Stanley: MS Savone Global Reflections 22 Aug 2026",
+              "weight_hint": 3
+            },
+            {
+              "date": "2026-08-18",
+              "id": "cev-research_vault-fee179a69bfa",
+              "kind": "report",
+              "source": "research_vault",
+              "source_ref": "marketdesk-4bsngk2htsd-550f52",
+              "tickers": [],
+              "title": "J.P. Morgan: JPM US Market Intelligence Morning Briefing",
+              "weight_hint": 3
+            }
+          ]
         },
         {
           "n_events": 113,
@@ -549,7 +651,28 @@
           "n_events": 2,
           "source": "regime_flip",
           "theme": "regime",
-          "top_events": []
+          "top_events": [
+            {
+              "date": "2026-08-18",
+              "id": "cev-regime_flip-473ee143192e",
+              "kind": "state_flip",
+              "source": "regime_flip",
+              "source_ref": "state_log#2026-08-18#regime_hk",
+              "tickers": [],
+              "title": "HK regime: Q1 Goldilocks → Q4 Growth-scare",
+              "weight_hint": 3
+            },
+            {
+              "date": "2026-08-17",
+              "id": "cev-regime_flip-ad3dc732fc9d",
+              "kind": "state_flip",
+              "source": "regime_flip",
+              "source_ref": "state_log#2026-08-17#regime_canada",
+              "tickers": [],
+              "title": "CANADA regime: Q2 Reflation → Q1 Goldilocks",
+              "weight_hint": 3
+            }
+          ]
         },
         {
           "n_events": 2,
@@ -575,108 +698,9 @@
     {
       "clusters": [
         {
-          "n_events": 418,
-          "source": "earnings_call",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 270,
+          "n_events": 38,
           "source": "research_vault",
           "theme": null,
-          "top_events": [
-            {
-              "date": "2026-08-11",
-              "id": "cev-research_vault-2b1f0ed9a35c",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-vko7e4zekvn-09bb9d",
-              "tickers": [],
-              "title": "J.P. Morgan: JPM US Market Intelligence Morning Briefing Aug 11",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-13",
-              "id": "cev-research_vault-2f224a033fcb",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-i3beom5skfx-38d370",
-              "tickers": [],
-              "title": "J.P. Morgan: JPM International Market Intell | Morning Briefing Aug 13",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-13",
-              "id": "cev-research_vault-7df46c597a12",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-97w8woj8a3k-626676",
-              "tickers": [],
-              "title": "Goldman Sachs: GS TMT SPEC SALES – Adyen topline good enough",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-11",
-              "id": "cev-research_vault-9bcacbdd5d30",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-nal7r2gm25q-0e6c2a",
-              "tickers": [],
-              "title": "J.P. Morgan: JPM US Market Intelligence Afternoon Briefing Aug 10",
-              "weight_hint": 3
-            },
-            {
-              "date": "2026-08-13",
-              "id": "cev-research_vault-a8943ef5539e",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-bbr0h5reosm-8ac386",
-              "tickers": [],
-              "title": "J.P. Morgan: JPM US Market Intelligence | Morning Briefing: Futs higher; APAC Tech improves; US Retail returns; CPI post mortem; Stay Bullish",
-              "weight_hint": 3
-            }
-          ]
-        },
-        {
-          "n_events": 149,
-          "source": "earnings",
-          "theme": "earnings",
-          "top_events": []
-        },
-        {
-          "n_events": 8,
-          "source": "prophet_ledger",
-          "theme": null,
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "cpi_headline",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "cpi_core",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "ppi_finaldemand",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "macro_release",
-          "theme": "claims",
-          "top_events": []
-        },
-        {
-          "n_events": 1,
-          "source": "research_vault",
-          "theme": "McElligott",
           "top_events": []
         }
       ],

@@ -121,6 +121,8 @@ html[data-theme="light"] .tt-detail{background:var(--panel);border-color:var(--l
 @media (max-width:560px){
   .tt-detail{left:0;right:0;top:auto;bottom:0;width:auto;max-width:none;max-height:70vh;border-radius:var(--r-card,12px) var(--r-card,12px) 0 0;border-bottom:0;padding:14px 16px 22px}
   .tt-detail-close{width:44px;height:44px}
+  /* Reserve scroll room for the last chip while the fixed sheet covers the bottom. */
+  body.tt-detail-open{padding-bottom:calc(70vh + 56px)}
 }
 
 /* ── DIRECT-CHIPS (theme with no sub_theme layer) ── */
@@ -319,7 +321,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
             </div>
             <div class="tt-chips">
               {% for chip in sub.micros %}
-              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" data-tt-selection="{{ [macro.subject_id, theme.subject_id, sub.subject_id, chip.node_id]|tojson|forceescape }}" aria-controls="tt-detail" aria-expanded="false" data-tt-tip-en="{{ chip.tip_en|e }}" data-tt-tip-zh="{{ chip.tip_zh|e }}">
                 <span class="l-en">{{ chip.name_en }}</span>
                 <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
               </button>
@@ -342,7 +344,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
             </div>
             <div class="tt-chips">
               {% for chip in theme.direct_micros %}
-              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+              <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" data-tt-selection="{{ [macro.subject_id, theme.subject_id, chip.node_id]|tojson|forceescape }}" aria-controls="tt-detail" aria-expanded="false" data-tt-tip-en="{{ chip.tip_en|e }}" data-tt-tip-zh="{{ chip.tip_zh|e }}">
                 <span class="l-en">{{ chip.name_en }}</span>
                 <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
               </button>
@@ -369,7 +371,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
         <div class="tt-theme-body">
           <div class="tt-chips">
             {% for chip in theme.direct_micros %}
-            <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" aria-controls="tt-detail" aria-expanded="false" data-tip-en="{{ chip.tip_en|e }}" data-tip-zh="{{ chip.tip_zh|e }}">
+            <button type="button" class="tt-chip" data-node="{{ chip.node_id }}" data-tt-selection="{{ [macro.subject_id, theme.subject_id, chip.node_id]|tojson|forceescape }}" aria-controls="tt-detail" aria-expanded="false" data-tt-tip-en="{{ chip.tip_en|e }}" data-tt-tip-zh="{{ chip.tip_zh|e }}">
               <span class="l-en">{{ chip.name_en }}</span>
               <span class="l-zh">{{ chip.name_zh or chip.name_en }}</span>
             </button>
@@ -481,28 +483,82 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
     });
     list.hidden=!(d.instruments&&d.instruments.length);
   }
+  var selectionKey='tt-selection';
+  function matches(value){
+    return Array.prototype.filter.call(document.querySelectorAll('.tt-chip[data-node]'),function(chip){
+      return chip.getAttribute('data-tt-selection')===value;
+    });
+  }
+  function remember(value){
+    try{
+      var u=new URL(window.location.href),values=u.searchParams.getAll(selectionKey);
+      if(value===null&&!values.length)return;
+      if(value!==null&&values.length===1&&values[0]===value)return;
+      // Keep unrelated raw segments in the same form the Shell bridge received.
+      var parts=u.search?u.search.slice(1).split('&'):[];
+      parts=parts.filter(function(part){
+        var key=part.split('=',1)[0];
+        try{return decodeURIComponent(key.replace(/\+/g,' '))!==selectionKey;}catch(e){return true;}
+      });
+      if(value!==null)parts.push(selectionKey+'='+encodeURIComponent(value));
+      u.search=parts.length?'?'+parts.join('&'):'';
+      window.history.replaceState(window.history.state,'',u.href);
+    }catch(e){}
+  }
+  function hide(returnFocus){
+    card.hidden=true;document.body.classList.remove('tt-detail-open');
+    if(opener){opener.setAttribute('aria-expanded','false');if(returnFocus)opener.focus();}
+    opener=null;
+  }
   function close(){
     if(card.hidden)return;
-    card.hidden=true;document.body.classList.remove('tt-detail-open');
-    if(opener){opener.setAttribute('aria-expanded','false');opener.focus();}
-    opener=null;
+    hide(true);remember(null);
+  }
+  function revealOpener(chip){
+    var bounds=chip.getBoundingClientRect();
+    var bottom=window.innerHeight;
+    if(window.matchMedia('(max-width: 560px)').matches){
+      bottom=Math.min(bottom,card.getBoundingClientRect().top);
+    }
+    var inset=8;
+    if(bounds.top>=inset&&bounds.bottom<=bottom-inset)return;
+    // Centre within the painted area, which ends above the phone sheet.
+    window.scrollBy({top:(bounds.top+bounds.bottom-bottom)/2,behavior:'instant'});
+  }
+  function show(chip,restoring){
+    var d=data[chip.getAttribute('data-node')];if(!d)return;
+    if(opener===chip&&!card.hidden)return;
+    if(opener)opener.setAttribute('aria-expanded','false');
+    fill(d);opener=chip;chip.setAttribute('aria-expanded','true');card.hidden=false;document.body.classList.add('tt-detail-open');
+    var parent=chip.parentElement;
+    while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}
+    revealOpener(chip);
+    if(restoring)chip.focus({preventScroll:true});else card.querySelector('.tt-detail-close').focus({preventScroll:true});
+  }
+  function restore(){
+    var values;try{values=new URL(window.location.href).searchParams.getAll(selectionKey);}catch(e){return;}
+    var found=values.length===1&&values[0]?matches(values[0]):[];
+    if(found.length!==1||!data[found[0].getAttribute('data-node')]){hide(false);return;}
+    show(found[0],true);
   }
   document.addEventListener('click',function(e){
     if(e.target.closest('[data-close]')){close();return;}
     var chip=e.target.closest('.tt-chip[data-node]');
-    if(!chip){return;}
-    var d=data[chip.getAttribute('data-node')];if(!d)return;
-    if(opener&&opener!==chip)opener.setAttribute('aria-expanded','false');
+    if(!chip||!data[chip.getAttribute('data-node')])return;
     if(opener===chip&&!card.hidden){close();return;}
-    fill(d);opener=chip;chip.setAttribute('aria-expanded','true');card.hidden=false;document.body.classList.add('tt-detail-open');
-    card.querySelector('.tt-detail-close').focus();
+    show(chip,false);
+    var value=chip.getAttribute('data-tt-selection');
+    remember(value&&matches(value).length===1?value:null);
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  window.addEventListener('popstate',restore);
+  window.addEventListener('mmx:shell-location',restore);
+  restore();
 })();
 </script>
 <script>
 (function(){
-  // Multi-parent tip on micro chips — stays a hover pop, no inline style mutation.
+  // Multi-parent tip on micro chips.
   var _tip=null;
   function _makeTip(){
     if(_tip)return _tip;
@@ -512,24 +568,34 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
     return _tip;
   }
   function _lang(){return (document.documentElement.getAttribute('data-lang')||'')==='zh'?'zh':'en';}
-  document.addEventListener('mouseover',function(e){
-    var el=e.target.closest('[data-tip-en]');
+  function _position(tip,e){
+    var inset=8,width=tip.getBoundingClientRect().width;
+    var right=window.innerWidth-width-inset;
+    var x=e.clientX+13,y=e.clientY+14;
+    if(x>right)x=e.clientX-width-13;
+    x=Math.max(inset,Math.min(x,right));
+    if(y+90>window.innerHeight)y=e.clientY-90;
+    tip.style.left=x+'px';tip.style.top=y+'px';
+  }
+  document.addEventListener('pointerover',function(e){
+    if(e.pointerType!=='mouse')return;
+    var el=e.target.closest('[data-tt-tip-en]');
     if(!el)return;
-    var en=el.getAttribute('data-tip-en');if(!en)return;
-    var zh=el.getAttribute('data-tip-zh')||en;
+    var en=el.getAttribute('data-tt-tip-en');if(!en)return;
+    var zh=el.getAttribute('data-tt-tip-zh')||en;
     var tip=_makeTip();
     tip.textContent=_lang()==='zh'?zh:en;
     tip.style.display='block';
+    _position(tip,e);
   });
-  document.addEventListener('mousemove',function(e){
+  document.addEventListener('pointermove',function(e){
+    if(e.pointerType!=='mouse')return;
     if(!_tip||_tip.style.display==='none')return;
-    var x=e.clientX+13,y=e.clientY+14;
-    if(x+280>window.innerWidth)x=e.clientX-280;
-    if(y+90>window.innerHeight)y=e.clientY-90;
-    _tip.style.left=x+'px';_tip.style.top=y+'px';
+    _position(_tip,e);
   });
-  document.addEventListener('mouseout',function(e){
-    var el=e.target.closest('[data-tip-en]');
+  document.addEventListener('pointerout',function(e){
+    if(e.pointerType!=='mouse')return;
+    var el=e.target.closest('[data-tt-tip-en]');
     if(!el)return;
     if(_tip)_tip.style.display='none';
   });
@@ -691,7 +757,7 @@ html[data-theme="light"] .tt-ticker-profile{background:var(--panel);box-shadow:n
 })();
 </script>
 <style>
-.tt-tip{position:fixed;z-index:999;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 11px;font-size:12px;max-width:270px;pointer-events:none;line-height:1.5;display:none;color:var(--text);box-shadow:var(--popover-shadow)}
+.tt-tip{position:fixed;z-index:999;background:var(--panel);border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 11px;font-size:12px;width:max-content;max-width:min(270px,calc(100% - 16px));overflow-wrap:anywhere;pointer-events:none;line-height:1.5;display:none;color:var(--text);box-shadow:var(--popover-shadow)}
 </style>
 </body>
 </html>

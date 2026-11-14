@@ -1,0 +1,125 @@
+{
+ "schema": "theme_graph.segment_propose_manifest/v1",
+ "rows": [
+  {
+   "ticker": "AMAT",
+   "issuer": "co:us:AMAT",
+   "theme": "theme:cmp_planarization_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "AMAT",
+   "issuer": "co:us:AMAT",
+   "theme": "theme:epitaxy_thermal_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "AMAT",
+   "issuer": "co:us:AMAT",
+   "theme": "theme:etch_deposition_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "AMAT",
+   "issuer": "co:us:AMAT",
+   "theme": "theme:ion_implant_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "AMAT",
+   "issuer": "co:us:AMAT",
+   "theme": "theme:process_metrology_inspection",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMAT_0001628280-25-056742_Semiconductor-Systems_e242c1d71e02_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "FORM",
+   "issuer": "co:us:FORM",
+   "theme": "theme:probe_card_test_interfaces",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/FORM_0001039399-26-000009_Probe-Cards_1acff33e808e_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/FORM_0001039399-26-000009_Probe-Cards_1acff33e808e_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "LRCX",
+   "issuer": "co:us:LRCX",
+   "theme": "theme:equipment_field_services",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_Customer-support-related-revenue-and-other_e4ab5d953356_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_Customer-support-related-revenue-and-other_e4ab5d953356_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "LRCX",
+   "issuer": "co:us:LRCX",
+   "theme": "theme:refurbished_equipment_market",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_Customer-support-related-revenue-and-other_e4ab5d953356_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_Customer-support-related-revenue-and-other_e4ab5d953356_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "LRCX",
+   "issuer": "co:us:LRCX",
+   "theme": "theme:etch_deposition_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_one-reportable-business-segment_260c75c085aa_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_one-reportable-business-segment_260c75c085aa_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  },
+  {
+   "ticker": "LRCX",
+   "issuer": "co:us:LRCX",
+   "theme": "theme:wet_clean_equipment",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:30:00Z",
+   "created": "2026-11-14T14:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_one-reportable-business-segment_260c75c085aa_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/LRCX_0000707549-26-000037_one-reportable-business-segment_260c75c085aa_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  }
+ ]
+}

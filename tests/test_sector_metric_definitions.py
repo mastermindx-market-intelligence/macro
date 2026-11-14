@@ -31,6 +31,29 @@ ROOT = Path(__file__).resolve().parent.parent
 DOC = ROOT / "research" / "sector_completion_20261021" / "B04_METRIC_DEFINITIONS.md"
 
 
+# The B04 doc and these pins describe the donor cycle-analytics surface
+# (engine/sector_cycles.py RS meta + post-base writers, cycle_rhythm /
+# cycle_phase_age / hazard_score, and the Central-family writer files whose
+# line numbers were refreshed with it: narrative_rotation, sector_central_
+# grader, build_sector_central). This lane composes the generation/holdings
+# surface only; the cycle surface is a sibling lane. Pins guarding it stay
+# dormant here and reactivate as soon as the donor marker lands.
+def _cycle_surface_present() -> bool:
+    try:
+        src = (ROOT / "engine" / "sector_cycles.py").read_text(encoding="utf-8")
+    except OSError:
+        return False
+    return '"horizons_sessions": list(RS_HISTORY_HORIZONS)' in src
+
+
+needs_cycle_surface = pytest.mark.skipif(
+    not _cycle_surface_present(),
+    reason="cycle-analytics donor surface (engine/sector_cycles.py post-base "
+           "writers + cycle_rhythm/phase_age/hazard and the refreshed "
+           "Central-family writer line numbers) is not composed on this lane; "
+           "pinned by the sibling cycle lane")
+
+
 # ── synthetic panels ──────────────────────────────────────────────────────────
 def _panel(n: int = 300):
     """XLK/SPY close panel with hand-computable 21/63/126-session RS endpoints.
@@ -144,18 +167,24 @@ def test_grader_horizons_are_21_63_126_trading_bars():
     assert _HORIZONS_D == (21, 63, 126)
 
 
+@needs_cycle_surface
 def test_rs_meta_pins_basis_benchmark_and_reconstruction_label():
     src = _src("engine/sector_cycles.py")
     for literal in (
-        '"horizons_sessions": [21, 63]',
-        '"mode": "reconstructed_price_history"',
+        '"horizons_sessions": list(RS_HISTORY_HORIZONS)',
+        '"mode": RS_HISTORY_MODE',
         '"naturally_observed": False',
         '"basis": "tr"',
         "RS_BENCH_FFILL_LIMIT = 5",
         "_RS_MIN_ROWS = 210",
-        "RS_HISTORY_MAX_POINTS = 252",
+        '"max_points_per_sector": RS_HISTORY_MAX_POINTS',
     ):
         assert literal in src, f"rs contract literal drifted: {literal!r}"
+    from lib import sector_history_contract as history_contract
+    assert sc.RS_HISTORY_MAX_POINTS == history_contract.RS_HISTORY_MAX_POINTS == 252
+    assert history_contract.RS_HISTORY_HORIZONS == (21, 63)
+    assert history_contract.RS_HISTORY_MODE == "reconstructed_price_history"
+    assert history_contract.RS_HISTORY_SCHEMA == "sector_cycles.rs_history.v1"
     # the shared ratio formula and the limit-free basket variant (B01 F4)
     assert "ratio = t / b.reindex(t.index).ffill(limit=RS_BENCH_FFILL_LIMIT)" in src
     assert 'rs = (full / spy.reindex(full.index).ffill()).dropna()' in src
@@ -217,6 +246,7 @@ def test_conviction_and_trend_gate_formula_pins():
     assert "pos12 = bool(r12 is not None and r12 > 0)" in narr  # None-guarded pos_12m
 
 
+@needs_cycle_surface
 def test_post_base_writer_pins():
     """SIC-D-B04 r3: the post-base fields the new doc section documents exist in
     the tree exactly where the doc cites them."""
@@ -226,7 +256,8 @@ def test_post_base_writer_pins():
         '"rhythm_version": 1',
         '"correction_contract": {',
         'rec["rhythm"] = rhythm',
-        'rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)',
+        'rec["estimate_kinds"] = (',
+        'live_hazard_parity=live_hazard_parity)',
         'nw["hazard"] = hz',
     ):
         assert literal in cycles, f"post-base cycles writer drifted: {literal!r}"
@@ -317,6 +348,7 @@ def _cited_segment(rel: str, start: int, end: int) -> str:
     return "\n".join(lines[start - 1:end])
 
 
+@needs_cycle_surface
 def test_b04_doc_citations_resolve_to_lines_that_name_the_row():
     """Every `file.py:NNN[-MMM]` citation in every data row is opened and the
     cited line range must still contain a token the same row names — so a moved

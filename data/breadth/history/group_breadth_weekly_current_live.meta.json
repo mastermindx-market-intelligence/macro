@@ -1,0 +1,186 @@
+{
+  "basis": "reconstructed_current_membership",
+  "basis_note": "today's members applied to the past; not point-in-time; survivors only",
+  "separate_sources": "This file and the long history (group_breadth_weekly_current.parquet, Tiingo archive) sit on different price sources. They are compared, not joined.",
+  "price_source": "yfinance auto_adjust=True full-window download (period 2y), one vintage per run; never the collector's cache (#11124)",
+  "price_vintage": "2026-11-14T05:46:36+00:00",
+  "as_of_week": "2026-11-13",
+  "span": {
+    "closes_start": "2024-11-14",
+    "closes_end": "2026-11-13"
+  },
+  "refresh": "every run rebuilds the whole file from one download; nothing is appended across vintages",
+  "stale_rule": "label stale at two or more completed weekly closes behind the latest session",
+  "members": {
+    "in_map": 503,
+    "priced": 503,
+    "unpriced": [],
+    "unpriced_by_group": {}
+  },
+  "aliases": {
+    "MMC": {
+      "downloaded_as": "MRSH",
+      "evidence": "same issuer: closes match the archive's series for the company over 478 sessions"
+    },
+    "FI": {
+      "downloaded_as": "FISV",
+      "evidence": "same issuer: closes match the archive's series for the company over 478 sessions"
+    }
+  },
+  "counts_last_week": {
+    "definitions": {
+      "in_map": "members of the sector on today's list",
+      "n_members": "members with a close that week",
+      "n_has_200": "members with a defined 200-session average that week (the share's denominator)",
+      "n_fixed_200_13w": "members counted in the 13-week like-for-like change: a defined 200-session average both that week and 13 weeks earlier (the headline's set)"
+    },
+    "by_sector": {
+      "Communication Services": {
+        "in_map": 22,
+        "n_members": 22,
+        "n_has_200": 22,
+        "n_fixed_200_13w": 22
+      },
+      "Consumer Discretionary": {
+        "in_map": 47,
+        "n_members": 47,
+        "n_has_200": 47,
+        "n_fixed_200_13w": 47
+      },
+      "Consumer Staples": {
+        "in_map": 33,
+        "n_members": 33,
+        "n_has_200": 32,
+        "n_fixed_200_13w": 32
+      },
+      "Energy": {
+        "in_map": 21,
+        "n_members": 21,
+        "n_has_200": 21,
+        "n_fixed_200_13w": 21
+      },
+      "Financials": {
+        "in_map": 76,
+        "n_members": 76,
+        "n_has_200": 76,
+        "n_fixed_200_13w": 76
+      },
+      "Health Care": {
+        "in_map": 60,
+        "n_members": 60,
+        "n_has_200": 60,
+        "n_fixed_200_13w": 60
+      },
+      "Industrials": {
+        "in_map": 83,
+        "n_members": 83,
+        "n_has_200": 81,
+        "n_fixed_200_13w": 81
+      },
+      "Information Technology": {
+        "in_map": 76,
+        "n_members": 76,
+        "n_has_200": 76,
+        "n_fixed_200_13w": 76
+      },
+      "Materials": {
+        "in_map": 24,
+        "n_members": 24,
+        "n_has_200": 24,
+        "n_fixed_200_13w": 24
+      },
+      "Real Estate": {
+        "in_map": 30,
+        "n_members": 30,
+        "n_has_200": 30,
+        "n_fixed_200_13w": 30
+      },
+      "Utilities": {
+        "in_map": 31,
+        "n_members": 31,
+        "n_has_200": 31,
+        "n_fixed_200_13w": 31
+      }
+    }
+  },
+  "comparison_vs_archive": {
+    "metric": "fix_chg_pct_above_200_13w",
+    "each_file_own_members": {
+      "common_weeks": 45,
+      "common_span": [
+        "2025-12-05",
+        "2026-10-09"
+      ],
+      "max_abs_diff_by_sector": {
+        "Communication Services": 7.7273,
+        "Consumer Discretionary": 0.0,
+        "Consumer Staples": 3.125,
+        "Energy": 4.0476,
+        "Financials": 3.5328,
+        "Health Care": 2.8736,
+        "Industrials": 2.5942,
+        "Information Technology": 2.4762,
+        "Materials": 5.2536,
+        "Real Estate": 6.4368,
+        "Utilities": 5.6989
+      },
+      "max_abs_diff": 7.7273,
+      "max_at": {
+        "group": "Communication Services",
+        "date": "2026-08-14"
+      }
+    },
+    "expectation": "about 4.76 points at most on the common members (ruling 27 section 3 test)",
+    "is_gate": false,
+    "common_members_only": {
+      "common_weeks": 45,
+      "common_span": [
+        "2025-12-05",
+        "2026-10-09"
+      ],
+      "max_abs_diff_by_sector": {
+        "Communication Services": 4.7619,
+        "Consumer Discretionary": 0.0,
+        "Consumer Staples": 3.125,
+        "Energy": 0.0,
+        "Financials": 1.3699,
+        "Health Care": 1.7241,
+        "Industrials": 1.2658,
+        "Information Technology": 0.0,
+        "Materials": 4.3478,
+        "Real Estate": 3.4483,
+        "Utilities": 3.3333
+      },
+      "max_abs_diff": 4.7619,
+      "max_at": {
+        "group": "Communication Services",
+        "date": "2026-01-30"
+      }
+    },
+    "members_priced_only_in_live": {
+      "count": 18,
+      "tickers": [
+        "BNY",
+        "CEG",
+        "COHR",
+        "COR",
+        "DD",
+        "DELL",
+        "DOC",
+        "DOW",
+        "ECHO",
+        "FI",
+        "MMC",
+        "MRNA",
+        "OKE",
+        "P",
+        "Q",
+        "SNDK",
+        "TEL",
+        "VLTO"
+      ]
+    }
+  },
+  "engine": "engine/group_breadth_history.py",
+  "rows": 1155
+}

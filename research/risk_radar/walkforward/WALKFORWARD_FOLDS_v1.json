@@ -1,0 +1,829 @@
+{
+ "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+ "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+ "prereg_unmodified": true,
+ "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+ "note": "every evaluated candidate is kept; the chosen row is repeated in `default` and `chosen` (default = shipped g=0.40, delta=0)",
+ "folds": [
+  {
+   "name": "F22",
+   "fit_window": [
+    "2020-01-02",
+    "2021-12-31"
+   ],
+   "fit_cutoff": "2021-12-31",
+   "score_window": [
+    "2022-01-03",
+    "2022-12-30"
+   ],
+   "seen_history": false,
+   "n_fit_sessions": 505,
+   "n_fit_episodes": 2,
+   "n_fit_labels": 4,
+   "candidates": [
+    {
+     "g": 0.3,
+     "delta": -10.0,
+     "loud_share": 0.08712871287128712,
+     "shares_by_delta": {
+      "-10": 0.08712871287128712,
+      "-8": 0.08316831683168317,
+      "-6": 0.07920792079207921,
+      "-4": 0.07722772277227723,
+      "-2": 0.07722772277227723,
+      "0": 0.07326732673267326,
+      "2": 0.06930693069306931,
+      "4": 0.06732673267326733,
+      "6": 0.06732673267326733,
+      "8": 0.06732673267326733,
+      "10": 0.06534653465346535
+     },
+     "J": 0.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 2,
+     "scored_turns": 4,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.4,
+     "delta": -10.0,
+     "loud_share": 0.08712871287128712,
+     "shares_by_delta": {
+      "-10": 0.08712871287128712,
+      "-8": 0.08316831683168317,
+      "-6": 0.07920792079207921,
+      "-4": 0.07722772277227723,
+      "-2": 0.07722772277227723,
+      "0": 0.07326732673267326,
+      "2": 0.06930693069306931,
+      "4": 0.06732673267326733,
+      "6": 0.06732673267326733,
+      "8": 0.06732673267326733,
+      "10": 0.06534653465346535
+     },
+     "J": 0.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 2,
+     "scored_turns": 4,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.5,
+     "delta": -10.0,
+     "loud_share": 0.08712871287128712,
+     "shares_by_delta": {
+      "-10": 0.08712871287128712,
+      "-8": 0.08316831683168317,
+      "-6": 0.07920792079207921,
+      "-4": 0.07722772277227723,
+      "-2": 0.07722772277227723,
+      "0": 0.07326732673267326,
+      "2": 0.06930693069306931,
+      "4": 0.06732673267326733,
+      "6": 0.06732673267326733,
+      "8": 0.06732673267326733,
+      "10": 0.06534653465346535
+     },
+     "J": 0.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 2,
+     "scored_turns": 4,
+     "censored_turns": 0
+    },
+    {
+     "g": null,
+     "delta": 10.0,
+     "loud_share": 0.4534653465346535,
+     "shares_by_delta": {
+      "-10": 0.8376237623762376,
+      "-8": 0.8178217821782178,
+      "-6": 0.7762376237623763,
+      "-4": 0.7445544554455445,
+      "-2": 0.700990099009901,
+      "0": 0.6415841584158416,
+      "2": 0.6079207920792079,
+      "4": 0.5683168316831683,
+      "6": 0.5267326732673268,
+      "8": 0.48316831683168315,
+      "10": 0.4534653465346535
+     },
+     "J": -3.5,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 9,
+     "premature_all_clear": 0,
+     "scored_turns": 4,
+     "censored_turns": 0
+    }
+   ],
+   "default": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.07326732673267326,
+    "J": 0.0,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 2,
+    "scored_turns": 4,
+    "censored_turns": 0
+   },
+   "chosen": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.07326732673267326,
+    "J": 0.0,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 2,
+    "scored_turns": 4,
+    "censored_turns": 0
+   },
+   "reason": "retained default: J(best)-J(default)=+0.0 < 1 (best g=0.3, delta=-10)",
+   "effective_state": {
+    "fold": "F22",
+    "g": 0.4,
+    "delta": 0.0,
+    "bands": {
+     "watch": 55.0,
+     "caution": 68.0,
+     "elevated": 78.0,
+     "risk_off": 88.0
+    },
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+    "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "prereg_unmodified": true,
+    "effective_state_sha256": "588ad8517e1b1365a17160d4aae6b73d662abeffadb43b3160f5a16b3d2167b7"
+   },
+   "hy_oas_budget": {
+    "threshold": 0.899391,
+    "fit_budget_target": 0.07326732673267326,
+    "score_window_budget": 0.2829
+   }
+  },
+  {
+   "name": "F23",
+   "fit_window": [
+    "2020-01-02",
+    "2022-12-30"
+   ],
+   "fit_cutoff": "2022-12-30",
+   "score_window": [
+    "2023-01-03",
+    "2023-12-29"
+   ],
+   "seen_history": false,
+   "n_fit_sessions": 756,
+   "n_fit_episodes": 3,
+   "n_fit_labels": 5,
+   "candidates": [
+    {
+     "g": 0.3,
+     "delta": 10.0,
+     "loud_share": 0.2261904761904762,
+     "shares_by_delta": {
+      "-10": 0.28703703703703703,
+      "-8": 0.2843915343915344,
+      "-6": 0.28174603174603174,
+      "-4": 0.2804232804232804,
+      "-2": 0.2804232804232804,
+      "0": 0.27645502645502645,
+      "2": 0.2671957671957672,
+      "4": 0.2619047619047619,
+      "6": 0.2566137566137566,
+      "8": 0.2447089947089947,
+      "10": 0.2261904761904762
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 5,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.4,
+     "delta": 10.0,
+     "loud_share": 0.23677248677248677,
+     "shares_by_delta": {
+      "-10": 0.3055555555555556,
+      "-8": 0.3029100529100529,
+      "-6": 0.29894179894179895,
+      "-4": 0.2976190476190476,
+      "-2": 0.2962962962962963,
+      "0": 0.2923280423280423,
+      "2": 0.2830687830687831,
+      "4": 0.2724867724867725,
+      "6": 0.2671957671957672,
+      "8": 0.2552910052910053,
+      "10": 0.23677248677248677
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 5,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.5,
+     "delta": 10.0,
+     "loud_share": 0.24603174603174602,
+     "shares_by_delta": {
+      "-10": 0.328042328042328,
+      "-8": 0.3253968253968254,
+      "-6": 0.3187830687830688,
+      "-4": 0.3134920634920635,
+      "-2": 0.31084656084656087,
+      "0": 0.3055555555555556,
+      "2": 0.29365079365079366,
+      "4": 0.2830687830687831,
+      "6": 0.27645502645502645,
+      "8": 0.26455026455026454,
+      "10": 0.24603174603174602
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 5,
+     "censored_turns": 0
+    },
+    {
+     "g": null,
+     "delta": 10.0,
+     "loud_share": 0.5582010582010583,
+     "shares_by_delta": {
+      "-10": 0.8888888888888888,
+      "-8": 0.8756613756613757,
+      "-6": 0.843915343915344,
+      "-4": 0.8174603174603174,
+      "-2": 0.7857142857142857,
+      "0": 0.7433862433862434,
+      "2": 0.7116402116402116,
+      "4": 0.6746031746031746,
+      "6": 0.6375661375661376,
+      "8": 0.5965608465608465,
+      "10": 0.5582010582010583
+     },
+     "J": -8.0,
+     "tops_flagged": 2,
+     "bottoms_flagged": 0,
+     "false_risk_off": 9,
+     "premature_all_clear": 11,
+     "scored_turns": 5,
+     "censored_turns": 0
+    }
+   ],
+   "default": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.2923280423280423,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 5,
+    "censored_turns": 0
+   },
+   "chosen": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.2923280423280423,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 5,
+    "censored_turns": 0
+   },
+   "reason": "retained default: J(best)-J(default)=-4.5 < 1 (best g=0.3, delta=+10)",
+   "effective_state": {
+    "fold": "F23",
+    "g": 0.4,
+    "delta": 0.0,
+    "bands": {
+     "watch": 55.0,
+     "caution": 68.0,
+     "elevated": 78.0,
+     "risk_off": 88.0
+    },
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+    "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "prereg_unmodified": true,
+    "effective_state_sha256": "da5e5ed875ce03ac41154d4443f30d14f596ad46bbe6bae39a5aaa9c27a6c95b"
+   },
+   "hy_oas_budget": {
+    "threshold": 0.743514,
+    "fit_budget_target": 0.2923280423280423,
+    "score_window_budget": 0.18
+   }
+  },
+  {
+   "name": "F24",
+   "fit_window": [
+    "2020-01-02",
+    "2023-12-29"
+   ],
+   "fit_cutoff": "2023-12-29",
+   "score_window": [
+    "2024-01-02",
+    "2024-12-31"
+   ],
+   "seen_history": true,
+   "n_fit_sessions": 1006,
+   "n_fit_episodes": 3,
+   "n_fit_labels": 6,
+   "candidates": [
+    {
+     "g": 0.3,
+     "delta": 10.0,
+     "loud_share": 0.17395626242544732,
+     "shares_by_delta": {
+      "-10": 0.22365805168986083,
+      "-8": 0.2216699801192843,
+      "-6": 0.21968190854870775,
+      "-4": 0.21868787276341947,
+      "-2": 0.21868787276341947,
+      "0": 0.21570576540755468,
+      "2": 0.20874751491053678,
+      "4": 0.20278330019880716,
+      "6": 0.1978131212723658,
+      "8": 0.18886679920477137,
+      "10": 0.17395626242544732
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 6,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.4,
+     "delta": 10.0,
+     "loud_share": 0.18290258449304175,
+     "shares_by_delta": {
+      "-10": 0.23956262425447317,
+      "-8": 0.23658051689860835,
+      "-6": 0.23359840954274355,
+      "-4": 0.23260437375745527,
+      "-2": 0.23161033797216699,
+      "0": 0.2286282306163022,
+      "2": 0.2216699801192843,
+      "4": 0.2117296222664016,
+      "6": 0.20675944333996024,
+      "8": 0.1978131212723658,
+      "10": 0.18290258449304175
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 6,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.5,
+     "delta": 10.0,
+     "loud_share": 0.18986083499005965,
+     "shares_by_delta": {
+      "-10": 0.2584493041749503,
+      "-8": 0.2544731610337972,
+      "-6": 0.24950298210735586,
+      "-4": 0.24552683896620278,
+      "-2": 0.24353876739562624,
+      "0": 0.23956262425447317,
+      "2": 0.23061630218687873,
+      "4": 0.220675944333996,
+      "6": 0.21371769383697814,
+      "8": 0.2047713717693837,
+      "10": 0.18986083499005965
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 6,
+     "censored_turns": 0
+    },
+    {
+     "g": null,
+     "delta": 10.0,
+     "loud_share": 0.47813121272365805,
+     "shares_by_delta": {
+      "-10": 0.8687872763419483,
+      "-8": 0.8429423459244533,
+      "-6": 0.8061630218687873,
+      "-4": 0.7783300198807157,
+      "-2": 0.7306163021868787,
+      "0": 0.68389662027833,
+      "2": 0.6441351888667992,
+      "4": 0.6033797216699801,
+      "6": 0.5606361829025845,
+      "8": 0.5198807157057654,
+      "10": 0.47813121272365805
+     },
+     "J": -8.5,
+     "tops_flagged": 2,
+     "bottoms_flagged": 0,
+     "false_risk_off": 10,
+     "premature_all_clear": 11,
+     "scored_turns": 6,
+     "censored_turns": 0
+    }
+   ],
+   "default": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.2286282306163022,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 6,
+    "censored_turns": 0
+   },
+   "chosen": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.2286282306163022,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 6,
+    "censored_turns": 0
+   },
+   "reason": "retained default: J(best)-J(default)=-4.5 < 1 (best g=0.3, delta=+10)",
+   "effective_state": {
+    "fold": "F24",
+    "g": 0.4,
+    "delta": 0.0,
+    "bands": {
+     "watch": 55.0,
+     "caution": 68.0,
+     "elevated": 78.0,
+     "risk_off": 88.0
+    },
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+    "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "prereg_unmodified": true,
+    "effective_state_sha256": "733a650a70eecf02474a06530e6e3c7f9d6cba2d1fc5c12e49ecbff83bdb583f"
+   },
+   "hy_oas_budget": {
+    "threshold": 0.790675,
+    "fit_budget_target": 0.2286282306163022,
+    "score_window_budget": 0.0794
+   }
+  },
+  {
+   "name": "F25",
+   "fit_window": [
+    "2020-01-02",
+    "2024-12-31"
+   ],
+   "fit_cutoff": "2024-12-31",
+   "score_window": [
+    "2025-01-02",
+    "2025-12-31"
+   ],
+   "seen_history": true,
+   "n_fit_sessions": 1258,
+   "n_fit_episodes": 5,
+   "n_fit_labels": 10,
+   "candidates": [
+    {
+     "g": 0.3,
+     "delta": 8.0,
+     "loud_share": 0.151033386327504,
+     "shares_by_delta": {
+      "-10": 0.17885532591414943,
+      "-8": 0.17726550079491257,
+      "-6": 0.17567567567567569,
+      "-4": 0.17488076311605724,
+      "-2": 0.17488076311605724,
+      "0": 0.1724960254372019,
+      "2": 0.1669316375198728,
+      "4": 0.16216216216216217,
+      "6": 0.15818759936406995,
+      "8": 0.151033386327504,
+      "10": 0.13910969793322733
+     },
+     "J": -5.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 12,
+     "scored_turns": 10,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.4,
+     "delta": 10.0,
+     "loud_share": 0.14626391096979333,
+     "shares_by_delta": {
+      "-10": 0.1915739268680445,
+      "-8": 0.1891891891891892,
+      "-6": 0.18680445151033387,
+      "-4": 0.18600953895071543,
+      "-2": 0.18521462639109698,
+      "0": 0.18282988871224165,
+      "2": 0.17726550079491257,
+      "4": 0.16931637519872814,
+      "6": 0.16534181240063592,
+      "8": 0.15818759936406995,
+      "10": 0.14626391096979333
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 10,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.5,
+     "delta": 10.0,
+     "loud_share": 0.1518282988871224,
+     "shares_by_delta": {
+      "-10": 0.2066772655007949,
+      "-8": 0.20349761526232116,
+      "-6": 0.19952305246422894,
+      "-4": 0.19634340222575516,
+      "-2": 0.19475357710651828,
+      "0": 0.1915739268680445,
+      "2": 0.18441971383147854,
+      "4": 0.17647058823529413,
+      "6": 0.17090620031796502,
+      "8": 0.16375198728139906,
+      "10": 0.1518282988871224
+     },
+     "J": -7.0,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 16,
+     "scored_turns": 10,
+     "censored_turns": 0
+    },
+    {
+     "g": null,
+     "delta": 10.0,
+     "loud_share": 0.4737678855325914,
+     "shares_by_delta": {
+      "-10": 0.8688394276629571,
+      "-8": 0.8434022257551669,
+      "-6": 0.8131955484896661,
+      "-4": 0.7869634340222575,
+      "-2": 0.7448330683624801,
+      "0": 0.6971383147853736,
+      "2": 0.6573926868044515,
+      "4": 0.6136724960254372,
+      "6": 0.5651828298887123,
+      "8": 0.519872813990461,
+      "10": 0.4737678855325914
+     },
+     "J": -12.0,
+     "tops_flagged": 3,
+     "bottoms_flagged": 0,
+     "false_risk_off": 15,
+     "premature_all_clear": 15,
+     "scored_turns": 10,
+     "censored_turns": 0
+    }
+   ],
+   "default": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.18282988871224165,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 10,
+    "censored_turns": 0
+   },
+   "chosen": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.18282988871224165,
+    "J": -2.5,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 7,
+    "scored_turns": 10,
+    "censored_turns": 0
+   },
+   "reason": "retained default: J(best)-J(default)=-2.5 < 1 (best g=0.3, delta=+8)",
+   "effective_state": {
+    "fold": "F25",
+    "g": 0.4,
+    "delta": 0.0,
+    "bands": {
+     "watch": 55.0,
+     "caution": 68.0,
+     "elevated": 78.0,
+     "risk_off": 88.0
+    },
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+    "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "prereg_unmodified": true,
+    "effective_state_sha256": "e03d88bbcb3d7e408bcb6710bf482bf26032e989d60122252b27f5cc15a56017"
+   },
+   "hy_oas_budget": {
+    "threshold": 0.812681,
+    "fit_budget_target": 0.18282988871224165,
+    "score_window_budget": 0.296
+   }
+  },
+  {
+   "name": "F26",
+   "fit_window": [
+    "2020-01-02",
+    "2025-12-31"
+   ],
+   "fit_cutoff": "2025-12-31",
+   "score_window": [
+    "2026-01-02",
+    "2026-11-10"
+   ],
+   "seen_history": true,
+   "n_fit_sessions": 1508,
+   "n_fit_episodes": 7,
+   "n_fit_labels": 14,
+   "candidates": [
+    {
+     "g": 0.3,
+     "delta": 8.0,
+     "loud_share": 0.14721485411140584,
+     "shares_by_delta": {
+      "-10": 0.17440318302387267,
+      "-8": 0.1724137931034483,
+      "-6": 0.17108753315649866,
+      "-4": 0.16976127320954906,
+      "-2": 0.16976127320954906,
+      "0": 0.16710875331564987,
+      "2": 0.16246684350132626,
+      "4": 0.15716180371352786,
+      "6": 0.15384615384615385,
+      "8": 0.14721485411140584,
+      "10": 0.13660477453580902
+     },
+     "J": -5.5,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 13,
+     "scored_turns": 14,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.4,
+     "delta": 8.0,
+     "loud_share": 0.15318302387267904,
+     "shares_by_delta": {
+      "-10": 0.18501326259946949,
+      "-8": 0.1823607427055703,
+      "-6": 0.18037135278514588,
+      "-4": 0.17904509283819628,
+      "-2": 0.1783819628647215,
+      "0": 0.17572944297082227,
+      "2": 0.17108753315649866,
+      "4": 0.16312997347480107,
+      "6": 0.15981432360742706,
+      "8": 0.15318302387267904,
+      "10": 0.14257294429708223
+     },
+     "J": -5.5,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 13,
+     "scored_turns": 14,
+     "censored_turns": 0
+    },
+    {
+     "g": 0.5,
+     "delta": 10.0,
+     "loud_share": 0.14721485411140584,
+     "shares_by_delta": {
+      "-10": 0.1976127320954907,
+      "-8": 0.1942970822281167,
+      "-6": 0.1909814323607427,
+      "-4": 0.1876657824933687,
+      "-2": 0.1863395225464191,
+      "0": 0.1830238726790451,
+      "2": 0.1770557029177719,
+      "4": 0.16909814323607428,
+      "6": 0.16445623342175067,
+      "8": 0.15782493368700265,
+      "10": 0.14721485411140584
+     },
+     "J": -7.5,
+     "tops_flagged": 1,
+     "bottoms_flagged": 0,
+     "false_risk_off": 0,
+     "premature_all_clear": 17,
+     "scored_turns": 14,
+     "censored_turns": 0
+    },
+    {
+     "g": null,
+     "delta": 10.0,
+     "loud_share": 0.4330238726790451,
+     "shares_by_delta": {
+      "-10": 0.8209549071618037,
+      "-8": 0.7957559681697612,
+      "-6": 0.76657824933687,
+      "-4": 0.7380636604774535,
+      "-2": 0.6982758620689655,
+      "0": 0.6518567639257294,
+      "2": 0.610079575596817,
+      "4": 0.5656498673740054,
+      "6": 0.5179045092838196,
+      "8": 0.47546419098143233,
+      "10": 0.4330238726790451
+     },
+     "J": -10.0,
+     "tops_flagged": 5,
+     "bottoms_flagged": 1,
+     "false_risk_off": 15,
+     "premature_all_clear": 17,
+     "scored_turns": 14,
+     "censored_turns": 0
+    }
+   ],
+   "default": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.17572944297082227,
+    "J": -3.0,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 8,
+    "scored_turns": 14,
+    "censored_turns": 0
+   },
+   "chosen": {
+    "g": 0.4,
+    "delta": 0.0,
+    "loud_share": 0.17572944297082227,
+    "J": -3.0,
+    "tops_flagged": 1,
+    "bottoms_flagged": 0,
+    "false_risk_off": 0,
+    "premature_all_clear": 8,
+    "scored_turns": 14,
+    "censored_turns": 0
+   },
+   "reason": "retained default: J(best)-J(default)=-2.5 < 1 (best g=0.3, delta=+8)",
+   "effective_state": {
+    "fold": "F26",
+    "g": 0.4,
+    "delta": 0.0,
+    "bands": {
+     "watch": 55.0,
+     "caution": 68.0,
+     "elevated": 78.0,
+     "risk_off": 88.0
+    },
+    "code_commit": "31167d60052a3568dda286c48f75945e0178b5f1+11137-review-fix (working tree of the commit that carries this file)",
+    "prereg_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "actual_file_sha256": "01e66c59d9cc7fa3d9a2bf042c9a9cebc885c97c890057b9a76569267ca7e7ca",
+    "prereg_unmodified": true,
+    "effective_state_sha256": "8081f61dd2d3f354381412f9e4dc5a8b27ce0a255f45c842546a8b3457f867ee"
+   },
+   "hy_oas_budget": {
+    "threshold": 0.83946,
+    "fit_budget_target": 0.17572944297082227,
+    "score_window_budget": 0.213
+   }
+  }
+ ]
+}

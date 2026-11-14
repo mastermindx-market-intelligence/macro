@@ -762,3 +762,136 @@ def test_read_ledger_history_docstring_states_non_claims():
     doc = re_.read_ledger_history.__doc__ or ""
     assert "consumer join" in doc
     assert "not evidence" in doc
+
+
+# ------------------------------------------------ v2 cross_state file-level stamp ----
+
+def _cross_universe(a, b):
+    """Minimal universe + closes for the v2 cross-pair path through run_nightly."""
+    closes = {"spy": _series([100.0] * len(a)), "don": a, "rec": b}
+    universe = {
+        "bench": {"key": "spy"},
+        "series": [
+            {"key": "don", "kind": "etf", "ticker": "DON", "label_en": "Donor",
+             "label_zh": "供体", "sector": "don"},
+            {"key": "rec", "kind": "etf", "ticker": "REC", "label_en": "Receiver",
+             "label_zh": "受体", "sector": "rec"},
+        ],
+        "pairs": [
+            {"id": "don->rec", "donor": "don", "receiver": "rec", "tier": "primary"},
+        ],
+        "contagion_pairs": [], "complexes": [], "velocity_series": [],
+    }
+    return universe, closes
+
+
+def _fire_cross(monkeypatch):
+    """evaluate_cross always fires, so the pair's confirm sequence is deterministic
+    regardless of the synthetic legs' signature shape."""
+    receipts = {"event_type": "into_strength", "donor_signature": "contagion_bleed",
+                "donor": {"state": "contagion_bleed"},
+                "receiver": {"off_low_pct": 0.12},
+                "ratio": None, "blowoff": None, "turn": None, "asof": "stub"}
+    monkeypatch.setattr(re_, "evaluate_cross", lambda *args, **kwargs: dict(receipts))
+
+
+def test_cross_state_carries_file_level_asof_and_generated_at(tmp_path, monkeypatch):
+    """cross_state.json carries a top-level ``asof`` (the same value the per-entry
+    ``asof`` fields use in that run) and a parseable UTC ``generated_at``; and the
+    two keys are inert — a follow-up night stepping from the stamped file lands on
+    the same active/candidates/closed as one stepping from the same state with the
+    keys stripped."""
+    from datetime import datetime
+
+    _fire_cross(monkeypatch)
+    a, b = _aligned_pair()
+    sectors = _sectors(a, b)
+    universe, closes = _cross_universe(a, b)
+
+    def run(data_dir):
+        return re_.run_nightly(sectors, data_dir, generated_utc="2026-10-01 05:00 UTC",
+                               universe=universe, closes=closes)
+
+    # night 1: candidate (confirm_streak=1); night 2: confirm_days=2 → promoted + emitted
+    keyed_dir, bare_dir = tmp_path / "keyed", tmp_path / "bare"
+    run(keyed_dir)
+    payload = run(keyed_dir)
+
+    written = json.loads((keyed_dir / "rotation_events" / "cross_state.json").read_text())
+    assert "asof" in written and "generated_at" in written
+
+    emitted = [e for e in payload["active"] if e["id"] == "don->rec"]
+    assert emitted, "fixture must confirm the pair so a per-entry asof exists tonight"
+    assert written["asof"] in {e["asof"] for e in emitted}
+    datetime.strptime(written["generated_at"], "%Y-%m-%dT%H:%M:%SZ")
+
+    # control arm: identical two nights, then the two keys stripped before night 3
+    run(bare_dir)
+    run(bare_dir)
+    bare_p = bare_dir / "rotation_events" / "cross_state.json"
+    stripped = json.loads(bare_p.read_text())
+    stripped.pop("asof", None)
+    stripped.pop("generated_at", None)
+    bare_p.write_text(json.dumps(stripped, ensure_ascii=False, indent=1))
+
+    run(keyed_dir)
+    run(bare_dir)
+
+    keyed = json.loads((keyed_dir / "rotation_events" / "cross_state.json").read_text())
+    bare = json.loads(bare_p.read_text())
+    for section in ("active", "candidates", "closed"):
+        assert keyed[section] == bare[section]
+    # the bare arm's night-3 write re-stamps the file itself (the keys are inert
+    # INPUTS but always present on OUTPUT) at the same run date
+    assert bare["asof"] == keyed["asof"]
+    assert "generated_at" in bare
+
+
+def test_cross_state_asof_fallback_uses_pair_common_date(tmp_path, monkeypatch):
+    """Empty-night fallback: a series one session ahead of the pair (here the bench
+    "spy") must not stamp cross_state.json's ``asof`` past the pair's last common
+    date — the fallback uses the same donor ∩ receiver rule step_cross_pairs
+    stamps, not the max over every series' own last index."""
+    # no cross events tonight: evaluate_cross never fires
+    monkeypatch.setattr(re_, "evaluate_cross", lambda *args, **kwargs: None)
+
+    a, b = _aligned_pair()
+    sectors = _sectors(a, b)
+    universe, closes = _cross_universe(a, b)
+    # bench runs one session past the pair's last common date
+    extra = pd.bdate_range(a.index[-1] + pd.Timedelta(days=1), periods=1)
+    closes["spy"] = pd.concat([closes["spy"], pd.Series([100.0], index=extra)])
+
+    re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC",
+                    universe=universe, closes=closes)
+
+    written = json.loads((tmp_path / "rotation_events" / "cross_state.json").read_text())
+    pair_last = str(a.index[-1].date())
+    later = str(closes["spy"].index[-1].date())
+    assert later > pair_last, "fixture must put the bench one session ahead"
+    assert written["asof"] == pair_last, (
+        f"fallback stamped {written['asof']!r}, expected the pair-common {pair_last!r}")
+
+
+def test_cross_state_asof_null_when_no_evaluable_pair(tmp_path):
+    """ADDENDUM (COO): a night with NO evaluable pair (fewer than 60 common dates)
+    and no cross events writes cross_state.json's ``asof`` as JSON null — never a
+    guessed date — while ``generated_at`` is still stamped."""
+    a, b = _aligned_pair()
+    sectors = _sectors(a, b)
+    universe, closes = _cross_universe(a, b)
+    # shrink both legs under the 60-session floor → no evaluable pair tonight
+    # (step_cross_pairs skips it before evaluate_cross is ever called), while the
+    # bench keeps full history — a guessed-date fallback would stamp the bench's
+    # last date, the null rule must not
+    n = 40
+    closes["don"] = a.iloc[-n:]
+    closes["rec"] = b.iloc[-n:]
+
+    re_.run_nightly(sectors, tmp_path, generated_utc="2026-10-01 05:00 UTC",
+                    universe=universe, closes=closes)
+
+    written = json.loads((tmp_path / "rotation_events" / "cross_state.json").read_text())
+    assert "asof" in written
+    assert written["asof"] is None
+    assert "generated_at" in written

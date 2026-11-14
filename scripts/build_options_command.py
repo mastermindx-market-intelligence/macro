@@ -1611,10 +1611,17 @@ def build_payoff_lab(payload: dict | None, stores: dict, *,
         bracket = _payoff_lab_bracket(root, stores)
         # asof_note only when ledger_asof differs from the card's own asof.
         ledger_asof = payload.get("ledger_asof")
-        card_asof = payload.get("asof")
+        # The producer sets both payload dates from the pricing ledger.
+        # Compare against the same per-symbol meta date shown by build_indexes.
+        card_store = (stores.get("gex") or {}).get(sym) or {}
+        card_meta = card_store.get("meta")
+        card_meta = card_meta if isinstance(card_meta, dict) else {}
+        card_session = _day(card_meta.get("asof"))
+        ledger_session = _day(ledger_asof)
+        card_asof = payload.get("asof")  # Retain the catalyst's pricing clock.
         asof_note_en = ""
         asof_note_zh = ""
-        if ledger_asof and card_asof and str(ledger_asof) != str(card_asof):
+        if ledger_session and card_session and ledger_session != card_session:
             asof_note_en = f"Structures as of {ledger_asof}"
             asof_note_zh = f"结构定价截至 {ledger_asof}"
         # F03-W3-2 — catalyst chip.  Driven by the SAME catalyst_links

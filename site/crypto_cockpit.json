@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-11-11",
-  "generated_at": "2026-11-11T01:43:58+00:00",
+  "as_of": "2026-11-14",
+  "generated_at": "2026-11-14T21:38:55+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 73611.44,
-    "change_24h_pct": -0.68,
+    "price": 67641.76,
+    "change_24h_pct": -0.87,
     "stance_en": "STRONG RISK-OFF",
     "stance_zh": "强烈偏空",
-    "summary_en": "The big picture reads strongly risk-off. Support comes from leverage levels and miners; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向明显偏空。支撑来自杠杆水平与矿工；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": -37,
-    "exposure_pct": 1,
+    "summary_en": "The big picture reads strongly risk-off. Support comes from miners and fundamentals; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向明显偏空。支撑来自矿工与基本面；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -54,
+    "exposure_pct": 23,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-11-11",
+    "as_of": "2026-11-14",
     "integrity_ok": true,
-    "final_exposure_pct": 1,
+    "final_exposure_pct": 23,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-11-11"
+        "as_of": "2026-11-14"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -178,13 +178,13 @@
         },
         {
           "key": "cot",
-          "label_en": "CME positioning",
-          "label_zh": "CME 持仓",
+          "label_en": "Cot",
+          "label_zh": "cot",
           "source": "master.board.cot",
-          "state_en": "Crowded long",
-          "state_zh": "多头拥挤",
-          "tone": "bear",
-          "grade": "EXTREMES"
+          "state_en": "Unavailable",
+          "state_zh": "暂无",
+          "tone": "neutral",
+          "grade": null
         }
       ]
     },
@@ -219,9 +219,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Neutral",
-          "state_zh": "中性",
-          "tone": "neutral",
+          "state_en": "Distribution",
+          "state_zh": "派发",
+          "tone": "bear",
           "grade": "NEW"
         },
         {

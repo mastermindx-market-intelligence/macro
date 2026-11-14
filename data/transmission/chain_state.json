@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
-  "asof": "2026-11-06",
-  "built": "2026-11-09 09:18 UTC",
+  "asof": "2026-11-12",
+  "built": "2026-11-13 13:52 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -11,15 +11,15 @@
         "en": "Credit spreads widen → refinancing-dependent cohort de-rate",
         "zh": "信用利差走阔 → 依赖再融资的板块下修"
       },
-      "state": "expressed",
+      "state": "dormant",
       "state_label": {
-        "en": "Expressed",
-        "zh": "已兑现"
+        "en": "Dormant",
+        "zh": "休眠"
       },
-      "hop": 1,
+      "hop": 0,
       "n_hops": 1,
       "armable": true,
-      "episode_id": "credit_spreads_refinancing@r2:2026-11-06",
+      "episode_id": null,
       "hops": [
         {
           "id": "spread_widen->refi_cohort_derate",
@@ -29,15 +29,15 @@
             0,
             90
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "IWM",
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -3.886,
+              "value": -6.263,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -55,16 +55,16 @@
         {
           "id": "spread_widen",
           "resolved": true,
-          "confirmed": true,
+          "confirmed": false,
           "receipts": [
             {
               "series": "HYG/LQD",
               "metric": "ratio_ret_pct",
               "window": 22,
-              "value": -2.261,
+              "value": -0.493,
               "op": "lt",
               "threshold": -2.0,
-              "passed": true
+              "passed": false
             }
           ]
         },
@@ -78,7 +78,7 @@
               "vs": "SPY",
               "metric": "rs_pp",
               "window": 63,
-              "value": -3.886,
+              "value": -6.263,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -134,17 +134,2497 @@
           }
         }
       },
+      "blast": {},
+      "display_only": true
+    },
+    {
+      "chain": "dollar_spike_em_multinational",
+      "rev": 3,
+      "tier": "calibrated_context",
+      "title": {
+        "en": "Dollar spike → EM & multinational-EPS headwind",
+        "zh": "美元飙升 → 新兴市场与跨国企业盈利承压"
+      },
+      "state": "arming",
+      "state_label": {
+        "en": "Arming",
+        "zh": "触发中"
+      },
+      "hop": 0,
+      "n_hops": 2,
+      "armable": true,
+      "episode_id": "dollar_spike_em_multinational@r3:2026-11-12",
+      "hops": [
+        {
+          "id": "dollar_spike->usd_transmission_on",
+          "from": "dollar_spike",
+          "to": "usd_transmission_on",
+          "lag_d": [
+            0,
+            20
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "path": "transmission.usd_dir",
+              "op": "eq",
+              "threshold": "strengthening",
+              "value": "strengthening",
+              "passed": true
+            },
+            {
+              "path": "transmission.headwind_for",
+              "op": "in_contains",
+              "threshold": "EM equities",
+              "value": [
+                "US equities",
+                "EM equities",
+                "Gold",
+                "Copper",
+                "10y Treasury",
+                "Bitcoin"
+              ],
+              "passed": true
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.9082,
+            "n": 98,
+            "regime_split": "unavailable",
+            "per_regime": {}
+          }
+        },
+        {
+          "id": "usd_transmission_on->em_derate",
+          "from": "usd_transmission_on",
+          "to": "em_derate",
+          "lag_d": [
+            0,
+            90
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "FXI",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -1.808,
+              "op": "lt",
+              "threshold": 0,
+              "passed": true
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.9238,
+            "n": 210,
+            "regime_split": "unavailable",
+            "per_regime": {}
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "id": "dollar_spike",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "path": "dollar_desk.trend",
+              "op": "eq",
+              "threshold": "up",
+              "value": "up",
+              "passed": true
+            },
+            {
+              "path": "dollar_desk.usd_pos_pctile",
+              "op": "gte",
+              "threshold": 60,
+              "value": 77.0,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "usd_transmission_on",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "path": "transmission.usd_dir",
+              "op": "eq",
+              "threshold": "strengthening",
+              "value": "strengthening",
+              "passed": true
+            },
+            {
+              "path": "transmission.headwind_for",
+              "op": "in_contains",
+              "threshold": "EM equities",
+              "value": [
+                "US equities",
+                "EM equities",
+                "Gold",
+                "Copper",
+                "10y Treasury",
+                "Bitcoin"
+              ],
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "em_derate",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "series": "FXI",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -1.808,
+              "op": "lt",
+              "threshold": 0,
+              "passed": true
+            }
+          ]
+        }
+      ],
+      "falsifier_fired": null,
+      "base_rates": {
+        "asof": null,
+        "n_floor": 8,
+        "calibrated_hops": 2,
+        "n_hops": 2,
+        "by_hop": {
+          "dollar_spike->usd_transmission_on": {
+            "from": "dollar_spike",
+            "to": "usd_transmission_on",
+            "lag_d": [
+              0,
+              20
+            ],
+            "method": {
+              "from": "proxy: fred/DTWEXBGS >50d MA AND 63d ret>0 AND trailing-252d pctile>=0.60",
+              "to": "proxy: fred/DTWEXBGS 21d ret>0 (dollar strengthening)"
+            },
+            "p_confirm": 0.9082,
+            "n": 98,
+            "per_regime": {},
+            "regime_split": "unavailable",
+            "span": {
+              "first": "2008-08-13",
+              "last": "2026-07-01"
+            },
+            "regime_split_reason": "no coarse regime scheme matched the condition prose 'real-rate-driven strength (carry/haven bid), not a risk-on reflation dollar'; pooled only"
+          },
+          "usd_transmission_on->em_derate": {
+            "from": "usd_transmission_on",
+            "to": "em_derate",
+            "lag_d": [
+              0,
+              90
+            ],
+            "method": {
+              "from": "proxy: fred/DTWEXBGS 21d ret>0 (dollar strengthening)",
+              "to": "series:yahoo"
+            },
+            "p_confirm": 0.9238,
+            "n": 210,
+            "per_regime": {},
+            "regime_split": "unavailable",
+            "span": {
+              "first": "2006-02-06",
+              "last": "2026-06-17"
+            },
+            "regime_split_reason": "no coarse regime scheme matched the condition prose 'EM without a domestic-policy offset (no local easing cushioning the FX drag)'; pooled only"
+          }
+        },
+        "cohort_event_study": {
+          "available": true,
+          "cohort": "FXI",
+          "vs": "SPY",
+          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
+          "horizons": {
+            "21d": {
+              "mean_excess_pct": -0.184,
+              "median_excess_pct": -0.578,
+              "n": 3151
+            },
+            "63d": {
+              "mean_excess_pct": -1.143,
+              "median_excess_pct": -1.939,
+              "n": 3109
+            }
+          }
+        }
+      },
       "blast": {
+        "em_revenue_exposure": {
+          "label": {
+            "en": "EM revenue exposure",
+            "zh": "新兴市场营收敞口"
+          },
+          "n": 127,
+          "cuts": {},
+          "unevaluable": 2663,
+          "names": [
+            "A",
+            "AAPL",
+            "ADI",
+            "AEIS",
+            "AES",
+            "AGCO",
+            "AIN",
+            "AIOT",
+            "AIP",
+            "ALGM",
+            "ALV",
+            "AMAT",
+            "AMBA",
+            "AOS",
+            "APD",
+            "APH",
+            "ASPN",
+            "ASYS",
+            "AVT",
+            "BCO",
+            "BWA",
+            "CBT",
+            "CCK",
+            "CDXS",
+            "CE",
+            "CEVA",
+            "CGNX",
+            "CMT",
+            "CNH",
+            "COHU",
+            "CPAY",
+            "CPS",
+            "CRUS",
+            "CTVA",
+            "DCH",
+            "DD",
+            "EEFT",
+            "EL",
+            "ESI",
+            "EZPW",
+            "FCEL",
+            "FCFS",
+            "FCX",
+            "FLS",
+            "FMC",
+            "FN",
+            "GSIT",
+            "HLF",
+            "HLX",
+            "HUN",
+            "IDCC",
+            "IMAX",
+            "INDI",
+            "INGR",
+            "INVX",
+            "ITT",
+            "JBL",
+            "KE",
+            "KLIC",
+            "KMT",
+            "LAUR",
+            "LEA",
+            "LFUS",
+            "LIN",
+            "LITE",
+            "LRCX",
+            "LULU",
+            "MEI",
+            "MGM",
+            "MKSI",
+            "MPWR",
+            "MRVL",
+            "MTSI",
+            "MU",
+            "MVST",
+            "NATR",
+            "NBR",
+            "NEM",
+            "NGVT",
+            "NUVB",
+            "NVDA",
+            "NXPI",
+            "OEC",
+            "OII",
+            "OLED",
+            "ONTO",
+            "OSUR",
+            "PAYO",
+            "PENG",
+            "PHIN",
+            "PI",
+            "PLAB",
+            "PLXS",
+            "POWI",
+            "PPIH",
+            "PSN",
+            "QRVO",
+            "RDZN",
+            "RIG",
+            "RMBS",
+            "ROG",
+            "RYAM",
+            "SCL",
+            "SDRL",
+            "SLAB",
+            "SMHI",
+            "SNDK",
+            "SNPS",
+            "SRI",
+            "SSRM",
+            "ST",
+            "SYNA",
+            "TEL",
+            "TER",
+            "THRM",
+            "TPR",
+            "TROX",
+            "UCTT",
+            "ULS",
+            "VC",
+            "VECO",
+            "VIAV",
+            "VREX",
+            "WAB",
+            "WDC",
+            "WHR",
+            "WLFC"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "names with >=15% of revenue from explicitly-EM-classified regions in their 10-K geographic note (measured per-name; em_pct is a conservative lower bound — mixed aggregates never counted). Names without a parseable disclosure bucket as unevaluable.",
+            "zh": "10-K地区披露中明确属新兴市场的营收占比≥15%的名字（逐名实测；em_pct为保守下限——混合地区聚合不计入）。无可解析披露的名字归入无法评估桶。"
+          }
+        },
+        "multinational_fx_translation": {
+          "label": {
+            "en": "Multinational FX translation",
+            "zh": "跨国汇率折算"
+          },
+          "n": 420,
+          "cuts": {},
+          "unevaluable": 1987,
+          "names": [
+            "A",
+            "AA",
+            "AAPL",
+            "ABNB",
+            "ABT",
+            "ACIW",
+            "ADBE",
+            "ADI",
+            "ADM",
+            "ADSK",
+            "ADTN",
+            "AEIS",
+            "AES",
+            "AGCO",
+            "AIG",
+            "AIN",
+            "AIOT",
+            "AIP",
+            "AIRO",
+            "AKAM",
+            "ALGM",
+            "ALGN",
+            "ALV",
+            "AMAT",
+            "AMBA",
+            "AME",
+            "AON",
+            "AORT",
+            "AOSL",
+            "AP",
+            "APD",
+            "APH",
+            "APP",
+            "APTV",
+            "ARCT",
+            "ARW",
+            "ASAN",
+            "ASH",
+            "ASLE",
+            "ASYS",
+            "ATEN",
+            "ATI",
+            "ATMU",
+            "ATNI",
+            "ATR",
+            "AVGO",
+            "AVPT",
+            "AVT",
+            "AVY",
+            "BA",
+            "BALL",
+            "BAX",
+            "BCO",
+            "BDC",
+            "BDX",
+            "BF-B",
+            "BG",
+            "BHE",
+            "BIO",
+            "BKNG",
+            "BKR",
+            "BMBL",
+            "BRC",
+            "BRKR",
+            "BRZE",
+            "BSY",
+            "BTBT",
+            "BWA",
+            "C",
+            "CARR",
+            "CAT",
+            "CBRE",
+            "CBT",
+            "CCK",
+            "CCL",
+            "CDNS",
+            "CE",
+            "CEVA",
+            "CGNX",
+            "CLB",
+            "CMCO",
+            "CMI",
+            "CMPR",
+            "CMT",
+            "CNH",
+            "CNMD",
+            "COHU",
+            "COLM",
+            "COO",
+            "CPAY",
+            "CPRI",
+            "CPS",
+            "CR",
+            "CRD-A",
+            "CRL",
+            "CRNC",
+            "CROX",
+            "CRS",
+            "CRSR",
+            "CRUS",
+            "CSCO",
+            "CSTM",
+            "CTKB",
+            "CTVA",
+            "CVLT",
+            "CWCO",
+            "CXM",
+            "DAN",
+            "DBD",
+            "DBX",
+            "DCH",
+            "DD",
+            "DDD",
+            "DE",
+            "DECK",
+            "DELL",
+            "DLB",
+            "DLR",
+            "DOLE",
+            "DOV",
+            "DUOL",
+            "DXC",
+            "EAF",
+            "EBAY",
+            "EEFT",
+            "EL",
+            "ELAN",
+            "EMBC",
+            "EMN",
+            "EMR",
+            "ENOV",
+            "ENR",
+            "EPAC",
+            "EPAM",
+            "EPC",
+            "EQIX",
+            "ESAB",
+            "ESI",
+            "ETSY",
+            "EVC",
+            "EXPE",
+            "EXTR",
+            "FBP",
+            "FCEL",
+            "FCX",
+            "FDMT",
+            "FFIV",
+            "FLNC",
+            "FLS",
+            "FMC",
+            "FN",
+            "FROG",
+            "FRSH",
+            "FTNT",
+            "FUL",
+            "GATX",
+            "GBTG",
+            "GE",
+            "GEHC",
+            "GEV",
+            "GGG",
+            "GOLD",
+            "GOLF",
+            "GOOGL",
+            "GPRO",
+            "GRND",
+            "GSIT",
+            "GXO",
+            "HAS",
+            "HLF",
+            "HLNE",
+            "HLX",
+            "HON",
+            "HPE",
+            "HPQ",
+            "HUN",
+            "HWM",
+            "ICHR",
+            "IDCC",
+            "IEX",
+            "IMAX",
+            "INDI",
+            "INGN",
+            "INGR",
+            "INTC",
+            "INTT",
+            "INVX",
+            "IOSP",
+            "IPAR",
+            "IR",
+            "IRDM",
+            "ITGR",
+            "ITT",
+            "ITW",
+            "JBL",
+            "JBTM",
+            "JCI",
+            "JNJ",
+            "KAI",
+            "KBR",
+            "KD",
+            "KE",
+            "KEEL",
+            "KLIC",
+            "KLTR",
+            "KMT",
+            "KN",
+            "KO",
+            "KODK",
+            "KVUE",
+            "KWR",
+            "LAUR",
+            "LEA",
+            "LEG",
+            "LFUS",
+            "LIN",
+            "LITE",
+            "LIVN",
+            "LKQ",
+            "LMAT",
+            "LPTH",
+            "LRCX",
+            "LULU",
+            "LYB",
+            "MAGN",
+            "MAT",
+            "MATV",
+            "MCO",
+            "MDLZ",
+            "MDT",
+            "MEI",
+            "META",
+            "MHK",
+            "MIR",
+            "MKSI",
+            "MLAB",
+            "MMM",
+            "MMSI",
+            "MOV",
+            "MPWR",
+            "MRAM",
+            "MRK",
+            "MRSH",
+            "MRVI",
+            "MRVL",
+            "MSA",
+            "MSCI",
+            "MSFT",
+            "MTCH",
+            "MTRN",
+            "MTSI",
+            "MTW",
+            "MTX",
+            "MVST",
+            "NABL",
+            "NATL",
+            "NATR",
+            "NBR",
+            "NDSN",
+            "NEM",
+            "NEOG",
+            "NEU",
+            "NFLX",
+            "NGVT",
+            "NKE",
+            "NOV",
+            "NOVT",
+            "NPO",
+            "NRGV",
+            "NTAP",
+            "NTCT",
+            "NTNX",
+            "NUVB",
+            "NVAX",
+            "NVCR",
+            "NVST",
+            "NWSA",
+            "NXPI",
+            "OEC",
+            "OGN",
+            "OI",
+            "OII",
+            "OLED",
+            "OMC",
+            "ON",
+            "ONDS",
+            "ONTO",
+            "OPLN",
+            "ORA",
+            "ORCL",
+            "OSIS",
+            "OSW",
+            "OTIS",
+            "PACB",
+            "PAHC",
+            "PANL",
+            "PAYO",
+            "PCAR",
+            "PEGA",
+            "PENG",
+            "PEP",
+            "PFE",
+            "PHIN",
+            "PI",
+            "PKOH",
+            "PLAB",
+            "PLBY",
+            "PLXS",
+            "POWI",
+            "PPC",
+            "PPIH",
+            "PRAA",
+            "PRGO",
+            "PRSU",
+            "PTC",
+            "PTCT",
+            "PUBM",
+            "PVH",
+            "PYPL",
+            "QBTS",
+            "QLYS",
+            "RAL",
+            "RBBN",
+            "RDW",
+            "RDZN",
+            "RIG",
+            "RL",
+            "RMBS",
+            "RMNI",
+            "ROG",
+            "ROK",
+            "RSVR",
+            "RTX",
+            "RVTY",
+            "RXRX",
+            "RYAM",
+            "SABR",
+            "SARO",
+            "SCL",
+            "SDGR",
+            "SDRL",
+            "SHC",
+            "SLAB",
+            "SLB",
+            "SMHI",
+            "SNDK",
+            "SNEX",
+            "SNPS",
+            "SOLV",
+            "SON",
+            "SONO",
+            "SRI",
+            "ST",
+            "STEP",
+            "STT",
+            "STX",
+            "SVV",
+            "SW",
+            "SXI",
+            "SXT",
+            "SYNA",
+            "TDC",
+            "TDW",
+            "TDY",
+            "TECH",
+            "TEL",
+            "TER",
+            "TFX",
+            "THRM",
+            "TILE",
+            "TKR",
+            "TMO",
+            "TNC",
+            "TPR",
+            "TRMB",
+            "TROX",
+            "TTMI",
+            "TTWO",
+            "TXG",
+            "UBER",
+            "UCTT",
+            "UIS",
+            "ULS",
+            "USAR",
+            "V",
+            "VC",
+            "VECO",
+            "VFC",
+            "VIAV",
+            "VICR",
+            "VIR",
+            "VPG",
+            "VREX",
+            "VRT",
+            "VSEC",
+            "VSH",
+            "VTOL",
+            "VTRS",
+            "WAB",
+            "WAT",
+            "WDC",
+            "WDFC",
+            "WKC",
+            "WLFC",
+            "WLY",
+            "WMG",
+            "WST",
+            "WTW",
+            "WWD",
+            "WWW",
+            "XPEL",
+            "XPER",
+            "XPO",
+            "XRAY",
+            "XRX",
+            "XYL",
+            "YUM",
+            "ZBH",
+            "ZBRA",
+            "ZTS"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "US multinationals with >=40% foreign revenue (10-K geographic note, measured per-name) — overseas EPS shrinks in dollar terms as USD firms. PERCENT 0-100; unparseable names bucket as unevaluable.",
+            "zh": "海外营收占比≥40%的美国跨国企业（10-K地区披露，逐名实测）——美元走强时海外每股盈利以美元计缩水。百分比0-100；无法解析的名字归入无法评估桶。"
+          }
+        },
+        "dollar_debt_burden": {
+          "label": {
+            "en": "Dollar-debt burden",
+            "zh": "美元债务负担"
+          },
+          "n": 39,
+          "cuts": {
+            "financials.debt_to_assets": 32.4
+          },
+          "unevaluable": 2378,
+          "names": [
+            "ATNI",
+            "AVGO",
+            "BCO",
+            "BKNG",
+            "BMBL",
+            "BSY",
+            "CCK",
+            "CMPR",
+            "DCH",
+            "EAF",
+            "ELAN",
+            "FUL",
+            "HLF",
+            "INDI",
+            "ITW",
+            "MSCI",
+            "MTCH",
+            "NATL",
+            "NBR",
+            "NDSN",
+            "NXPI",
+            "OEC",
+            "OGN",
+            "OI",
+            "OSIS",
+            "OTIS",
+            "PI",
+            "PLBY",
+            "SABR",
+            "SMHI",
+            "SON",
+            "SRI",
+            "ST",
+            "SYNA",
+            "VFC",
+            "VREX",
+            "VTRS",
+            "WMG",
+            "XRAY"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "leveraged names (top-third debt_to_assets) whose revenue is majority non-US (>=50%, 10-K geographic note) — dollar-debt service against non-dollar cash flows. Assumes US filers' debt is USD-denominated (stated assumption; no currency-of-debt field exists).",
+            "zh": "高杠杆（debt_to_assets前三分之一）且营收过半来自美国以外（≥50%，10-K地区披露）的名字——以非美元现金流偿付美元债务。假设美国披露人的债务以美元计价（明示假设；无债务币种字段）。"
+          }
+        },
+        "em_commodity_sector_proxy": {
+          "label": {
+            "en": "EM/commodity sector (proxy)",
+            "zh": "新兴市场/商品行业（代理）"
+          },
+          "n": 231,
+          "cuts": {},
+          "unevaluable": 5,
+          "names": [
+            "AA",
+            "ACDC",
+            "AEM",
+            "AESI",
+            "AG",
+            "AGI",
+            "ALB",
+            "ALM",
+            "AM",
+            "AMCR",
+            "AMPY",
+            "AMR",
+            "ANGPY",
+            "APA",
+            "APD",
+            "AR",
+            "AROC",
+            "ASH",
+            "ATR",
+            "AU",
+            "AVNT",
+            "AVY",
+            "AXTA",
+            "B",
+            "BALL",
+            "BCPC",
+            "BHP",
+            "BKR",
+            "BKV",
+            "BORR",
+            "BTG",
+            "BTU",
+            "CBT",
+            "CC",
+            "CCJ",
+            "CCK",
+            "CE",
+            "CENX",
+            "CF",
+            "CHRD",
+            "CLB",
+            "CLF",
+            "CLNE",
+            "CMC",
+            "CNR",
+            "CNX",
+            "COP",
+            "CRC",
+            "CRGY",
+            "CRH",
+            "CRK",
+            "CTRA",
+            "CTVA",
+            "CVI",
+            "CVX",
+            "DD",
+            "DEC",
+            "DHT",
+            "DINO",
+            "DK",
+            "DNN",
+            "DOW",
+            "DTM",
+            "DVN",
+            "ECL",
+            "EE",
+            "EGO",
+            "EGY",
+            "EMN",
+            "EOG",
+            "EPM",
+            "EPSN",
+            "EQT",
+            "EQX",
+            "ESI",
+            "EU",
+            "EXE",
+            "EXK",
+            "EXP",
+            "FANG",
+            "FCX",
+            "FET",
+            "FLNG",
+            "FLOC",
+            "FMC",
+            "FNV",
+            "FSM",
+            "FTI",
+            "FTK",
+            "FUL",
+            "GEF",
+            "GFI",
+            "GLNG",
+            "GPK",
+            "GRNT",
+            "HAL",
+            "HCC",
+            "HL",
+            "HLX",
+            "HMY",
+            "HP",
+            "HPK",
+            "HWKN",
+            "IAG",
+            "IFF",
+            "IMPUY",
+            "INR",
+            "INSW",
+            "INVX",
+            "IOSP",
+            "IP",
+            "KALU",
+            "KGC",
+            "KGEI",
+            "KGS",
+            "KMI",
+            "KNF",
+            "KNTK",
+            "KOP",
+            "KOS",
+            "KWR",
+            "LAC",
+            "LBRT",
+            "LEU",
+            "LIN",
+            "LNG",
+            "LNN",
+            "LPG",
+            "LYB",
+            "MGY",
+            "MLM",
+            "MOS",
+            "MP",
+            "MPC",
+            "MTDR",
+            "MTRN",
+            "MTUS",
+            "MTX",
+            "MUR",
+            "NAT",
+            "NBR",
+            "NC",
+            "NE",
+            "NEM",
+            "NESR",
+            "NEU",
+            "NEXT",
+            "NGS",
+            "NGVT",
+            "NOG",
+            "NOV",
+            "NUE",
+            "NVGS",
+            "NXE",
+            "OI",
+            "OII",
+            "OIS",
+            "OKE",
+            "OVV",
+            "OXY",
+            "PAAS",
+            "PARR",
+            "PBF",
+            "PED",
+            "PKG",
+            "PLG",
+            "PNRG",
+            "PPG",
+            "PR",
+            "PSX",
+            "PTEN",
+            "PUMP",
+            "REI",
+            "REPX",
+            "RES",
+            "REX",
+            "RGLD",
+            "RIG",
+            "RIO",
+            "RNGR",
+            "RPM",
+            "RRC",
+            "RS",
+            "SBSW",
+            "SCL",
+            "SD",
+            "SDRL",
+            "SGML",
+            "SHW",
+            "SLB",
+            "SLGN",
+            "SLVM",
+            "SM",
+            "SMC",
+            "SMG",
+            "SND",
+            "SOC",
+            "SON",
+            "STLD",
+            "STNG",
+            "SVM",
+            "SW",
+            "SXT",
+            "TALO",
+            "TDW",
+            "TK",
+            "TNK",
+            "TPL",
+            "TRGP",
+            "TTI",
+            "UEC",
+            "URG",
+            "UROY",
+            "UUUU",
+            "VAL",
+            "VALE",
+            "VLO",
+            "VMC",
+            "VNOM",
+            "VTOL",
+            "VTS",
+            "WFRD",
+            "WHD",
+            "WKC",
+            "WLK",
+            "WMB",
+            "WS",
+            "WTI",
+            "WTTR",
+            "XOM",
+            "XPRO"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "PROXY (sector, not revenue): GICS sector membership stands in for EM-demand exposure — Materials & Energy are the dollar-priced-commodity sectors most EM/dollar-sensitive. Complements em_revenue_exposure (rev 2): sector coverage is ~full, so it also catches names whose 10-K discloses no parseable geography. A coarse sector stand-in, not a revenue measurement.",
+            "zh": "代理（行业而非营收）：以GICS行业归属代表新兴市场需求敞口——材料与能源是对新兴市场/美元最敏感的美元计价商品行业。与rev 2的em_revenue_exposure互补：行业覆盖近乎全库，故也覆盖10-K无可解析地区披露的名字。粗略的行业替代，非营收测度。"
+          }
+        }
+      },
+      "display_only": true
+    },
+    {
+      "chain": "oil_inflation_duration_derate",
+      "rev": 2,
+      "tier": "calibrated_context",
+      "title": {
+        "en": "Oil shock → inflation → yields → long-duration de-rate",
+        "zh": "油价冲击 → 通胀 → 收益率 → 长久期估值下修"
+      },
+      "state": "dormant",
+      "state_label": {
+        "en": "Dormant",
+        "zh": "休眠"
+      },
+      "hop": 0,
+      "n_hops": 3,
+      "armable": true,
+      "episode_id": null,
+      "hops": [
+        {
+          "id": "oil_shock->breakeven_rise",
+          "from": "oil_shock",
+          "to": "breakeven_rise",
+          "lag_d": [
+            5,
+            60
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "T10YIE",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "gt",
+              "threshold": 15,
+              "passed": false
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.6901,
+            "n": 71,
+            "regime_split": "available",
+            "per_regime": {
+              "growth_accelerating": {
+                "p": 0.75,
+                "n": 28
+              },
+              "growth_steady_or_slowing": {
+                "p": 0.6512,
+                "n": 43
+              }
+            }
+          }
+        },
+        {
+          "id": "breakeven_rise->yield_rise",
+          "from": "breakeven_rise",
+          "to": "yield_rise",
+          "lag_d": [
+            0,
+            90
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "path": "state.rates.direction",
+              "op": "eq",
+              "threshold": "rising",
+              "value": "rising",
+              "passed": true
+            },
+            {
+              "path": "state.rates.real_10y_chg_63d_bp",
+              "op": "gt",
+              "threshold": 30,
+              "value": 34.0,
+              "passed": true
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.5319,
+            "n": 141,
+            "regime_split": "available",
+            "per_regime": {
+              "liquidity_contracting": {
+                "p": 0.6667,
+                "n": 36
+              },
+              "liquidity_expanding": {
+                "p": 0.4717,
+                "n": 53
+              },
+              "liquidity_neutral_or_draining": {
+                "p": 0.5,
+                "n": 52
+              }
+            }
+          }
+        },
+        {
+          "id": "yield_rise->duration_derate",
+          "from": "yield_rise",
+          "to": "duration_derate",
+          "lag_d": [
+            0,
+            120
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "QQQ",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -3.536,
+              "op": "lt",
+              "threshold": 0,
+              "passed": true
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.9375,
+            "n": 96,
+            "regime_split": "unavailable",
+            "per_regime": {}
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "id": "oil_shock",
+          "resolved": true,
+          "confirmed": false,
+          "receipts": [
+            {
+              "series": "CL=F",
+              "metric": "ret_pct",
+              "window": 60,
+              "value": -2.228,
+              "op": "gt",
+              "threshold": 25,
+              "passed": false
+            },
+            {
+              "series": "CL=F",
+              "metric": "ma50_slope5",
+              "value": -1.1548,
+              "op": "gt",
+              "threshold": 0,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "breakeven_rise",
+          "resolved": true,
+          "confirmed": false,
+          "receipts": [
+            {
+              "series": "T10YIE",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "gt",
+              "threshold": 15,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "yield_rise",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "path": "state.rates.direction",
+              "op": "eq",
+              "threshold": "rising",
+              "value": "rising",
+              "passed": true
+            },
+            {
+              "path": "state.rates.real_10y_chg_63d_bp",
+              "op": "gt",
+              "threshold": 30,
+              "value": 34.0,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "duration_derate",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "series": "QQQ",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -3.536,
+              "op": "lt",
+              "threshold": 0,
+              "passed": true
+            }
+          ]
+        }
+      ],
+      "falsifier_fired": null,
+      "base_rates": {
+        "asof": null,
+        "n_floor": 8,
+        "calibrated_hops": 3,
+        "n_hops": 3,
+        "by_hop": {
+          "oil_shock->breakeven_rise": {
+            "from": "oil_shock",
+            "to": "breakeven_rise",
+            "lag_d": [
+              5,
+              60
+            ],
+            "method": {
+              "from": "series:yahoo",
+              "to": "series:fred"
+            },
+            "p_confirm": 0.6901,
+            "n": 71,
+            "per_regime": {
+              "growth_accelerating": {
+                "p": 0.75,
+                "n": 28
+              },
+              "growth_steady_or_slowing": {
+                "p": 0.6512,
+                "n": 43
+              }
+            },
+            "regime_split": "available",
+            "span": {
+              "first": "2002-03-07",
+              "last": "2026-03-03"
+            },
+            "regime_scheme": "growth_accel"
+          },
+          "breakeven_rise->yield_rise": {
+            "from": "breakeven_rise",
+            "to": "yield_rise",
+            "lag_d": [
+              0,
+              90
+            ],
+            "method": {
+              "from": "series:fred",
+              "to": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)"
+            },
+            "p_confirm": 0.5319,
+            "n": 141,
+            "per_regime": {
+              "liquidity_contracting": {
+                "p": 0.6667,
+                "n": 36
+              },
+              "liquidity_expanding": {
+                "p": 0.4717,
+                "n": 53
+              },
+              "liquidity_neutral_or_draining": {
+                "p": 0.5,
+                "n": 52
+              }
+            },
+            "regime_split": "available",
+            "span": {
+              "first": "2003-02-04",
+              "last": "2026-04-30"
+            },
+            "regime_scheme": "liquidity_dir"
+          },
+          "yield_rise->duration_derate": {
+            "from": "yield_rise",
+            "to": "duration_derate",
+            "lag_d": [
+              0,
+              120
+            ],
+            "method": {
+              "from": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)",
+              "to": "series:yahoo"
+            },
+            "p_confirm": 0.9375,
+            "n": 96,
+            "per_regime": {},
+            "regime_split": "unavailable",
+            "span": {
+              "first": "2003-08-06",
+              "last": "2026-05-15"
+            },
+            "regime_split_reason": "no coarse regime scheme matched the condition prose 'no offsetting earnings-acceleration in the long-duration cohort'; pooled only"
+          }
+        },
+        "cohort_event_study": {
+          "available": true,
+          "cohort": "QQQ",
+          "vs": "SPY",
+          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
+          "horizons": {
+            "21d": {
+              "mean_excess_pct": -0.016,
+              "median_excess_pct": 0.183,
+              "n": 2705
+            },
+            "63d": {
+              "mean_excess_pct": 0.492,
+              "median_excess_pct": 1.248,
+              "n": 2682
+            }
+          }
+        }
+      },
+      "blast": {},
+      "display_only": true
+    },
+    {
+      "chain": "oil_slide_disinflation_duration_rerate",
+      "rev": 0,
+      "tier": "calibrated_context",
+      "title": {
+        "en": "Oil slide → disinflation → yields fall → long-duration re-rate",
+        "zh": "油价下滑 → 通胀降温 → 收益率回落 → 长久期估值修复"
+      },
+      "state": "arming",
+      "state_label": {
+        "en": "Arming",
+        "zh": "触发中"
+      },
+      "hop": 0,
+      "n_hops": 3,
+      "armable": true,
+      "episode_id": "oil_slide_disinflation_duration_rerate@r0:2026-11-12",
+      "hops": [
+        {
+          "id": "oil_slide->breakeven_fall",
+          "from": "oil_slide",
+          "to": "breakeven_fall",
+          "lag_d": [
+            5,
+            60
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "T10YIE",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "lt",
+              "threshold": -12,
+              "passed": false
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.7196,
+            "n": 107,
+            "regime_split": "available",
+            "per_regime": {
+              "growth_accelerating": {
+                "p": 0.6667,
+                "n": 45
+              },
+              "growth_steady_or_slowing": {
+                "p": 0.7581,
+                "n": 62
+              }
+            }
+          }
+        },
+        {
+          "id": "breakeven_fall->real_yield_fall",
+          "from": "breakeven_fall",
+          "to": "real_yield_fall",
+          "lag_d": [
+            0,
+            90
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "DFII10",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "lt",
+              "threshold": -12,
+              "passed": false
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.9591,
+            "n": 171,
+            "regime_split": "available",
+            "per_regime": {
+              "inflation_down_or_flat": {
+                "p": 0.962,
+                "n": 158
+              },
+              "inflation_up": {
+                "p": 0.9231,
+                "n": 13
+              }
+            }
+          }
+        },
+        {
+          "id": "real_yield_fall->duration_rerate",
+          "from": "real_yield_fall",
+          "to": "duration_rerate",
+          "lag_d": [
+            0,
+            120
+          ],
+          "confirmed": false,
+          "asof": null,
+          "value_receipt": [
+            {
+              "series": "QQQ",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -3.536,
+              "op": "gt",
+              "threshold": 0,
+              "passed": false
+            }
+          ],
+          "base_rate": {
+            "p_confirm": 0.9628,
+            "n": 269,
+            "regime_split": "unavailable",
+            "per_regime": {}
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "id": "oil_slide",
+          "resolved": true,
+          "confirmed": true,
+          "receipts": [
+            {
+              "series": "CL=F",
+              "metric": "ret_pct",
+              "window": 20,
+              "value": -13.341,
+              "op": "lt",
+              "threshold": -12,
+              "passed": true
+            },
+            {
+              "series": "CL=F",
+              "metric": "ret_pct",
+              "window": 60,
+              "value": -2.228,
+              "op": "lt",
+              "threshold": -18,
+              "passed": false
+            },
+            {
+              "series": "CL=F",
+              "metric": "ma50_slope5",
+              "value": -1.1548,
+              "op": "lt",
+              "threshold": 0,
+              "passed": true
+            }
+          ]
+        },
+        {
+          "id": "breakeven_fall",
+          "resolved": true,
+          "confirmed": false,
+          "receipts": [
+            {
+              "series": "T10YIE",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "lt",
+              "threshold": -12,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "real_yield_fall",
+          "resolved": true,
+          "confirmed": false,
+          "receipts": [
+            {
+              "series": "DFII10",
+              "metric": "ret_bp",
+              "window": 22,
+              "value": -9.0,
+              "op": "lt",
+              "threshold": -12,
+              "passed": false
+            }
+          ]
+        },
+        {
+          "id": "duration_rerate",
+          "resolved": true,
+          "confirmed": false,
+          "receipts": [
+            {
+              "series": "QQQ",
+              "vs": "SPY",
+              "metric": "rs_pp",
+              "window": 63,
+              "value": -3.536,
+              "op": "gt",
+              "threshold": 0,
+              "passed": false
+            }
+          ]
+        }
+      ],
+      "falsifier_fired": null,
+      "base_rates": {
+        "asof": null,
+        "n_floor": 8,
+        "calibrated_hops": 3,
+        "n_hops": 3,
+        "by_hop": {
+          "oil_slide->breakeven_fall": {
+            "from": "oil_slide",
+            "to": "breakeven_fall",
+            "lag_d": [
+              5,
+              60
+            ],
+            "method": {
+              "from": "series:yahoo",
+              "to": "series:fred"
+            },
+            "p_confirm": 0.7196,
+            "n": 107,
+            "per_regime": {
+              "growth_accelerating": {
+                "p": 0.6667,
+                "n": 45
+              },
+              "growth_steady_or_slowing": {
+                "p": 0.7581,
+                "n": 62
+              }
+            },
+            "regime_split": "available",
+            "span": {
+              "first": "2000-12-07",
+              "last": "2026-07-20"
+            },
+            "regime_scheme": "growth_accel"
+          },
+          "breakeven_fall->real_yield_fall": {
+            "from": "breakeven_fall",
+            "to": "real_yield_fall",
+            "lag_d": [
+              0,
+              90
+            ],
+            "method": {
+              "from": "series:fred",
+              "to": "series:fred"
+            },
+            "p_confirm": 0.9591,
+            "n": 171,
+            "per_regime": {
+              "inflation_down_or_flat": {
+                "p": 0.962,
+                "n": 158
+              },
+              "inflation_up": {
+                "p": 0.9231,
+                "n": 13
+              }
+            },
+            "regime_split": "available",
+            "span": {
+              "first": "2003-03-24",
+              "last": "2026-06-11"
+            },
+            "regime_scheme": "inflation_regime"
+          },
+          "real_yield_fall->duration_rerate": {
+            "from": "real_yield_fall",
+            "to": "duration_rerate",
+            "lag_d": [
+              0,
+              120
+            ],
+            "method": {
+              "from": "series:fred",
+              "to": "series:yahoo"
+            },
+            "p_confirm": 0.9628,
+            "n": 269,
+            "per_regime": {},
+            "regime_split": "unavailable",
+            "span": {
+              "first": "2003-02-04",
+              "last": "2026-04-23"
+            },
+            "regime_split_reason": "no coarse regime scheme matched the condition prose 'no concurrent earnings deterioration in the long-duration cohort (a growth scare can swamp the discount-rate tailwind)'; pooled only"
+          }
+        },
+        "cohort_event_study": {
+          "available": true,
+          "cohort": "QQQ",
+          "vs": "SPY",
+          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
+          "horizons": {
+            "21d": {
+              "mean_excess_pct": 0.482,
+              "median_excess_pct": 0.425,
+              "n": 4141
+            },
+            "63d": {
+              "mean_excess_pct": 1.171,
+              "median_excess_pct": 0.976,
+              "n": 4122
+            }
+          }
+        }
+      },
+      "blast": {
+        "long_duration_valuation": {
+          "label": {
+            "en": "Long-duration valuation",
+            "zh": "长久期估值"
+          },
+          "n": 707,
+          "cuts": {
+            "valuation.forward_pe": 27.9
+          },
+          "unevaluable": 2166,
+          "names": [
+            "A",
+            "AA",
+            "AAL",
+            "AAP",
+            "AAPL",
+            "AAT",
+            "ABBV",
+            "ABG",
+            "ABNB",
+            "ABT",
+            "ACAD",
+            "ACHC",
+            "ACI",
+            "ADAM",
+            "ADC",
+            "ADM",
+            "ADMA",
+            "ADNT",
+            "ADT",
+            "ADUS",
+            "AEE",
+            "AEO",
+            "AEP",
+            "AES",
+            "AGNT",
+            "AHCO",
+            "AHR",
+            "AKR",
+            "ALB",
+            "ALGN",
+            "ALHC",
+            "ALK",
+            "ALKS",
+            "ALLE",
+            "ALV",
+            "AMCR",
+            "AMD",
+            "AMGN",
+            "AMH",
+            "AMN",
+            "AMPH",
+            "AMR",
+            "AMRX",
+            "AMT",
+            "AMZN",
+            "AN",
+            "ANDE",
+            "ANET",
+            "ANF",
+            "ANIP",
+            "AORT",
+            "AOS",
+            "APD",
+            "APLE",
+            "APOG",
+            "APTV",
+            "ARE",
+            "ARI",
+            "ARMK",
+            "ARR",
+            "ARWR",
+            "ASH",
+            "ASO",
+            "ASTH",
+            "ATO",
+            "ATR",
+            "AVA",
+            "AVB",
+            "AVNT",
+            "AVTR",
+            "AVY",
+            "AWK",
+            "AWR",
+            "AXTA",
+            "AZO",
+            "AZTA",
+            "BA",
+            "BALL",
+            "BAX",
+            "BBWI",
+            "BBY",
+            "BC",
+            "BCC",
+            "BCPC",
+            "BDX",
+            "BF-B",
+            "BFAM",
+            "BFS",
+            "BG",
+            "BIIB",
+            "BIO",
+            "BJ",
+            "BJRI",
+            "BKE",
+            "BKH",
+            "BKNG",
+            "BLFS",
+            "BMRN",
+            "BMY",
+            "BNL",
+            "BOOT",
+            "BRKR",
+            "BROS",
+            "BRX",
+            "BSX",
+            "BURL",
+            "BWA",
+            "BXP",
+            "BYD",
+            "CAG",
+            "CAH",
+            "CAKE",
+            "CALM",
+            "CALY",
+            "CART",
+            "CASY",
+            "CAVA",
+            "CBRE",
+            "CBRL",
+            "CBT",
+            "CC",
+            "CCI",
+            "CCK",
+            "CCL",
+            "CCS",
+            "CDP",
+            "CE",
+            "CEG",
+            "CELH",
+            "CENT",
+            "CENTA",
+            "CENX",
+            "CERT",
+            "CF",
+            "CHD",
+            "CHDN",
+            "CHE",
+            "CHEF",
+            "CHH",
+            "CHWY",
+            "CI",
+            "CL",
+            "CLF",
+            "CLX",
+            "CMC",
+            "CMG",
+            "CMS",
+            "CNC",
+            "CNMD",
+            "CNP",
+            "COCO",
+            "COKE",
+            "COLL",
+            "COLM",
+            "CON",
+            "COO",
+            "COR",
+            "CORT",
+            "COST",
+            "CPK",
+            "CPT",
+            "CRH",
+            "CRI",
+            "CRL",
+            "CROX",
+            "CRVL",
+            "CRWD",
+            "CSGP",
+            "CSL",
+            "CSR",
+            "CTRE",
+            "CTVA",
+            "CUBE",
+            "CURB",
+            "CUZ",
+            "CVCO",
+            "CVNA",
+            "CVS",
+            "CVSA",
+            "CWEN",
+            "CWEN-A",
+            "CWK",
+            "CWST",
+            "CWT",
+            "CYTK",
+            "CZR",
+            "D",
+            "DAN",
+            "DAR",
+            "DASH",
+            "DCH",
+            "DD",
+            "DE",
+            "DEA",
+            "DECK",
+            "DEI",
+            "DFH",
+            "DG",
+            "DGX",
+            "DHI",
+            "DHR",
+            "DKS",
+            "DLR",
+            "DLTR",
+            "DOC",
+            "DOCS",
+            "DORM",
+            "DOW",
+            "DPZ",
+            "DRH",
+            "DRI",
+            "DTE",
+            "DUK",
+            "DUOL",
+            "DVA",
+            "DXCM",
+            "EAT",
+            "EBAY",
+            "ECL",
+            "ED",
+            "EFX",
+            "EGP",
+            "EHC",
+            "EIX",
+            "EL",
+            "ELAN",
+            "ELF",
+            "ELS",
+            "ELV",
+            "EMN",
+            "ENOV",
+            "ENR",
+            "ENSG",
+            "EPC",
+            "EPR",
+            "EPRT",
+            "EQIX",
+            "ES",
+            "ESAB",
+            "ESI",
+            "ESS",
+            "ETR",
+            "ETSY",
+            "EVRG",
+            "EW",
+            "EXC",
+            "EXEL",
+            "EXP",
+            "EXPE",
+            "EXR",
+            "EYE",
+            "F",
+            "FBIN",
+            "FBRT",
+            "FCPT",
+            "FCX",
+            "FE",
+            "FIVE",
+            "FIZZ",
+            "FLO",
+            "FMC",
+            "FND",
+            "FOXF",
+            "FR",
+            "FRPT",
+            "FRT",
+            "FTDR",
+            "FTRE",
+            "FUL",
+            "FUN",
+            "GAP",
+            "GE",
+            "GEF",
+            "GEHC",
+            "GEV",
+            "GFF",
+            "GHC",
+            "GIII",
+            "GILD",
+            "GIS",
+            "GKOS",
+            "GLPI",
+            "GM",
+            "GME",
+            "GMED",
+            "GNL",
+            "GNTX",
+            "GO",
+            "GOLF",
+            "GPC",
+            "GPI",
+            "GPK",
+            "GRBK",
+            "GRMN",
+            "GTY",
+            "H",
+            "HAE",
+            "HALO",
+            "HAS",
+            "HCA",
+            "HCC",
+            "HD",
+            "HE",
+            "HGV",
+            "HIMS",
+            "HIW",
+            "HL",
+            "HLT",
+            "HNI",
+            "HOG",
+            "HQY",
+            "HR",
+            "HRB",
+            "HRL",
+            "HRMY",
+            "HSIC",
+            "HST",
+            "HSTM",
+            "HSY",
+            "HTO",
+            "HUM",
+            "HWKN",
+            "HWM",
+            "HZO",
+            "IART",
+            "IBP",
+            "ICUI",
+            "IDA",
+            "IDXX",
+            "IFF",
+            "IIPR",
+            "INCY",
+            "INDV",
+            "INGR",
+            "INSP",
+            "INTC",
+            "INVA",
+            "INVH",
+            "IOSP",
+            "IP",
+            "IPAR",
+            "IQV",
+            "IRM",
+            "IRT",
+            "ISRG",
+            "ITGR",
+            "JAZZ",
+            "JBGS",
+            "JBLU",
+            "JBSS",
+            "JJSF",
+            "JLL",
+            "JNJ",
+            "JOE",
+            "KALU",
+            "KBH",
+            "KDP",
+            "KHC",
+            "KIM",
+            "KMB",
+            "KMX",
+            "KNF",
+            "KO",
+            "KOP",
+            "KR",
+            "KRC",
+            "KRG",
+            "KSS",
+            "KTB",
+            "KVUE",
+            "KWR",
+            "LAD",
+            "LAMR",
+            "LAUR",
+            "LCII",
+            "LEA",
+            "LEG",
+            "LEN",
+            "LFST",
+            "LGIH",
+            "LGND",
+            "LH",
+            "LII",
+            "LIN",
+            "LIVN",
+            "LKQ",
+            "LLY",
+            "LMAT",
+            "LNN",
+            "LNT",
+            "LNTH",
+            "LOPE",
+            "LOW",
+            "LPX",
+            "LQDA",
+            "LRN",
+            "LTC",
+            "LTH",
+            "LULU",
+            "LUV",
+            "LVS",
+            "LW",
+            "LXP",
+            "LYB",
+            "LYV",
+            "LZB",
+            "M",
+            "MA",
+            "MAA",
+            "MAC",
+            "MAR",
+            "MAS",
+            "MAT",
+            "MATW",
+            "MBC",
+            "MCD",
+            "MCK",
+            "MCRI",
+            "MD",
+            "MDLZ",
+            "MDT",
+            "MDU",
+            "MEDP",
+            "MGEE",
+            "MGM",
+            "MHK",
+            "MHO",
+            "MKC",
+            "MLKN",
+            "MLM",
+            "MMI",
+            "MMSI",
+            "MNST",
+            "MO",
+            "MOS",
+            "MP",
+            "MPT",
+            "MRK",
+            "MRNA",
+            "MRP",
+            "MSEX",
+            "MTD",
+            "MTH",
+            "MTN",
+            "MTRN",
+            "MTUS",
+            "MTX",
+            "MUSA",
+            "MZTI",
+            "NBIX",
+            "NCLH",
+            "NEE",
+            "NEM",
+            "NEO",
+            "NEOG",
+            "NEU",
+            "NFG",
+            "NGVT",
+            "NHC",
+            "NI",
+            "NJR",
+            "NKE",
+            "NNN",
+            "NRG",
+            "NUE",
+            "NVR",
+            "NVST",
+            "NWE",
+            "NWL",
+            "NWN",
+            "NX",
+            "NXRT",
+            "O",
+            "OC",
+            "OGE",
+            "OGN",
+            "OGS",
+            "OHI",
+            "OI",
+            "OLLI",
+            "OMCL",
+            "OPCH",
+            "ORA",
+            "ORLY",
+            "OSW",
+            "OTIS",
+            "OTTR",
+            "OUT",
+            "PAG",
+            "PAHC",
+            "PANW",
+            "PATK",
+            "PBH",
+            "PCG",
+            "PCRX",
+            "PEB",
+            "PECO",
+            "PEG",
+            "PEN",
+            "PENN",
+            "PEP",
+            "PFE",
+            "PFGC",
+            "PG",
+            "PGNY",
+            "PHIN",
+            "PHM",
+            "PII",
+            "PK",
+            "PKG",
+            "PLD",
+            "PLNT",
+            "PLTR",
+            "PM",
+            "PMT",
+            "PNW",
+            "PODD",
+            "POOL",
+            "POR",
+            "POST",
+            "PPC",
+            "PPG",
+            "PPL",
+            "PRDO",
+            "PRGO",
+            "PRKS",
+            "PRSU",
+            "PRVA",
+            "PSA",
+            "PSMT",
+            "PSN",
+            "PTCT",
+            "PTGX",
+            "PTON",
+            "PVH",
+            "PWR",
+            "PZZA",
+            "QDEL",
+            "RCL",
+            "RCUS",
+            "RDNT",
+            "REG",
+            "REGN",
+            "REXR",
+            "REYN",
+            "RGEN",
+            "RGLD",
+            "RH",
+            "RHP",
+            "RL",
+            "RMD",
+            "ROCK",
+            "ROIV",
+            "ROST",
+            "RPM",
+            "RRR",
+            "RS",
+            "RVTY",
+            "RWT",
+            "RYN",
+            "SABR",
+            "SAFE",
+            "SAH",
+            "SBAC",
+            "SBH",
+            "SBRA",
+            "SBUX",
+            "SCHL",
+            "SCI",
+            "SCL",
+            "SDGR",
+            "SFM",
+            "SGI",
+            "SHAK",
+            "SHC",
+            "SHO",
+            "SHOO",
+            "SHW",
+            "SIG",
+            "SJM",
+            "SKT",
+            "SKY",
+            "SKYW",
+            "SLG",
+            "SLGN",
+            "SLVM",
+            "SMG",
+            "SMP",
+            "SMPL",
+            "SN",
+            "SO",
+            "SOLV",
+            "SON",
+            "SONO",
+            "SPG",
+            "SPHR",
+            "SR",
+            "SRE",
+            "SRPT",
+            "SSD",
+            "STAA",
+            "STAG",
+            "STE",
+            "STLD",
+            "STRA",
+            "STZ",
+            "SUPN",
+            "SW",
+            "SWK",
+            "SWX",
+            "SXT",
+            "SYK",
+            "SYY",
+            "TECH",
+            "TFX",
+            "TGT",
+            "TGTX",
+            "THC",
+            "THO",
+            "THRM",
+            "TILE",
+            "TJX",
+            "TKO",
+            "TLN",
+            "TMDX",
+            "TMO",
+            "TNDM",
+            "TNL",
+            "TOL",
+            "TPR",
+            "TR",
+            "TREX",
+            "TRNO",
+            "TSCO",
+            "TSLA",
+            "TSN",
+            "TXNM",
+            "TXRH",
+            "UA",
+            "UAA",
+            "UAL",
+            "UDR",
+            "UE",
+            "UFPI",
+            "UFPT",
+            "UGI",
+            "UHS",
+            "UHT",
+            "ULTA",
+            "UNFI",
+            "UNH",
+            "UPBD",
+            "URBN",
+            "USFD",
+            "USPH",
+            "UTHR",
+            "UTI",
+            "UTL",
+            "UVV",
+            "VAC",
+            "VC",
+            "VCEL",
+            "VCYT",
+            "VEEV",
+            "VFC",
+            "VICI",
+            "VIR",
+            "VMC",
+            "VMRK",
+            "VNO",
+            "VRTX",
+            "VST",
+            "VSXY",
+            "VTR",
+            "VTRS",
+            "VVV",
+            "WAT",
+            "WAY",
+            "WDFC",
+            "WEC",
+            "WELL",
+            "WEN",
+            "WGO",
+            "WH",
+            "WHR",
+            "WINA",
+            "WING",
+            "WLK",
+            "WMS",
+            "WMT",
+            "WPC",
+            "WS",
+            "WSM",
+            "WST",
+            "WTRG",
+            "WWW",
+            "WY",
+            "WYNN",
+            "XEL",
+            "XHR",
+            "XNCR",
+            "XPEL",
+            "XRAY",
+            "YETI",
+            "YUM",
+            "ZBH",
+            "ZTS"
+          ],
+          "resolved": true,
+          "note": {
+            "en": "names whose value sits in far-dated cash flows — first to re-rate when the discount rate falls",
+            "zh": "价值集中于远期现金流的名字——贴现率回落时最先修复"
+          }
+        },
         "refinancing_channel": {
           "label": {
-            "en": "Refinancing channel",
-            "zh": "再融资通道"
+            "en": "Refinancing relief",
+            "zh": "再融资减压"
           },
-          "n": 386,
+          "n": 391,
           "cuts": {
-            "financials.debt_to_assets": 32.6
+            "financials.debt_to_assets": 32.4
           },
-          "unevaluable": 1785,
+          "unevaluable": 1776,
           "names": [
             "ACCO",
             "ACDC",
@@ -185,6 +2665,7 @@
             "AZO",
             "BAH",
             "BALY",
+            "BATRK",
             "BBCP",
             "BBWI",
             "BC",
@@ -290,9 +2771,11 @@
             "EXP",
             "FBIN",
             "FCFS",
+            "FDS",
             "FICO",
             "FIP",
             "FLNG",
+            "FLO",
             "FOUR",
             "FTRE",
             "FUL",
@@ -350,6 +2833,7 @@
             "KMI",
             "KOP",
             "KOS",
+            "KRMN",
             "KTB",
             "LAMR",
             "LEE",
@@ -476,6 +2960,7 @@
             "SON",
             "SPCE",
             "SR",
+            "SRI",
             "SSP",
             "ST",
             "STX",
@@ -535,33 +3020,18 @@
           ],
           "resolved": true,
           "note": {
-            "en": "issuers with high leverage — most exposed to a rollover at wider spreads. NOTE: the substrate carries no debt-maturity-wall or interest-coverage field, so this binds to the leverage ratio (debt_to_assets) as the available refinancing-exposure axis; a near-dated maturity wall is not separable here.",
-            "zh": "高杠杆发行人——利差走阔时展期风险最高。注：个股数据无债务到期墙或利息覆盖率字段，故绑定至杠杆比率（debt_to_assets）作为可得的再融资敞口维度；无法单独区分近期到期墙。"
-          }
-        },
-        "floating_rate_debt": {
-          "label": {
-            "en": "Floating-rate debt",
-            "zh": "浮动利率债务"
-          },
-          "n": 0,
-          "cuts": {},
-          "unevaluable": 2953,
-          "names": [],
-          "resolved": false,
-          "note": {
-            "en": "DROPPED — no field: the substrate has no fixed-vs-floating debt split; this channel cannot be resolved without a floating-rate-share field. Not proxied (a proxy would silently mislabel names).",
-            "zh": "已弃用——无字段：个股数据无固定与浮动利率债务拆分；缺少浮动利率占比字段则无法解析此通道。未做代理（代理会错误标记名字）。"
+            "en": "leveraged names whose refinancing cost falls with yields — the pressure channel, released",
+            "zh": "杠杆较高、再融资成本随收益率回落而下降的名字——压力通道的释放"
           }
         },
         "fcf_burner": {
           "label": {
-            "en": "FCF burner",
-            "zh": "现金流消耗"
+            "en": "FCF burner relief",
+            "zh": "现金流消耗减压"
           },
-          "n": 338,
+          "n": 337,
           "cuts": {},
-          "unevaluable": 811,
+          "unevaluable": 812,
           "names": [
             "AAMI",
             "AAP",
@@ -706,7 +3176,6 @@
             "IMNM",
             "INBX",
             "INDI",
-            "INDV",
             "INFQ",
             "INGN",
             "INV",
@@ -722,7 +3191,6 @@
             "KIDS",
             "KMTS",
             "KOPN",
-            "KPTI",
             "KRMN",
             "KRRO",
             "KTOS",
@@ -853,6 +3321,7 @@
             "STRO",
             "STTK",
             "STXS",
+            "SUPN",
             "SVCO",
             "TARS",
             "TCI",
@@ -904,898 +3373,11 @@
           ],
           "resolved": true,
           "note": {
-            "en": "cash-burning names that must access credit markets to fund operations",
-            "zh": "必须进入信贷市场为运营融资的现金消耗型名字"
+            "en": "cash-burning names most sensitive to the cost of capital — largest beta to the relief",
+            "zh": "现金消耗型名字对资金成本最敏感——宽松弹性最大"
           }
         }
       },
-      "display_only": true
-    },
-    {
-      "chain": "dollar_spike_em_multinational",
-      "rev": 3,
-      "tier": "calibrated_context",
-      "title": {
-        "en": "Dollar spike → EM & multinational-EPS headwind",
-        "zh": "美元飙升 → 新兴市场与跨国企业盈利承压"
-      },
-      "state": "dormant",
-      "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
-      },
-      "hop": 0,
-      "n_hops": 2,
-      "armable": true,
-      "episode_id": null,
-      "hops": [
-        {
-          "id": "dollar_spike->usd_transmission_on",
-          "from": "dollar_spike",
-          "to": "usd_transmission_on",
-          "lag_d": [
-            0,
-            20
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "path": "transmission.usd_dir",
-              "op": "eq",
-              "threshold": "strengthening",
-              "value": "strengthening",
-              "passed": true
-            },
-            {
-              "path": "transmission.headwind_for",
-              "op": "in_contains",
-              "threshold": "EM equities",
-              "value": [
-                "US equities",
-                "EM equities",
-                "Gold",
-                "Copper",
-                "10y Treasury",
-                "Bitcoin"
-              ],
-              "passed": true
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.9082,
-            "n": 98,
-            "regime_split": "unavailable",
-            "per_regime": {}
-          }
-        },
-        {
-          "id": "usd_transmission_on->em_derate",
-          "from": "usd_transmission_on",
-          "to": "em_derate",
-          "lag_d": [
-            0,
-            90
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "FXI",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": 0.426,
-              "op": "lt",
-              "threshold": 0,
-              "passed": false
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.9238,
-            "n": 210,
-            "regime_split": "unavailable",
-            "per_regime": {}
-          }
-        }
-      ],
-      "nodes": [
-        {
-          "id": "dollar_spike",
-          "resolved": true,
-          "confirmed": true,
-          "receipts": [
-            {
-              "path": "dollar_desk.trend",
-              "op": "eq",
-              "threshold": "up",
-              "value": "up",
-              "passed": true
-            },
-            {
-              "path": "dollar_desk.usd_pos_pctile",
-              "op": "gte",
-              "threshold": 60,
-              "value": 76.0,
-              "passed": true
-            }
-          ]
-        },
-        {
-          "id": "usd_transmission_on",
-          "resolved": true,
-          "confirmed": true,
-          "receipts": [
-            {
-              "path": "transmission.usd_dir",
-              "op": "eq",
-              "threshold": "strengthening",
-              "value": "strengthening",
-              "passed": true
-            },
-            {
-              "path": "transmission.headwind_for",
-              "op": "in_contains",
-              "threshold": "EM equities",
-              "value": [
-                "US equities",
-                "EM equities",
-                "Gold",
-                "Copper",
-                "10y Treasury",
-                "Bitcoin"
-              ],
-              "passed": true
-            }
-          ]
-        },
-        {
-          "id": "em_derate",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "series": "FXI",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": 0.426,
-              "op": "lt",
-              "threshold": 0,
-              "passed": false
-            }
-          ]
-        }
-      ],
-      "falsifier_fired": null,
-      "base_rates": {
-        "asof": null,
-        "n_floor": 8,
-        "calibrated_hops": 2,
-        "n_hops": 2,
-        "by_hop": {
-          "dollar_spike->usd_transmission_on": {
-            "from": "dollar_spike",
-            "to": "usd_transmission_on",
-            "lag_d": [
-              0,
-              20
-            ],
-            "method": {
-              "from": "proxy: fred/DTWEXBGS >50d MA AND 63d ret>0 AND trailing-252d pctile>=0.60",
-              "to": "proxy: fred/DTWEXBGS 21d ret>0 (dollar strengthening)"
-            },
-            "p_confirm": 0.9082,
-            "n": 98,
-            "per_regime": {},
-            "regime_split": "unavailable",
-            "span": {
-              "first": "2008-08-13",
-              "last": "2026-07-01"
-            },
-            "regime_split_reason": "no coarse regime scheme matched the condition prose 'real-rate-driven strength (carry/haven bid), not a risk-on reflation dollar'; pooled only"
-          },
-          "usd_transmission_on->em_derate": {
-            "from": "usd_transmission_on",
-            "to": "em_derate",
-            "lag_d": [
-              0,
-              90
-            ],
-            "method": {
-              "from": "proxy: fred/DTWEXBGS 21d ret>0 (dollar strengthening)",
-              "to": "series:yahoo"
-            },
-            "p_confirm": 0.9238,
-            "n": 210,
-            "per_regime": {},
-            "regime_split": "unavailable",
-            "span": {
-              "first": "2006-02-06",
-              "last": "2026-06-17"
-            },
-            "regime_split_reason": "no coarse regime scheme matched the condition prose 'EM without a domestic-policy offset (no local easing cushioning the FX drag)'; pooled only"
-          }
-        },
-        "cohort_event_study": {
-          "available": true,
-          "cohort": "FXI",
-          "vs": "SPY",
-          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
-          "horizons": {
-            "21d": {
-              "mean_excess_pct": -0.184,
-              "median_excess_pct": -0.578,
-              "n": 3151
-            },
-            "63d": {
-              "mean_excess_pct": -1.143,
-              "median_excess_pct": -1.939,
-              "n": 3109
-            }
-          }
-        }
-      },
-      "blast": {},
-      "display_only": true,
-      "arm_veto": {
-        "index": 0,
-        "note": "dollar_spike sustained but EM cohort RS>0 over 63d — the EM-drag leg is falsified",
-        "receipts": [
-          {
-            "series": "FXI",
-            "vs": "SPY",
-            "metric": "rs_pp",
-            "window": 63,
-            "value": 0.426,
-            "op": "gt",
-            "threshold": 0,
-            "passed": true
-          }
-        ]
-      }
-    },
-    {
-      "chain": "oil_inflation_duration_derate",
-      "rev": 2,
-      "tier": "calibrated_context",
-      "title": {
-        "en": "Oil shock → inflation → yields → long-duration de-rate",
-        "zh": "油价冲击 → 通胀 → 收益率 → 长久期估值下修"
-      },
-      "state": "dormant",
-      "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
-      },
-      "hop": 0,
-      "n_hops": 3,
-      "armable": true,
-      "episode_id": null,
-      "hops": [
-        {
-          "id": "oil_shock->breakeven_rise",
-          "from": "oil_shock",
-          "to": "breakeven_rise",
-          "lag_d": [
-            5,
-            60
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "T10YIE",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -13.0,
-              "op": "gt",
-              "threshold": 15,
-              "passed": false
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.6901,
-            "n": 71,
-            "regime_split": "available",
-            "per_regime": {
-              "growth_accelerating": {
-                "p": 0.75,
-                "n": 28
-              },
-              "growth_steady_or_slowing": {
-                "p": 0.6512,
-                "n": 43
-              }
-            }
-          }
-        },
-        {
-          "id": "breakeven_rise->yield_rise",
-          "from": "breakeven_rise",
-          "to": "yield_rise",
-          "lag_d": [
-            0,
-            90
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "path": "state.rates.direction",
-              "op": "eq",
-              "threshold": "rising",
-              "value": "rising",
-              "passed": true
-            },
-            {
-              "path": "state.rates.real_10y_chg_63d_bp",
-              "op": "gt",
-              "threshold": 30,
-              "value": 17.0,
-              "passed": false
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.5319,
-            "n": 141,
-            "regime_split": "available",
-            "per_regime": {
-              "liquidity_contracting": {
-                "p": 0.6667,
-                "n": 36
-              },
-              "liquidity_expanding": {
-                "p": 0.4717,
-                "n": 53
-              },
-              "liquidity_neutral_or_draining": {
-                "p": 0.5,
-                "n": 52
-              }
-            }
-          }
-        },
-        {
-          "id": "yield_rise->duration_derate",
-          "from": "yield_rise",
-          "to": "duration_derate",
-          "lag_d": [
-            0,
-            120
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "QQQ",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": -4.244,
-              "op": "lt",
-              "threshold": 0,
-              "passed": true
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.9375,
-            "n": 96,
-            "regime_split": "unavailable",
-            "per_regime": {}
-          }
-        }
-      ],
-      "nodes": [
-        {
-          "id": "oil_shock",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "series": "CL=F",
-              "metric": "ret_pct",
-              "window": 60,
-              "value": 10.714,
-              "op": "gt",
-              "threshold": 25,
-              "passed": false
-            },
-            {
-              "series": "CL=F",
-              "metric": "ma50_slope5",
-              "value": -0.0164,
-              "op": "gt",
-              "threshold": 0,
-              "passed": false
-            }
-          ]
-        },
-        {
-          "id": "breakeven_rise",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "series": "T10YIE",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -13.0,
-              "op": "gt",
-              "threshold": 15,
-              "passed": false
-            }
-          ]
-        },
-        {
-          "id": "yield_rise",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "path": "state.rates.direction",
-              "op": "eq",
-              "threshold": "rising",
-              "value": "rising",
-              "passed": true
-            },
-            {
-              "path": "state.rates.real_10y_chg_63d_bp",
-              "op": "gt",
-              "threshold": 30,
-              "value": 17.0,
-              "passed": false
-            }
-          ]
-        },
-        {
-          "id": "duration_derate",
-          "resolved": true,
-          "confirmed": true,
-          "receipts": [
-            {
-              "series": "QQQ",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": -4.244,
-              "op": "lt",
-              "threshold": 0,
-              "passed": true
-            }
-          ]
-        }
-      ],
-      "falsifier_fired": null,
-      "base_rates": {
-        "asof": null,
-        "n_floor": 8,
-        "calibrated_hops": 3,
-        "n_hops": 3,
-        "by_hop": {
-          "oil_shock->breakeven_rise": {
-            "from": "oil_shock",
-            "to": "breakeven_rise",
-            "lag_d": [
-              5,
-              60
-            ],
-            "method": {
-              "from": "series:yahoo",
-              "to": "series:fred"
-            },
-            "p_confirm": 0.6901,
-            "n": 71,
-            "per_regime": {
-              "growth_accelerating": {
-                "p": 0.75,
-                "n": 28
-              },
-              "growth_steady_or_slowing": {
-                "p": 0.6512,
-                "n": 43
-              }
-            },
-            "regime_split": "available",
-            "span": {
-              "first": "2002-03-07",
-              "last": "2026-03-03"
-            },
-            "regime_scheme": "growth_accel"
-          },
-          "breakeven_rise->yield_rise": {
-            "from": "breakeven_rise",
-            "to": "yield_rise",
-            "lag_d": [
-              0,
-              90
-            ],
-            "method": {
-              "from": "series:fred",
-              "to": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)"
-            },
-            "p_confirm": 0.5319,
-            "n": 141,
-            "per_regime": {
-              "liquidity_contracting": {
-                "p": 0.6667,
-                "n": 36
-              },
-              "liquidity_expanding": {
-                "p": 0.4717,
-                "n": 53
-              },
-              "liquidity_neutral_or_draining": {
-                "p": 0.5,
-                "n": 52
-              }
-            },
-            "regime_split": "available",
-            "span": {
-              "first": "2003-02-04",
-              "last": "2026-04-30"
-            },
-            "regime_scheme": "liquidity_dir"
-          },
-          "yield_rise->duration_derate": {
-            "from": "yield_rise",
-            "to": "duration_derate",
-            "lag_d": [
-              0,
-              120
-            ],
-            "method": {
-              "from": "proxy: fred/DFII10 real-10y Δ63d>30bp AND rising (Δ63d>0)",
-              "to": "series:yahoo"
-            },
-            "p_confirm": 0.9375,
-            "n": 96,
-            "per_regime": {},
-            "regime_split": "unavailable",
-            "span": {
-              "first": "2003-08-06",
-              "last": "2026-05-15"
-            },
-            "regime_split_reason": "no coarse regime scheme matched the condition prose 'no offsetting earnings-acceleration in the long-duration cohort'; pooled only"
-          }
-        },
-        "cohort_event_study": {
-          "available": true,
-          "cohort": "QQQ",
-          "vs": "SPY",
-          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
-          "horizons": {
-            "21d": {
-              "mean_excess_pct": -0.016,
-              "median_excess_pct": 0.183,
-              "n": 2705
-            },
-            "63d": {
-              "mean_excess_pct": 0.492,
-              "median_excess_pct": 1.248,
-              "n": 2682
-            }
-          }
-        }
-      },
-      "blast": {},
-      "display_only": true
-    },
-    {
-      "chain": "oil_slide_disinflation_duration_rerate",
-      "rev": 0,
-      "tier": "calibrated_context",
-      "title": {
-        "en": "Oil slide → disinflation → yields fall → long-duration re-rate",
-        "zh": "油价下滑 → 通胀降温 → 收益率回落 → 长久期估值修复"
-      },
-      "state": "dormant",
-      "state_label": {
-        "en": "Dormant",
-        "zh": "休眠"
-      },
-      "hop": 0,
-      "n_hops": 3,
-      "armable": true,
-      "episode_id": null,
-      "hops": [
-        {
-          "id": "oil_slide->breakeven_fall",
-          "from": "oil_slide",
-          "to": "breakeven_fall",
-          "lag_d": [
-            5,
-            60
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "T10YIE",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -13.0,
-              "op": "lt",
-              "threshold": -12,
-              "passed": true
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.7196,
-            "n": 107,
-            "regime_split": "available",
-            "per_regime": {
-              "growth_accelerating": {
-                "p": 0.6667,
-                "n": 45
-              },
-              "growth_steady_or_slowing": {
-                "p": 0.7581,
-                "n": 62
-              }
-            }
-          }
-        },
-        {
-          "id": "breakeven_fall->real_yield_fall",
-          "from": "breakeven_fall",
-          "to": "real_yield_fall",
-          "lag_d": [
-            0,
-            90
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "DFII10",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -35.0,
-              "op": "lt",
-              "threshold": -12,
-              "passed": true
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.9591,
-            "n": 171,
-            "regime_split": "available",
-            "per_regime": {
-              "inflation_down_or_flat": {
-                "p": 0.962,
-                "n": 158
-              },
-              "inflation_up": {
-                "p": 0.9231,
-                "n": 13
-              }
-            }
-          }
-        },
-        {
-          "id": "real_yield_fall->duration_rerate",
-          "from": "real_yield_fall",
-          "to": "duration_rerate",
-          "lag_d": [
-            0,
-            120
-          ],
-          "confirmed": false,
-          "asof": null,
-          "value_receipt": [
-            {
-              "series": "QQQ",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": -4.244,
-              "op": "gt",
-              "threshold": 0,
-              "passed": false
-            }
-          ],
-          "base_rate": {
-            "p_confirm": 0.9628,
-            "n": 269,
-            "regime_split": "unavailable",
-            "per_regime": {}
-          }
-        }
-      ],
-      "nodes": [
-        {
-          "id": "oil_slide",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "series": "CL=F",
-              "metric": "ret_pct",
-              "window": 20,
-              "value": -3.293,
-              "op": "lt",
-              "threshold": -12,
-              "passed": false
-            },
-            {
-              "series": "CL=F",
-              "metric": "ret_pct",
-              "window": 60,
-              "value": 10.714,
-              "op": "lt",
-              "threshold": -18,
-              "passed": false
-            },
-            {
-              "series": "CL=F",
-              "metric": "ma50_slope5",
-              "value": -0.0164,
-              "op": "lt",
-              "threshold": 0,
-              "passed": true
-            }
-          ]
-        },
-        {
-          "id": "breakeven_fall",
-          "resolved": true,
-          "confirmed": true,
-          "receipts": [
-            {
-              "series": "T10YIE",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -13.0,
-              "op": "lt",
-              "threshold": -12,
-              "passed": true
-            }
-          ]
-        },
-        {
-          "id": "real_yield_fall",
-          "resolved": true,
-          "confirmed": true,
-          "receipts": [
-            {
-              "series": "DFII10",
-              "metric": "ret_bp",
-              "window": 22,
-              "value": -35.0,
-              "op": "lt",
-              "threshold": -12,
-              "passed": true
-            }
-          ]
-        },
-        {
-          "id": "duration_rerate",
-          "resolved": true,
-          "confirmed": false,
-          "receipts": [
-            {
-              "series": "QQQ",
-              "vs": "SPY",
-              "metric": "rs_pp",
-              "window": 63,
-              "value": -4.244,
-              "op": "gt",
-              "threshold": 0,
-              "passed": false
-            }
-          ]
-        }
-      ],
-      "falsifier_fired": null,
-      "base_rates": {
-        "asof": null,
-        "n_floor": 8,
-        "calibrated_hops": 3,
-        "n_hops": 3,
-        "by_hop": {
-          "oil_slide->breakeven_fall": {
-            "from": "oil_slide",
-            "to": "breakeven_fall",
-            "lag_d": [
-              5,
-              60
-            ],
-            "method": {
-              "from": "series:yahoo",
-              "to": "series:fred"
-            },
-            "p_confirm": 0.7196,
-            "n": 107,
-            "per_regime": {
-              "growth_accelerating": {
-                "p": 0.6667,
-                "n": 45
-              },
-              "growth_steady_or_slowing": {
-                "p": 0.7581,
-                "n": 62
-              }
-            },
-            "regime_split": "available",
-            "span": {
-              "first": "2000-12-07",
-              "last": "2026-07-20"
-            },
-            "regime_scheme": "growth_accel"
-          },
-          "breakeven_fall->real_yield_fall": {
-            "from": "breakeven_fall",
-            "to": "real_yield_fall",
-            "lag_d": [
-              0,
-              90
-            ],
-            "method": {
-              "from": "series:fred",
-              "to": "series:fred"
-            },
-            "p_confirm": 0.9591,
-            "n": 171,
-            "per_regime": {
-              "inflation_down_or_flat": {
-                "p": 0.962,
-                "n": 158
-              },
-              "inflation_up": {
-                "p": 0.9231,
-                "n": 13
-              }
-            },
-            "regime_split": "available",
-            "span": {
-              "first": "2003-03-24",
-              "last": "2026-06-11"
-            },
-            "regime_scheme": "inflation_regime"
-          },
-          "real_yield_fall->duration_rerate": {
-            "from": "real_yield_fall",
-            "to": "duration_rerate",
-            "lag_d": [
-              0,
-              120
-            ],
-            "method": {
-              "from": "series:fred",
-              "to": "series:yahoo"
-            },
-            "p_confirm": 0.9628,
-            "n": 269,
-            "per_regime": {},
-            "regime_split": "unavailable",
-            "span": {
-              "first": "2003-02-04",
-              "last": "2026-04-23"
-            },
-            "regime_split_reason": "no coarse regime scheme matched the condition prose 'no concurrent earnings deterioration in the long-duration cohort (a growth scare can swamp the discount-rate tailwind)'; pooled only"
-          }
-        },
-        "cohort_event_study": {
-          "available": true,
-          "cohort": "QQQ",
-          "vs": "SPY",
-          "note": "descriptive forward excess return of the terminal cohort proxy at terminal-node firings — NOT a forecast, NOT a signal (display-only).",
-          "horizons": {
-            "21d": {
-              "mean_excess_pct": 0.482,
-              "median_excess_pct": 0.425,
-              "n": 4141
-            },
-            "63d": {
-              "mean_excess_pct": 1.171,
-              "median_excess_pct": 0.976,
-              "n": 4122
-            }
-          }
-        }
-      },
-      "blast": {},
       "display_only": true
     },
     {
@@ -1806,15 +3388,15 @@
         "en": "Real-rate peak → crypto re-rates",
         "zh": "实际利率见顶 → 加密资产修复"
       },
-      "state": "failed",
+      "state": "dormant",
       "state_label": {
-        "en": "Halted",
-        "zh": "已中止"
+        "en": "Dormant",
+        "zh": "休眠"
       },
-      "hop": 1,
+      "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "real_rate_peak_crypto_rerate@r1:2026-11-06",
+      "episode_id": null,
       "hops": [
         {
           "id": "real_rate_extreme->real_rate_rolldown",
@@ -1824,17 +3406,17 @@
             0,
             180
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": -35.0,
+              "value": -9.0,
               "op": "lt",
               "threshold": -12,
-              "passed": true
+              "passed": false
             }
           ],
           "base_rate": {
@@ -1868,7 +3450,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -8.329,
+              "value": -15.601,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1905,7 +3487,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 0.97,
+              "value": 0.99,
               "passed": true
             },
             {
@@ -1920,16 +3502,16 @@
         {
           "id": "real_rate_rolldown",
           "resolved": true,
-          "confirmed": true,
+          "confirmed": false,
           "receipts": [
             {
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": -35.0,
+              "value": -9.0,
               "op": "lt",
               "threshold": -12,
-              "passed": true
+              "passed": false
             }
           ]
         },
@@ -1942,7 +3524,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -8.329,
+              "value": -15.601,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1950,21 +3532,7 @@
           ]
         }
       ],
-      "falsifier_fired": {
-        "index": 1,
-        "note": "credit stress alongside the rolldown — flight-to-quality regime; the crypto duration-release hop does not apply",
-        "receipts": [
-          {
-            "series": "HYG/LQD",
-            "metric": "ratio_ret_pct",
-            "window": 22,
-            "value": -2.261,
-            "op": "lt",
-            "threshold": -2.0,
-            "passed": true
-          }
-        ]
-      },
+      "falsifier_fired": null,
       "base_rates": {
         "asof": null,
         "n_floor": 8,
@@ -2056,7 +3624,31 @@
         }
       },
       "blast": {},
-      "display_only": true
+      "display_only": true,
+      "arm_veto": {
+        "index": 0,
+        "note": "real 10y +15bp over the quarter AND still pressing its 10-day highs while armed — restriction still building",
+        "receipts": [
+          {
+            "series": "DFII10",
+            "metric": "ret_bp",
+            "window": 63,
+            "value": 35.0,
+            "op": "gt",
+            "threshold": 15,
+            "passed": true
+          },
+          {
+            "series": "DFII10",
+            "metric": "off_high_bp",
+            "window": 10,
+            "value": 0.0,
+            "op": "lt",
+            "threshold": 4,
+            "passed": true
+          }
+        ]
+      }
     },
     {
       "chain": "real_rate_peak_gold_rerate",
@@ -2066,15 +3658,15 @@
         "en": "Real-rate peak → gold re-rates",
         "zh": "实际利率见顶 → 黄金估值修复"
       },
-      "state": "failed",
+      "state": "dormant",
       "state_label": {
-        "en": "Halted",
-        "zh": "已中止"
+        "en": "Dormant",
+        "zh": "休眠"
       },
-      "hop": 1,
+      "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "real_rate_peak_gold_rerate@r1:2026-11-06",
+      "episode_id": null,
       "hops": [
         {
           "id": "real_rate_extreme->real_rate_rolldown",
@@ -2084,17 +3676,17 @@
             0,
             180
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": -35.0,
+              "value": -9.0,
               "op": "lt",
               "threshold": -12,
-              "passed": true
+              "passed": false
             }
           ],
           "base_rate": {
@@ -2128,7 +3720,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -2.002,
+              "value": -6.233,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -2161,7 +3753,7 @@
               "path": "state.rates.real_10y_pctile",
               "op": "gte",
               "threshold": 0.9,
-              "value": 0.97,
+              "value": 0.99,
               "passed": true
             },
             {
@@ -2176,16 +3768,16 @@
         {
           "id": "real_rate_rolldown",
           "resolved": true,
-          "confirmed": true,
+          "confirmed": false,
           "receipts": [
             {
               "series": "DFII10",
               "metric": "ret_bp",
               "window": 22,
-              "value": -35.0,
+              "value": -9.0,
               "op": "lt",
               "threshold": -12,
-              "passed": true
+              "passed": false
             }
           ]
         },
@@ -2198,7 +3790,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -2.002,
+              "value": -6.233,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -2206,21 +3798,7 @@
           ]
         }
       ],
-      "falsifier_fired": {
-        "index": 1,
-        "note": "real yields rolled down with gold flat-to-down over 63d — the re-rate leg is falsified",
-        "receipts": [
-          {
-            "series": "GC=F",
-            "metric": "ret_pct",
-            "window": 63,
-            "value": -11.443,
-            "op": "lt",
-            "threshold": 0,
-            "passed": true
-          }
-        ]
-      },
+      "falsifier_fired": null,
       "base_rates": {
         "asof": null,
         "n_floor": 8,
@@ -2308,7 +3886,31 @@
         }
       },
       "blast": {},
-      "display_only": true
+      "display_only": true,
+      "arm_veto": {
+        "index": 0,
+        "note": "real 10y +15bp over the quarter AND still pressing its 10-day highs while armed — restriction still building",
+        "receipts": [
+          {
+            "series": "DFII10",
+            "metric": "ret_bp",
+            "window": 63,
+            "value": 35.0,
+            "op": "gt",
+            "threshold": 15,
+            "passed": true
+          },
+          {
+            "series": "DFII10",
+            "metric": "off_high_bp",
+            "window": 10,
+            "value": 0.0,
+            "op": "lt",
+            "threshold": 4,
+            "passed": true
+          }
+        ]
+      }
     },
     {
       "chain": "vol_regime_deleveraging",
@@ -2318,15 +3920,15 @@
         "en": "Vol-regime shift → systematic deleveraging → high-beta unwind",
         "zh": "波动率状态转变 → 系统性去杠杆 → 高贝塔平仓"
       },
-      "state": "expressed",
+      "state": "arming",
       "state_label": {
-        "en": "Expressed",
-        "zh": "已兑现"
+        "en": "Arming",
+        "zh": "触发中"
       },
-      "hop": 2,
+      "hop": 0,
       "n_hops": 2,
       "armable": true,
-      "episode_id": "vol_regime_deleveraging@r2:2026-11-06",
+      "episode_id": "vol_regime_deleveraging@r2:2026-11-12",
       "hops": [
         {
           "id": "vol_expansion->systematic_delever",
@@ -2336,14 +3938,14 @@
             0,
             21
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.5,
+              "value": 0.57,
               "passed": true
             }
           ],
@@ -2362,15 +3964,15 @@
             0,
             42
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "SPHB",
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": -22.51,
+              "value": -12.337,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -2397,15 +3999,15 @@
                 "warning",
                 "backwardation-stress"
               ],
-              "value": "backwardation-stress",
+              "value": "warning",
               "passed": true
             },
             {
               "path": "vol_regime.vix",
               "op": "gte",
               "threshold": 25,
-              "value": 25.64,
-              "passed": true
+              "value": 19.46,
+              "passed": false
             }
           ]
         },
@@ -2418,7 +4020,7 @@
               "path": "vol_regime.vol_target_scalar",
               "op": "lt",
               "threshold": 0.85,
-              "value": 0.5,
+              "value": 0.57,
               "passed": true
             }
           ]
@@ -2433,7 +4035,7 @@
               "vs": "SPLV",
               "metric": "rs_pp",
               "window": 21,
-              "value": -22.51,
+              "value": -12.337,
               "op": "lt",
               "threshold": 0,
               "passed": true
@@ -2512,50 +4114,51 @@
           },
           "n": 590,
           "cuts": {
-            "risk_sizing.vol_ann_pct": 81.4
+            "risk_sizing.vol_ann_pct": 66.3
           },
           "unevaluable": 7,
           "names": [
             "AAON",
             "ABAT",
+            "ABEO",
             "ABOS",
             "ABSI",
+            "ACAD",
             "ACDC",
             "ACH",
             "ACHR",
             "ACLS",
             "ACMR",
-            "ADEA",
-            "ADMA",
-            "ADTN",
+            "ACRS",
+            "ADCT",
             "ADV",
             "AEHR",
             "AEIS",
             "AESI",
             "AEVA",
             "AGEN",
-            "AGIO",
-            "AGL",
             "AGNT",
             "AGX",
+            "AIOT",
             "AIP",
             "AIRJ",
             "AIRO",
             "AIRS",
-            "AKAM",
             "AKBA",
             "ALAB",
             "ALEC",
             "ALGM",
+            "ALM",
             "ALMS",
             "ALMU",
-            "ALNT",
             "ALOY",
+            "ALT",
             "ALTG",
+            "ALTI",
             "ALXO",
             "AMAT",
             "AMBQ",
-            "AMC",
+            "AMCX",
             "AMD",
             "AMKR",
             "AMLX",
@@ -2563,79 +4166,84 @@
             "AMPX",
             "AMRC",
             "AMTX",
-            "ANET",
-            "ANGI",
             "ANIK",
-            "ANNX",
             "ANRO",
             "AORT",
             "AOSL",
             "AP",
             "APLD",
             "APP",
+            "APPS",
             "ARCT",
-            "ARDT",
             "AREC",
+            "ARHS",
             "ARLO",
             "ARM",
             "ARMP",
             "ARQT",
             "ARRY",
+            "ASMB",
             "ASPI",
             "ASPN",
             "ASTS",
-            "ASYS",
             "ATEC",
             "ATEX",
             "ATOM",
+            "AURA",
             "AVAV",
             "AVBP",
             "AVNW",
+            "AVR",
             "AVTX",
-            "AVXL",
+            "AXGN",
             "AXON",
             "AXTI",
+            "AZTA",
+            "BALY",
             "BAND",
             "BBAI",
             "BBNX",
             "BCAX",
             "BDTX",
             "BE",
-            "BELFA",
-            "BELFB",
+            "BEAM",
             "BETR",
             "BFLY",
+            "BGS",
+            "BH",
             "BHVN",
-            "BKD",
             "BKKT",
+            "BKSY",
             "BL",
             "BLND",
             "BLZE",
-            "BMBL",
             "BNAI",
             "BNTC",
-            "BRKR",
-            "BROS",
+            "BRCC",
             "BRUN",
+            "BRZE",
             "BTBT",
             "BTDR",
+            "BV",
             "BW",
+            "BZ",
             "BZAI",
             "BZFD",
+            "CABA",
             "CABO",
             "CADL",
+            "CAMP",
             "CAMT",
             "CAPR",
+            "CARL",
             "CATX",
             "CBRS",
             "CCOI",
             "CCSI",
             "CD",
-            "CDNA",
-            "CDXS",
             "CDZI",
             "CECO",
-            "CENX",
+            "CERS",
             "CEVA",
             "CGEM",
             "CGON",
@@ -2643,198 +4251,194 @@
             "CHRS",
             "CIEN",
             "CIFR",
-            "CLF",
             "CLNE",
             "CLPT",
             "CLSK",
-            "CLVT",
             "CLYM",
             "CMCO",
-            "CMPX",
             "CMTG",
             "CNDT",
+            "CNTB",
             "CNTN",
             "CNTX",
             "COHR",
             "COHU",
             "COMP",
             "CORZ",
-            "CPS",
             "CRBP",
             "CRBU",
+            "CRCL",
             "CRCT",
             "CRDO",
+            "CRMD",
             "CRML",
             "CRVS",
             "CRWV",
-            "CSV",
             "CTEV",
-            "CTKB",
+            "CTGO",
+            "CTMX",
             "CTNM",
-            "CTRI",
             "CTRN",
+            "CTVA",
+            "CURI",
+            "CURV",
             "CVRX",
             "CWH",
+            "CYH",
             "CYRX",
             "DAVE",
-            "DCO",
+            "DCTH",
             "DDD",
-            "DDOG",
             "DELL",
             "DFH",
-            "DFTX",
             "DGII",
             "DIOD",
             "DJT",
             "DKNG",
-            "DLX",
-            "DMAC",
-            "DMRC",
             "DNA",
-            "DNUT",
             "DOCN",
             "DRUG",
-            "DSGN",
             "DTIL",
             "DUOL",
             "DUOT",
-            "DXPE",
-            "DXYZ",
-            "DY",
             "EAF",
             "ECG",
             "ECPG",
+            "EDIT",
             "ELDN",
+            "ELE",
             "ELTX",
             "ENOV",
+            "ENPH",
             "ENTG",
             "ENVX",
+            "EOLS",
             "EOSE",
-            "EPAM",
             "ERAS",
             "ETON",
             "EU",
             "EVC",
             "EVEX",
             "EVGO",
-            "EXPE",
-            "EXTR",
+            "EWTX",
             "EYPT",
             "FBRX",
             "FBYD",
             "FCEL",
             "FDMT",
             "FEIM",
+            "FF",
+            "FHTX",
             "FIP",
+            "FIS",
             "FIX",
             "FLEX",
             "FLGT",
+            "FLL",
             "FLNC",
             "FLY",
             "FLYX",
             "FMC",
             "FN",
-            "FNKO",
             "FORM",
+            "FOSL",
             "FROG",
             "FSLY",
             "FTAI",
             "FTK",
             "FUN",
             "FWDI",
-            "GALT",
-            "GCT",
             "GDC",
-            "GENI",
-            "GEO",
+            "GDS",
+            "GDYN",
             "GERN",
             "GEVO",
-            "GIL",
             "GKOS",
             "GLSI",
             "GLW",
             "GLXY",
             "GOGO",
+            "GPGI",
+            "GPN",
             "GPRO",
             "GRAL",
-            "GRNT",
-            "GSM",
-            "GTM",
+            "GRPN",
+            "GSIT",
             "GYRE",
-            "HELE",
             "HIMS",
             "HLIO",
             "HLLY",
-            "HPE",
+            "HNRG",
+            "HPK",
             "HPP",
+            "HRI",
             "HRTX",
             "HTZ",
             "HUT",
             "HYLN",
             "HYMC",
-            "HYPR",
-            "IBEX",
             "IBRX",
-            "IBTA",
-            "ICFI",
             "ICHR",
+            "IDN",
+            "IDR",
             "IE",
             "IESC",
             "IHRT",
+            "IKT",
             "IMMX",
-            "IMRX",
+            "IMVT",
             "IMXI",
             "INBX",
             "INDI",
             "INFQ",
             "INOD",
+            "INSE",
             "INSG",
             "INTC",
-            "INTT",
             "INV",
             "IONQ",
             "IOVA",
-            "IPGP",
             "IPSC",
             "IRD",
             "IREN",
             "IRON",
             "IRTC",
+            "IVVD",
             "JANX",
+            "JBI",
             "JBLU",
-            "KD",
-            "KE",
+            "JOBY",
             "KEEL",
-            "KELYA",
-            "KGS",
             "KLAC",
-            "KLIC",
-            "KNSA",
+            "KLC",
+            "KLTR",
+            "KMTS",
             "KOD",
             "KOP",
             "KOPN",
-            "KPTI",
+            "KOS",
+            "KRMD",
             "KRMN",
             "KRRO",
             "KRT",
             "KRUS",
             "KURA",
-            "KVHI",
-            "KYTX",
+            "LAC",
             "LASR",
             "LAZR",
-            "LBRT",
             "LCID",
+            "LCTX",
             "LDI",
             "LENZ",
             "LEU",
-            "LION",
+            "LFMD",
+            "LINC",
             "LITE",
-            "LOPE",
+            "LNZA",
+            "LODE",
             "LPTH",
             "LQDA",
             "LRCX",
-            "LRMR",
             "LSCC",
             "LTBR",
             "LTRX",
@@ -2842,55 +4446,54 @@
             "LUNR",
             "LVWR",
             "LWLG",
+            "LXEO",
             "LYEL",
-            "LYTS",
             "MARA",
             "MASS",
-            "MBUU",
-            "MEC",
             "MEI",
             "METC",
-            "MGNI",
             "MGNX",
+            "MGTX",
+            "MIR",
             "MKSI",
             "MLYS",
+            "MNRO",
             "MNTK",
             "MNTN",
+            "MPAA",
             "MPWR",
             "MRAM",
             "MRCY",
             "MRNA",
-            "MRVI",
             "MRVL",
+            "MSTR",
             "MTRN",
-            "MTRX",
             "MTSI",
-            "MTUS",
             "MTZ",
             "MU",
+            "MUX",
             "MVST",
             "MXL",
-            "MYGN",
-            "NAGE",
-            "NATR",
             "NAUT",
+            "NAVI",
             "NB",
             "NBIS",
+            "NCMI",
             "NERV",
             "NESR",
-            "NET",
+            "NEXN",
             "NKTX",
             "NMRA",
             "NN",
             "NNE",
+            "NOVT",
             "NPWR",
             "NRDS",
-            "NRG",
             "NRGV",
             "NRIX",
-            "NSIT",
-            "NTCT",
+            "NTLA",
             "NUAI",
+            "NUTX",
             "NVAX",
             "NVCT",
             "NVEC",
@@ -2899,73 +4502,77 @@
             "NVTS",
             "NXT",
             "OCGN",
-            "OCUL",
-            "OEC",
+            "ODD",
             "OKLO",
             "OKUR",
             "OLMA",
             "OMDA",
             "ONCY",
             "ONDS",
-            "ONL",
-            "ONT",
             "ONTO",
+            "OPAL",
             "OPEN",
-            "OPRT",
             "OPTU",
             "OPTX",
+            "ORCL",
+            "ORGO",
             "ORIC",
-            "ORN",
             "OSS",
-            "OSUR",
             "OUST",
             "OVID",
             "PACB",
             "PAL",
-            "PBH",
+            "PAMT",
+            "PAYS",
             "PCT",
+            "PCVX",
+            "PDEX",
             "PDFS",
             "PDYN",
             "PENG",
             "PGEN",
             "PHAT",
-            "PI",
-            "PKOH",
             "PL",
             "PLPC",
+            "PLSE",
             "PLUG",
-            "PLUS",
-            "PMTS",
+            "PLX",
             "POWI",
             "POWL",
             "PPTA",
             "PRAA",
+            "PRAX",
+            "PRCH",
             "PRIM",
             "PRLD",
             "PRME",
-            "PROK",
+            "PSFE",
             "PSIX",
             "PTLO",
-            "PUMP",
-            "PVLA",
-            "PWR",
+            "PUBM",
             "QBTS",
             "QDEL",
+            "QLYS",
             "QNT",
             "QTRX",
             "QUBT",
             "QUIK",
-            "RAL",
+            "RAIL",
             "RAPP",
+            "RBBN",
             "RC",
             "RCAT",
+            "RCMT",
             "RDDT",
+            "RDNW",
             "RDW",
+            "RDZN",
             "REAX",
             "RELL",
-            "RELY",
             "RENT",
             "REPL",
+            "REZI",
+            "RGNX",
             "RGTI",
             "RHLD",
             "RIOT",
@@ -2973,83 +4580,85 @@
             "RLAY",
             "RLMD",
             "RMBS",
+            "RNAC",
             "ROCK",
-            "ROG",
-            "ROOT",
             "RPD",
             "RR",
+            "RUM",
+            "RUN",
             "RXRX",
             "RXT",
-            "RYTM",
-            "RYZ",
-            "RZLT",
+            "S",
+            "SANA",
             "SATL",
-            "SCSC",
+            "SDGR",
             "SEDG",
             "SENS",
+            "SEPN",
             "SERV",
             "SES",
-            "SEZL",
             "SGML",
             "SGMT",
+            "SGP",
+            "SGRY",
             "SHLS",
-            "SHOO",
             "SIDU",
             "SION",
-            "SITC",
             "SITM",
+            "SLDB",
             "SLNH",
             "SLS",
             "SLVM",
             "SMCI",
+            "SMHI",
             "SMR",
+            "SND",
             "SNDK",
-            "SNDX",
             "SOC",
+            "SONO",
             "SPCE",
-            "SPCX",
             "SPIR",
             "SPRB",
             "SPRY",
-            "SRI",
             "SRZN",
+            "SSP",
             "SSTK",
-            "STEP",
+            "STAA",
             "STLN",
-            "STRA",
             "STRL",
             "STRO",
             "STTK",
             "STX",
-            "SVCO",
+            "STXS",
             "SVRA",
-            "SVV",
             "TARA",
-            "TBI",
             "TBLA",
             "TCX",
             "TDUP",
             "TE",
-            "TEAM",
             "TEM",
             "TENX",
             "TER",
             "TG",
             "TH",
+            "THRY",
             "TIC",
-            "TILE",
+            "TKNO",
+            "TLS",
+            "TLSI",
             "TMDX",
+            "TNDM",
             "TNGX",
+            "TNXP",
             "TOYO",
             "TRDA",
             "TREE",
             "TRIP",
-            "TRNS",
             "TRON",
             "TROX",
             "TRVI",
             "TSSI",
-            "TTAM",
+            "TTD",
             "TTGT",
             "TTMI",
             "TWST",
@@ -3058,54 +4667,47 @@
             "UAMY",
             "UCTT",
             "UEC",
-            "UFPT",
             "ULCC",
             "ULH",
             "UMAC",
+            "UNIT",
+            "UP",
             "UPB",
             "URG",
-            "UROY",
             "USAR",
-            "USAU",
+            "USGO",
+            "UUUU",
             "VATE",
             "VCYT",
             "VECO",
             "VELO",
+            "VENU",
             "VERI",
-            "VHI",
             "VIAV",
             "VICR",
             "VIR",
-            "VISN",
-            "VITL",
-            "VKTX",
             "VOYG",
             "VPG",
             "VRT",
             "VSAT",
             "VSH",
-            "VST",
+            "VSTM",
             "VUZI",
-            "VYGR",
             "WATT",
             "WDC",
-            "WEST",
-            "WK",
-            "WMS",
+            "WGS",
             "WULF",
-            "WVE",
             "WYFI",
             "XERS",
             "XMAX",
-            "XMTR",
-            "XPRO",
+            "XNCR",
+            "XPOF",
             "XRX",
-            "YOU",
-            "ZBIO",
+            "ZENA",
             "ZIP",
+            "ZNTL",
             "ZSQR",
-            "ZURA",
-            "ZVRA"
+            "ZURA"
           ],
           "resolved": true,
           "note": {
@@ -3118,12 +4720,12 @@
             "en": "Crowded positioning",
             "zh": "拥挤持仓"
           },
-          "n": 778,
+          "n": 776,
           "cuts": {
             "smart_money.ownership_hhi": 1.0,
             "positioning.short.pct_float": 9.43
           },
-          "unevaluable": 2038,
+          "unevaluable": 2039,
           "names": [
             "AA",
             "AAL",
@@ -3512,7 +5114,6 @@
             "KN",
             "KNSA",
             "KNSL",
-            "KPTI",
             "KR",
             "KRC",
             "KRE",
@@ -3736,7 +5337,6 @@
             "SEDG",
             "SEZL",
             "SF",
-            "SFBS",
             "SFIX",
             "SFM",
             "SFNC",
@@ -3917,13 +5517,14 @@
           },
           "n": 52,
           "cuts": {
-            "tech.dollar_vol_20d": 329916689.0
+            "tech.dollar_vol_20d": 339277870.0
           },
-          "unevaluable": 2697,
+          "unevaluable": 2696,
           "names": [
             "ADM",
             "AEE",
             "AMCR",
+            "APD",
             "ATO",
             "AVB",
             "AWK",
@@ -3946,9 +5547,7 @@
             "EXR",
             "FOX",
             "GRMN",
-            "HAL",
             "HST",
-            "HSY",
             "IFF",
             "INVH",
             "IP",
@@ -3972,6 +5571,7 @@
             "TTD",
             "VICI",
             "VMRK",
+            "VTR",
             "WY"
           ],
           "resolved": true,
@@ -4000,18 +5600,18 @@
   ],
   "display_only": true,
   "substrate": {
-    "universe": 2953,
+    "universe": 2952,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-11-09"
+      "max": "2026-11-13"
     }
   },
   "input_capture": {
     "schema": "txi.prospective_input_read.v1",
     "status": "observed_input_bytes",
-    "capture_started_at": "2026-11-09T09:17:59.568964+00:00",
-    "capture_completed_at": "2026-11-09T09:18:08.464042+00:00",
-    "observation_asof": "2026-11-06",
+    "capture_started_at": "2026-11-13T13:52:27.888918+00:00",
+    "capture_completed_at": "2026-11-13T13:52:33.929287+00:00",
+    "observation_asof": "2026-11-12",
     "knowledge_basis": "native_process_observation_only",
     "source_available_at": null,
     "first_ingested_at": null,
@@ -4030,104 +5630,104 @@
     "reads": [
       {
         "path": "data/forex/latest.json",
-        "bytes": 221704,
-        "sha256": "b2207b859172748c7c9b10e4a12403bcaccb9a10445ad77e17bdb9433743ef78",
+        "bytes": 221736,
+        "sha256": "17913d95fa2fb792b5ef0ab321095ea15680bea4b3f22c012bf4efcbec60b3b3",
         "status": "present"
       },
       {
         "path": "data/fred/DFII10.parquet",
-        "bytes": 62181,
-        "sha256": "a42c5bb2ae6123ec24bff30e7353136fdbac6f5f5ba276c41101cd3f34eec023",
+        "bytes": 62224,
+        "sha256": "0cb61934e2a5bbb7b6964fbaf9b0cca1e417295163df5d7f1651dba609bc80a1",
         "status": "present"
       },
       {
         "path": "data/fred/T10YIE.parquet",
-        "bytes": 60768,
-        "sha256": "0477d588bbfd82c48cd8f495b526dc9dbb9f594dcf8d8bf6a6a5033c316b93a8",
+        "bytes": 60810,
+        "sha256": "4c948baeb8fdbf15ad3d5654c2d1dec338bf3ec74632dae2374b580424d19f3f",
         "status": "present"
       },
       {
         "path": "data/regime/latest.json",
-        "bytes": 968349,
-        "sha256": "6c7d835ae6f9b5a7f58f544ffa67155738c8ec2509369f588f2374a072505c39",
+        "bytes": 952810,
+        "sha256": "3621a2e6088f1ae4f2c5e00ac6a9be7498d48bc0f622d7bcb703605b40b17371",
         "status": "present"
       },
       {
         "path": "data/transmission/chain_episodes.jsonl",
-        "bytes": 71171,
-        "sha256": "ed45dd71fb82bfeb453397e989c42f46f52e4eb66a7d05de217996e3874e3c1d",
+        "bytes": 74287,
+        "sha256": "b92ab152bb2d58e88a4ec90e68f7e5e6369e0a5bb76aea92057184c4bdbc1eae",
         "status": "present"
       },
       {
         "path": "data/transmission/latest.json",
-        "bytes": 106676,
-        "sha256": "bb9516e1496e6678d8a586961c3c6b455f8c870faab76407501cebc12978757b",
+        "bytes": 105688,
+        "sha256": "e1f7931f9640c62053ef4528a43dfca6031fb397aea1ede1e5fa725c5020b5cb",
         "status": "present"
       },
       {
         "path": "data/yahoo/BTC-USD.parquet",
-        "bytes": 140296,
-        "sha256": "6edb67afad5b5432fb0182b155eed91a196bc63b097826f9c64c6a7c95b25f83",
+        "bytes": 140448,
+        "sha256": "ffc6ab72d9ef996e0df8d3c16174f9ab8bf3ed2661be2f0b957a1c9a30e78d2b",
         "status": "present"
       },
       {
         "path": "data/yahoo/CL_F.parquet",
-        "bytes": 172466,
-        "sha256": "827693d72df52627c69cf32bb546d01aa6e745227daf2e309bdcdee180e9c0f2",
+        "bytes": 172596,
+        "sha256": "7bc3f892a593529e8e51b4f5c8bea02929b77ce7f659ab7988d992d616508aa4",
         "status": "present"
       },
       {
         "path": "data/yahoo/FXI.parquet",
-        "bytes": 149863,
-        "sha256": "fff65180c2452cb632b39361a00488dc7b370fb9c48808238f4e31ca6965f4c3",
+        "bytes": 149928,
+        "sha256": "9dc8694bdfd449d00fbec6d772b1d004c310cb324f6192f2fd6f1f4ffbcc8457",
         "status": "present"
       },
       {
         "path": "data/yahoo/GC_F.parquet",
-        "bytes": 157060,
-        "sha256": "8eb35721d5ae1bffb2df1e5e449b5493c8751c4b12077e0147e6b7296e5f47e3",
+        "bytes": 157209,
+        "sha256": "217b581abd074a1d44747356f265721b4710ea1a3dd1cf8c6c5cade20d0a5c21",
         "status": "present"
       },
       {
         "path": "data/yahoo/HYG.parquet",
-        "bytes": 129036,
-        "sha256": "6fe3106aa41b154a74053dc7a72ec440fa3d86b247c308578b4cbc159b98b76d",
+        "bytes": 129137,
+        "sha256": "99698135a25875fdb04e7ede2a53b3591f0959ae953312688328114c5ccb7564",
         "status": "present"
       },
       {
         "path": "data/yahoo/IWM.parquet",
-        "bytes": 192781,
-        "sha256": "9e2df36d059356c683b59a06b4633f54ec970b87cd7f162b29a033993366c027",
+        "bytes": 192871,
+        "sha256": "957536cf5fe856327b9249b05dadea264746fc1cce23852f173e1b889ca8b36d",
         "status": "present"
       },
       {
         "path": "data/yahoo/LQD.parquet",
-        "bytes": 156162,
-        "sha256": "42a0a4f978202810b2deed7557672e9e7d47ca75ec100393086f0682dc5bf829",
+        "bytes": 156320,
+        "sha256": "a3ac6e9d0b1fa8a11a855b1770cabc157046e7c5f170035f2218f56cb7f331ad",
         "status": "present"
       },
       {
         "path": "data/yahoo/QQQ.parquet",
-        "bytes": 201845,
-        "sha256": "661f800faadf1e43e6e4d73d84917281e88f899b9928b5a91a037ed57116c8a9",
+        "bytes": 201988,
+        "sha256": "45932c25c504e84d3af1fee16da524cb7e7d23fae02b3ba14b74aa9c723852cf",
         "status": "present"
       },
       {
         "path": "data/yahoo/SPHB.parquet",
-        "bytes": 102352,
-        "sha256": "4acb128f5da89f636b2ec0b1eb466ce0f2e94096f393d908f6c3293153255963",
+        "bytes": 102487,
+        "sha256": "a80a532bc727873e787f31ef560f1ffd28d48b330a55c0f2680f4a046d84d423",
         "status": "present"
       },
       {
         "path": "data/yahoo/SPLV.parquet",
-        "bytes": 104841,
-        "sha256": "507f23220e316d249c39386c85effca204d10759d75082e0098eab7d9c55ca0f",
+        "bytes": 104982,
+        "sha256": "35c6d6379c388a93f9e368e5f9988b6e08eb7b36b3914718daf89dd49978e3e5",
         "status": "present"
       },
       {
         "path": "data/yahoo/SPY.parquet",
-        "bytes": 245094,
-        "sha256": "3a7a515be6be64af75d2aa3b29434db99271ea655cb013a1426e93ee7890ae94",
+        "bytes": 245242,
+        "sha256": "6108b422f3bdace7bc6d6c5528e8bd92d118b1c8a25b1003bf117135b720139b",
         "status": "present"
       },
       {
@@ -4185,11 +5785,11 @@
       ],
       "knowledge/transmission/proposed": []
     },
-    "causal_state_sha256": "b76e886afaa191788142e7a8e6ab2b76c68c183374bdad9996bdf4c9de228a93",
-    "proposed_transitions_sha256": "4a8ef114b8da7f959bb5c934c08ca7cf71f5c6b2ac64ad3e6582bb81835424a1",
+    "causal_state_sha256": "fbc5292b050f43ec418f1a3a1fea589deb1241779615a2e835444e2e5e666dca",
+    "proposed_transitions_sha256": "aa5e495c613767ed54d610c4ae18dca2d3852bea7cd9224cac1240e72098c86b",
     "retention": "resolve_exact_bytes_in_same_normal_git_publication",
     "publication_receipt": null,
     "scientific_acceptance": false,
-    "generation_id": "sha256:9ee671591040f63bb3fc3e9629b518a175691d42f52b8d86b6cdcc6abcb5a266"
+    "generation_id": "sha256:94ac60e518a8dd2616bf277a0c1a619e2bbf07d9f03ddb8ad4cc34b7b6c758de"
   }
 }

@@ -1,27 +1,27 @@
 {
-  "as_of": "2026-11-10T10:34:08.658688+00:00",
+  "as_of": "2026-11-14T07:30:41.816749+00:00",
   "ok": false,
   "fail_reasons": [],
   "warnings": [
-    "earnings store COVERAGE stale: only 483 of 2351 rows (20.5%) carry an as_of within the 2 td SLA (floor=50%) \u2014 the store-level as_of looks fresh because a few rows were refreshed while the rest are frozen; check that the collector is sweeping the whole universe, not a named-ticker subset"
+    "earnings store COVERAGE stale: only 336 of 2351 rows (14.3%) carry an as_of within the 2 td SLA (floor=50%) \u2014 the store-level as_of looks fresh because a few rows were refreshed while the rest are frozen; check that the collector is sweeping the whole universe, not a named-ticker subset"
   ],
   "errors": [
-    "earnings store stale AT SCALE: only 761 of 2351 names reporting within the sweep window (32.4%) carry an as_of inside the 2-td SLA (floor 50%). The newest stamp (2026-11-10) is fresh, so an age-only check reads green \u2014 that is the presence-vs-coverage trap. Most likely the sweep is running against a tiny ticker list instead of the full universe, or is bot-walled after its first calls."
+    "earnings store stale AT SCALE: only 336 of 2351 names reporting within the sweep window (14.3%) carry an as_of inside the 2-td SLA (floor 50%). The newest stamp (2026-11-14) is fresh, so an age-only check reads green \u2014 that is the presence-vs-coverage trap. Most likely the sweep is running against a tiny ticker list instead of the full universe, or is bot-walled after its first calls."
   ],
   "detail": {
-    "today_utc": "2026-11-10",
+    "today_utc": "2026-11-14",
     "store_path": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/earnings/earnings.parquet",
     "store_present": true,
-    "as_of_str": "2026-11-10T10:34:05.808449+00:00",
+    "as_of_str": "2026-11-14T07:29:45.588940+00:00",
     "as_of_age_td": 0,
     "ticker_count": 2351,
     "with_next_date": 2351,
-    "fresh_rows": 761,
-    "fresh_share": 0.3237,
+    "fresh_rows": 336,
+    "fresh_share": 0.1429,
     "min_fresh_share": 0.5,
     "max_age_td": 2,
-    "rows_within_sla": 483,
-    "fresh_row_fraction": 0.2054,
+    "rows_within_sla": 336,
+    "fresh_row_fraction": 0.1429,
     "sla_ok": true,
     "fresh_denominator": 2351,
     "denominator_basis": "sweep_window",

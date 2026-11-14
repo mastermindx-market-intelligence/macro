@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "GTES-BULL-20260731",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 25.4,
-  "raw_confidence": 25.1,
-  "delta_vs_base": -34.6,
+  "management_confidence": 28.2,
+  "raw_confidence": 31.6,
+  "delta_vs_base": -31.8,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 36.2,
+    "validity": 53.6,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.471,
+    "dist_to_stop_r": 0.63,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 208.9,
-    "p1": -0.3529,
-    "p2": -0.1764,
+    "horizon_pct_used": 220.0,
+    "p1": -0.2466,
+    "p2": -0.1233,
     "p3": null,
-    "move_r": -0.529,
+    "move_r": -0.37,
     "mfe_r": 0.019,
     "mae_r": -0.598
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 94,
-  "tau": 2.0889,
+  "days_elapsed": 99,
+  "tau": 2.2,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

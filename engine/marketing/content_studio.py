@@ -6140,6 +6140,17 @@ def content_plan(
                     facts=facts_data or None,
                     extra=None,
                 )
+                # The copywriter's numeric license comes from deterministic
+                # producer facts, but until now it died with this local ctx.
+                # Keep a bounded PRIVATE handoff for the in-memory outbox emit;
+                # strip_scaffolding still excludes it from content_plan.json.
+                try:
+                    from engine.marketing.fact_evidence import capture_writer_packet
+                    _writer_packet = capture_writer_packet(ctx, facts_data, as_of=today)
+                except Exception:  # noqa: BLE001 — evidence must fail closed, not mute writer
+                    _writer_packet = None
+                if _writer_packet:
+                    item_dict["_writer_fact_packet"] = _writer_packet
                 # Ensure voice and type are set on context for template lookup
                 ctx["type"] = item_dict.get("type", ctx.get("type", ""))
                 ctx["voice"] = voice

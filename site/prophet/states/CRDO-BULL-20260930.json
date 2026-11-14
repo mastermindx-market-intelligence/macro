@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CRDO-BULL-20260930",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 11.4,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 33.0
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.333,
+    "dist_to_stop_r": -0.187,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 60.7,
-    "p1": -0.889,
-    "p2": -0.4445,
+    "horizon_pct_used": 69.6,
+    "p1": -0.7915,
+    "p2": -0.3957,
     "p3": null,
-    "move_r": -1.333,
+    "move_r": -1.187,
     "mfe_r": 0.0,
     "mae_r": -1.442
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 34,
-  "tau": 0.6071
+  "days_elapsed": 39,
+  "tau": 0.6964
 }

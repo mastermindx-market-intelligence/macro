@@ -28,10 +28,12 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
 from lib import config
+from lib import fabric_client
 from engine import desk_ledger as _ledger_law    # run-scoped ids + immutable appends (leaf util)
 from engine.catalyst_tone import _extract_json   # shared tolerant JSON parser (leaf util)
 
@@ -1659,6 +1661,76 @@ def _client(cfg: dict):
         return None
 
 
+# --------------------------------------------------------------------------- #
+# Capacity Fabric cutover — the BRIEF WRITER only (Chairman order 2026-11-12)
+# --------------------------------------------------------------------------- #
+#: usage_stage values that identify the BRIEF WRITER. The zh pass tags itself
+#: "<lens>-zh" and every other _call_model consumer (ai_desk, etc.) has its own
+#: stage, so gating on this set keeps the cutover off their spend and behavior.
+_FABRIC_BRIEF_STAGES = frozenset({"macro", "china", "btc"})
+_FABRIC_PROJECT_ID = "macro-dashboard"
+
+
+def _fabric_brief_enabled(cfg: dict) -> bool:
+    """True when the brief writer should route through the Capacity Fabric.
+
+    Default ON whenever the router token is present; MACRO_BRIEF_FABRIC=0 is the
+    operator kill-switch. Scoped to the BRIEF WRITER: the zh translation pass
+    (usage_stage "<lens>-zh") and every other _call_model consumer keep the
+    legacy ladder, so this cutover cannot move their spend or behavior.
+    """
+    if os.environ.get("MACRO_BRIEF_FABRIC", "").strip() == "0":
+        return False
+    if str(cfg.get("usage_stage") or "") not in _FABRIC_BRIEF_STAGES:
+        return False
+    return fabric_client.is_configured()
+
+
+def _fabric_brief_call(system: str, user: str, cfg: dict,
+                       served: dict | None = None) -> tuple[str | None, str | None]:
+    """ONE brief call through the router. Never retries, never fails over.
+
+    The router owns provider selection, cooldown and account pooling, so this
+    makes exactly one request: a raised SDK error degrades the brief exactly as
+    a legacy ladder failure would, and a second attempt here would double-serve
+    a call the router already resolved.
+
+    FabricUnavailable is the one exception and is re-raised: it means no request
+    ever left this host (no token, or the SDK will not import), so nothing was
+    served and nothing was billed. _call_model catches it and runs the legacy
+    ladder — blanking a brief that a healthy legacy path could still produce
+    would be a regression, not a degradation.
+    """
+    stage = str(cfg.get("usage_stage") or "macro")
+    try:
+        comp = fabric_client.complete(
+            [{"role": "user", "content": user}],
+            system=system,
+            lane="fast",
+            max_tokens=int(cfg.get("max_tokens", 4000)),
+            client="Python client",
+            project_id=_FABRIC_PROJECT_ID,
+            session_id=f"macro-brief-{stage}",
+        )
+    except fabric_client.FabricUnavailable:
+        raise
+    except Exception as e:  # noqa: BLE001 — degrade, never raise
+        log.warning("master_brain: fabric brief call failed (%s)", e)
+        return None, "llm_error"
+    if not comp.text:
+        return None, "empty_reply"
+    if served is not None:
+        try:  # telemetry only — never let this break a call that otherwise worked
+            served["provider"] = "fabric"
+            if comp.model_served:
+                served["model"] = comp.model_served
+        except Exception as e:  # noqa: BLE001
+            log.debug("master_brain: fabric served-by telemetry failed (%s)", e)
+    reason = ("truncated"
+              if getattr(comp.raw, "stop_reason", None) == "max_tokens" else None)
+    return comp.text, reason
+
+
 def _call_model(system: str, user: str, cfg: dict,
                  served: dict | None = None) -> tuple[str | None, str | None]:
     """Return (reply_text, degraded_reason). Never raises.
@@ -1693,6 +1765,18 @@ def _call_model(system: str, user: str, cfg: dict,
     balance exhaustion no longer blanks the whole brief. An operator who
     pinned some OTHER endpoint keeps the historic single-provider descriptor.
     """
+    # Capacity Fabric cutover (Chairman order 2026-11-12): the BRIEF WRITER goes
+    # through the router when it is configured. When it is not — no token, or
+    # MACRO_BRIEF_FABRIC=0 — the legacy ladder below runs unchanged. A router that
+    # cannot be reached at all (FabricUnavailable: no token after all, or the SDK
+    # will not import) also falls through here rather than blanking the brief.
+    if _fabric_brief_enabled(cfg):
+        try:
+            return _fabric_brief_call(system, user, cfg, served)
+        except fabric_client.FabricUnavailable as e:
+            log.warning(
+                "master_brain: fabric router unavailable (%s); using the legacy ladder", e)
+
     from engine import llm_auth
 
     if _is_deepseek_lane(cfg):

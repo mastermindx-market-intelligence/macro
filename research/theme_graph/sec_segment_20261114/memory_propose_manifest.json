@@ -1,0 +1,65 @@
+{
+ "schema": "theme_graph.segment_propose_manifest/v1",
+ "rows": [
+  {
+   "ticker": "PENG",
+   "issuer": "co:us:PENG",
+   "theme": "theme:memory_module_manufacturing",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T12:30:00Z",
+   "created": "2026-11-14T12:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "PENG",
+   "issuer": "co:us:PENG",
+   "theme": "theme:cxl_memory_expansion_devices",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T12:30:00Z",
+   "created": "2026-11-14T12:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "PENG",
+   "issuer": "co:us:PENG",
+   "theme": "theme:nand_enterprise_storage",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T12:30:00Z",
+   "created": "2026-11-14T12:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "DELL",
+   "issuer": "co:us:DELL",
+   "theme": "theme:data_center_storage_systems",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T12:30:00Z",
+   "created": "2026-11-14T12:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/DELL_0001571996-26-000008_Storage_a69c4dece144_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/DELL_0001571996-26-000008_Storage_a69c4dece144_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "DELL",
+   "issuer": "co:us:DELL",
+   "theme": "theme:software_defined_storage_platforms",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T12:30:00Z",
+   "created": "2026-11-14T12:30:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/DELL_0001571996-26-000008_Storage_a69c4dece144_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/DELL_0001571996-26-000008_Storage_a69c4dece144_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  }
+ ]
+}

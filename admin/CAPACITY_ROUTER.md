@@ -19,6 +19,19 @@ accepted windows are 5, 15, 60 and 120 minutes.
 - Provider route inventory and cooldown state. Route-wide priorities/weights
   are configuration, not live quota or capacity promises; model-specific rules
   in the incumbent router remain authoritative.
+- **Overflow ladders** (Overflow tab): per-family diversion state, the configured
+  target ladder with the current rung highlighted, recheck countdowns, seat
+  token-rate pressure, and a recent diversion log. Seat pressure is a local
+  router estimate, never a provider balance.
+- **Claude family lanes** (Claude lanes tab): per-account weekly budgets for each
+  model family, the shared 5-hour window, bench/reset times with provider-reported
+  vs estimated reset sources, drain and expiring-soon markers, and the gateway's
+  stranded-family boost and account preferences. The observer polls the incumbent
+  gateway's existing loopback status surface every 30 seconds using an
+  operator-configured token (`claude_status_url` / `claude_token_env` in
+  `observatory-export.json`); a failed read keeps the last observation with its
+  original timestamp rather than inventing capacity.
+- The Z.ai peak-window gate state (active/idle) appears in the metrics strip.
 - Known sessions and caller-reported agent/parent/project relationships. Unknown
   identity is shown as unattributed. SDK account IDs are never treated as sessions.
 - Search, model/state filters, pause/resume, window selection, topology zoom,

@@ -1564,11 +1564,11 @@ class TestConcurrentStoreWrites:
             assert by_date[str(d)] == float(d.toordinal())
 
     def test_concurrent_upserts_never_publish_unreadable_parquet(self, tmp_path, monkeypatch):
-        """A reader polling the store during concurrent writes never sees a torn file.
+        """One opened snapshot stays readable during concurrent atomic replacement.
 
-        os.replace is atomic, so the only way a reader observes corruption is if
-        what got replaced IN was already torn — which is exactly what a shared
-        temp *name* produces.
+        A pathname-based Parquet read may reopen between metadata and row reads,
+        crossing two complete file versions. Pin one opened inode so this check
+        tests writer integrity; in-place corruption still raises and is recorded.
         """
         import scripts.build_tape_flow_daily as mod
         from concurrent.futures import ThreadPoolExecutor
@@ -1582,7 +1582,10 @@ class TestConcurrentStoreWrites:
             while not stop.is_set():
                 if p.exists():
                     try:
-                        pd.read_parquet(p)
+                        # One opened inode is one snapshot. A pathname-based
+                        # PyArrow read can reopen across an atomic replacement.
+                        with p.open("rb") as snapshot:
+                            pd.read_parquet(snapshot)
                     except Exception as e:  # noqa: BLE001
                         failures.append(str(e))
 

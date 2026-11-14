@@ -1,22 +1,22 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-11-10T15:02:10+00:00",
-  "status": "available_fresh",
-  "render_consistent": true,
-  "machine_projection_consistent": true,
+  "checked_at": "2026-11-14T12:00:32+00:00",
+  "status": "render_mismatch",
+  "render_consistent": false,
+  "machine_projection_consistent": false,
   "available": true,
   "headline_method": "close_proxy",
-  "headline_state": "discount",
-  "premium_pct": -0.12995285084673736,
+  "headline_state": "premium",
+  "premium_pct": 0.27875955639897754,
   "expected_display_source": "proxy",
   "rendered_display_source": "proxy",
   "expected_currency": "CNY",
   "rendered_currency": "CNY",
-  "rendered_state": "discount",
-  "rendered_source_asof": "2026-11-06T07:30:00+00:00",
-  "rendered_premium_pct": -0.129953,
+  "rendered_state": "premium",
+  "rendered_source_asof": "2026-11-12T07:30:00+00:00",
+  "rendered_premium_pct": 0.236299,
   "source_fresh": true,
-  "source_asof": "2026-11-06T07:30:00+00:00",
+  "source_asof": "2026-11-13T07:30:00+00:00",
   "sources": [
     "Shanghai Gold Exchange Au99.99",
     "Global XAU/CNY spot"
@@ -37,13 +37,18 @@
     "close_proxy": {
       "available": true,
       "fresh": true,
-      "asof": "2026-11-06T07:30:00+00:00"
+      "asof": "2026-11-13T07:30:00+00:00"
     }
   },
-  "history_points": 268,
+  "history_points": 273,
   "stats_5_ready": true,
   "stats_30_ready": true,
-  "violations": [],
+  "violations": [
+    "source_asof: expected 2026-11-13T07:30:00+00:00, rendered 2026-11-12T07:30:00+00:00",
+    "premium_pct: expected 0.27875955639897754, rendered 0.236299",
+    "machine.source_asof: expected 2026-11-13T07:30:00+00:00, rendered 2026-11-12T07:30:00+00:00",
+    "machine.premium_pct: expected 0.27875955639897754, rendered 0.2362991272405024"
+  ],
   "source_artifacts": [
     {
       "role": "sge",
@@ -54,9 +59,9 @@
       "column": "rmb_per_g",
       "path": "data/gold_china_basis/sge_au9999.parquet",
       "exists": true,
-      "rows": 275,
-      "sha256": "d49253ab2dafbad040402cc155db7016d300eb4f7b26d863cbba2e1330fb4fd0",
-      "asof": "2026-11-06T07:30:00+00:00",
+      "rows": 280,
+      "sha256": "b20c54bf2b69a1a5b37700aefec0fd85011f47b9a0d612187b6e0f551dc2c838",
+      "asof": "2026-11-13T07:30:00+00:00",
       "selected_asof_present": true
     },
     {
@@ -68,12 +73,16 @@
       "column": "cny_per_oz",
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
-      "rows": 292,
-      "sha256": "3a45a7bb35b5c0a12088d4066903b42abd8005955836ea66cf798150c50554e3",
-      "asof": "2026-11-06T07:30:00+00:00",
+      "rows": 297,
+      "sha256": "2f39988c01603a18064bb1afbb8e93d6f427482de8821007a8cd33e07a9e0218",
+      "asof": "2026-11-13T07:30:00+00:00",
       "selected_asof_present": true
     }
   ],
-  "close_proxy_dataos_promotion_ready": true,
-  "close_proxy_dataos_promotion_blockers": []
+  "close_proxy_dataos_promotion_ready": false,
+  "close_proxy_dataos_promotion_blockers": [
+    "render contract is not consistent",
+    "status is render_mismatch, not available_fresh",
+    "machine projection was not proven consistent"
+  ]
 }

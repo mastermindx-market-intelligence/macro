@@ -1,0 +1,11 @@
+{
+  "artifact": "research/breadth_history/BREADTH_PRIOR_LOOKS_CENSUS.md",
+  "basis": "document_census",
+  "basis_note": "Not a reconstructed series: a read-only census of committed reports and research documents. None of the four series bases applies.",
+  "span": "documents on origin/main at 4869c78575b9b9521154daec47f69c09fb6077b7; each row states the date span of the look it describes and whether it touched 2024-01-02 onward",
+  "build_time_utc": "2026-11-12T01:45:55Z",
+  "code_version": "4869c78575b9b9521154daec47f69c09fb6077b7",
+  "input_stores_read": ["reports/*.md", "research/ (studies, verdicts, results)", "research/DO_NOT_REBUILD.md", "config/causal_priors.yml"],
+  "data_files_opened": false,
+  "missing": "The rotation-time-machine generating scripts and the hot_breadth and improving_breadth definitions are not on main; looks recorded only in documents under unrelated names may be missed."
+}

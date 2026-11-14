@@ -1,0 +1,17 @@
+{
+ "schema": "theme_graph.segment_propose_manifest/v1",
+ "rows": [
+  {
+   "ticker": "AMKR",
+   "issuer": "co:us:AMKR",
+   "theme": "theme:memory_assembly_test",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T14:45:00Z",
+   "created": "2026-11-14T14:45:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/AMKR_0001047127-26-000014_Advanced-Products_f5db4853d189_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/AMKR_0001047127-26-000014_Advanced-Products_f5db4853d189_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": false
+  }
+ ]
+}

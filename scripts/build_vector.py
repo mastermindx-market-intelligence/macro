@@ -3981,24 +3981,7 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
             '<link rel="stylesheet" href="theme.css">\n'
             + _GLOBE_HUB_CSS + _HUB_CRITICAL_CSS + '</head><body class="hub-page">')
 
-    # The page clock is the civil date of the bake (vm.built), never a data date.
-    # Never tick the viewer's clock — that would relabel a snapshot as live.
-    _asof_raw = str((vm or {}).get("built") or "").strip()
-    _asof = _asof_raw[:10] if len(_asof_raw) >= 10 else ""
-    _MONTH = ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
-              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-    _asof_en = _asof_zh = ""
-    if _asof:
-        try:
-            _y, _m, _d = int(_asof[0:4]), int(_asof[5:7]), int(_asof[8:10])
-            if 1 <= _m <= 12 and 1 <= _d <= 31:
-                _asof_en = f"{_MONTH[_m - 1]} {_d}, {_y}"
-                _asof_zh = f"{_y}年{_m}月{_d}日"
-            else:
-                _asof = ""
-        except ValueError:
-            _asof = ""
-    _asof_attr = (' data-asof="' + _esc(_asof, quote=True) + '"') if _asof else ""
+    # Site status describes this served website, not real-time market-data freshness.
 
     body = (
         '<div id="sky" aria-hidden="true"><canvas id="sky-stars"></canvas><div id="sky-sun"></div><div id="sky-moon"></div>'
@@ -4037,14 +4020,9 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         + '<span class="logo-word">MASTERMINDX</span></h1>'
         '<p>' + _bi("One disciplined view across every major market.",
                     "一套框架，看清全球主要市场。") + '</p></div></div>'
-        '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot"></span>'
-        '<span class="hub-clock-wrap"' + _asof_attr + '>'
-        '<span class="hub-clock-static">' + _bi("Page built", "页面生成于") + '</span>'
-        '<span class="hub-clock-skel skel" aria-hidden="true"></span>'
-        '<span class="hub-clock-live">'
-        + _bi('Page built · <span class="hub-clock" data-loc="en">' + _esc(_asof_en) + '</span>',
-              '页面生成于 · <span class="hub-clock" data-loc="zh-CN">' + _esc(_asof_zh) + '</span>')
-        + '</span></span></span></div></header>'
+        '<div class="hub-snapshot-meta"><span class="eyebrow"><span class="snapshot-dot" aria-hidden="true"></span>'
+        '<span class="hub-site-status">' + _bi("SITE LIVE", "网站运行中") + '</span>'
+        '</span></div></header>'
         + globe_deck
         + '<div class="hub-views" id="hub-views" data-view="mk">'
         + _HUB_SEG_HTML
@@ -4063,14 +4041,6 @@ def _hub_html(vm: dict, macro: dict, alerts: list, china: dict | None = None,
         '<script src="theme.js"></script>'
         # live_config.js + live.js already load through the canonical product nav
         # emitted by _hub_product_nav_html(); do not parse/execute them twice here.
-        # Snapshot as-of is baked; JS only reveals it (is-live) or fails honest
-        # (no-clock keeps the static snapshot word). No viewer-clock tick.
-        '<script>(function(){var wrap=document.querySelector(".hub-clock-wrap");'
-        'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}'
-        'setTimeout(fail,2000);'
-        'try{if(!wrap||!wrap.getAttribute("data-asof")){fail();return;}'
-        'var els=document.querySelectorAll(".hub-clock");if(!els.length){fail();return;}'
-        'wrap.classList.add("is-live");}catch(e){fail();}})();</script>'
         # personal welcome — name greeting + a short market-aware read (real #globe-data,
         # no LLM), paced with pauses, then a slow dissolve to the brand. Engine + topic/
         # phrasing rotation + same-day visit recall live in hub-welcome.js.

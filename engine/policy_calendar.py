@@ -6,8 +6,8 @@ Reads data/federal_register/documents.parquet (W0b store) and produces:
    - days_to_next_comment_close  (forward-dated comment-close across ALL reg_stages —
      a comment-close date is a real dated event whether the doc is a notice, RFI,
      proposed rule or final rule; the surfaced event carries its true reg_stage)
-   - days_to_next_rule_effective (final_rule rows with future comments_close_on — proxy;
-     see note below on effective-date absence in W0b schema)
+   - days_to_next_rule_effective (final_rule rows with valid, forward-dated effective_on;
+     unknown when the source or an older tape row does not supply that date)
    - prorule_inflow_60d          (proposed_rule rows published in last 60 days)
    - rule_finalization_60d       (final_rule rows published in last 60 days)
 
@@ -101,6 +101,11 @@ def compute_policy_calendar(
     df = df.copy()
     df["publication_date"] = df["publication_date"].fillna("").astype(str)
     df["comments_close_on"] = df["comments_close_on"].fillna("").astype(str)
+    # Older PIT tapes have no effective_on column. Never substitute a comment
+    # deadline or publication date, and reject malformed values before selection.
+    df["effective_on"] = df.get(
+        "effective_on", pd.Series("", index=df.index, dtype=object)
+    ).map(_canonical_effective_date)
     df["reg_stage"] = df["reg_stage"].fillna("").astype(str)
     df["rin"] = df["rin"].fillna("").astype(str)
     df["title"] = df["title"].fillna("").astype(str)
@@ -133,17 +138,20 @@ def compute_policy_calendar(
             days_to_next_comment_close = _days_from_today(today, next_comment_close_date)
             next_comment_close_title = str(earliest["title"])[:120]
 
-        # Days to next "rule effective" — W0b does not store a separate effective date.
-        # We use final_rule rows that have a future comments_close_on as the nearest
-        # forward-dated final rule signal (honest proxy; labeled as such in the output).
+        # Effective dates are independent of whether a comment deadline exists
+        # or is still upcoming. Preserve the established final_rule stage filter.
         days_to_next_rule_effective: int | None = None
         next_rule_effective_date: str | None = None
         next_rule_effective_title: str | None = None
-        fr_fwd = fwd_df[fwd_df["reg_stage"] == "final_rule"].copy()
+        fr_fwd = bdf[
+            (bdf["reg_stage"] == "final_rule")
+            & (bdf["effective_on"] != "")
+            & (bdf["effective_on"] >= today_str)
+        ].copy()
         if not fr_fwd.empty:
-            fr_fwd_sorted = fr_fwd.sort_values("comments_close_on")
+            fr_fwd_sorted = fr_fwd.sort_values("effective_on")
             earliest_fr = fr_fwd_sorted.iloc[0]
-            next_rule_effective_date = earliest_fr["comments_close_on"]
+            next_rule_effective_date = earliest_fr["effective_on"]
             days_to_next_rule_effective = _days_from_today(today, next_rule_effective_date)
             next_rule_effective_title = str(earliest_fr["title"])[:120]
 
@@ -213,8 +221,8 @@ def compute_policy_calendar(
         "latency_summary": latency_summary,
         "note": (
             "display-only; evidence class = dated-structured (Federal Register, PIT-stamped). "
-            "days_to_next_rule_effective uses comments_close_on of final_rule rows as a proxy — "
-            "W0b does not store a separate effective date field. "
+            "days_to_next_rule_effective uses only a valid effective_on from final_rule rows; "
+            "missing effective dates in older PIT rows remain unknown. "
             "PRORULE→RULE latency is empirical via RIN join; open PRORULE rows excluded from median."
         ),
     }
@@ -237,8 +245,8 @@ def format_policy_reg_chip(policy_row: dict | None, theme_key: str) -> dict | No
     parts: list[str] = []
     if dtcc is not None:
         parts.append(f"comment close in {dtcc}d ({policy_row.get('next_comment_close_date','')})")
-    if dtrf is not None and dtrf != dtcc:
-        parts.append(f"rule effective in {dtrf}d")
+    if dtrf is not None:
+        parts.append(f"rule effective in {dtrf}d ({policy_row.get('next_rule_effective_date','')})")
     if pr60:
         parts.append(f"{pr60} proposed rule(s) last 60d")
     if fr60:
@@ -256,6 +264,8 @@ def format_policy_reg_chip(policy_row: dict | None, theme_key: str) -> dict | No
         "rule_finalization_60d": fr60,
         "next_comment_close_date": policy_row.get("next_comment_close_date"),
         "next_comment_close_title": policy_row.get("next_comment_close_title"),
+        "next_rule_effective_date": policy_row.get("next_rule_effective_date"),
+        "next_rule_effective_title": policy_row.get("next_rule_effective_title"),
         "evidence_class": "dated-structured",
     }
 
@@ -290,6 +300,17 @@ def _document_number(row) -> str:
     if not text or text.lower() in {"nan", "none"}:
         return ""
     return text
+
+
+def _canonical_effective_date(value: object) -> str:
+    """Accept the API's YYYY-MM-DD calendar date, never a coerced date or timestamp."""
+    if not isinstance(value, str):
+        return ""
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return ""
+    return value if parsed.isoformat() == value else ""
 
 
 def _days_from_today(today: date, date_str: str) -> int | None:
@@ -477,3 +498,4 @@ def _append_ledger(themes: dict, asof: str) -> None:
         with p.open("a") as fh:
             fh.write("\n".join(new_rows) + "\n")
         log.info("policy_calendar: %d new ledger rows appended", len(new_rows))
+

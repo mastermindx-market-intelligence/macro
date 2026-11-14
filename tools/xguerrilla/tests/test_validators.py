@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.xguerrilla import config                       # noqa: E402
+from tools.xguerrilla import tlds                         # noqa: E402
 from tools.xguerrilla.persona import Persona              # noqa: E402
 from tools.xguerrilla.validators import (                 # noqa: E402
     BIO_PATH_RE,
@@ -448,3 +449,163 @@ def test_links_in_text_sees_every_spelling_that_resolves():
         "mastermind-x.com/x/ab12cd34"]
     # A number is not a host: version strings must survive the matcher.
     assert links_in_text("shipped 2.0.1 today") == []
+
+
+# --- the general scheme-less host: TLD membership, not label shape ----------
+#
+# The last _LINK_TOKEN alternative used to fire on any dotted word with an
+# alphabetic 2+ label tail, so filename-shaped prose was refused by the
+# absolute zero-URL gate (BL-9) as though it carried a link. The trailing
+# label must now be a member of the versioned TLD set (tlds.py/tlds.txt)
+# for the match to count. One fire row and one non-fire row per class.
+
+#: Not links: the post gate must let every one of these through.
+LINK_PROSE = [
+    "Node.js 22 ships today",
+    "the checklist lives in notes.txt now",
+    "setup.exe is what the vendor shipped",
+    "cf. e.g. the earlier run",
+    "we shipped 2.0.1 and v1.2 both",
+    "ping me at a.b@corp.com any time",
+]
+
+#: Links: the post gate must refuse every one of these (fire direction
+#: unchanged — scheme-less outside-domain hosts stay refused).
+LINK_HOSTS = [
+    "the write-up is at x.com/handle now",
+    "she is twitter.com/somebody these days",
+    "the mirror is evil.example/path today",
+    # Collision decision (tlds.txt): zip/mov/app are REGISTERED TLDs, so a
+    # dotted word ending on one fires, fail-closed, exactly like any host.
+    "grab it from archive.zip today",
+    "the clip is at movie.mov now",
+]
+
+
+@pytest.mark.parametrize("text", LINK_PROSE)
+def test_filename_shaped_prose_is_not_a_link(text, personas):
+    assert links_in_text(text) == [], text
+    assert validate(clean_draft(text), personas[MILA]) == [], text
+
+
+@pytest.mark.parametrize("text", LINK_HOSTS)
+def test_a_scheme_less_host_with_a_real_tld_still_refuses(text, personas):
+    tokens = links_in_text(text)
+    assert tokens, text
+    problems = validate(clean_draft(text), personas[MILA])
+    assert any("URL in post text" in p for p in problems), (text, problems)
+
+
+def test_the_canonical_bio_link_is_still_the_one_token_a_bio_may_carry():
+    # Non-fire row for the bio surface: the canonical destination is still
+    # tokenized (validate_bio depends on links_in_text seeing exactly it).
+    assert links_in_text(_bio()) == [canonical_bio_link(CHILD)]
+    assert validate_bio(_bio(), child_id=CHILD, known_ids={CHILD}) == []
+
+
+# Rejecting a filename-shaped candidate must leave later explicit URLs visible
+# to every consumer of the shared scanner, including the profile-only gates.
+@pytest.mark.parametrize("prefix", [
+    "Node.js", "notes.txt", "setup.exe", "page.html", "payload.json",
+])
+@pytest.mark.parametrize("url", [
+    "https://evil.example/path", "http://evil.example/path", "www.evil.example/path",
+])
+@pytest.mark.parametrize("wrapper", [
+    "{prefix}/{url}", "{prefix}/({url})", "{prefix}/[{url}]", "{prefix}/nested/{url}",
+])
+@pytest.mark.parametrize("surface", ["post", "reply", "quote", "bio", "display_name"])
+def test_rejected_filename_cannot_hide_an_explicit_url(prefix, url, wrapper, surface, personas):
+    text = wrapper.format(prefix=prefix, url=url) + " today"
+    assert links_in_text(text) == [url]
+    if surface in ("post", "reply", "quote"):
+        problems = validate(clean_draft(text, surface), personas[MILA])
+        assert any(f"URL in {surface} text" in p for p in problems), problems
+    elif surface == "bio":
+        problems = validate_bio(f"{_bio()} {text}", child_id=CHILD, known_ids={CHILD})
+        assert any("2 URLs in the bio" in p for p in problems), problems
+    else:
+        problems = validate_bio(_bio(), child_id=CHILD, display_name=text)
+        assert any("display name carries a URL" in p for p in problems), problems
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("notes.txt.http://evil.example/path", "http://evil.example/path"),
+    ("notes.txt.https://evil.example/path", "https://evil.example/path"),
+    ("notes.txt.www.evil.notarealtld/path", "www.evil.notarealtld/path"),
+    ("notes.txt/(evil.example/a/b?x=1)", "evil.example/a/b?x=1"),
+    ("notes.txt/[x.com/handle]", "x.com/handle"),
+    ("notes.txt/(twitter.com/somebody)", "twitter.com/somebody"),
+    ("notes.txt/(t.co/AbCd12)", "t.co/AbCd12"),
+    ("notes.txt/(mastermind-x.com/x/ab12cd34)", "mastermind-x.com/x/ab12cd34"),
+])
+def test_rejected_filename_resumes_with_original_token_context(text, expected):
+    assert links_in_text(text) == [expected]
+
+
+def test_rejected_filename_preserves_link_paths_order_and_deduplication():
+    assert links_in_text(
+        "notes.txt/https://evil.example/a/b?x=1 then x.com/handle "
+        "and https://evil.example/a/b?x=1"
+    ) == ["https://evil.example/a/b?x=1", "x.com/handle"]
+
+
+def test_nested_filename_path_does_not_consume_the_final_explicit_url():
+    text = "/".join(["notes.txt"] * 2000 + ["https://evil.example/path"])
+    assert links_in_text(text) == ["https://evil.example/path"]
+
+
+@pytest.mark.parametrize("text", [
+    "notes.txt/subdir/file.json", "notes.txt/evil.example/path", "notes.txt/a.b@corp.com",
+])
+def test_rejected_filename_preserves_existing_bare_host_boundaries(text):
+    assert links_in_text(text) == []
+
+
+# --- the TLD data file: versioned, sha256-pinned, consumed ------------------
+
+
+def test_the_tld_set_carries_the_pinned_sentinels():
+    # Real TLDs are members, file extensions are not: this is the row that
+    # separates "Node.js" (pass) from "x.com" (refuse).
+    assert tlds.is_tld("com") and tlds.is_tld("io") and tlds.is_tld("xn--p1ai")
+    assert not tlds.is_tld("js") and not tlds.is_tld("txt")
+    assert not tlds.is_tld("exe") and not tlds.is_tld("html")
+    # Documented collision decision: these labels are BOTH registered TLDs
+    # and file extensions; they count as TLDs so the gate stays fail-closed.
+    for label in ("zip", "mov", "app", "dev", "py", "md"):
+        assert tlds.is_tld(label), label
+    # Reserved names IANA's registry omits (RFC 2606/6761/7686) still
+    # refuse: "evil.example/path" must fire.
+    for label in ("example", "invalid", "localhost", "test", "onion"):
+        assert tlds.is_tld(label), label
+    # Case is not semantic.
+    assert tlds.is_tld("COM") and tlds.is_tld("Com") and tlds.is_tld("Example")
+
+
+def test_the_tld_file_declares_its_version_and_source():
+    raw = tlds._DATA_PATH.read_text(encoding="utf-8")
+    assert "# source: https://data.iana.org/TLD/tlds-alpha-by-domain.txt" in raw
+    assert "# iana-version: Version 2026111200" in raw
+    assert tlds._PIN_RE.search(raw) is not None
+
+
+def test_a_drifted_tld_file_refuses_to_load(tmp_path):
+    raw = tlds._DATA_PATH.read_text(encoding="utf-8")
+    # Drop one label from the IANA block: the recomputed sha256 no longer
+    # matches the pin, so the loader must refuse loudly, not load quietly.
+    assert raw.count("\nZIP\n") == 1
+    tampered = tmp_path / "tlds-dropped-label.txt"
+    tampered.write_text(raw.replace("\nZIP\n", "\n", 1), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="does not match"):
+        tlds._load(tampered)
+    # A stale pin (label added, pin left behind) must refuse the same way.
+    stale = tmp_path / "tlds-stale-pin.txt"
+    stale.write_text(raw.replace("\nZIP\n", "\nZIP\nZZZ\n", 1), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="does not match"):
+        tlds._load(stale)
+    # A file with no pin at all is not loadable data.
+    stripped = tmp_path / "tlds-no-pin.txt"
+    stripped.write_text(tlds._PIN_RE.sub("", raw), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="sha256"):
+        tlds._load(stripped)

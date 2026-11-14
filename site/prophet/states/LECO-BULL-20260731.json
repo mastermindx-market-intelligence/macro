@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LECO-BULL-20260731",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 37.7,
@@ -10,21 +10,21 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 82.8,
-    "progress": 0.0,
+    "validity": 100.0,
+    "progress": 2.3,
     "pace": 0.0,
-    "retention": 0.0,
-    "overlay": 39.0
+    "retention": 10.6,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.87,
-    "dist_to_t1_r": 1.5,
-    "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 208.9,
-    "p1": -0.0868,
-    "p2": -0.0434,
+    "dist_to_stop_r": 1.017,
+    "dist_to_t1_r": 1.483,
+    "dist_to_t2_r": 2.983,
+    "horizon_pct_used": 220.0,
+    "p1": 0.0112,
+    "p2": 0.0056,
     "p3": null,
-    "move_r": -0.13,
+    "move_r": 0.017,
     "mfe_r": 0.159,
     "mae_r": -0.606
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-12",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 94,
-  "tau": 2.0889,
+  "days_elapsed": 99,
+  "tau": 2.2,
   "closed": true,
   "outcome": "EXPIRED"
 }

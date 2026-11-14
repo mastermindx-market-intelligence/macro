@@ -1,0 +1,313 @@
+{
+ "rights_class": "house",
+ "title": "Group price indexes for baskets and sectors (COO ruling 38 Part B)",
+ "price_note": "Total return = the dividend-adjusted close already used in the breadth history. Adjusted closes are today's restated values (split and dividend adjustment as of the Tiingo archive capture 2026-10-11..16), not the prices printed at the time. Data end 2026-10-09.",
+ "redistribution_note": "Group-level index levels and counts only; no member prices, tickers or per-security dates. Member-level history stays off git.",
+ "index": {
+  "rebalance_rule": "engine.baskets._ew_level: equal-weight daily total-return level, cumprod of (1 + EW daily return) from 1.0 at the first active session; a member counts only inside its membership window",
+  "return": "total return (dividend-adjusted close)",
+  "floor": 5,
+  "floor_rule": "first date per key = earliest session with at least 5 priced members; rows below 5 keep n_priced_members with a blank index",
+  "floor_gap": "below-floor sessions are blank; the chain stays flat across the gap and resumes from the last valid level"
+ },
+ "files": {
+  "group_index_daily_dated.parquet": {
+   "basis": "reconstructed_dated_membership",
+   "levels": [
+    "sector"
+   ],
+   "rows": 85184,
+   "span": {
+    "start": "1996-01-02",
+    "end": "2026-10-09"
+   },
+   "membership": "S&P 500 dated membership (sp1500_pit_membership src=sp500) x as-of-now GICS sector classification (sp1500_pit_sectors); classification is as of now, NOT era-correct; same basis as #11094 group_breadth_daily_dated_sp500.parquet"
+  },
+  "group_index_daily_current_sensitivity.parquet": {
+   "basis": "reconstructed_current_membership",
+   "sensitivity": true,
+   "levels": [
+    "sector",
+    "basket"
+   ],
+   "rows": 978000,
+   "span": {
+    "start": "1962-01-02",
+    "end": "2026-10-09"
+   },
+   "membership": "today's members applied to every past session; survivors only; not point-in-time"
+  }
+ },
+ "levels": {
+  "sector": {
+   "engine_key_source": "engine/neuralweb/sector_map.py GICS_TO_ETF (explicit code map) and engine/sector_cycles.py SECTORS / engine/subsector_rotation.py SECTOR_ETFS, keyed by the 11 SPDR sector ETF tickers",
+   "engine_key": "SPDR sector ETF ticker via GICS_TO_ETF",
+   "dated": {
+    "first_valid_index": {
+     "Communication Services": "1996-01-02",
+     "Consumer Discretionary": "1996-01-02",
+     "Consumer Staples": "1996-01-02",
+     "Energy": "1996-01-02",
+     "Financials": "1996-01-02",
+     "Health Care": "1996-01-02",
+     "Industrials": "1996-01-02",
+     "Information Technology": "1996-01-02",
+     "Materials": "1996-01-02",
+     "Real Estate": "2005-08-19",
+     "Utilities": "1996-01-02"
+    },
+    "n_priced_at_last_date": {
+     "Communication Services": 19,
+     "Consumer Discretionary": 47,
+     "Consumer Staples": 36,
+     "Energy": 20,
+     "Financials": 73,
+     "Health Care": 57,
+     "Industrials": 81,
+     "Information Technology": 67,
+     "Materials": 24,
+     "Real Estate": 28,
+     "Utilities": 30
+    },
+    "price_input": {
+     "path": "/tmp/qb/tiingo/repo_closes.parquet",
+     "sha256_16": "740e8eb2f5fff02c"
+    }
+   },
+   "current_sensitivity": {
+    "first_valid_index": {
+     "Communication Services": "1990-03-26",
+     "Consumer Discretionary": "1983-04-06",
+     "Consumer Staples": "1972-08-25",
+     "Energy": "1981-12-31",
+     "Financials": "1984-07-19",
+     "Health Care": "1972-06-01",
+     "Industrials": "1970-01-02",
+     "Information Technology": "1980-03-17",
+     "Materials": "1983-04-06",
+     "Real Estate": "1990-03-07",
+     "Utilities": "1972-06-01"
+    },
+    "n_priced_at_last_date": {
+     "Communication Services": 21,
+     "Consumer Discretionary": 47,
+     "Consumer Staples": 33,
+     "Energy": 20,
+     "Financials": 73,
+     "Health Care": 58,
+     "Industrials": 81,
+     "Information Technology": 70,
+     "Materials": 23,
+     "Real Estate": 29,
+     "Utilities": 30
+    }
+   }
+  },
+  "basket": {
+   "engine_key_source": "engine/us_basket_turn.py and engine/baskets.py read data/baskets/membership.json keyed by basket id; engine_key = basket id",
+   "engine_key": "basket id",
+   "dated": false,
+   "no_dated_file_reason": "The basket membership on main carries added/removed fields, but added_semantics states `added` is an index-inclusion mask back-projected to seed_date (2023-05-09) for any roster curated later (35 of 49 baskets are back-projected), and `curated_added` is a recent curation stamp, not an era-correct entry date. membership_history.parquet holds only 4 snapshots (2026-08-13..2026-10-14). There is no historical point-in-time basket entry/exit record covering the price span, so a dated basket index would misrepresent hindsight-curated, back-projected rosters as genuine dated history. Baskets are therefore current members only, in the sensitivity file.",
+   "current_sensitivity": {
+    "first_valid_index": {
+     "ai_agents": "2021-07-28",
+     "ai_infra": "1989-05-16",
+     "ai_neoclouds": "2020-12-07",
+     "ai_semiconductors": "2004-11-19",
+     "ai_software": "1993-03-22",
+     "big_pharma": "1991-04-02",
+     "critical_minerals": "2020-06-22",
+     "crypto": "2024-07-23",
+     "crypto_rails": "2021-04-14",
+     "cybersecurity": "2018-03-16",
+     "data_center_power": "2018-04-30",
+     "defense": "1977-01-03",
+     "defensives": "1972-06-01",
+     "energy_complex": "1981-12-31",
+     "gold_miners": "1996-09-30",
+     "housing": "1985-07-01",
+     "industrial_distribution": "1987-11-05",
+     "insurance": "1984-09-07",
+     "mag7": "2004-08-19",
+     "managed_care": "2001-10-30",
+     "memory_storage": null,
+     "non_ai_software": "2012-10-12",
+     "non_ai_tech": "1990-03-26",
+     "nuclear_power": "2021-07-08",
+     "obesity_glp1": "1988-01-05",
+     "payments_fintech": "2001-06-20",
+     "pgm_miners": null,
+     "power_grid": "1983-04-06",
+     "quantum_computing": "2004-08-19",
+     "regional_banks": "1990-03-26",
+     "reshoring": "1972-06-01",
+     "retail": "1985-07-01",
+     "robotics_automation": "1989-10-09",
+     "semicap_equipment": "1990-03-26",
+     "silver_miners": "2005-05-02",
+     "space_economy": "2019-12-20",
+     "travel": "1993-04-28",
+     "uranium_miners": "2007-04-05",
+     "us_sector_comm": "1990-03-26",
+     "us_sector_discretionary": "1983-04-06",
+     "us_sector_energy": "1981-12-31",
+     "us_sector_financials": "1984-07-19",
+     "us_sector_health": "1972-06-01",
+     "us_sector_industrials": "1970-01-02",
+     "us_sector_materials": "1983-04-06",
+     "us_sector_realestate": "1990-03-07",
+     "us_sector_staples": "1972-08-25",
+     "us_sector_tech": "1980-03-17",
+     "us_sector_utilities": "1972-06-01"
+    },
+    "n_priced_at_last_date": {
+     "ai_agents": 7,
+     "ai_infra": 22,
+     "ai_neoclouds": 8,
+     "ai_semiconductors": 12,
+     "ai_software": 16,
+     "big_pharma": 9,
+     "critical_minerals": 8,
+     "crypto": 5,
+     "crypto_rails": 6,
+     "cybersecurity": 9,
+     "data_center_power": 8,
+     "defense": 20,
+     "defensives": 18,
+     "energy_complex": 21,
+     "gold_miners": 11,
+     "housing": 18,
+     "industrial_distribution": 12,
+     "insurance": 18,
+     "mag7": 7,
+     "managed_care": 9,
+     "memory_storage": 3,
+     "non_ai_software": 13,
+     "non_ai_tech": 11,
+     "nuclear_power": 7,
+     "obesity_glp1": 14,
+     "payments_fintech": 19,
+     "pgm_miners": 4,
+     "power_grid": 22,
+     "quantum_computing": 11,
+     "regional_banks": 19,
+     "reshoring": 16,
+     "retail": 21,
+     "robotics_automation": 12,
+     "semicap_equipment": 16,
+     "silver_miners": 8,
+     "space_economy": 13,
+     "travel": 23,
+     "uranium_miners": 8,
+     "us_sector_comm": 20,
+     "us_sector_discretionary": 47,
+     "us_sector_energy": 20,
+     "us_sector_financials": 73,
+     "us_sector_health": 58,
+     "us_sector_industrials": 81,
+     "us_sector_materials": 24,
+     "us_sector_realestate": 29,
+     "us_sector_staples": 33,
+     "us_sector_tech": 68,
+     "us_sector_utilities": 30
+    },
+    "price_input": {
+     "path": "/tmp/qb/tiingo/basket_closes_tradj.parquet",
+     "sha256_16": "17b8448a8f44e08e",
+     "note": "the same closes #11107 used"
+    }
+   }
+  }
+ },
+ "membership_census": {
+  "sp500": {
+   "rows": 1255,
+   "tickers": 1202,
+   "first_start": "1996-01-02",
+   "open_rows": 503
+  },
+  "sp400": {
+   "rows": 969,
+   "tickers": 930,
+   "first_start": "2012-01-13",
+   "open_rows": 400
+  },
+  "sp600": {
+   "rows": 1062,
+   "tickers": 1048,
+   "first_start": "2019-12-17",
+   "open_rows": 603
+  },
+  "note": "All three dated S&P sources exist in sp1500_pit_membership.parquet with the desk's expected first dates. The committed dated sector index uses sp500 (the same basis as #11094 group_breadth_daily_dated_sp500.parquet). sp400/sp600 membership is available for a future extension; nothing was purchased or downloaded."
+ },
+ "inputs": [
+  {
+   "path": "/tmp/qb/tiingo/repo_closes.parquet",
+   "sha256_16": "740e8eb2f5fff02c"
+  },
+  {
+   "path": "/tmp/qb/tiingo/basket_closes_tradj.parquet",
+   "sha256_16": "17b8448a8f44e08e"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_membership.parquet",
+   "sha256_16": "7b34316c0561619b"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/sp1500_pit_sectors.parquet",
+   "sha256_16": "cba7fc07da53a623"
+  },
+  {
+   "path": "/tmp/qb/data/breadth/constituents.parquet",
+   "sha256_16": "99f071b19a24cb67"
+  },
+  {
+   "path": "/tmp/qb/data/baskets/membership.json",
+   "sha256_16": "2f9e553cb856e906"
+  }
+ ],
+ "coverage": {
+  "dated_sector": {
+   "members_in_map": 1202,
+   "members_priced": 906,
+   "membership_rows": 1255,
+   "membership_rows_unlabeled": 484
+  },
+  "basket": {
+   "members_in_map": 702,
+   "members_priced": 664,
+   "membership_rows": 1020
+  }
+ },
+ "dropped_partial_rows": {
+  "repo_closes": [
+   "1970-02-23",
+   "1972-11-07",
+   "1972-12-28",
+   "1973-01-25",
+   "1976-11-02",
+   "1977-07-14",
+   "2026-02-16",
+   "2026-10-12",
+   "2026-10-13",
+   "2026-10-14",
+   "2026-10-15"
+  ],
+  "basket_closes_tradj": [
+   "2026-10-12",
+   "2026-10-13",
+   "2026-10-14",
+   "2026-10-15"
+  ]
+ },
+ "dropped_partial_rows_rule": "centred 21-row median of priced names; a row under half is dropped (data cleaning, not a signal rule)",
+ "duplicate_series_pairs_count": {
+  "dated_sector": 0,
+  "current_sector": 0,
+  "basket": 0
+ },
+ "duplicate_series_rule": "month-by-month hash of daily returns, then pairwise check: >=60 identical returns and >=95% identical between first and last identical session; the second ticker is counted once over the span. Detection and labelling only; no store repaired. Pair tickers are not committed (group-level counts only).",
+ "no_outcomes": "Data only. Descriptive group levels and counts. No outcome relation, no backtest, no hit rate, no signal, ranking or score column.",
+ "build_time_utc": "2026-11-12T15:17:44+00:00",
+ "engine": "engine.baskets._ew_level; scripts/build_group_breadth_history.py dated loaders; scripts/build_tree_breadth_and_index.py group_index"
+}

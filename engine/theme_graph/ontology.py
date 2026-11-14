@@ -197,6 +197,16 @@ def _is_ignored_theme_tier(row: Mapping[str, Any]) -> bool:
     return str(tier) != "theme"
 
 
+def is_hierarchy_tier_node(row: Mapping[str, Any]) -> bool:
+    """Public name of the W-C2b tier rule for consumers outside this module.
+
+    True for a ``kind == "theme"`` node whose ``tier`` is set and is not ``theme``
+    (``macro_category``, ``sub_theme``, ``micro_theme``). Such nodes are display-only
+    hierarchy nodes, and readers treat them as absent.
+    """
+    return _is_ignored_theme_tier(row)
+
+
 def _node_projection(row: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "node_id": str(row.get("node_id") or ""),

@@ -14,7 +14,7 @@ checks to skip this proof in a sparse tree.
 
 Properties (readiness map §V4, quoting MASTERPLAN.md:474):
   P1 report/proposal/final/effective states distinct — collectors stage
-     taxonomy + engine/policy_calendar.py effective-date proxy
+     taxonomy + engine/policy_calendar.py source effective-date selection
   P2 sourced, dated product/company exposure — committed cascade chip +
      producer chip from a SYNTH row naming company/product/source
   P3 alternatives and falsifiers — cascade + producers (ceiling PARTIAL)
@@ -125,17 +125,16 @@ def _exposure_families(obj: dict) -> dict[str, bool]:
 
 # ----------------------------------------------------------------------- P1 ----
 def p1_stage_states() -> tuple[str, str]:
-    """Report/proposal/final/effective states: taxonomy distinct, effective proxied.
+    """Report/proposal/final/effective states: taxonomy and effective dates distinct.
 
     Positive: four SYNTH documents whose action text states its own stage
     ("Request for Information" -> rfi, "Interim final rule" -> interim_final_rule,
     ...) must map to four distinct reg_stage values through the collector's own
-    _reg_stage. Negative: a SYNTH final rule whose effective date differs from
-    its comment-close date goes through the calendar path as the EARLIEST-closing
-    final rule (the other final rule closes later, so no tie confounds the
-    read); a mechanism that carried effective dates would report the effective
-    date, the store proxy reports the comment-close date. The proxy is also what
-    users see: format_policy_reg_chip renders it as "rule effective in Nd".
+    _reg_stage. A SYNTH final rule whose effective date differs from its comment
+    deadline must retain the effective date through the calendar and visible
+    chip. The other final rule has no effective_on and must remain unknown.
+    Collector-to-Parquet pass-through and malformed/legacy negatives run in
+    tests/test_federal_register.py and tests/test_policy_calendar.py.
     """
     import pandas as pd
     from collectors.federal_register import _FIELDS, _reg_stage
@@ -181,8 +180,11 @@ def p1_stage_states() -> tuple[str, str]:
     chip = format_policy_reg_chip(theme_row, "synth_policy_theme") or {}
     shown_match = re.search(r"rule effective in (\d+)d", chip.get("summary") or "")
     shown_as_effective = bool(shown_match)
+    shown_days_correct = bool(shown_match) and int(shown_match.group(1)) == (
+        date.fromisoformat(effective_on) - TODAY
+    ).days
 
-    if positive_ok and effective_carried and field_requested:
+    if positive_ok and effective_carried and field_requested and shown_days_correct:
         verdict = "PROVEN"
     elif positive_ok:
         verdict = "PARTIAL"
@@ -514,3 +516,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

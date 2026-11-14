@@ -161,3 +161,28 @@
 {"date":"2026-11-09","theme":"Software","donor":"softwaresecurity","receiver":"softwaregaming","confidence":0.76,"both_confirmed":true}
 {"date":"2026-11-09","theme":"Telecommunications","donor":"telecominfrastructure","receiver":"telecomwireless","confidence":0.395,"both_confirmed":false}
 {"date":"2026-11-09","theme":"Wearables","donor":"wearablesimmersive","receiver":"wearablessoftware","confidence":0.336,"both_confirmed":false}
+{"date":"2026-11-11","theme":"Software","donor":"softwarehsaas","receiver":"softwaregaming","confidence":0.649,"both_confirmed":true}
+{"date":"2026-11-11","theme":"Hardware","donor":"hardwareindustrialiot","receiver":"hardwarenetworking","confidence":0.37,"both_confirmed":false}
+{"date":"2026-11-11","theme":"Energy Renewable","donor":"energycleansmartgrid","receiver":"energycleanmaterials","confidence":0.344,"both_confirmed":false}
+{"date":"2026-11-11","theme":"Semiconductors","donor":"semisanalog","receiver":"semislithography","confidence":0.332,"both_confirmed":false}
+{"date":"2026-11-11","theme":"Autonomous Systems","donor":"autonomousspecialized","receiver":"autonomousmachinevision","confidence":0.306,"both_confirmed":false}
+{"date":"2026-11-11","theme":"Smart Home","donor":"smarthomesecurity","receiver":"smarthomevoiceai","confidence":0.303,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Software","donor":"softwarehsaas","receiver":"softwaregaming","confidence":0.317,"both_confirmed":true}
+{"date":"2026-11-12","theme":"Transportation & Logistics","donor":"transportationaircargo","receiver":"transportationnextgen","confidence":0.413,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Crypto & Blockchain","donor":"blockchainpayments","receiver":"blockchainmining","confidence":0.368,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Cloud Computing","donor":"cloudhsaas","receiver":"cloudhardware","confidence":0.332,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.317,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Artificial Intelligence","donor":"aisecurity","receiver":"aicompute","confidence":0.274,"both_confirmed":false}
+{"date":"2026-11-12","theme":"Consumer Goods","donor":"consumersecondhand","receiver":"consumerfarmdirect","confidence":0.19,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Crypto & Blockchain","donor":"blockchainpayments","receiver":"blockchainmining","confidence":0.394,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Nanotechnology","donor":"nanotechproducts","receiver":"nanotechelectronics","confidence":0.39,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Cloud Computing","donor":"cloudhsaas","receiver":"cloudhardware","confidence":0.386,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Wearables","donor":"wearablesmedical","receiver":"wearablesimmersive","confidence":0.364,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Hardware","donor":"hardwaregaming","receiver":"hardwaretelecom","confidence":0.363,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Virtual & Augmented Reality","donor":"varealityenterprise","receiver":"varealityhardware","confidence":0.343,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Digital Entertainment","donor":"entertainmentmusic","receiver":"entertainmentinfrastructure","confidence":0.335,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Environmental Sustainability","donor":"environmentalwaste","receiver":"environmentalairquality","confidence":0.335,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Electric Vehicles","donor":"evscharging","receiver":"evschips","confidence":0.339,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Transportation & Logistics","donor":"transportationairtravel","receiver":"transportationtrucking","confidence":0.33,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechelectronics","confidence":0.317,"both_confirmed":false}
+{"date":"2026-11-13","theme":"Software","donor":"softwarevsaas","receiver":"softwaregaming","confidence":0.16,"both_confirmed":false}

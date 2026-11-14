@@ -1,0 +1,81 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "Trump threatens to DOUBLE Mexico tariffs over new migrant caravans — Mexico-exposed supply chains on watch",
+  "banner_title_zh": "特朗普威胁对新移民大篷车加倍征收墨西哥关税——墨西哥相关供应链承压",
+  "summary": "President Trump has explicitly threatened to immediately double tariffs on Mexico if it does not stop new migrant caravans, while doubling down on a closed-border stance after Democrats took the House. The tariff threat is the market-relevant transmission channel, with concentrated exposure in autos, Mexican manufacturing, and cross-border agriculture.",
+  "summary_zh": "特朗普明确威胁，若墨西哥不阻止新移民大篷车，将立即加倍对墨西哥关税；同时民主党掌控众议院后，他继续强化关闭边境立场。关税威胁是市场相关传导渠道，汽车、墨西哥制造业和跨境农业敞口集中。",
+  "analysis": "The announcement is primarily political messaging, but it contains a concrete, market-moving policy threat embedded in the President's quoted statement: that if Mexico does not stop the caravans, 'the Tariffs on Mexico will be IMMEDIATELY DOUBLED.' This is not a signed action, but it escalates the trade-policy risk premium on any supply chain with Mexican exposure, especially given the existing USMCA framework and prior tariff history.\n\nThe transmission mechanism runs through input costs and margins for US companies sourcing from Mexico — autos and auto parts are the most obvious, followed by electronics, appliances, avocados and other produce, and industrial goods. A doubling of tariffs on Mexico would function as a supply-side shock, raising costs and potentially forcing reconfiguration of North American supply chains that have deepened since USMCA.\n\nThe key uncertainty is execution versus rhetoric. The White House has used tariff threats as leverage before, and this reads as a pressure tactic tied to immigration enforcement rather than a formal trade action. However, the explicit, specific language — 'IMMEDIATELY DOUBLED' — and the political backdrop (a new Democratic House vowing to dismantle ICE/DHS) raise the odds that immigration-trade linkage becomes an active policy tool again.",
+  "sectors": [
+    {
+      "name": "Autos & Auto Parts",
+      "impact": "headwind",
+      "rationale": "Heavy Mexican production exposure; doubled tariffs would compress margins on vehicles and components built south of the border."
+    },
+    {
+      "name": "Cross-Border Industrials & Electronics",
+      "impact": "headwind",
+      "rationale": "Mexico is a major assembly hub for appliances, electronics and machinery; tariff escalation raises input costs."
+    },
+    {
+      "name": "Agriculture & Produce Importers",
+      "impact": "headwind",
+      "rationale": "Large share of US produce imports — avocados, berries, tomatoes — come from Mexico; doubled tariffs would raise consumer prices."
+    },
+    {
+      "name": "US Domestic Manufacturing",
+      "impact": "tailwind",
+      "rationale": "Protectionist tilt could benefit US-based producers competing with Mexican imports, at least on a relative basis."
+    },
+    {
+      "name": "Border Security & Enforcement",
+      "impact": "tailwind",
+      "rationale": "Renewed focus on border closure and enforcement sustains demand for surveillance, detention, and border-infrastructure contractors."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "GM",
+      "direction": "hurt",
+      "rationale": "Major Mexico-based light vehicle production; doubled tariffs would directly raise vehicle and component import costs."
+    },
+    {
+      "symbol": "F",
+      "direction": "hurt",
+      "rationale": "Significant Mexican manufacturing footprint; tariff escalation would squeeze margins on cross-border models."
+    },
+    {
+      "symbol": "STLA",
+      "direction": "hurt",
+      "rationale": "Builds Ram trucks and other models in Mexico; exposed to a tariff shock on Mexican imports."
+    },
+    {
+      "symbol": "LEA",
+      "direction": "hurt",
+      "rationale": "Large Mexican auto-seating and electronics operations; input cost and supply-chain disruption risk is direct."
+    },
+    {
+      "symbol": "BWA",
+      "direction": "hurt",
+      "rationale": "Auto supplier with substantial Mexican manufacturing; doubled tariffs would pressure margins."
+    },
+    {
+      "symbol": "AVO",
+      "direction": "hurt",
+      "rationale": "Mission Produce sources avocados heavily from Mexico; tariff doubling would raise landed costs."
+    },
+    {
+      "symbol": "GEO",
+      "direction": "benefit",
+      "rationale": "Private detention and monitoring contractor; sustained hardline border enforcement supports demand."
+    },
+    {
+      "symbol": "CXW",
+      "direction": "benefit",
+      "rationale": "Detention-facility operator with ICE exposure; closed-border stance sustains utilization."
+    }
+  ],
+  "confidence": "medium"
+}

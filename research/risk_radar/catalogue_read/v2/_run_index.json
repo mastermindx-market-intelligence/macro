@@ -1,0 +1,234 @@
+{
+ "R-off__component_k10__top": {
+  "runtime_s": 9.9,
+  "error": null
+ },
+ "R-off__component_k11__top": {
+  "runtime_s": 9.9,
+  "error": null
+ },
+ "R-off__component_k12__top": {
+  "runtime_s": 10.0,
+  "error": null
+ },
+ "R-off__component_k1__top": {
+  "runtime_s": 229.7,
+  "error": null
+ },
+ "R-off__component_k2__top": {
+  "runtime_s": 280.8,
+  "error": null
+ },
+ "R-off__component_k3__top": {
+  "runtime_s": 132.5,
+  "error": null
+ },
+ "R-off__component_k4__top": {
+  "runtime_s": 69.1,
+  "error": null
+ },
+ "R-off__component_k5__top": {
+  "runtime_s": 62.7,
+  "error": null
+ },
+ "R-off__component_k6__top": {
+  "runtime_s": 25.5,
+  "error": null
+ },
+ "R-off__component_k7__top": {
+  "runtime_s": 13.3,
+  "error": null
+ },
+ "R-off__component_k8__top": {
+  "runtime_s": 21.5,
+  "error": null
+ },
+ "R-off__component_k9__top": {
+  "runtime_s": 19.2,
+  "error": null
+ },
+ "R-off__confluence_k4__top": {
+  "runtime_s": 271.8,
+  "error": null
+ },
+ "R-off__confluence_k4__top__unshifted": {
+  "runtime_s": 261.9,
+  "error": null
+ },
+ "R-off__incumbent__top": {
+  "runtime_s": 148.0,
+  "error": null
+ },
+ "R-off__incumbent__top__unshifted": {
+  "runtime_s": 232.4,
+  "error": null
+ },
+ "R-off__leg_bubble_ext__top": {
+  "runtime_s": 59.4,
+  "error": null
+ },
+ "R-off__leg_bubble_leadership__top": {
+  "runtime_s": 59.1,
+  "error": null
+ },
+ "R-off__leg_corr_floor_break__top": {
+  "runtime_s": 18.9,
+  "error": null
+ },
+ "R-off__leg_credit_hyg_tlt__top": {
+  "runtime_s": 60.7,
+  "error": null
+ },
+ "R-off__leg_credit_oas_roc__top": {
+  "runtime_s": 62.5,
+  "error": null
+ },
+ "R-off__leg_global_breadth__top": {
+  "runtime_s": 31.2,
+  "error": null
+ },
+ "R-off__leg_growth_cyc_def__top": {
+  "runtime_s": 43.8,
+  "error": null
+ },
+ "R-off__leg_growth_defensives__top": {
+  "runtime_s": 61.8,
+  "error": null
+ },
+ "R-off__leg_jpy_carry__top": {
+  "runtime_s": 123.2,
+  "error": null
+ },
+ "R-off__leg_rates_move__top": {
+  "runtime_s": 77.4,
+  "error": null
+ },
+ "R-off__leg_rates_realrate__top": {
+  "runtime_s": 121.9,
+  "error": null
+ },
+ "R-off__leg_vol_term__top": {
+  "runtime_s": 91.5,
+  "error": null
+ },
+ "R-on__component_k10__bottom": {
+  "runtime_s": 9.5,
+  "error": null
+ },
+ "R-on__component_k11__bottom": {
+  "runtime_s": 13.2,
+  "error": null
+ },
+ "R-on__component_k12__bottom": {
+  "runtime_s": 13.3,
+  "error": null
+ },
+ "R-on__component_k1__bottom": {
+  "runtime_s": 138.8,
+  "error": null
+ },
+ "R-on__component_k2__bottom": {
+  "runtime_s": 144.5,
+  "error": null
+ },
+ "R-on__component_k3__bottom": {
+  "runtime_s": 74.4,
+  "error": null
+ },
+ "R-on__component_k4__bottom": {
+  "runtime_s": 40.8,
+  "error": null
+ },
+ "R-on__component_k5__bottom": {
+  "runtime_s": 33.1,
+  "error": null
+ },
+ "R-on__component_k6__bottom": {
+  "runtime_s": 24.3,
+  "error": null
+ },
+ "R-on__component_k7__bottom": {
+  "runtime_s": 12.5,
+  "error": null
+ },
+ "R-on__component_k8__bottom": {
+  "runtime_s": 12.6,
+  "error": null
+ },
+ "R-on__component_k9__bottom": {
+  "runtime_s": 11.3,
+  "error": null
+ },
+ "R-on__confluence_k4__bottom": {
+  "runtime_s": 230.5,
+  "error": null
+ },
+ "R-on__confluence_k4__bottom__unshifted": {
+  "runtime_s": 230.4,
+  "error": null
+ },
+ "R-on__exit_v1__bottom": {
+  "runtime_s": 75.9,
+  "error": null
+ },
+ "R-on__exit_v1__bottom__unshifted": {
+  "runtime_s": 96.0,
+  "error": null
+ },
+ "R-on__incumbent__bottom": {
+  "runtime_s": 173.1,
+  "error": null
+ },
+ "R-on__incumbent__bottom__unshifted": {
+  "runtime_s": 163.0,
+  "error": null
+ },
+ "R-on__leg_bubble_ext__bottom": {
+  "runtime_s": 36.7,
+  "error": null
+ },
+ "R-on__leg_bubble_leadership__bottom": {
+  "runtime_s": 53.8,
+  "error": null
+ },
+ "R-on__leg_corr_floor_break__bottom": {
+  "runtime_s": 17.5,
+  "error": null
+ },
+ "R-on__leg_credit_hyg_tlt__bottom": {
+  "runtime_s": 33.2,
+  "error": null
+ },
+ "R-on__leg_credit_oas_roc__bottom": {
+  "runtime_s": 32.9,
+  "error": null
+ },
+ "R-on__leg_global_breadth__bottom": {
+  "runtime_s": 22.8,
+  "error": null
+ },
+ "R-on__leg_growth_cyc_def__bottom": {
+  "runtime_s": 42.4,
+  "error": null
+ },
+ "R-on__leg_growth_defensives__bottom": {
+  "runtime_s": 53.8,
+  "error": null
+ },
+ "R-on__leg_jpy_carry__bottom": {
+  "runtime_s": 44.1,
+  "error": null
+ },
+ "R-on__leg_rates_move__bottom": {
+  "runtime_s": 39.9,
+  "error": null
+ },
+ "R-on__leg_rates_realrate__bottom": {
+  "runtime_s": 62.1,
+  "error": null
+ },
+ "R-on__leg_vol_term__bottom": {
+  "runtime_s": 39.3,
+  "error": null
+ }
+}

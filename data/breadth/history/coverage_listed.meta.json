@@ -1,0 +1,186 @@
+{
+  "basis": "listed_member_coverage",
+  "counts_only": "Counts only. No threshold, flag or floor. n_listed joins the counted column of each breadth file on group and date.",
+  "group_map": {
+    "path": "data/breadth/sp1500_pit_sectors.parquet",
+    "blob_sha": "bf87ec4c523387777f6acddfdc7ffb82816fa57b",
+    "commit": "71aee82e596c9729edead51f443a11f800027986"
+  },
+  "membership_dated": {
+    "path": "scripts/build_group_breadth_history.py",
+    "blob_sha": "f37d46ee27d2833c1daca94c50d94043e7fc3819",
+    "commit": "71aee82e596c9729edead51f443a11f800027986",
+    "function": "membership_dated",
+    "windows": "engine.group_breadth_history.assign_groups (start_date <= d < end_date)"
+  },
+  "inputs": [
+    {
+      "path": "data/breadth/sp1500_pit_membership.parquet",
+      "blob_sha": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+      "commit": "71aee82e596c9729edead51f443a11f800027986"
+    },
+    {
+      "path": "data/breadth/sp1500_pit_sectors.parquet",
+      "blob_sha": "bf87ec4c523387777f6acddfdc7ffb82816fa57b",
+      "commit": "71aee82e596c9729edead51f443a11f800027986"
+    }
+  ],
+  "calendar": {
+    "path": "data/breadth/history/group_breadth_daily_dated_sp500.parquet",
+    "blob_sha": "b234f25b38ea24e819c206682b06adf74c7d5400",
+    "commit": "71aee82e596c9729edead51f443a11f800027986",
+    "n_sessions": 16300,
+    "first": "1962-01-02",
+    "last": "2026-10-09",
+    "source": "session_date values of the dated sp500 breadth parquet (no prices read)"
+  },
+  "srcs_included": [
+    "sp500",
+    "sp400",
+    "sp600"
+  ],
+  "srcs_excluded": {},
+  "sp400_sp600_note": "sp400 and sp600 are included when the same sp1500 sector map labels their members; unlabeled members are counted under 'unmapped'.",
+  "groups": [
+    "Communication Services",
+    "Consumer Discretionary",
+    "Consumer Staples",
+    "Energy",
+    "Financials",
+    "Health Care",
+    "Industrials",
+    "Information Technology",
+    "Materials",
+    "Real Estate",
+    "Utilities",
+    "unmapped"
+  ],
+  "rows": 586800,
+  "span": {
+    "first": "1962-01-02",
+    "last": "2026-10-09"
+  },
+  "house_registry_sizes": {
+    "note": "Today's members applied to the past: n_listed is the registry size on every date.",
+    "baskets": {
+      "source": "data/baskets/membership.json",
+      "commit": "f4cad82e75cadc6bf24834c37e848053dff4dad3",
+      "rule": "active members (a member with a 'removed' date is excluded)",
+      "blob_sha": "42149e59b72987f8510df149322c41b266aa6f92",
+      "sizes": {
+        "mag7": 7,
+        "ai_infra": 24,
+        "ai_software": 17,
+        "defense": 21,
+        "power_grid": 24,
+        "reshoring": 16,
+        "regional_banks": 20,
+        "managed_care": 9,
+        "housing": 18,
+        "payments_fintech": 21,
+        "energy_complex": 22,
+        "defensives": 18,
+        "travel": 24,
+        "retail": 21,
+        "crypto": 7,
+        "crypto_rails": 7,
+        "ai_neoclouds": 10,
+        "non_ai_software": 14,
+        "non_ai_tech": 13,
+        "ai_semiconductors": 12,
+        "semicap_equipment": 16,
+        "memory_storage": 4,
+        "data_center_power": 8,
+        "cybersecurity": 10,
+        "nuclear_power": 9,
+        "robotics_automation": 12,
+        "obesity_glp1": 14,
+        "quantum_computing": 11,
+        "gold_miners": 12,
+        "silver_miners": 8,
+        "pgm_miners": 4,
+        "uranium_miners": 10,
+        "critical_minerals": 11,
+        "space_economy": 15,
+        "ai_agents": 8,
+        "insurance": 19,
+        "big_pharma": 9,
+        "industrial_distribution": 12,
+        "us_sector_tech": 74,
+        "us_sector_financials": 76,
+        "us_sector_health": 60,
+        "us_sector_discretionary": 47,
+        "us_sector_comm": 23,
+        "us_sector_industrials": 83,
+        "us_sector_staples": 33,
+        "us_sector_energy": 21,
+        "us_sector_utilities": 31,
+        "us_sector_realestate": 30,
+        "us_sector_materials": 25
+      }
+    },
+    "families": {
+      "source": "data/breadth/history/registry/",
+      "commit": "a53c2b7f86f847857c90f669b607e0451376d31d",
+      "sizes": {
+        "gmi_macro_category.csv": {
+          "theme:energy_power": 47,
+          "theme:financial_services": 21,
+          "theme:healthcare_lifesciences": 22,
+          "theme:industrials_defense": 57,
+          "theme:materials_mining": 27,
+          "theme:semiconductors_hardware": 42,
+          "theme:technology_software": 51
+        },
+        "gmi_theme.csv": {
+          "theme:ai_semiconductors": 26,
+          "theme:copper_steel_electrify": 16,
+          "theme:cybersecurity": 10,
+          "theme:data_center_power": 18,
+          "theme:defense_aerospace": 21,
+          "theme:fintech_payments": 21,
+          "theme:glp1_obesity": 13,
+          "theme:grid_electrification": 24,
+          "theme:medical_devices": 9,
+          "theme:memory_storage": 4,
+          "theme:nuclear_power": 19,
+          "theme:rare_earth_critical_min": 11,
+          "theme:robotics_automation": 12,
+          "theme:semicap_equipment": 16,
+          "theme:space_satellite": 15
+        },
+        "rel_customers_of.csv": {
+          "AMKR": 5,
+          "GFS": 5,
+          "TSM": 19,
+          "UMC": 7
+        },
+        "rel_suppliers_of.csv": {
+          "AAPL": 7,
+          "FTNT": 7,
+          "INTC": 5
+        }
+      },
+      "blobs": [
+        {
+          "path": "data/breadth/history/registry/gmi_macro_category.csv",
+          "blob_sha": "3862755a6df8b05702729038e4518d16bc542e85"
+        },
+        {
+          "path": "data/breadth/history/registry/gmi_theme.csv",
+          "blob_sha": "c2f2439a1d958714fc89a4bb9c9a28a036d11bbd"
+        },
+        {
+          "path": "data/breadth/history/registry/rel_customers_of.csv",
+          "blob_sha": "87ca4e48ea0e3b7bcbad368175ac5dc50448467d"
+        },
+        {
+          "path": "data/breadth/history/registry/rel_suppliers_of.csv",
+          "blob_sha": "f04b18f5b2cec7582fb226e3763c6c042c90d1cb"
+        }
+      ]
+    }
+  },
+  "build_time_utc": "2026-11-13T06:49:44+00:00",
+  "not_an_outcome_claim": "Data only. No forward return, hit rate or backtest is attached."
+}

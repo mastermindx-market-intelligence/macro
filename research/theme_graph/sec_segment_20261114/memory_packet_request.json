@@ -1,0 +1,335 @@
+{
+ "schema": "theme_graph.segment_packet_request/v1",
+ "rows": [
+  {
+   "ticker": "AMKR",
+   "accession": "0001047127-26-000014",
+   "manifest_key": "manifests/0001047127/0001047127-26-000014/ffsec_manifest_b25279c4a731b8109702d3b10c68caf18bd993bc34fb1aabf633d40f142d760e.json",
+   "document_id": "sec_document_ec1560dddb9cad7cf036addfb577e46618b816d7a0c712f04775f29b49413362",
+   "subject_label": "Amkor",
+   "disclosed_line": "Advanced Products",
+   "share_scope": "product_line",
+   "fiscal_year": 2025,
+   "span_start_anchor": "Amkor has built long-standing relationships with most of the world&#8217;s leading semiconductor companies over the last five decades.  Our operational excellence, high quality, reliability and predictability have been key to attracting and retaining customers.  Our collaborative approach enables us to work closely with customers and suppliers to co-develop proprietary process technologies, accelerate time-to-market, improve quality and lower costs.  We work closely with lead customers in the following key markets",
+   "span_end_anchor": "Our Advanced Products include the following packaging types",
+   "figures": {
+    "revenue": {
+     "text": "5,556",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table sets forth, for the periods indicated, net sales for Advanced Products and Mainstream Products"
+    },
+    "revenue_denominator": {
+     "text": "6,708",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table sets forth, for the periods indicated, net sales for Advanced Products and Mainstream Products"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "MRAM",
+   "accession": "0001628280-26-014733",
+   "manifest_key": "manifests/0001438423/0001628280-26-014733/ffsec_manifest_05b84ff38feb08e3ea512d688e98e862c4bb78457faa6f900893fe4515eba5aa.json",
+   "document_id": "sec_document_952422bfa696e7be98ed251e5cece704a7f2528e070fbbe45fd59a509562870d",
+   "subject_label": "EVERSPIN TECHNOLOGIES, INC.",
+   "disclosed_line": "Product sales",
+   "share_scope": "product_line",
+   "fiscal_year": 2025,
+   "span_start_anchor": "EVERSPIN TECHNOLOGIES, INC.</span></div><div style=\"text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:700;line-height:120%\">Statements of Operations and Comprehensive (Loss) Income",
+   "span_end_anchor": "Cost of product sales</span></td><td colspan=\"2\" style=\"background-color:#ffffff;",
+   "figures": {
+    "revenue": {
+     "text": "48,292",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "EVERSPIN TECHNOLOGIES, INC.</span></div><div style=\"text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:700;line-height:120%\">Statements of Operations and Comprehensive (Loss) Income"
+    },
+    "revenue_denominator": {
+     "text": "55,202",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "EVERSPIN TECHNOLOGIES, INC.</span></div><div style=\"text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:700;line-height:120%\">Statements of Operations and Comprehensive (Loss) Income"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "MU",
+   "accession": "0000723125-26-000023",
+   "manifest_key": "manifests/0000723125/0000723125-26-000023/ffsec_manifest_fa9181488feee818e3868d857e2cfba03e2703a9829d121d46289472a3ea96e4.json",
+   "document_id": "sec_document_f06f91fefde1e1ddc49b3e6c64f4897423634c471f93f5be3bd62c4b2b375626",
+   "subject_label": "Micron",
+   "disclosed_line": "Automotive and Embedded Business Unit (“AEBU”)",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "permits issued for Micron&#8217;s construction related activities",
+   "span_end_anchor": "id=\"f-1187\">133,188",
+   "figures": {
+    "revenue": {
+     "text": "15,886",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "which are our reportable segments:"
+    },
+    "revenue_denominator": {
+     "text": "133,188",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "which are our reportable segments:"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "MU",
+   "accession": "0000723125-26-000023",
+   "manifest_key": "manifests/0000723125/0000723125-26-000023/ffsec_manifest_fa9181488feee818e3868d857e2cfba03e2703a9829d121d46289472a3ea96e4.json",
+   "document_id": "sec_document_f06f91fefde1e1ddc49b3e6c64f4897423634c471f93f5be3bd62c4b2b375626",
+   "subject_label": "Micron",
+   "disclosed_line": "Cloud Memory Business Unit (“CMBU”)",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "permits issued for Micron&#8217;s construction related activities",
+   "span_end_anchor": "id=\"f-1187\">133,188",
+   "figures": {
+    "revenue": {
+     "text": "43,085",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "which are our reportable segments:"
+    },
+    "revenue_denominator": {
+     "text": "133,188",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "which are our reportable segments:"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "PENG",
+   "accession": "0001616533-26-000050",
+   "manifest_key": "manifests/0001616533/0001616533-26-000050/ffsec_manifest_e08d7ffff4438789a680d24df6dde32f0b1efaf5a2ade793c28f5b4759bafbbc.json",
+   "document_id": "sec_document_f2028e7d4f503513baa09569773ba7bd309dac7d1fcbfca60cfca86defe9f56c",
+   "subject_label": "Penguin Solutions",
+   "disclosed_line": "Integrated Memory",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "refer to Penguin Solutions Delaware and its consolidated subsidiaries. See",
+   "span_end_anchor": "ne-height:114%\">%</span></td></tr><tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2.62pt 1pt 1.5pt 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:114%\">Cost of sales",
+   "figures": {
+    "revenue": {
+     "text": "924,001",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "refer to Penguin Solutions Delaware and its consolidated subsidiaries. See"
+    },
+    "revenue_denominator": {
+     "text": "1,731,468",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "refer to Penguin Solutions Delaware and its consolidated subsidiaries. See"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "SNDK",
+   "accession": "0001628280-26-057406",
+   "manifest_key": "manifests/0002023554/0001628280-26-057406/ffsec_manifest_550700bd63be49970595b570421176120147dfc191206a474896487f6cfd1eca.json",
+   "document_id": "sec_document_a3a9ec46eda17673f3d766185b77526a2e5716687eb203d61cb2a86d3b19a99d",
+   "subject_label": "Sandisk",
+   "disclosed_line": "single reportable operating segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The Company manages and reports its business operations under a single reportable operating segment.",
+   "span_end_anchor": "The Company&#8217;s operations outside the United States include owned manufacturing facilities in Malaysia",
+   "figures": {
+    "revenue": {
+     "text": "20,248",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The Company manages and reports its business operations under a single reportable operating segment."
+    },
+    "revenue_denominator": {
+     "text": "20,248",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The Company manages and reports its business operations under a single reportable operating segment."
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "STX",
+   "accession": "0001137789-26-000159",
+   "manifest_key": "manifests/0001137789/0001137789-26-000159/ffsec_manifest_695a068a689692a110fc86f14cf6f6136b36dfbc4315dfa41f4007aaa3dcf21b.json",
+   "document_id": "sec_document_676bfdba8a04fd85846e5d15802655e3e0ba6f28e8cb61d83469109efb700453",
+   "subject_label": "Seagate",
+   "disclosed_line": "single reportable segment",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "chosen by Seagate with expertise in U.S. export control laws",
+   "span_end_anchor": "Revenue from external customers",
+   "figures": {
+    "revenue": {
+     "text": "12,195",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "single reportable segment:"
+    },
+    "revenue_denominator": {
+     "text": "12,195",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "single reportable segment:"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "WDC",
+   "accession": "0001628280-26-057139",
+   "manifest_key": "manifests/0000106040/0001628280-26-057139/ffsec_manifest_a98230b1a6c208e4e59cb6a8bafa255a71be9cd26ca0bb991cb04fd4fb7f235c.json",
+   "document_id": "sec_document_af09d9d3df52ba5f8fbfaab141264f93d1aa2c5ffecaa9247b5086175cd5eeaf",
+   "subject_label": "WESTERN DIGITAL CORPORATION",
+   "disclosed_line": "HDD",
+   "share_scope": "segment",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The Company&#8217;s Chief Executive Officer is the Company&#8217;s CODM.",
+   "span_end_anchor": "Less: Significant expenses and other segment items",
+   "figures": {
+    "revenue": {
+     "text": "12,919",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The Company&#8217;s Chief Executive Officer is the Company&#8217;s CODM."
+    },
+    "revenue_denominator": {
+     "text": "12,919",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The Company&#8217;s Chief Executive Officer is the Company&#8217;s CODM."
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "SNPS",
+   "accession": "0000883241-25-000028",
+   "manifest_key": "manifests/0000883241/0000883241-25-000028/ffsec_manifest_510813c346ddc5babb6721c133bc84ed2fb4c02a5d64642151badb36d102c37d.json",
+   "document_id": "sec_document_054688a9c287ca60a914162db163b1423a903401c0c340a32a28133225327288",
+   "subject_label": "Synopsys",
+   "disclosed_line": "Design IP",
+   "share_scope": "segment",
+   "fiscal_year": 2025,
+   "span_start_anchor": "Information by reportable segment is as follows",
+   "span_end_anchor": "Synopsys carried out an evaluation under the supervision",
+   "figures": {
+    "revenue": {
+     "text": "1,751,838",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "Information by reportable segment is as follows"
+    },
+    "revenue_denominator": {
+     "text": "7,054,178",
+     "sign": "+",
+     "scale": "thousands",
+     "anchor": "Information by reportable segment is as follows"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  },
+  {
+   "ticker": "DELL",
+   "accession": "0001571996-26-000008",
+   "manifest_key": "manifests/0001571996/0001571996-26-000008/ffsec_manifest_90969ad70b6d8e13b3581bb9f534c4e753c4920221e2932f9e394bf02ff815b2.json",
+   "document_id": "sec_document_e04ea50e8eabd6eddae05c3ebf1ddd4f0ec326569dc45e6d1cbeff52b25b89c8",
+   "subject_label": "DELL TECHNOLOGIES INC.",
+   "disclosed_line": "Storage",
+   "share_scope": "product_line",
+   "fiscal_year": 2026,
+   "span_start_anchor": "The following table presents the disaggregation of net revenue by reportable segment",
+   "span_end_anchor": "Net revenue from any single foreign country did not constitute 10% or more of the Company&#8217;s consolidated net revenue for any of the fiscal years ended January&#160;30, 2026, January&#160;31, 2025, and February&#160;2, 2024.</span></div></ix:continuation><div style=\"height:54pt;position:relative;width:100%\"><div style=\"bottom:0;position:absolute;width:100%\"><div style=\"text-align:center\"><span><br/></span></div><div style=\"text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">129</span></div><div><span><br/></span></div></div></div><hr style=\"page-break-after:always\"/><div style=\"min-height:72pt;width:100%\"><div><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\"><a style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline\" href=\"#ieecfa9cdffdd430cb1da4c02ab2461d3_1099511629672\">Table of Contents</a></span></div><div style=\"text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:700;line-height:120%\">DELL TECHNOLOGIES INC.",
+   "figures": {
+    "revenue": {
+     "text": "16,631",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table presents the disaggregation of net revenue by reportable segment"
+    },
+    "revenue_denominator": {
+     "text": "113,538",
+     "sign": "+",
+     "scale": "millions",
+     "anchor": "The following table presents the disaggregation of net revenue by reportable segment"
+    },
+    "profit": null,
+    "profit_denominator": null
+   },
+   "profit_measure": null,
+   "reviewer": "curation lead (ruling 130 snapshot; proposer and checker seats recorded in curation notes)",
+   "reviewed_at": "2026-11-14T11:30:00Z",
+   "policy_recorded_at": "2026-11-14T11:30:00Z",
+   "adopted_at": "2026-11-14T11:30:00Z"
+  }
+ ]
+}

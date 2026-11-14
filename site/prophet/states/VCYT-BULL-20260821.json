@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VCYT-BULL-20260821",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 18.7,
@@ -14,17 +14,17 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 39.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -10.135,
+    "dist_to_stop_r": -10.031,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 177.8,
-    "p1": -7.4233,
-    "p2": -3.7117,
+    "horizon_pct_used": 188.9,
+    "p1": -7.3538,
+    "p2": -3.6769,
     "p3": null,
-    "move_r": -11.135,
+    "move_r": -11.031,
     "mfe_r": 5.258,
     "mae_r": -11.233
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-27",
   "_first_t2_ts": "2026-09-25",
-  "days_elapsed": 80,
-  "tau": 1.7778,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "T1_HIT"
 }

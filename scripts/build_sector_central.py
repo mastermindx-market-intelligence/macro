@@ -465,6 +465,31 @@ def _flows_section_html() -> str | None:
         "<p class='muted sm' style='margin:8px 2px 0'>" + str(note) + "</p></div>")
 
 
+#: The five lane-1 row blocks (review r1 SF-1). They are heavy (up to 512 KiB each
+#: at carry) and no page script reads them; the render-blocking JS twin stays
+#: without them. The ``sectordata`` JSON member — the sector-generation input —
+#: keeps all twelve.
+_ROW_BLOCK_NAMES = frozenset((
+    "confluence_universe_sp500", "confluence_universe_nasdaq",
+    "confluence_universe_russell", "confluence_universe_baskets", "theme_rows"))
+
+
+def _js_twin_data(data: dict) -> dict:
+    """The free JS twin's data: the full build record except the five row blocks.
+
+    ``site/sector_central_data.js`` loads as a render-blocking script on
+    ``sector_central.html`` and nothing on that page reads the row blocks, so the
+    twin omits exactly those five ``carried`` names (review r1 SF-1). The input
+    is not mutated: the JSON member written from ``data`` keeps all twelve.
+    """
+    twin = dict(data)
+    carried = twin.get("carried")
+    if isinstance(carried, dict):
+        twin["carried"] = {name: block for name, block in carried.items()
+                           if name not in _ROW_BLOCK_NAMES}
+    return twin
+
+
 def main(*, strict: bool = False) -> int:
     """Build Sector Central.
 
@@ -659,6 +684,18 @@ def main(*, strict: bool = False) -> int:
     # build actually consumed: one status per secondary source with the failure
     # MODE preserved, the generation it was built from, and the correction
     # contract. Values the builder used are unchanged; only the record is new.
+    # v1.1 CARRY (Sector generation typed blocks + current-basis industry). Existing
+    # producer artifacts re-expressed under the closed key ``carried`` - bounded,
+    # finite, each with its own source name and as-of; nothing recomputed. A source
+    # that is absent simply yields no key (the generation reads not_produced).
+    try:
+        from collectors.sponsors import sector_flow_periods
+        from engine.baskets import _membership
+        from lib.sector_central_carry import build_carry
+        data["carried"] = build_carry(site, data, _membership(), sector_flow_periods())
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.warning("sector_central: carried blocks skipped (%s)", e)
+        data["carried"] = {}
     data["publication"] = {
         "schema": "sector_central.publication.v1",
         "as_of": data.get("as_of"),
@@ -704,7 +741,8 @@ def main(*, strict: bool = False) -> int:
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("sector_central: research handoff step failed (%s)", e)
         data["publication"]["research_handoff"] = {"status": "error"}
-    payload = "window.SECTOR_CENTRAL=" + json.dumps(data, separators=(",", ":"), ensure_ascii=False) + ";\n"
+    payload = "window.SECTOR_CENTRAL=" + json.dumps(
+        _js_twin_data(data), separators=(",", ":"), ensure_ascii=False) + ";\n"
     (site / "sector_central_data.js").write_text(payload, encoding="utf-8")
     fdir = site / "sectordata"
     fdir.mkdir(parents=True, exist_ok=True)

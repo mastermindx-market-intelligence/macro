@@ -1,47 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-10T23:20:06.151396+00:00",
+  "as_of": "2026-11-14T22:22:50.088177+00:00",
   "posts_seen": 15,
-  "seen_total": 340,
-  "evaluated": 6,
-  "activated": 1,
+  "seen_total": 355,
+  "evaluated": 0,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-10-nominations-and-withdrawals-sent-to-the-senate-b6a4",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-10-veterans-day-2026",
-      "importance": 10,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-10-presidential-determination-concerning-wildfire-suppression-activities-in-the-uni",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-10-congressional-bills-h-r-997-h-r-1703-h-r-1945-and-h-r-7730-signed-into-law",
-      "importance": 20,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-10-fact-sheet-president-donald-j-trump-advances-wildfire-suppression",
-      "importance": 61,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-10-secretary-hegseth-torches-baseless-impeachment-stunt-this-is-not-patriotism-this",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

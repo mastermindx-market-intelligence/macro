@@ -109,7 +109,13 @@ def test_stamp_hazard_identical_before_after_extraction(one_record, tape):
     sc._stamp_hazard(rec, family="sector")
     hf, direction, quad, liq = sc._live_hazard_inputs(rec, family="sector")
     assert rec["now"]["hazard"] is not None          # never a vacuous None==None
-    assert rec["now"]["hazard"] == hz_score(hf, direction, "sector", quad, liq)
+    # Lane 8 (B12): the stamp is the scored block AFTER the current-MODEL gate —
+    # the same inputs, scored then qualified; with PARITY_FAILS no MODEL survives.
+    assert rec["now"]["hazard"] == sc._qualify_hazard(
+        rec, hz_score(hf, direction, "sector", quad, liq), "sector")
+    assert rec["now"]["hazard"]["unavailable"] is True
+    assert not any(h in rec["now"]["hazard"] for h in ("1m", "3m", "6m"))
+    assert "parity" in rec["now"]["hazard"]["current_model"]["failing"]
 
     rec2 = hp.live_record(tape, tape["index"][-1])
     sc._stamp_hazard(rec2, family="sector")

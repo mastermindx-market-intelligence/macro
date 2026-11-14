@@ -2821,6 +2821,29 @@ def emit_from_content_plan(
                     if isinstance(_th_blk, dict) and _th_blk.get("agg_pct") is not None:
                         source["baseline_pct"] = _th_blk.get("agg_pct")
 
+                    # Source evidence is the PRE-GENERATION deterministic fact
+                    # packet, not numbers scraped from the final model text.
+                    # Absent/malformed/old packets remain absent; the approval
+                    # desk must continue to hold unprovable numeric copy.
+                    _writer_packet = qi.get("_writer_fact_packet")
+                    try:
+                        from engine.marketing.fact_evidence import valid_writer_packet
+                        _writer_packet_valid = valid_writer_packet(
+                            _writer_packet, as_of=as_of)
+                    except Exception:  # noqa: BLE001 — no evidence is an honest hold
+                        _writer_packet_valid = False
+                    if _writer_packet_valid:
+                        source["fact_packet"] = _writer_packet
+
+                    # Graded receipts carry their own signed-off historical
+                    # stop and target.  They are typed levels, not ordinary
+                    # source-fact numbers that may become new objectives.
+                    _receipt = qi.get("_receipt")
+                    if qi.get("type") == "receipt" and isinstance(_receipt, dict):
+                        for _level in ("stop", "target"):
+                            if _receipt.get(_level) is not None:
+                                source[_level] = _receipt[_level]
+
                     # GIFT-GRIP-PROOF VERDICT (XG-W3, charter §0). Every
                     # emission carries its verdict in metadata. RECORD-ONLY
                     # unless config value_gate.enforce is true — see
@@ -2831,7 +2854,11 @@ def emit_from_content_plan(
                         body=qi.get("body") or "",
                         kind=qi.get("type") or "signal",
                         has_media=bool(media),
-                        numbers_whitelist=qi.get("numbers_whitelist") or (),
+                        numbers_whitelist=(
+                            _writer_packet["numbers_whitelist"]
+                            if _writer_packet_valid
+                            else qi.get("numbers_whitelist") or ()
+                        ),
                         cfg=cfg,
                     )
                     if _would_block:

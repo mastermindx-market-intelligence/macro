@@ -145,7 +145,11 @@ jobs:
   publish:
     # Readback is a separate permission-bounded job. A readback dispatch cannot
     # enter sender, recall, batch telemetry, ledger commit, or liveness steps.
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.delivery_readback_item == '' }}
+    # The write-capable job only accepts main dispatches: checking out main
+    # must not authorize a branch/tag dispatch to persist effects on main.
+    if: >-
+      ${{ github.ref == 'refs/heads/main'
+          && (github.event_name != 'workflow_dispatch' || inputs.delivery_readback_item == '') }}
     # SELF-HOSTED (operator ruling 2026-08-03, autonomous mandate). This ran on
     # ubuntu-latest to stay off the render path, and that was right until the
     # HOSTED pool became the outage: on 2026-08-03 a manually dispatched sweep
@@ -175,7 +179,21 @@ jobs:
       # of this name must NOT keep the publisher live after the toggle is off.
       MARKETING_PUBLISH_ENABLED: ${{ vars.MARKETING_PUBLISH_ENABLED }}
     steps:
+      - name: admit the canonical main ref
+        id: main_ref
+        shell: bash
+        env:
+          PUBLISH_EVENT_REF: ${{ github.ref }}
+        run: |
+          # Actions expression equality ignores case; the Git ref must be exact.
+          if [ "$PUBLISH_EVENT_REF" != 'refs/heads/main' ]; then
+            echo "::error::marketing-publish requires the canonical main ref"
+            exit 1
+          fi
+          echo "canonical_main=true" >> "$GITHUB_OUTPUT"
+
       - name: checkout (shallow + write token)
+        id: publisher_checkout
         # SHALLOW ON PURPOSE (2026-07-28). This was fetch-depth: 0 and the clone
         # of this heavy-churn repo grew past the 25m job timeout — the 12:58Z
         # sweep spent 12:58:08→13:23:07 inside `checkout` and was cancelled with
@@ -186,6 +204,9 @@ jobs:
         # always has a merge base even when main advanced mid-run.
         uses: actions/checkout@v4
         with:
+          # Resolve main AFTER the concurrency wait. The default checkout uses
+          # the dispatch-time SHA and can miss an earlier run's posted receipt.
+          ref: refs/heads/main
           fetch-depth: 1
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -398,6 +419,8 @@ jobs:
         # and the audit trail for a kill-switch event would be empty.
         if: >-
           ${{ always()
+              && steps.main_ref.outputs.canonical_main == 'true'
+              && steps.publisher_checkout.outcome == 'success'
               && (env.MARKETING_PUBLISH_ENABLED == '1'
                   || (github.event_name == 'workflow_dispatch' && inputs.recall_pending)) }}
         run: |
@@ -478,7 +501,10 @@ jobs:
         #
         # Skipped on a recall dispatch, like the publisher step: that run exists
         # to STOP posts, so "no posts went out" is its success condition.
-        if: ${{ always() && !(github.event_name == 'workflow_dispatch' && inputs.recall_pending) }}
+        if: >-
+          ${{ always() && steps.main_ref.outputs.canonical_main == 'true'
+              && steps.publisher_checkout.outcome == 'success'
+              && !(github.event_name == 'workflow_dispatch' && inputs.recall_pending) }}
         env:
           # Same repo VARIABLE as the job env above, restated here so the one
           # input this alarm reads is visible at the step that reads it.
