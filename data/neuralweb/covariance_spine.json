@@ -1,26 +1,26 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-14",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
   "blocks": {
     "rates": {
-      "dominant_pc_share": 0.8276,
-      "first3_var": 0.9639,
-      "effective_dimension_pr": 1.4367,
+      "dominant_pc_share": 0.8283,
+      "first3_var": 0.964,
+      "effective_dimension_pr": 1.4347,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
       "vol_match_multipliers": {
-        "pc2": 2.96,
-        "pc3": 4.45
+        "pc2": 2.97,
+        "pc3": 4.47
       },
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.6489,
-      "effective_factor_bets_pr": 2.1959,
+      "dominant_factor_pc_share": 0.6526,
+      "effective_factor_bets_pr": 2.1761,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
@@ -28,16 +28,16 @@
     },
     "dispersion": {
       "state": "lean_in",
-      "dispersion_pctile": 0.94,
-      "avg_corr": 0.09,
-      "dominant_equity_pc_share": 0.1765,
-      "effective_universe_bets_pr": 21.48,
-      "idio_dispersion_share": 0.552
+      "dispersion_pctile": 0.96,
+      "avg_corr": 0.11,
+      "dominant_equity_pc_share": 0.1801,
+      "effective_universe_bets_pr": 20.85,
+      "idio_dispersion_share": 0.5241
     },
     "lobes": {
       "effective_independent_lobes": 1.0,
       "n_lobes_measurable": 1,
-      "n_lobes_total": 36,
+      "n_lobes_total": 38,
       "null_reference": {
         "null_median": 1.0,
         "null_p90": 1.0,
@@ -68,8 +68,9 @@
           "desk:narrative_brain": 7,
           "desk:policy_intent": 10,
           "desk:radar": 5,
-          "desk:stock_desk": 19,
-          "desk:thematic_desk": 17,
+          "desk:stock_desk": 20,
+          "desk:thematic_desk": 18,
+          "flip_confirmation.v1": 3,
           "hk_board": 20,
           "intel_hub": 15,
           "macro_context": 16,
@@ -81,6 +82,7 @@
           "reflex.cortex_attention": 14,
           "reflex.options_flow_attention": 8,
           "reflex.regime_stale_selfheal": 14,
+          "reflex.shock_deescalation": 1,
           "stock_desk": 8,
           "stock_personality": 1,
           "tech_signals": 1,
@@ -115,8 +117,9 @@
       "desk:narrative_brain": 7,
       "desk:policy_intent": 10,
       "desk:radar": 5,
-      "desk:stock_desk": 19,
-      "desk:thematic_desk": 17,
+      "desk:stock_desk": 20,
+      "desk:thematic_desk": 18,
+      "flip_confirmation.v1": 3,
       "hk_board": 20,
       "intel_hub": 15,
       "macro_context": 16,
@@ -128,6 +131,7 @@
       "reflex.cortex_attention": 14,
       "reflex.options_flow_attention": 8,
       "reflex.regime_stale_selfheal": 14,
+      "reflex.shock_deescalation": 1,
       "stock_desk": 8,
       "stock_personality": 1,
       "tech_signals": 1,

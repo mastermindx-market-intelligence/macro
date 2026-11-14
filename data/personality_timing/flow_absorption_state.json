@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-10",
+  "as_of": "2026-11-14",
   "authority": {
     "may_alert": false,
     "may_auto_promote": false,
@@ -39,21 +39,21 @@
   "family": "pss_af1_finra_absorption_witness_prospective",
   "finra_prefix_sha256": "4d7165ff3346c7bdaaf28e0b4064f1eda4311a1600f3df33509e8d03d183bbf6",
   "gate_open": true,
-  "generated_utc": "2026-11-10T11:14:31.859209+00:00",
+  "generated_utc": "2026-11-14T08:08:34.738170+00:00",
   "ledger": {
     "advanced_today": 0,
     "appended_today": 0,
     "earliest_action": "2026-08-18",
-    "events": 5,
+    "events": 10,
     "flow_witness": 1,
-    "latest_action": "2026-11-05",
-    "leader_flow_control": 3,
-    "low_activity_diagnostic": 1,
+    "latest_action": "2026-11-12",
+    "leader_flow_control": 6,
+    "low_activity_diagnostic": 3,
     "matured": 0,
     "missing_flow_diagnostic": 0,
-    "primary_events": 4,
+    "primary_events": 7,
     "rejected_pre_cutoff_today": 0,
-    "ungraded": 5
+    "ungraded": 10
   },
   "manifest_sha256": "6b9fc71307aca9d97a04eb4933f0fdc3744ae4b7b8d9a23cbd9b178be15aa658",
   "membership_sha256": "f00c9d70e0c554213d6aa9a82fecc1492bcedc49c04ce36d4a14647f85713baf",
@@ -64,8 +64,8 @@
   "scan_census": {
     "derived_events": 0,
     "eligible_future_cr1_leader_sources": 0,
-    "finra_latest_session": "2026-11-06",
-    "finra_rows_through_as_of": 168922,
+    "finra_latest_session": "2026-11-13",
+    "finra_rows_through_as_of": 176485,
     "reasons": {}
   },
   "schema": "personality_flow_absorption.state/v1",

@@ -90,8 +90,13 @@
     "score": 0.9993
   },
   "XLRE": {
-    "streak": 4,
-    "last_date": "2026-11-06",
-    "score": 0.9992
+    "streak": 6,
+    "last_date": "2026-11-13",
+    "score": 0.9892
+  },
+  "XLF": {
+    "streak": 2,
+    "last_date": "2026-11-11",
+    "score": 0.9964
   }
 }

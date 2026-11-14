@@ -1,53 +1,53 @@
 {
-  "checked_at": "2026-11-10T23:33:10+00:00",
-  "expected_session": "2026-11-10",
+  "checked_at": "2026-11-14T21:09:56+00:00",
+  "expected_session": "2026-11-13",
   "stores": {
     "cache": {
-      "asof": "2026-11-09",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-11-13",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "bellwether": {
-      "asof": "2026-11-09",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-11-13",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "standouts": {
-      "asof": "2026-11-09",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-11-13",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "regime": {
-      "asof": "2026-11-09",
-      "lag_days": 1,
-      "lag_sessions": 1,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-11-13",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true
     },
     "southbound": {
-      "asof": "2026-11-06",
-      "lag_days": 4,
-      "lag_sessions": 2,
-      "state": "slow",
-      "data_state": "late",
+      "asof": "2026-11-13",
+      "lag_days": 0,
+      "lag_sessions": 0,
+      "state": "fresh",
+      "data_state": "current",
       "calendar_verified": true,
-      "expected_session": "2026-11-10"
+      "expected_session": "2026-11-13"
     }
   },
   "coherence": {
     "ok": true,
-    "standouts_asof": "2026-11-09",
-    "regime_date": "2026-11-09",
+    "standouts_asof": "2026-11-13",
+    "regime_date": "2026-11-13",
     "gap_sessions": 0,
     "calendar_verified": true,
     "data_state": "current",
@@ -55,8 +55,8 @@
   },
   "regression": {
     "ok": true,
-    "prev_cache_max": "2026-11-09",
-    "curr_cache_max": "2026-11-09",
+    "prev_cache_max": "2026-11-13",
+    "curr_cache_max": "2026-11-13",
     "note": null
   },
   "verdict": "ok",
