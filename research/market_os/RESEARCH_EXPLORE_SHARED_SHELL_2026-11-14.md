@@ -98,14 +98,39 @@ Preserve existing owner-issued discovery/cohort/ranking semantics without new fu
 
 ## Phases
 
-- P1 source and design inventory: in progress; exact routes and product contracts recovered, existing file inspection underway.
-- P2 Paper composition: next, starting E01 then E02/E03/E04; retain source-grounded breadth, inspect screenshots and repair each useful journey.
+- P1 source and design inventory: source contracts and twelve destination routes recovered. Current dedicated design homes inspected; existing Terminal and Intelligence Hub files provide isolated new pages for destinations without a located dedicated home. This bounded inventory does not claim account-wide absence.
+- P2 Paper composition: ACTIVE. Policy, Government Revenue and Alternative Data primary flows have been authored. Continue Special Situations, BioCatalyst, Capital Structure, all five Cycles routes and Research, then close remaining interaction/responsive gaps.
 - P3 interaction/responsive/theme/locale and Build closure: follows each product; no static-frame-only completion.
 - P4 Terminal frontend and engine upgrade packets: after full Paper design completion, with fresh carrier/hold/running-writer reconciliation.
 - P5 implementation, protected release and real consumer acceptance: not started.
 
 ## Next action and truthful boundary
 
-Inspect current Policy and Revenue product frames, tokens and retained notes. Establish isolated new candidate sections within their existing files, construct and visually verify the primary workflows, then continue the next source-qualified destination. Update this same packet with actual Paper page/node identities and verification at meaningful milestones.
+Continue the source-qualified design sequence. Current next work: final visual readback of Government/Policy semantic refinements, inspect Alternative Data frames, then author Special Situations in isolated Terminal pages. Preserve all original/held nodes. Remaining family designs and production implementation are not complete.
 
 MISSION_COMPLETE: false. Paper work, implementation, production proof and acceptance are distinct. No source engine release, merge, deployment, trade, subscription purchase or background execution is implied by this design packet.
+
+
+## Authored design milestone — 14 November 2026
+
+These are candidate design frames with synthetic fixture data, not production evidence. Four Policy product frames and two Policy support boards were visually inspected; subsequent semantic refinements are recorded below. Government's three product frames were initially inspected and layout/identity/time-basis corrections applied; final refined screenshots remain to be checked. Alternative Data's two product frames were authored and await their first visual review.
+
+| Destination | Paper page URL | Root node | State |
+|---|---|---|---|
+| Policy Now | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-5-1 | 1YI-1 | Authored; visual review; proposal wording refined |
+| Policy dossier | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-8-1 | 270-1 | Authored and visually reviewed |
+| Policy central banks, dark | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-6-1 | 274-1 | Authored; chart basis and fact/interpretation refined |
+| Policy mobile | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-7-1 | 272-1 | Authored and visually reviewed |
+| Policy state sheet | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-9-1 | 2PR-1 | Six state specimens; visually reviewed |
+| Policy Build | https://app.paper.design/file/01M6Y2X53ABR4MME4ATS15B8SH/p-A-1 | 2SM-1 | Engine/interaction contract; visually reviewed |
+| Government changes | https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-6-0 | 44V-0 | Authored; corrections applied |
+| Government funding evidence | https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-7-0 | 4CN-0 | Authored; corrections applied |
+| Government mobile | https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-8-0 | 4ID-0 | Authored and visually reviewed |
+| Alternative Data companies | https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-D-1 | 8N7-1 | Authored; visual review next |
+| Alternative Data evidence | https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-E-1 | 8U3-1 | Authored; visual review next |
+
+Detailed Policy source: [Policy Watch R6 build specification](research_explore/POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md), committed and byte-readback verified. It explicitly preserves incomplete Pipeline/Memory/Research work; no design-complete claim is made.
+
+Visual reasoning caught and resolved these specific defects in owned nodes: insufficient chart-footer padding; mobile excess card space; literal newline text in a Build block; overlapping Government secondary paths; a company-linked filter that still displayed an unresolved recipient; ambiguous award identity; historical snapshot predating first observation; collided evidence captions; unspecified market-implied rate basis; and official decision copy blended with interpretation. The last semantic changes require final screenshot readback before closure.
+
+The current Paper bridge supports creation of page-root frames through qualified write_html. Each product frame uses its own new page for reliable canvas organization. Original page/node IDs and held states remain untouched. New pages are additive candidate work, not a source-family cutover.
