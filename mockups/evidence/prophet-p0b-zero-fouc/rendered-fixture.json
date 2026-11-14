@@ -496,7 +496,7 @@
         {
           "path": "templates/hk.html.j2",
           "role": "jinja_template",
-          "sha256": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac"
+          "sha256": "20ae8afd856503c66e584f0515ec0a1fd5093e4faa1ee93db9efcbf32491d28b"
         }
       ],
       "output": "hk_stocks.html",

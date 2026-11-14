@@ -62,6 +62,61 @@ PLOT_LAYOUT = dict(
     legend={"orientation": "h", "y": 1.08})
 
 
+def _aibrief_lens_freshness(site_dir: Path, lens: str, brief: "dict | None" = None,
+                            source: "str | None" = None, now: "datetime | None" = None) -> "dict | None":
+    """Consumer of the machine-readable receipt site/aibrief_freshness.json (written by
+    scripts/build_aibrief.py). Returns {"stale": bool, "generated_date": "YYYY-MM-DD",
+    "refresh_days": int} for `lens`, or None when the receipt/lens/any field is missing
+    or malformed -- a page that cannot VERIFY an age renders no freshness chip rather than
+    asserting one. Fail-open and never fatal. Kept identical across build_site.py /
+    build_china.py / build_hk.py (parity pinned by tests/test_aibrief_consumer_freshness.py).
+
+    The 2-arg form is the plain receipt reader. When the caller passes `brief` (the EXACT
+    payload it renders) and `source` ("site" | "data_regime"), the receipt is BOUND to that
+    payload: it must certify the same source and the same `generated_at`, and `stale` is
+    re-qualified at the consumer build clock `now` (default: real UTC now) through the
+    producer's own _lens_freshness -- the single freshness authority, never a second one.
+    A missing, divergent, outdated or unmatched receipt then certifies nothing (None): a
+    stale site copy can never wear a fresher data/regime copy's chip, an aged receipt can
+    never stay fresh, and a post-receipt replacement can never inherit the old payload's
+    date. Content stays fail-open; only the chip is withheld."""
+    try:
+        from datetime import date as _date, datetime as _dt, timezone as _tz  # noqa: PLC0415
+        _rcpt = json.loads((Path(site_dir) / "aibrief_freshness.json").read_text(encoding="utf-8"))
+        _e = _rcpt["lenses"][lens]
+        _stale = _e["stale"]
+        _gen = _e["generated_at"]
+        _rd = _e["refresh_days"]
+        if not isinstance(_stale, bool):
+            return None
+        if isinstance(_rd, bool) or not isinstance(_rd, int) or not (0 < _rd <= 7):
+            return None
+        if not isinstance(_gen, str):
+            return None
+        _gd = _gen[:10]
+        _date.fromisoformat(_gd)  # ValueError -> caught below -> None
+        if brief is None:
+            return {"stale": _stale, "generated_date": _gd, "refresh_days": _rd}
+        # Bound path: certify ONLY the exact rendered payload, re-qualified at consumer clock.
+        if not isinstance(brief, dict):
+            return None
+        if source is not None and _e.get("source") != source:
+            return None
+        if _gen != brief.get("generated_at"):
+            return None
+        from scripts.build_aibrief import _lens_freshness  # noqa: PLC0415 — single authority
+        _now = now if now is not None else _dt.now(_tz.utc)
+        _info = _lens_freshness(lens, brief, source, _now)
+        if _info["stale"] is None:
+            return None
+        return {"stale": _info["stale"],
+                "generated_date": str(_info["generated_at"])[:10] if _info["generated_at"] else None,
+                "refresh_days": _info["refresh_days"]}
+    except Exception as _fe:  # noqa: BLE001 -- display-only; never fatal
+        log.debug("aibrief freshness receipt unusable for lens %s (%s); no chip", lens, _fe)
+        return None
+
+
 def tv_symbol(ticker: str) -> str:
     """TradingView symbol for an HK ticker. `0700.HK -> HKEX:700` (strip leading
     zeros); indices fall back to a sensible TV symbol."""
@@ -1568,6 +1623,10 @@ def main() -> int:
         except Exception as _cb_e:  # noqa: BLE001 — additive, never fatal
             log.warning("hk china_brief load failed (%s); skipping", _cb_e)
             vm["china_brief"] = None
+        # Verified freshness BOUND to the exact shared brief (receipt site/aibrief_freshness.json,
+        # `china` lens, source="site"). None = unverifiable/divergent/outdated/unmatched -> no chip.
+        vm["china_brief_freshness"] = _aibrief_lens_freshness(
+            site, "china", brief=vm.get("china_brief"), source="site")
 
         # HK / US / China macro release calendar — display-only scheduling context
         # (pure date arithmetic; no news API). None-safe.

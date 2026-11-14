@@ -45,7 +45,7 @@
   },
   "fixture_receipt": {
     "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-    "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
+    "sha256": "fff1623539673ee19f5e4103fc814601b06a9a553de197f0836e346242a4d084"
   },
   "fixture_assets_root": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
   "fixture_market": "hk",
@@ -539,7 +539,7 @@
     "templates/_risk_radar_dlg.html.j2": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749",
     "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
     "templates/_site_nav.html.j2": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
-    "templates/hk.html.j2": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac"
+    "templates/hk.html.j2": "20ae8afd856503c66e584f0515ec0a1fd5093e4faa1ee93db9efcbf32491d28b"
   },
   "loaded_assets": {
     "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",

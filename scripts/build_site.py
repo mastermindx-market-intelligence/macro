@@ -3824,19 +3824,85 @@ def chart_vix_term(f: pd.DataFrame, cf: pd.DataFrame) -> str:
     return _html(fig)
 
 
-def _master_brief_vm() -> dict:
+def _aibrief_lens_freshness(site_dir: Path, lens: str, brief: "dict | None" = None,
+                            source: "str | None" = None, now: "datetime | None" = None) -> "dict | None":
+    """Consumer of the machine-readable receipt site/aibrief_freshness.json (written by
+    scripts/build_aibrief.py). Returns {"stale": bool, "generated_date": "YYYY-MM-DD",
+    "refresh_days": int} for `lens`, or None when the receipt/lens/any field is missing
+    or malformed -- a page that cannot VERIFY an age renders no freshness chip rather than
+    asserting one. Fail-open and never fatal. Kept identical across build_site.py /
+    build_china.py / build_hk.py (parity pinned by tests/test_aibrief_consumer_freshness.py).
+
+    The 2-arg form is the plain receipt reader. When the caller passes `brief` (the EXACT
+    payload it renders) and `source` ("site" | "data_regime"), the receipt is BOUND to that
+    payload: it must certify the same source and the same `generated_at`, and `stale` is
+    re-qualified at the consumer build clock `now` (default: real UTC now) through the
+    producer's own _lens_freshness -- the single freshness authority, never a second one.
+    A missing, divergent, outdated or unmatched receipt then certifies nothing (None): a
+    stale site copy can never wear a fresher data/regime copy's chip, an aged receipt can
+    never stay fresh, and a post-receipt replacement can never inherit the old payload's
+    date. Content stays fail-open; only the chip is withheld."""
+    try:
+        from datetime import date as _date, datetime as _dt, timezone as _tz  # noqa: PLC0415
+        _rcpt = json.loads((Path(site_dir) / "aibrief_freshness.json").read_text(encoding="utf-8"))
+        _e = _rcpt["lenses"][lens]
+        _stale = _e["stale"]
+        _gen = _e["generated_at"]
+        _rd = _e["refresh_days"]
+        if not isinstance(_stale, bool):
+            return None
+        if isinstance(_rd, bool) or not isinstance(_rd, int) or not (0 < _rd <= 7):
+            return None
+        if not isinstance(_gen, str):
+            return None
+        _gd = _gen[:10]
+        _date.fromisoformat(_gd)  # ValueError -> caught below -> None
+        if brief is None:
+            return {"stale": _stale, "generated_date": _gd, "refresh_days": _rd}
+        # Bound path: certify ONLY the exact rendered payload, re-qualified at consumer clock.
+        if not isinstance(brief, dict):
+            return None
+        if source is not None and _e.get("source") != source:
+            return None
+        if _gen != brief.get("generated_at"):
+            return None
+        from scripts.build_aibrief import _lens_freshness  # noqa: PLC0415 — single authority
+        _now = now if now is not None else _dt.now(_tz.utc)
+        _info = _lens_freshness(lens, brief, source, _now)
+        if _info["stale"] is None:
+            return None
+        return {"stale": _info["stale"],
+                "generated_date": str(_info["generated_at"])[:10] if _info["generated_at"] else None,
+                "refresh_days": _info["refresh_days"]}
+    except Exception as _fe:  # noqa: BLE001 -- display-only; never fatal
+        log.debug("aibrief freshness receipt unusable for lens %s (%s); no chip", lens, _fe)
+        return None
+
+
+def _master_brief_vm(site_dir: "Path | None" = None, data_dir: "Path | None" = None,
+                     now: "datetime | None" = None) -> dict:
     """Read site/master_brief.json (fallback data/regime/master_brief.json).
-    Returns {'master_brief': <dict>} on success, {} on any failure (fail-open).
-    Never fatal — a missing/malformed file simply omits the key from the VM."""
+    Returns {'master_brief': <dict>, 'master_brief_freshness': <dict|None>} on success,
+    {} on any failure (fail-open). Never fatal — a missing/malformed file simply omits
+    the key from the VM. `master_brief_freshness` is the verified `macro` lens entry of
+    site/aibrief_freshness.json BOUND to the exact brief rendered here (None when
+    unverifiable/divergent/outdated/unmatched -> the template renders no chip).
+    `site_dir`/`data_dir` default to the repo's; they exist so tests can inject tmp dirs.
+    `now` is the consumer build clock (default: real UTC now); tests inject it."""
     import json as _json
+    _site = Path(site_dir) if site_dir is not None else Path(__file__).parent.parent / "site"
+    _data = Path(data_dir) if data_dir is not None else Path(__file__).parent.parent / "data"
     _candidates = [
-        Path(__file__).parent.parent / "site" / "master_brief.json",
-        Path(__file__).parent.parent / "data" / "regime" / "master_brief.json",
+        (_site / "master_brief.json", "site"),
+        (_data / "regime" / "master_brief.json", "data_regime"),
     ]
-    for _p in _candidates:
+    for _p, _src in _candidates:
         try:
             if _p.exists():
-                return {"master_brief": _json.loads(_p.read_text(encoding="utf-8"))}
+                _brief = _json.loads(_p.read_text(encoding="utf-8"))
+                return {"master_brief": _brief,
+                        "master_brief_freshness": _aibrief_lens_freshness(
+                            _site, "macro", brief=_brief, source=_src, now=now)}
         except Exception:  # noqa: BLE001 — display-only; never fatal
             pass
     return {}

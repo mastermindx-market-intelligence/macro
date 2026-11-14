@@ -6753,6 +6753,7 @@ jobs:
       - "scripts/build_canada_library.py"
       - "scripts/build_chart_data.py"
       - "scripts/build_china.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_china_allocation.py"
       - "scripts/build_china_library.py"
       - "scripts/build_china_masterminds.py"
@@ -10646,6 +10647,7 @@ jobs:
           tests/test_library_chg_1d.py
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
+          tests/test_aibrief_consumer_freshness.py
           tests/test_aibrief_w4_panels.py
           tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
@@ -15375,6 +15377,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_theme_tree_page.py"
@@ -20685,6 +20688,7 @@ jobs:
       - scripts/build_risk_envelope.py
       - scripts/build_rr_banner.py
       - scripts/build_site.py
+      - scripts/build_aibrief.py
       - scripts/build_sp500_heatmap.py
       - scripts/build_state_of_themes.py
       - scripts/build_stock_library.py
@@ -25765,6 +25769,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_spvector.py"
       - "scripts/build_state_of_themes.py"
@@ -29089,6 +29094,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_theme_tree_page.py"
@@ -36405,6 +36411,7 @@ jobs:
       - "scripts/build_commodity_strategies.py"
       - "scripts/build_crossmarket.py"
       - "scripts/build_hk.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_ipo.py"
       - "scripts/build_masterminds.py"
@@ -37449,6 +37456,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_theme_tree_page.py"
@@ -38866,6 +38874,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/capture_page_evidence.py"
       - "scripts/capture_us_stocks_compression_evidence.py"
       - "scripts/build_sp500_heatmap.py"
@@ -48616,6 +48625,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       # Shared hook 2 (#7780): the leaf module the tracker builder above reads
@@ -48904,6 +48914,7 @@ jobs:
       - "scripts/build_risk_envelope.py"
       - "scripts/build_rr_banner.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_theme_tree_page.py"
@@ -53233,6 +53244,7 @@ jobs:
       - "scripts/build_rr_banner.py"
       - "scripts/build_security_master.py"
       - "scripts/build_site.py"
+      - "scripts/build_aibrief.py"
       - "scripts/build_sp500_heatmap.py"
       - "scripts/build_state_of_themes.py"
       - "scripts/build_stock_library.py"
