@@ -53,3 +53,41 @@ def test_dispersion_optional():
 def test_snapshot_degrades(monkeypatch):
     monkeypatch.setattr(fs, "_read", lambda mn: None)
     assert fs.snapshot() is None
+
+
+
+def test_short_history_withholds_state_and_keeps_rates():
+    for n in range(1, 60):
+        for with_dispersion in (False, True):
+            sofr = _flat(3.0).iloc[:n]
+            d = {'sofr': sofr, 'effr': sofr - .01}
+            if with_dispersion:
+                d['sofr_p99'] = sofr + .02
+            out = fs.compute(d, {})
+            assert out['score'] is None and out['state'] is None
+            assert out['spread_bp'] == 1.0
+            assert len(out['rows']) == (2 if with_dispersion else 1)
+
+
+def test_sixty_observations_remain_qualified():
+    sofr = _flat(3.0).iloc[:60]
+    out = fs.compute({'sofr': sofr, 'effr': sofr - .01}, {})
+    assert out['score'] == 100 and out['state'] == 'stressed'
+
+
+def test_funding_tile_unavailable_and_zero_score():
+    from jinja2 import Environment
+    source = (Path(__file__).resolve().parents[1] / 'templates/crossasset.html.j2').read_text()
+    start = source.index('{# Funding tile #}')
+    end = source.index('\n</div>\n{% endif %}', start)
+    template = Environment(autoescape=True).from_string(source[start:end])
+    for lang in (0, 1):
+        for score, state in ((None, None), (None, 'calm'), (50, 'unknown')):
+            out = template.render(funding={'score': score, 'state': state, 'spread_bp': 1, 'note': ''}, t=lambda en, zh: (en, zh)[lang])
+            assert ('Unavailable', '暂无评估')[lang] in out
+            assert ('look calm', '市场平静')[lang] not in out
+            assert 'var(--muted)' in out
+        for score, state, word in ((0, 'calm', ('Calm', '平静')), (70, 'watch', ('Watch', '关注')), (90, 'stressed', ('Stressed', '紧张'))):
+            out = template.render(funding={'score': score, 'state': state, 'spread_bp': 1, 'note': ''}, t=lambda en, zh: (en, zh)[lang])
+            assert word[lang] in out
+            assert ('Unavailable', '暂无评估')[lang] not in out

@@ -682,14 +682,17 @@
 
   {# Funding tile #}
   {% if funding %}
-  {% set _fcol = 'var(--down,#e06464)' if funding.state == 'stressed' else 'var(--warn,#e0a030)' if funding.state == 'watch' else 'var(--up,#45b873)' %}
-  {% set _fword_en = 'Stressed' if funding.state == 'stressed' else 'Watch' if funding.state == 'watch' else 'Calm' %}
-  {% set _fword_zh = '紧张' if funding.state == 'stressed' else '关注' if funding.state == 'watch' else '平静' %}
+  {% set _favailable = funding.score is defined and funding.score is not none and funding.state in ['calm', 'watch', 'stressed'] %}
+  {% set _fcol = 'var(--muted)' if not _favailable else 'var(--down,#e06464)' if funding.state == 'stressed' else 'var(--warn,#e0a030)' if funding.state == 'watch' else 'var(--up,#45b873)' %}
+  {% set _fword_en = 'Unavailable' if not _favailable else 'Stressed' if funding.state == 'stressed' else 'Watch' if funding.state == 'watch' else 'Calm' %}
+  {% set _fword_zh = '暂无评估' if not _favailable else '紧张' if funding.state == 'stressed' else '关注' if funding.state == 'watch' else '平静' %}
   <div class="plumb-tile">
     <div class="plumb-label">{{ t('Funding & Repo', '资金与回购') }}</div>
     <div class="plumb-val" style="color:{{ _fcol }}">{{ t(_fword_en, _fword_zh) }}</div>
     <div class="plumb-sub">
-      {% if funding.state == 'stressed' %}
+      {% if not _favailable %}
+        {{ t('Funding stress assessment is unavailable.', '暂无可用的资金压力评估。') }}
+      {% elif funding.state == 'stressed' %}
         {{ t('Short-term funding markets are under pressure.', '短期资金市场承压。') }}
       {% elif funding.state == 'watch' %}
         {{ t('Short-term funding markets need watching.', '短期资金市场需关注。') }}
@@ -809,3 +812,4 @@
 <script src="theme.js"></script>
 </body>
 </html>
+

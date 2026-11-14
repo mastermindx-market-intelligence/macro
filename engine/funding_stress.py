@@ -71,7 +71,8 @@ def compute(d: dict[str, pd.Series], cfg: dict | None = None) -> dict | None:
     disp_pct = _pctile(disp, lb) if not disp.empty else None
     parts = [p for p in (spread_pct, disp_pct) if p is not None]
     score = round(float(np.mean(parts)), 0) if parts else None
-    state = ("stressed" if (score or 0) >= 90 else "watch" if (score or 0) >= 70 else "calm")
+    state = (None if score is None else "stressed" if score >= 90
+             else "watch" if score >= 70 else "calm")
 
     rows = [{"key": "sofr_effr", "label_en": "SOFR − EFFR spread", "label_zh": "SOFR − 联邦基金利率",
              "value": round(float(spread.iloc[-1]), 1), "unit": "bp", "pctile": _r(spread_pct),
@@ -113,3 +114,4 @@ def snapshot(cfg: dict | None = None) -> dict | None:
 
 def _r(v, nd: int = 0):
     return None if v is None or not np.isfinite(v) else round(float(v), nd)
+
