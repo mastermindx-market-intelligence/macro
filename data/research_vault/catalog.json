@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T13:56:50.137382+00:00",
-  "count": 3369,
+  "generated_at": "2026-11-14T14:11:44.847872+00:00",
+  "count": 3370,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -810,6 +810,21 @@
       "tickers": [],
       "top_pick": false,
       "pages": 5,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-9d5exjf2yte-bcd21c",
+      "title": "GS Global Equities Call GS Global Equities Call 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:51:33Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
