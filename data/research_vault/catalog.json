@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T01:40:22.852586+00:00",
-  "count": 3333,
+  "generated_at": "2026-11-14T01:55:17.246883+00:00",
+  "count": 3334,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -2091,6 +2091,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-g8xadptrgoj-30d206",
+      "title": "GS Utilities Daily Siemens Energy Stronger profit growth outlook with higher returns of value RWE Strong quarter (Tradi...)",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T03:43:57Z",
+      "summary_points": [
+        "Siemens Capital Allocation: €27bn returns of value by 2030 (25% ops/organic, 40-60% dividends/buybacks, 30% strategic), FY2026 revenue €45bn, profit €5.76bn; consensus upgrades imply stronger growth trajectory.",
+        "UK Gas Policy Shift: Coal plants must decommission by July 2026/Jan 2030 to avoid early shutdowns; new builds only count toward minimum investment, critical for coal/gas asset risk assessment.",
+        "AI-Electrification Super-Cycle: AI power demand (+20-30% by 2030-35) could boost datacenter needs by +25%, driving 1.5-2% annual power demand growth (vs 1-1.5%), enabling 16x P/E target and 9% EPS CAGR.",
+        "Europe Electrification Acceleration: Power demand +5% annually, infrastructure investment tripling to €2Tn (2026-35); utilities with strong balance sheets (e.g., RWE) poised to outperform."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
       "language": "en",
       "needs_metadata": false
     },
