@@ -813,14 +813,24 @@ def test_all_native_selections_preserve_their_exact_owner_view_and_read_only_sel
     _assert_private_output(response)
     body = response.json()
     snapshot, artifact = builder.read_workspace(complete_publication / "macrodata", page)
-    assert body["selected_workspace"] == {
+    expected = {
         "workspace_id": page.workspace_id, "region": "US", "state": "ready", "failure": None,
         "generation_id": snapshot["generation"]["generation_id"], "artifact": artifact,
         "view": macro_suite_view.build_view(snapshot, page_built_at=body["source"]["composed_at"],
                                              artifact=artifact, layout=builder._layout_for(page.workspace_id)),
     }
-    assert [p.name for p in reads] == ["manifest.json", "latest.json", "manifest.json"]
-    assert reads[1] == complete_publication / artifact["path"]
+    if page.workspace_id == "rates_curves":
+        expected["scenario"] = {
+            "schema": "mastermind.macro_rates_scenario_source.v1", "source_state": "disabled",
+            "reason": "publication_disabled",
+            "access": {"required_feature": "site_full", "state": "not_checked"},
+        }
+    assert body["selected_workspace"] == expected
+    manifest_path = complete_publication / artifact["manifest_path"]
+    selected_path = complete_publication / artifact["path"]
+    # The shared selected-reader exit fence rereads this exact body before the
+    # final manifest check; no sibling workspace or fallback path is admitted.
+    assert reads == [manifest_path, selected_path, selected_path, manifest_path]
     assert before == {p.relative_to(complete_publication): sha256(p.read_bytes()).hexdigest()
                       for p in complete_publication.rglob("*") if p.is_file()}
 

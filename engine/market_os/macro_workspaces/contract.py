@@ -47,6 +47,15 @@ VOLATILE_GENERATION_FIELDS = (
 
 ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = ROOT / "contracts" / "market_os" / "macro_workspace_snapshot.v1.schema.json"
+SCHEMA_PATHS = {
+    "1.0.0": SCHEMA_PATH,
+    "1.1.0": ROOT / "contracts" / "market_os" / "macro_workspace_snapshot.v1_1.schema.json",
+}
+# Explicit reader compatibility; learning 1.1 does not change producer defaults.
+CLIENT_CONTRACT_VERSIONS = {
+    f"{CONTRACT_ID}@1.0.0": frozenset({"1.0.0"}),
+    f"{CONTRACT_ID}@1.1.0": frozenset({"1.0.0", "1.1.0"}),
+}
 
 _PLACEHOLDER_DIGEST = "0" * 64
 
@@ -55,16 +64,27 @@ class ContractError(ValueError):
     """A snapshot violated the closed contract (schema, version, or integrity)."""
 
 
-@lru_cache(maxsize=1)
-def load_schema() -> dict:
-    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+@lru_cache(maxsize=2)
+def load_schema(version: str = CONTRACT_VERSION) -> dict:
+    if version not in SCHEMA_PATHS:
+        raise ContractError(f"unsupported schema version: {version!r}")
+    return json.loads(SCHEMA_PATHS[version].read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=1)
-def _validator() -> Draft202012Validator:
-    schema = load_schema()
+@lru_cache(maxsize=2)
+def _validator(version: str = CONTRACT_VERSION) -> Draft202012Validator:
+    schema = load_schema(version)
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema, format_checker=FormatChecker())
+
+
+def supported_client_contract(value: Any) -> bool:
+    return isinstance(value, str) and value in CLIENT_CONTRACT_VERSIONS
+
+
+def publication_contract_supports(value: Any, version: Any) -> bool:
+    return (supported_client_contract(value) and isinstance(version, str)
+            and version in CLIENT_CONTRACT_VERSIONS[value])
 
 
 def canonical_json(obj: Any) -> str:
@@ -120,10 +140,11 @@ def validate(snapshot: Any, *, check_hash: bool = True) -> None:
         raise ContractError(
             f"unknown or missing contract id: {sch.get('contract') if isinstance(sch, Mapping) else sch!r}"
         )
-    if sch.get("version") != CONTRACT_VERSION:
+    version = sch.get("version")
+    if not isinstance(version, str) or version not in SCHEMA_PATHS:
         raise ContractError(f"unsupported schema version: {sch.get('version')!r}")
 
-    errors = sorted(_validator().iter_errors(snapshot), key=lambda e: list(e.path))
+    errors = sorted(_validator(version).iter_errors(snapshot), key=lambda e: list(e.path))
     if errors:
         joined = "; ".join(
             f"{'/'.join(str(p) for p in e.path) or '<root>'}: {e.message}" for e in errors[:6]

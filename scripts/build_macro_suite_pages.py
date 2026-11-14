@@ -461,11 +461,11 @@ def read_workspace(data_root: Path, page: SuitePage, *, read_json=None) -> tuple
         raise SnapshotRefused("SOURCE_FAILED", "manifest.json is not a JSON object")
 
     declared_contract = manifest.get("min_client_contract")
-    if declared_contract != MIN_CLIENT_CONTRACT:
+    if not contract.supported_client_contract(declared_contract):
         raise SnapshotRefused(
             "COMPUTATION_REFUSED",
-            f"manifest requires client contract {declared_contract!r}; this page implements "
-            f"{MIN_CLIENT_CONTRACT!r}",
+            f"manifest requires client contract {declared_contract!r}; this page supports "
+            f"{tuple(contract.CLIENT_CONTRACT_VERSIONS)!r}",
         )
 
     key = f"{page.workspace_id}/{page.region}"
@@ -484,6 +484,9 @@ def read_workspace(data_root: Path, page: SuitePage, *, read_json=None) -> tuple
         contract.validate(snapshot)
     except contract.ContractError as exc:
         raise SnapshotRefused("COMPUTATION_REFUSED", str(exc)) from exc
+
+    if not contract.publication_contract_supports(declared_contract, snapshot["schema"]["version"]):
+        raise SnapshotRefused("COMPUTATION_REFUSED", "manifest under-declares the snapshot contract")
 
     published = (snapshot.get("generation") or {}).get("content_sha256")
     if entry.get("content_sha256") != published:
@@ -509,7 +512,7 @@ def read_workspace(data_root: Path, page: SuitePage, *, read_json=None) -> tuple
         "manifest_path": "macrodata/workspaces/manifest.json",
         "sha256": published,
         "bytes": byte_size,
-        "min_client_contract": MIN_CLIENT_CONTRACT,
+        "min_client_contract": declared_contract,
     }
     return dict(snapshot), artifact
 

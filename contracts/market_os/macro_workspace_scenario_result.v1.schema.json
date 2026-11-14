@@ -1,0 +1,435 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_os/macro_workspace_scenario_result.v1.schema.json",
+  "title": "Mechanical US Rates two-yield scenario result; no execution authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "method",
+    "status",
+    "workspace_id",
+    "region",
+    "calculation_id",
+    "assumptions",
+    "publication",
+    "baseline",
+    "assumed",
+    "unsupported_effects",
+    "authority",
+    "effects"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mastermind.macro_workspace_scenario_result.v1"
+    },
+    "method": {
+      "const": "rates_curves.two_yield_shift.v1"
+    },
+    "status": {
+      "const": "MECHANICAL_CALCULATION"
+    },
+    "workspace_id": {
+      "const": "rates_curves"
+    },
+    "region": {
+      "const": "US"
+    },
+    "calculation_id": {
+      "type": "string",
+      "pattern": "^rates-scenario:[0-9a-f]{64}$"
+    },
+    "assumptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "us2y_bp",
+        "us10y_bp"
+      ],
+      "properties": {
+        "us2y_bp": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300,
+          "multipleOf": 5
+        },
+        "us10y_bp": {
+          "type": "integer",
+          "minimum": -300,
+          "maximum": 300,
+          "multipleOf": 5
+        }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "manifest_generated_at",
+        "generation_id",
+        "artifact"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "manifest_generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$"
+        },
+        "generation_id": {
+          "type": "string",
+          "pattern": "^rates_curves-US-[0-9a-f]{16}$"
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "manifest_path",
+            "sha256",
+            "bytes",
+            "min_client_contract"
+          ],
+          "properties": {
+            "path": {
+              "const": "macrodata/workspaces/rates_curves/US/latest.json"
+            },
+            "manifest_path": {
+              "const": "macrodata/workspaces/manifest.json"
+            },
+            "sha256": {
+              "$ref": "#/$defs/digest"
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2097152
+            },
+            "min_client_contract": {
+              "enum": ["mastermind.macro_workspace_snapshot.v1@1.0.0", "mastermind.macro_workspace_snapshot.v1@1.1.0"]
+            }
+          }
+        }
+      }
+    },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_id",
+        "snapshot_content_sha256",
+        "observed_at",
+        "value_basis",
+        "us2y",
+        "us10y",
+        "curve_2s10s",
+        "sources"
+      ],
+      "properties": {
+        "baseline_id": {
+          "type": "string",
+          "pattern": "^rates-baseline:[0-9a-f]{64}$"
+        },
+        "snapshot_content_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "value_basis": {
+          "const": "published_four_decimal_cmt_points"
+        },
+        "us2y": {
+          "$ref": "#/$defs/yield"
+        },
+        "us10y": {
+          "$ref": "#/$defs/yield"
+        },
+        "curve_2s10s": {
+          "$ref": "#/$defs/spread"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "$ref": "#/$defs/source",
+              "properties": {
+                "series_id": {
+                  "const": "us2y"
+                },
+                "source_id": {
+                  "const": "dgs2"
+                },
+                "source_ref": {
+                  "const": "FRED:DGS2"
+                },
+                "artifact_ref": {
+                  "const": "data/fred/DGS2.parquet"
+                },
+                "owner_ref": {
+                  "const": "collectors.fred[DGS2]"
+                }
+              }
+            },
+            {
+              "$ref": "#/$defs/source",
+              "properties": {
+                "series_id": {
+                  "const": "us10y"
+                },
+                "source_id": {
+                  "const": "dgs10"
+                },
+                "source_ref": {
+                  "const": "FRED:DGS10"
+                },
+                "artifact_ref": {
+                  "const": "data/fred/DGS10.parquet"
+                },
+                "owner_ref": {
+                  "const": "collectors.fred[DGS10]"
+                }
+              }
+            }
+          ],
+          "items": false
+        }
+      }
+    },
+    "assumed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "us2y",
+        "us10y",
+        "curve_2s10s",
+        "spread_change"
+      ],
+      "properties": {
+        "us2y": {
+          "$ref": "#/$defs/yield"
+        },
+        "us10y": {
+          "$ref": "#/$defs/yield"
+        },
+        "curve_2s10s": {
+          "$ref": "#/$defs/spread"
+        },
+        "spread_change": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "unit"
+          ],
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": -600,
+              "maximum": 600,
+              "multipleOf": 5
+            },
+            "unit": {
+              "const": "bp"
+            }
+          }
+        }
+      }
+    },
+    "unsupported_effects": {
+      "const": [
+        "other_curve_tenors",
+        "term_premium",
+        "policy_response",
+        "credit_equity_response",
+        "portfolio_pnl",
+        "future_path"
+      ]
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "display_only",
+        "can_rank",
+        "can_gate",
+        "can_size",
+        "can_originate_signal",
+        "can_execute"
+      ],
+      "properties": {
+        "display_only": {
+          "type": "boolean",
+          "const": true
+        },
+        "can_rank": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_gate": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_size": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_originate_signal": {
+          "type": "boolean",
+          "const": false
+        },
+        "can_execute": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_writes",
+        "alert_writes",
+        "portfolio_writes",
+        "calibration_writes"
+      ],
+      "properties": {
+        "canonical_writes": {
+          "type": "integer",
+          "const": 0
+        },
+        "alert_writes": {
+          "type": "integer",
+          "const": 0
+        },
+        "portfolio_writes": {
+          "type": "integer",
+          "const": 0
+        },
+        "calibration_writes": {
+          "type": "integer",
+          "const": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "not": {
+        "const": "0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "source_id",
+        "source_ref",
+        "artifact_ref",
+        "owner_ref",
+        "unit",
+        "basis",
+        "latest_observed_at",
+        "freshness",
+        "rights_state"
+      ],
+      "properties": {
+        "series_id": {
+          "enum": [
+            "us2y",
+            "us10y"
+          ]
+        },
+        "source_id": {
+          "enum": [
+            "dgs2",
+            "dgs10"
+          ]
+        },
+        "source_ref": {
+          "enum": [
+            "FRED:DGS2",
+            "FRED:DGS10"
+          ]
+        },
+        "artifact_ref": {
+          "enum": [
+            "data/fred/DGS2.parquet",
+            "data/fred/DGS10.parquet"
+          ]
+        },
+        "owner_ref": {
+          "enum": [
+            "collectors.fred[DGS2]",
+            "collectors.fred[DGS10]"
+          ]
+        },
+        "unit": {
+          "const": "percent"
+        },
+        "basis": {
+          "const": "constant_maturity_investment_basis"
+        },
+        "latest_observed_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "freshness": {
+          "enum": [
+            "CURRENT",
+            "LATE_WITHIN_TOLERANCE",
+            "STALE_SOURCE"
+          ]
+        },
+        "rights_state": {
+          "const": "OPEN"
+        }
+      }
+    },
+    "yield": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "unit": {
+          "const": "percent"
+        }
+      }
+    },
+    "spread": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit"
+      ],
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "unit": {
+          "const": "bp"
+        }
+      }
+    }
+  }
+}

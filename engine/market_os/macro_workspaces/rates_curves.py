@@ -210,6 +210,9 @@ inputs always yields an identical snapshot body.
 from __future__ import annotations
 
 import datetime as _dt
+import json as _json
+import math as _math
+from dataclasses import dataclass
 from hashlib import sha256
 from typing import Any, Mapping, Sequence
 
@@ -1665,3 +1668,309 @@ def _corrections(current_metrics_by_id: dict, effective_date, prior_snapshot: Ma
         "correction_state": "none",
         "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
     }
+
+
+# --------------------------------------------------------------------------- #
+# Pure two-yield counterfactual (internal calculation, no service admission).
+# The composer above still emits its unchanged 1.0.0 execution-unavailable
+# contract. These values establish content consistency, never proof that a
+# publication was served/current or available at a historical knowledge cutoff.
+# --------------------------------------------------------------------------- #
+RATES_SCENARIO_METHOD = "rates_curves.two_yield_shift.v1"
+_SCENARIO_OBSERVED_FRESHNESS = frozenset({
+    "CURRENT", "LATE_WITHIN_TOLERANCE", "STALE_SOURCE",
+})
+
+
+class RatesScenarioInputError(ValueError):
+    """A request exceeds the closed two-yield assumption vocabulary."""
+
+
+class RatesScenarioBaselineError(ValueError):
+    """Published content does not qualify for this observed-baseline method."""
+
+
+@dataclass(frozen=True, slots=True)
+class RatesScenarioSource:
+    series_id: str
+    source_id: str
+    source_ref: str
+    artifact_ref: str
+    owner_ref: str
+    unit: str
+    basis: str
+    latest_observed_at: str
+    freshness: str
+    rights_state: str
+
+
+@dataclass(frozen=True, slots=True)
+class RatesScenarioBaseline:
+    baseline_id: str
+    snapshot_content_sha256: str
+    observed_at: str
+    us2y_pct: float
+    us10y_pct: float
+    sources: tuple[RatesScenarioSource, RatesScenarioSource]
+
+    @property
+    def observed_spread_bp(self) -> float:
+        """The same owner arithmetic for preview and the executed comparison."""
+        return _scenario_number(round((self.us10y_pct - self.us2y_pct) * 100, 4))
+
+
+@dataclass(frozen=True, slots=True)
+class RatesYieldShifts:
+    us2y_bp: int
+    us10y_bp: int
+
+
+@dataclass(frozen=True, slots=True)
+class RatesScenarioCalculation:
+    calculation_id: str
+    method_version: str
+    baseline: RatesScenarioBaseline
+    assumptions: RatesYieldShifts
+    observed_spread_bp: float
+    assumed_us2y_pct: float
+    assumed_us10y_pct: float
+    assumed_spread_bp: float
+    spread_change_bp: int
+    unsupported_effects: tuple[str, ...]
+    display_only: bool = True
+    can_rank: bool = False
+    can_gate: bool = False
+    can_size: bool = False
+    can_originate_signal: bool = False
+    can_execute: bool = False
+    canonical_writes: int = 0
+    alert_writes: int = 0
+    portfolio_writes: int = 0
+    calibration_writes: int = 0
+
+
+def parse_rates_yield_shifts(assumptions: Any) -> RatesYieldShifts:
+    """Normalize only independent 2Y/10Y basis-point shifts.
+
+    Duplicate JSON keys remain the existing transport parser's responsibility.
+    This pure boundary accepts an already decoded object, never a byte stream.
+    """
+    if not isinstance(assumptions, Mapping) or set(assumptions) != {"us2y_bp", "us10y_bp"}:
+        raise RatesScenarioInputError("unsupported_assumptions")
+    values: list[int] = []
+    for key in ("us2y_bp", "us10y_bp"):
+        value = assumptions[key]
+        if type(value) not in (int, float):
+            raise RatesScenarioInputError("invalid_yield_shift")
+        try:
+            valid = _math.isfinite(value) and -300 <= value <= 300 and value % 5 == 0
+        except (OverflowError, ValueError):
+            valid = False
+        if not valid:
+            raise RatesScenarioInputError("invalid_yield_shift")
+        values.append(int(value))
+    return RatesYieldShifts(*values)
+
+
+def _scenario_number(value: Any) -> float:
+    if type(value) not in (int, float):
+        raise RatesScenarioBaselineError("invalid_observed_value")
+    try:
+        number = float(value)
+    except (OverflowError, ValueError):
+        raise RatesScenarioBaselineError("invalid_observed_value") from None
+    if not _math.isfinite(number) or round(number, 4) != number:
+        raise RatesScenarioBaselineError("invalid_observed_value")
+    return 0.0 if number == 0 else number
+
+
+def _scenario_date(value: Any) -> _dt.date:
+    if not isinstance(value, str) or len(value) != 10:
+        raise RatesScenarioBaselineError("invalid_observation_date")
+    try:
+        result = _dt.date.fromisoformat(value)
+    except ValueError:
+        raise RatesScenarioBaselineError("invalid_observation_date") from None
+    if result.isoformat() != value:
+        raise RatesScenarioBaselineError("invalid_observation_date")
+    return result
+
+
+def _scenario_hash(kind: str, content: dict) -> str:
+    payload = {"kind": kind, "content": content}
+    encoded = _json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    return sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def _scenario_source_payload(source: RatesScenarioSource) -> dict:
+    return {field: getattr(source, field) for field in RatesScenarioSource.__dataclass_fields__}
+
+
+def _rates_baseline_payload(baseline: RatesScenarioBaseline) -> dict:
+    return {
+        "workspace": WORKSPACE_ID, "region": "US",
+        "composer_method": METHOD_VERSION, "scenario_method": RATES_SCENARIO_METHOD,
+        "snapshot_content_sha256": baseline.snapshot_content_sha256,
+        "observed_at": baseline.observed_at,
+        "us2y_pct": baseline.us2y_pct, "us10y_pct": baseline.us10y_pct,
+        "sources": [_scenario_source_payload(source) for source in baseline.sources],
+        "value_basis": "published_four_decimal_cmt_points",
+    }
+
+
+def _scenario_source_rows(snapshot: Mapping, col: str, sid: str
+                          ) -> tuple[list[tuple[_dt.date, float]], RatesScenarioSource]:
+    expected_ref, expected_artifact = f"FRED:{sid}", f"data/fred/{sid}.parquet"
+    expected_owner, expected_source_id = f"collectors.fred[{sid}]", sid.lower()
+    series = [item for item in snapshot["series"]["items"]
+              if item["series_id"] == col or item["source_ref"] == expected_ref]
+    sources = [item for item in snapshot["sources"]["items"]
+               if item["source_id"] == expected_source_id
+               or item["artifact_ref"] == expected_artifact or item["owner_ref"] == expected_owner]
+    if len(series) != 1 or len(sources) != 1:
+        raise RatesScenarioBaselineError("ambiguous_or_missing_source")
+    entry, source = series[0], sources[0]
+    if (entry["series_id"] != col or entry["source_ref"] != expected_ref
+            or entry["unit"] != "percent" or entry["basis"] != "constant_maturity_investment_basis"
+            or source["source_id"] != expected_source_id
+            or source["artifact_ref"] != expected_artifact or source["owner_ref"] != expected_owner):
+        raise RatesScenarioBaselineError("source_identity_mismatch")
+    # Qualify each leg before any worst-state aggregation: SIMULATED can
+    # otherwise be hidden by the more severe STALE_SOURCE token.
+    if (entry["freshness"] not in _SCENARIO_OBSERVED_FRESHNESS
+            or source["freshness"] not in _SCENARIO_OBSERVED_FRESHNESS
+            or source["freshness"] != entry["freshness"] or source["rights_state"] != "OPEN"):
+        raise RatesScenarioBaselineError("source_not_qualified")
+    points = entry["points"]
+    if not points or len(points) > _CURVE_HERO_HISTORY_DAYS + 1:
+        raise RatesScenarioBaselineError("source_history_unavailable")
+    published = _parse_date(snapshot["generation"]["built_at"])
+    if published is None:
+        raise RatesScenarioBaselineError("source_clock_mismatch")
+    rows: list[tuple[_dt.date, float]] = []
+    previous: _dt.date | None = None
+    for point in points:
+        observed = _scenario_date(point["t"])
+        if observed > published:
+            raise RatesScenarioBaselineError("source_clock_mismatch")
+        if previous is not None and observed <= previous:
+            raise RatesScenarioBaselineError("unordered_or_duplicate_observations")
+        previous = observed
+        if point["v"] is not None:
+            rows.append((observed, _scenario_number(point["v"])))
+    if not rows:
+        raise RatesScenarioBaselineError("source_history_unavailable")
+    newest = rows[-1][0]
+    if newest - _scenario_date(points[0]["t"]) > _dt.timedelta(days=_CURVE_HERO_HISTORY_DAYS):
+        raise RatesScenarioBaselineError("source_history_outside_owner_window")
+    if source["reference_period"] != newest.isoformat():
+        raise RatesScenarioBaselineError("source_observation_mismatch")
+    expected_freshness = _cadence_freshness(
+        snapshot["generation"]["built_at"], newest, _DAILY_CADENCE_DAYS, _DAILY_GRACE_DAYS, True)
+    if entry["freshness"] != expected_freshness:
+        raise RatesScenarioBaselineError("source_clock_mismatch")
+    receipt = RatesScenarioSource(
+        col, expected_source_id, expected_ref, expected_artifact, expected_owner,
+        "percent", "constant_maturity_investment_basis", newest.isoformat(),
+        entry["freshness"], "OPEN")
+    return rows, receipt
+
+
+def rates_scenario_baseline(snapshot: Mapping) -> RatesScenarioBaseline:
+    """Extract detached observed inputs from internally validated Rates content.
+
+    No manifest, file, authentication, currentness or PIT receipt is fabricated.
+    The runtime must separately bind served bytes and enforce selected-publication
+    stability before and after evaluation. The generation string and volatile
+    build clocks are deliberately not represented as verified receipt identities.
+    """
+    from engine.market_os.macro_workspaces import contract
+
+    try:
+        contract.validate(snapshot)
+    except (contract.ContractError, ValueError, TypeError, OverflowError, RecursionError):
+        raise RatesScenarioBaselineError("invalid_snapshot_content") from None
+    if (snapshot["workspace"]["id"] != WORKSPACE_ID
+            or snapshot["region"]["code"] != "US" or not snapshot["region"]["supported"]
+            or snapshot["generation"]["producer"] != PRODUCER
+            or snapshot["headline"]["method_version"] != METHOD_VERSION
+            or snapshot["series"]["status"] not in {"PRESENT", "PARTIAL"}):
+        raise RatesScenarioBaselineError("unsupported_snapshot_method")
+    short, short_source = _scenario_source_rows(snapshot, COL_US2Y, SERIES_US2Y)
+    long, long_source = _scenario_source_rows(snapshot, COL_US10Y, SERIES_US10Y)
+    date, short_value, long_value, _, refusal = _pair_value(
+        short, long, short_source.freshness, long_source.freshness)
+    if refusal is not None or date is None or short_value is None or long_value is None:
+        raise RatesScenarioBaselineError("qualified_common_date_unavailable")
+    baseline = RatesScenarioBaseline(
+        "", snapshot["generation"]["content_sha256"], date.isoformat(),
+        short_value, long_value, (short_source, long_source))
+    identity = "rates-baseline:" + _scenario_hash("rates_curves.scenario_baseline.v1",
+                                                _rates_baseline_payload(baseline))
+    return RatesScenarioBaseline(identity, baseline.snapshot_content_sha256, baseline.observed_at,
+                                 baseline.us2y_pct, baseline.us10y_pct, baseline.sources)
+
+
+def _qualify_rates_baseline(baseline: Any) -> RatesScenarioBaseline:
+    """Refuse edited or malformed serialized/reconstructed internal baselines."""
+    if type(baseline) is not RatesScenarioBaseline or type(baseline.sources) is not tuple:
+        raise RatesScenarioBaselineError("invalid_baseline")
+    digest = baseline.snapshot_content_sha256
+    if (not isinstance(digest, str) or len(digest) != 64 or digest == "0" * 64
+            or any(char not in "0123456789abcdef" for char in digest)
+            or len(baseline.sources) != 2):
+        raise RatesScenarioBaselineError("invalid_baseline")
+    date = _scenario_date(baseline.observed_at)
+    _scenario_number(baseline.us2y_pct)
+    _scenario_number(baseline.us10y_pct)
+    for source, col, sid in zip(baseline.sources, (COL_US2Y, COL_US10Y), (SERIES_US2Y, SERIES_US10Y)):
+        if (type(source) is not RatesScenarioSource or source.series_id != col
+                or source.source_id != sid.lower() or source.source_ref != f"FRED:{sid}"
+                or source.artifact_ref != f"data/fred/{sid}.parquet"
+                or source.owner_ref != f"collectors.fred[{sid}]"
+                or source.unit != "percent" or source.basis != "constant_maturity_investment_basis"
+                or source.freshness not in _SCENARIO_OBSERVED_FRESHNESS or source.rights_state != "OPEN"):
+            raise RatesScenarioBaselineError("invalid_baseline_source")
+        lag = (_scenario_date(source.latest_observed_at) - date).days
+        if lag < 0 or lag > _SAME_DATE_STALENESS_BOUND_DAYS:
+            raise RatesScenarioBaselineError("invalid_baseline_date")
+    expected = "rates-baseline:" + _scenario_hash("rates_curves.scenario_baseline.v1",
+                                                _rates_baseline_payload(baseline))
+    if baseline.baseline_id != expected:
+        raise RatesScenarioBaselineError("baseline_content_changed")
+    return baseline
+
+
+def evaluate_rates_scenario(baseline: RatesScenarioBaseline, assumptions: Mapping
+                             ) -> RatesScenarioCalculation:
+    """Apply two independent yield shifts; no fitting, reclassification or writes.
+
+    This internal result deliberately makes no public result-schema compliance
+    claim. Its service/result contract and native admission must be qualified
+    before the composer advertises execution.
+    """
+    baseline = _qualify_rates_baseline(baseline)
+    shifts = parse_rates_yield_shifts(assumptions)
+    short = _scenario_number(round(baseline.us2y_pct + shifts.us2y_bp / 100, 4))
+    long = _scenario_number(round(baseline.us10y_pct + shifts.us10y_bp / 100, 4))
+    spread = baseline.observed_spread_bp
+    delta = shifts.us10y_bp - shifts.us2y_bp
+    assumed_spread = _scenario_number(round(spread + delta, 4))
+    # Even finite JSON numbers can be too large for binary floats to represent
+    # a five-basis-point change. Refuse contradictory output rather than claim
+    # a changed spread beside yields that could not represent the requested move.
+    if (round((short - baseline.us2y_pct) * 100, 4) != shifts.us2y_bp
+            or round((long - baseline.us10y_pct) * 100, 4) != shifts.us10y_bp
+            or round((long - short) * 100, 4) != assumed_spread):
+        raise RatesScenarioBaselineError("calculation_precision_unavailable")
+    identity = "rates-scenario:" + _scenario_hash(RATES_SCENARIO_METHOD, {
+        "baseline_id": baseline.baseline_id,
+        "assumptions": {"us2y_bp": shifts.us2y_bp, "us10y_bp": shifts.us10y_bp},
+        "observed_spread_bp": spread, "assumed_us2y_pct": short,
+        "assumed_us10y_pct": long, "assumed_spread_bp": assumed_spread,
+    })
+    return RatesScenarioCalculation(
+        identity, RATES_SCENARIO_METHOD, baseline, shifts, spread, short, long, assumed_spread, delta,
+        ("other_curve_tenors", "term_premium", "policy_response", "credit_equity_response",
+         "portfolio_pnl", "future_path"))
+

@@ -271,10 +271,67 @@ def evaluate_current_scenario(*args, **kwargs):
     return evaluate(*args, **kwargs)
 
 
+def _rates_scenario_response(payload: dict) -> Response:
+    """One ephemeral Rates method on the existing private scenario transport."""
+    from app import macro_command
+    from engine.market_os.macro_workspaces import rates_curves
+    from lib import macro_rates_scenario_contract as wire
+
+    normalized = wire.normalize_rates_request(payload)  # closed client fields before source I/O
+    with macro_command.read_macro_publication("rates_curves") as publication:
+        entry = publication.entries[0]
+        snapshot = entry["snapshot"]
+        if snapshot is None:
+            raise SourceUnavailable("qualified Rates publication unavailable")
+        metadata = {
+            "manifest_sha256": publication.source["manifest_sha256"],
+            "manifest_generated_at": publication.source["manifest_generated_at"],
+            "generation_id": snapshot["generation"]["generation_id"],
+            "artifact": entry["artifact"],
+        }
+        baseline, metadata = wire.qualify_rates_publication(
+            snapshot, metadata, expected_publication=normalized["expected_publication"])
+        calculation = rates_curves.evaluate_rates_scenario(baseline, normalized["assumptions"])
+        result = wire.serialize_rates_result(normalized, calculation, publication=metadata)
+        # Encode and bound the actual HTTP response inside the same read fence.
+        return _bounded_post_response(result)
+
+
+async def _private_rates_scenario(payload: dict) -> Response:
+    from app import macro_command
+    from engine.market_os.macro_workspaces.rates_curves import RatesScenarioBaselineError
+    from lib.macro_rates_scenario_contract import RatesScenarioContractError, RatesScenarioUnavailable
+
+    try:
+        return await run_in_threadpool(_rates_scenario_response, payload)
+    except HTTPException:
+        raise
+    except macro_command.MacroPublicationChanged:
+        raise _post_error(409, "source_changed") from None
+    except RatesScenarioUnavailable as exc:
+        code = "scenario_unavailable" if str(exc) == "scenario_disabled" else "source_unavailable"
+        raise _post_error(503, code) from None
+    except RatesScenarioContractError as exc:
+        if str(exc) == "source_changed":
+            raise _post_error(409, "source_changed") from None
+        if str(exc) == "invalid_rates_request":
+            raise _post_error(400, "invalid_rates_request") from None
+        log.error("Rates scenario result failed internal qualification")
+        raise _post_error(500, "internal_error") from None
+    except (RatesScenarioBaselineError, SourceUnavailable, SourceIncoherent,
+            macro_command._ReadBudgetExceeded, OSError, ValueError):
+        raise _post_error(503, "source_unavailable") from None
+    except Exception:
+        log.error("Rates scenario failed unexpectedly")
+        raise _post_error(500, "internal_error") from None
+
+
 @router.post('/scenario/v1')
 async def evaluate_private_scenario(request: Request,
                                     _user: dict = Depends(require_site_full_user)) -> Response:
     payload = await _private_post_body(request)
+    if payload.get('schema') == 'ontology_scenario_request.v2':
+        return await _private_rates_scenario(payload)
     if set(payload) != {'schema','source_manifest_hash','assumption'} or payload.get('schema') != 'ontology_scenario_request.v1':
         raise _post_error(400,'invalid_scenario_request')
     manifest = payload.get('source_manifest_hash')

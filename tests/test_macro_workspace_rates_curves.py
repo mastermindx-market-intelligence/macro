@@ -1145,3 +1145,283 @@ def test_authority_is_fully_descriptive() -> None:
     assert a["axis_authority_ceiling"] == "DESCRIPTIVE"
     for m in snap["metrics"]["items"]:
         assert m["authority_ceiling"] == "DESCRIPTIVE"
+
+
+# Internal two-yield scenario: no endpoint or capability publication is enabled.
+def _scenario_snapshot(frames=_UNSET, **kwargs):
+    return contract.finalize(_compose(frames, **kwargs))
+
+
+def _scenario_series(snapshot, key):
+    return next(item for item in snapshot["series"]["items"] if item["series_id"] == key)
+
+
+def _scenario_source(snapshot, key):
+    return next(item for item in snapshot["sources"]["items"] if item["source_id"] == key)
+
+
+@pytest.mark.parametrize("two,ten,want2,want10,wantspread,wantdelta", [
+    (0, 0, 3.8, 4.1, 30.0, 0),
+    (100, 25, 4.8, 4.35, -45.0, -75),
+    (300, -300, 6.8, 1.1, -570.0, -600),
+    (-300, 300, 0.8, 7.1, 630.0, 600),
+    (5, 5, 3.85, 4.15, 30.0, 0),
+])
+def test_rates_scenario_direct_arithmetic_only(two, ten, want2, want10, wantspread, wantdelta):
+    snapshot = _scenario_snapshot()
+    before = copy.deepcopy(snapshot)
+    baseline = RC.rates_scenario_baseline(snapshot)
+    result = RC.evaluate_rates_scenario(baseline, {"us2y_bp": two, "us10y_bp": ten})
+    assert (result.assumed_us2y_pct, result.assumed_us10y_pct) == (want2, want10)
+    assert result.observed_spread_bp == 30.0
+    assert result.assumed_spread_bp == wantspread
+    assert result.spread_change_bp == wantdelta
+    assert result.display_only
+    assert not any((result.can_rank, result.can_gate, result.can_size,
+                    result.can_originate_signal, result.can_execute))
+    assert (result.canonical_writes, result.alert_writes, result.portfolio_writes,
+            result.calibration_writes) == (0, 0, 0, 0)
+    assert set(result.unsupported_effects) == {
+        "other_curve_tenors", "term_premium", "policy_response",
+        "credit_equity_response", "portfolio_pnl", "future_path",
+    }
+    assert snapshot == before
+    assert snapshot["scenario_contract"]["execution_available"] is False
+    assert snapshot["schema"]["version"] == "1.0.0"
+
+
+def test_rates_scenario_permits_negative_assumed_yields():
+    frames = _baseline_frames()
+    frames[RC.SERIES_US2Y] = _pt(.25)
+    frames[RC.SERIES_US10Y] = _pt(.50)
+    result = RC.evaluate_rates_scenario(RC.rates_scenario_baseline(_scenario_snapshot(frames)),
+                                        {"us2y_bp": -300, "us10y_bp": -300})
+    assert (result.assumed_us2y_pct, result.assumed_us10y_pct, result.assumed_spread_bp) == (-2.75, -2.5, 25.0)
+
+
+@pytest.mark.parametrize("key", ["us2y_bp", "us10y_bp"])
+@pytest.mark.parametrize("bad", [True, False, None, "5", [], {}, 301, -305, 2.5, 4.999999,
+                                float("nan"), float("inf"), float("-inf"), 10 ** 1000])
+def test_rates_scenario_rejects_invalid_assumption_values(key, bad):
+    request = {"us2y_bp": 0, "us10y_bp": 0}
+    request[key] = bad
+    with pytest.raises(RC.RatesScenarioInputError):
+        RC.parse_rates_yield_shifts(request)
+
+
+@pytest.mark.parametrize("payload", [
+    {}, None, [], {"us2y_bp": 0}, {"us10y_bp": 0},
+    {"us2y_bp": 0, "us10y_bp": 0, "curve_2s10s_bp": 5},
+    {"us2y_bp": 0, "us10y_bp": 0, "horizon": 20},
+    {"us2y_bp": 0, "us10y_bp": 0, "baseline_us2y": 4.5},
+])
+def test_rates_scenario_closed_two_key_assumptions(payload):
+    with pytest.raises(RC.RatesScenarioInputError):
+        RC.parse_rates_yield_shifts(payload)
+
+
+def test_rates_scenario_integral_float_and_evaluation_clock_identity():
+    from dataclasses import asdict
+    baseline = RC.rates_scenario_baseline(_scenario_snapshot())
+    result = RC.evaluate_rates_scenario(baseline, {"us2y_bp": 5, "us10y_bp": -5})
+    same = RC.evaluate_rates_scenario(baseline, {"us2y_bp": 5.0, "us10y_bp": -5.0})
+    assert result == same
+    snapshot = _scenario_snapshot()
+    snapshot["generation"]["built_at"] = "2026-09-05T09:30:00Z"
+    snapshot["generation"]["generation_id"] = "untrusted-generation-label"
+    snapshot["generation"]["rendered_at"] = "2026-09-05T10:00:00Z"
+    snapshot["generation"]["code_version"] = "another-code-build"
+    later = RC.rates_scenario_baseline(snapshot)
+    assert later == baseline  # No invented wall-clock or generation receipt.
+    assert RC.evaluate_rates_scenario(later, {"us2y_bp": 5, "us10y_bp": -5}) == result
+    assert "generation_id" not in asdict(baseline)
+    assert "manifest_hash" not in asdict(baseline)
+    assert "evaluated_at" not in asdict(result)
+
+
+def test_rates_scenario_baseline_and_result_detached_immutable_and_content_bound():
+    from dataclasses import FrozenInstanceError, replace
+    snapshot = _scenario_snapshot()
+    baseline = RC.rates_scenario_baseline(snapshot)
+    expected_id = baseline.baseline_id
+    _scenario_series(snapshot, "us2y")["points"][-1]["v"] = 9.0
+    assert baseline.us2y_pct == 3.8 and baseline.baseline_id == expected_id
+    with pytest.raises(FrozenInstanceError):
+        baseline.us2y_pct = 9.0
+    with pytest.raises(FrozenInstanceError):
+        baseline.sources[0].freshness = "CURRENT"
+    with pytest.raises(RC.RatesScenarioBaselineError, match="baseline_content_changed"):
+        RC.evaluate_rates_scenario(replace(baseline, us2y_pct=9.0), {"us2y_bp": 0, "us10y_bp": 0})
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.evaluate_rates_scenario(replace(baseline, sources=tuple(reversed(baseline.sources))),
+                                   {"us2y_bp": 0, "us10y_bp": 0})
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(snapshot)  # Original digest no longer matches.
+    changed = RC.rates_scenario_baseline(contract.finalize(snapshot))
+    assert changed.baseline_id != expected_id
+
+
+@pytest.mark.parametrize("lag,accepted", [(5, True), (6, False)])
+def test_rates_scenario_reuses_common_date_bound_instead_of_latest_tiles(lag, accepted):
+    frames = _baseline_frames()
+    shared = (dt.date(2026, 9, 2) - dt.timedelta(days=lag)).isoformat()
+    frames[RC.SERIES_US2Y] = [(shared, 3.5)]
+    frames[RC.SERIES_US10Y] = [(shared, 4.0), ("2026-09-02", 4.6)]
+    snapshot = _scenario_snapshot(frames)
+    assert _metric(snapshot, "us10y_level")["value"] == 4.6
+    if not accepted:
+        with pytest.raises(RC.RatesScenarioBaselineError, match="qualified_common_date_unavailable"):
+            RC.rates_scenario_baseline(snapshot)
+        return
+    baseline = RC.rates_scenario_baseline(snapshot)
+    assert (baseline.observed_at, baseline.us2y_pct, baseline.us10y_pct) == (shared, 3.5, 4.0)
+    assert baseline.sources[1].latest_observed_at == "2026-09-02"
+    assert RC.evaluate_rates_scenario(baseline, {"us2y_bp": 100, "us10y_bp": 25}).assumed_spread_bp == -25
+
+
+@pytest.mark.parametrize("mode", ["missing_short", "missing_long", "no_common"])
+def test_rates_scenario_never_synthesizes_a_missing_pair(mode):
+    frames = _baseline_frames()
+    if mode == "missing_short": frames.pop(RC.SERIES_US2Y)
+    elif mode == "missing_long": frames.pop(RC.SERIES_US10Y)
+    else:
+        frames[RC.SERIES_US2Y] = [("2026-09-01", 3.8)]
+        frames[RC.SERIES_US10Y] = [("2026-09-02", 4.1)]
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(_scenario_snapshot(frames))
+
+
+def test_rates_scenario_unrelated_missing_tenors_do_not_veto_qualified_pair():
+    snapshot = _scenario_snapshot({RC.SERIES_US2Y: _pt(3.5), RC.SERIES_US10Y: _pt(4.0)})
+    assert snapshot["availability"]["coverage_ratio"] < 1
+    assert snapshot["headline"]["state_id"] is None
+    assert snapshot["axes"]["items"] == []
+    baseline = RC.rates_scenario_baseline(snapshot)
+    assert (baseline.us2y_pct, baseline.us10y_pct) == (3.5, 4.0)
+
+
+@pytest.mark.parametrize("mutation", [
+    "wrong_artifact", "wrong_owner", "wrong_source_id", "wrong_series_ref", "wrong_unit",
+    "wrong_basis", "duplicate_series_id", "duplicate_series_source", "duplicate_disclosure",
+    "duplicate_artifact", "wrong_source_period", "wrong_method", "wrong_producer", "wrong_region",
+])
+def test_rates_scenario_rejects_resealed_source_identity_contradictions(mutation):
+    snapshot = _scenario_snapshot()
+    entry, source = _scenario_series(snapshot, "us2y"), _scenario_source(snapshot, "dgs2")
+    if mutation == "wrong_artifact": source["artifact_ref"] = "data/fred/DGS10.parquet"
+    elif mutation == "wrong_owner": source["owner_ref"] = "collectors.fred[DTB3]"
+    elif mutation == "wrong_source_id": source["source_id"] = "another-source"
+    elif mutation == "wrong_series_ref": entry["source_ref"] = "FRED:DTB3"
+    elif mutation == "wrong_unit": entry["unit"] = "bp"
+    elif mutation == "wrong_basis": entry["basis"] = "discount_basis"
+    elif mutation == "duplicate_series_id": snapshot["series"]["items"].append(copy.deepcopy(entry))
+    elif mutation == "duplicate_series_source":
+        extra = copy.deepcopy(entry); extra["series_id"] = "unexpected"; snapshot["series"]["items"].append(extra)
+    elif mutation == "duplicate_disclosure": snapshot["sources"]["items"].append(copy.deepcopy(source))
+    elif mutation == "duplicate_artifact":
+        extra = copy.deepcopy(source); extra["source_id"] = "another-source"; snapshot["sources"]["items"].append(extra)
+    elif mutation == "wrong_source_period": source["reference_period"] = "2026-09-01"
+    elif mutation == "wrong_method": snapshot["headline"]["method_version"] = "unqualified.method.v1"
+    elif mutation == "wrong_producer": snapshot["generation"]["producer"] = "other.producer"
+    elif mutation == "wrong_region": snapshot["region"]["code"] = "CN"
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(contract.finalize(snapshot))
+
+
+@pytest.mark.parametrize("bad_state", ["SIMULATED", "SOURCE_FAILED", "RIGHTS_BLOCKED",
+                                     "NOT_COVERED", "NOT_YET_RELEASED", "HISTORICAL_AS_KNOWN"])
+@pytest.mark.parametrize("side", ["series", "source"])
+def test_rates_scenario_checks_each_qualification_before_worst_freshness(bad_state, side):
+    snapshot = contract.finalize(RC.compose(_baseline_frames(), built_at="2026-09-20T00:00:00Z"))
+    assert _scenario_series(snapshot, "us10y")["freshness"] == "STALE_SOURCE"
+    target = _scenario_series(snapshot, "us2y") if side == "series" else _scenario_source(snapshot, "dgs2")
+    target["freshness"] = bad_state
+    with pytest.raises(RC.RatesScenarioBaselineError, match="source_not_qualified"):
+        RC.rates_scenario_baseline(contract.finalize(snapshot))
+
+
+def test_rates_scenario_preserves_observation_staleness_and_rights_separately():
+    snapshot = contract.finalize(RC.compose(_baseline_frames(), built_at="2026-09-20T00:00:00Z"))
+    baseline = RC.rates_scenario_baseline(snapshot)
+    assert all(source.freshness == "STALE_SOURCE" for source in baseline.sources)
+    _scenario_source(snapshot, "dgs2")["rights_state"] = "UNKNOWN"
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(contract.finalize(snapshot))
+
+
+@pytest.mark.parametrize("mode", ["date_time", "bad_date", "duplicate", "unordered", "extra_precision",
+                                  "source_clock", "all_null"])
+def test_rates_scenario_does_not_repair_sealed_point_contradictions(mode):
+    snapshot = _scenario_snapshot()
+    points = _scenario_series(snapshot, "us2y")["points"]
+    if mode == "date_time": points[-1]["t"] += "T00:00:00Z"
+    elif mode == "bad_date": points[-1]["t"] = "2026-02-30"
+    elif mode == "duplicate": points.append(copy.deepcopy(points[-1]))
+    elif mode == "unordered": points.insert(0, {"t": "2026-09-03", "v": 3.7})
+    elif mode == "extra_precision": points[-1]["v"] = 3.12345
+    elif mode == "source_clock": snapshot["generation"]["built_at"] = "2026-08-01T00:00:00Z"
+    elif mode == "all_null": points[-1]["v"] = None
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(contract.finalize(snapshot))
+
+
+def test_rates_scenario_keeps_null_gaps_and_uses_published_precision():
+    frames = _baseline_frames()
+    frames[RC.SERIES_US2Y] = [("2026-08-31", 3.123456), ("2026-09-02", 3.654321)]
+    frames[RC.SERIES_US10Y] = [("2026-08-31", 4.123456), ("2026-09-02", 4.654321)]
+    snapshot = _scenario_snapshot(frames)
+    for col in ("us2y", "us10y"):
+        points = _scenario_series(snapshot, col)["points"]
+        points.insert(1, {"t": "2026-09-01", "v": None})
+        points.append({"t": "2026-09-03", "v": None})
+    baseline = RC.rates_scenario_baseline(contract.finalize(snapshot))
+    assert (baseline.observed_at, baseline.us2y_pct, baseline.us10y_pct) == ("2026-09-02", 3.6543, 4.6543)
+    assert _metric(snapshot, "us2y_level")["value"] == 3.654321
+    assert RC.evaluate_rates_scenario(baseline, {"us2y_bp": 0, "us10y_bp": 0}).observed_spread_bp == 100.0
+
+
+@pytest.mark.parametrize("col", ["us2y", "us10y"])
+def test_rates_scenario_refuses_future_dated_null_history(col):
+    snapshot = _scenario_snapshot()
+    _scenario_series(snapshot, col)["points"].append({"t": "2030-01-01", "v": None})
+    with pytest.raises(RC.RatesScenarioBaselineError, match="source_clock_mismatch"):
+        RC.rates_scenario_baseline(contract.finalize(snapshot))
+
+
+@pytest.mark.parametrize("value", [True, None, "3.8", float("nan"), float("inf"), float("-inf")])
+def test_rates_scenario_refuses_non_numeric_or_nonfinite_sealed_observations(value):
+    snapshot = _scenario_snapshot()
+    _scenario_series(snapshot, "us2y")["points"][-1]["v"] = value
+    # A bad point never becomes usable, with or without an attempted reseal.
+    try:
+        snapshot = contract.finalize(snapshot)
+    except (ValueError, TypeError):
+        pass
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.rates_scenario_baseline(snapshot)
+
+
+@pytest.mark.parametrize("replacement", [
+    {"baseline_id": "other-baseline"},
+    {"snapshot_content_sha256": "a" * 64},
+    {"us2y_pct": True},
+    {"us10y_pct": float("inf")},
+    {"observed_at": "2026-09-03"},
+    {"observed_at": "2026-02-30"},
+])
+def test_rates_scenario_rechecks_reconstructed_baseline_content(replacement):
+    from dataclasses import replace
+    baseline = RC.rates_scenario_baseline(_scenario_snapshot())
+    with pytest.raises(RC.RatesScenarioBaselineError):
+        RC.evaluate_rates_scenario(replace(baseline, **replacement), {"us2y_bp": 0, "us10y_bp": 0})
+
+
+def test_rates_scenario_refuses_unrepresentable_finite_shocks():
+    frames = _baseline_frames()
+    frames[RC.SERIES_US2Y] = _pt(1e18)
+    frames[RC.SERIES_US10Y] = _pt(1e18)
+    baseline = RC.rates_scenario_baseline(_scenario_snapshot(frames))
+    with pytest.raises(RC.RatesScenarioBaselineError, match="calculation_precision_unavailable"):
+        RC.evaluate_rates_scenario(baseline, {"us2y_bp": 5, "us10y_bp": -5})
+
+
