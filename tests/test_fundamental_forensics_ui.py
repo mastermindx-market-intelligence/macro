@@ -34,7 +34,7 @@ def test_workbench_renders_seven_functional_views_and_external_assets():
     assert 'id="ff-company-search"' in html
     assert 'id="ff-evidence"' in html
     assert 'href="fundamental_forensics.css?v=20260816-ff0r1"' in html
-    assert 'src="fundamental_forensics.js?v=20260816-ff0r1"' in html
+    assert 'src="fundamental_forensics.js"' in html
     assert 'https://www.mastermind-x.com/fundamental_forensics.html' in html
     assert 'src="theme.js"' in html
     # There is no executable page-inline JS; the SEO structured data block is
@@ -372,7 +372,11 @@ def test_url_state_contract_node_suite():
     if node is None:
         return
     result = subprocess.run(
-        [node, "--test", str(ROOT / "tests" / "fundamental_forensics_url_state.test.mjs")],
+        [
+            node, "--test",
+            str(ROOT / "tests" / "fundamental_forensics_url_state.test.mjs"),
+            str(ROOT / "tests" / "fundamental_forensics_drawer_resume.test.mjs"),
+        ],
         capture_output=True,
         text=True,
         check=False,

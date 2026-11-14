@@ -598,7 +598,7 @@
 <script src="theme.js" defer></script>
 <script src="tier_preview.js" defer></script>
 <script src="fif_saved_briefcase.js?v=20261012-x2s1" defer></script>
-<script src="fundamental_forensics.js?v=20260816-ff0r1" defer></script>
+<script src="fundamental_forensics.js{% if forensics_js_version is defined and forensics_js_version %}?v={{ forensics_js_version }}{% endif %}" defer></script>
 <script src="institutional_holding_research.js{% if holding_js_version is defined and holding_js_version %}?v={{ holding_js_version }}{% endif %}" defer></script>
 </body>
 </html>

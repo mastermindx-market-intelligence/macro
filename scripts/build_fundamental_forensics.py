@@ -1786,6 +1786,7 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
         summary_as_of=summary_as_of,
         active_section="research",
         active_page="fundamental_forensics",
+        forensics_js_version=hashlib.sha256((root / "templates" / "fundamental_forensics.js").read_bytes()).hexdigest()[:8],
         holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],
         holding_css_version=hashlib.sha256((root / "templates" / "institutional_holding_research.css").read_bytes()).hexdigest()[:8],
     )
