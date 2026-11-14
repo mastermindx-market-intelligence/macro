@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T00:13:42.875306+00:00",
-  "count": 3329,
+  "generated_at": "2026-11-14T00:25:03.717479+00:00",
+  "count": 3330,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1519,6 +1519,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 19,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-jevotib78f3-472992",
+      "title": "JPM U.S. Analyst Focus List Current Snapshot (12 NOV 26)",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T11:32:02Z",
+      "summary_points": [
+        "Top Upside Catalysts: Caterpillar (CAT) leads with 66.22% upside, while COST (107.48%) and CYTK (75.8%) dominate healthcare with Overweight ratings, signaling strong fundamental growth catalysts in industrial and biotech sectors.",
+        "Tech Sector Divergence: NVDA (+70.1%) and MSFT (+60.1%) show bullish momentum, contrasting sharply with TSLA (-5.0%) amid EV sector policy/technical headwinds, highlighting critical sector-specific risk factors.",
+        "Institutional Flow Bias: JPM’s 95% Overweight coverage (vs. 53% global) signals strong institutional flow bias, with Overweight/Neutral/Underweight aligning to FINRA buy/hold/sell, directly impacting portfolio positioning and risk assessment."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 11,
       "language": "en",
       "needs_metadata": false
     },
