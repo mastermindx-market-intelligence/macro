@@ -3,14 +3,14 @@
 Status: DESIGN CANDIDATE / DESIGN PHASE IN PROGRESS  
 Date: 14 November 2026  
 Parent: [Research Explore migration record](../RESEARCH_EXPLORE_SHARED_SHELL_2026-11-14.md)  
-Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy R7 contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2 contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md) · [Capital Structure R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md)  
-Exact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
+Build: [Engine and implementation blueprint](ENGINE_AND_IMPLEMENTATION_BLUEPRINT_2026-11-14.md) · [Policy R6 contract](POLICY_WATCH_R6_BUILD_SPEC_2026-11-14.md) · [Policy R7 contract](POLICY_WATCH_R7_BUILD_SPEC_2026-11-14.md) · [BioCatalyst R11 contract](BIOCATALYST_R11_BUILD_SPEC_2026-11-14.md) · [Alternative Data R2 contract](ALTERNATIVE_DATA_R2_BUILD_SPEC_2026-11-14.md) · [Research Hub R6 contract](RESEARCH_HUB_R6_BUILD_SPEC_2026-11-14.md) · [Special Situations R2 contract](SPECIAL_SITUATIONS_R2_BUILD_SPEC_2026-11-14.md) · [Capital Structure R2 contract](CAPITAL_STRUCTURE_R2_BUILD_SPEC_2026-11-14.md) · [China Cycles R2 contract](CHINA_SECTOR_CYCLES_R2_BUILD_SPEC_2026-11-14.md)  
+Remaining workflow/parity closure: [Twelve-destination matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md)  \nExact identities and screenshot digests: [Paper inventory JSON](PAPER_INVENTORY_2026-11-14.json)
 
 ## What is authored
 
-The set contains **99 editable native Paper pages**: **77 product and responsive/theme/locale views, fifteen Build boards and seven state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
+The set contains **105 editable native Paper pages**: **81 product and responsive/theme/locale views, sixteen Build boards and eight state sheets**. Each page has one new owned root frame. All twelve destinations in the Chairman's Explore scope have a new primary composition; Global Cycles accounts for five separate destinations.
 
-Seventeen mobile and five intermediate-width compositions are included, including additional BioCatalyst First-seen and Government Calendar views. The original eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
+Twenty mobile and six intermediate-width compositions are included, including additional BioCatalyst First-seen and Government Calendar views. The original eight family-level mobile compositions are included (seven at 390px and Special Situations at 320px). Policy Central Banks and Capital Scenario have English dark treatments; Research All desks also has a Chinese dark version using available Noto Sans SC. These specimens are not systematic language/theme/breakpoint acceptance.
 
 The final compositions were screenshot-inspected. Specific repairs include overlaps, excessive gaps, wrapped date/year labels, missing selected states, source-date consistency, source-group counts, unit/basis labels, comparison-line patterns and ambiguity between a resolution event and a review deadline. Inspection establishes static design quality, not working buttons, production data, saved effects or browser proof.
 
@@ -199,6 +199,21 @@ Seven additional native pages preserve U0 Today / On a date / Scenario while mak
 
 The final save root is 2PLN-1 after an owned composition replacement. Final QA repaired detached navigation, historical/mobile gaps and distant feasibility copy. Build notes preserve the posted save anchor: save does not automatically rebase; current/scenario restore can. All seven final roots received observed guarded finish receipts. No account save or product implementation is implied.
 
+## C13 additions — China Sector Cycles R2
+
+Six new native pages add a Chinese dark mobile investigation, source/basis and historical-rhythm inspectors, plus a 1024px dark resource-recovery view. The [R2 contract](CHINA_SECTOR_CYCLES_R2_BUILD_SPEC_2026-11-14.md) binds exact measure, observation, timing and qualification semantics.
+
+| New native page | Size | Root | Purpose |
+|---|---|---|---|
+| [China Cycles R2 · 电子研究 · Mobile dark](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2X-1) | 390 × 1220 | 2PQY-1 | One selected Shenwan industry; measured history separated from timing context |
+| [China Cycles R2 · 来源与口径 · Mobile dark](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2Y-1) | 390 × 1500 | 2PTI-1 | Source close versus total-return uncertainty; actual observation versus page/period dates |
+| [China Cycles R2 · 历史节奏依据 · Mobile dark](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2Z-1) | 390 × 1610 | 2PW1-1 | Eight historical intervals, month-precision range and unretained confirmation time |
+| [China Cycles R2 · History recovery · 1024 dark](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-30-1) | 1024 × 1120 | 2PZE-1 | Compatible core remains while only heavy history is retried |
+| [China Cycles R2 · Clocks, eligibility & return states](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-31-1) | 1400 × 1180 | 2Q34-1 | Six independent provenance, qualification and historical-coverage states |
+| [China Cycles R2 · Measured history and investigation · Build](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-32-1) | 1400 × 1280 | 2Q5L-1 | Existing producer/router owners, missing projections and exact return proof |
+
+The synthetic 62.4 is the legacy oscillator, not canonical phase or probability. The interval fixture emits Dec 2026 / Jan 2027 / Feb 2027 with the incumbent formatter; 0.66 years is twice the median interval. Electronics has no conditional pathway, and current hazard qualification exposes no horizon/prior number. Exact per-series observation and supporting turn provenance are proposed owner projections. The standalone basket→sector return gap is recorded for the shell consumer. All six final roots were visually reviewed and received observed guarded finish receipts.
+
 ## Distinct interaction capabilities
 
 | Family | Authored investigation path |
@@ -225,9 +240,9 @@ These are scoped gaps, not permission or review ceremonies. Preserve already ins
 | D1-POLICY follow-through | Remaining research navigation, corrections and theme/locale/breakpoint parity | R7 core views authored; source/version/role projections and complete return states remain required |
 | D1-HUB follow-through | Expanded method/statistics disclosures, filtered exclusions and remaining parity states | R6 core views authored; same-population statistics, sparse samples, exact snapshots and preserved owner ordering remain required |
 | D1-CAPITAL follow-through | Historical evidence focus/return and remaining U0 parity | R2 conflict/restore/save states authored; retained result, version, CAS and exact evidence binding remain owner extensions |
-| D1-CYCLES follow-through | Measured-history/basis investigation, universe restoration and Frame/measured grammar across five routes | Only six product specimens currently cover five destinations; add meaningful narrow/theme/locale and return states without fabricating measurements or forecasts |\n| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
+| D1-CYCLES follow-through | Measured-history/basis investigation, universe restoration and Frame/measured grammar across five routes | Ten product specimens now cover five destinations, including China R2; Markets/Countries/U.S./Long Cycles still need their specific basis, universe and grammar proof |\n| D1-CROSS | Intermediate widths, collapsed rail, EN/ZH, dark/light and keyboard/touch/return flows | Actual content width, legible charts/tables, no crowding, focus return and supported persistence |
 
-The next bounded action is **D1-CYCLES / China Sectors**: a Chinese dark mobile investigation, source/basis detail and return state that preserve selected universe/sector and chart window. Separate measured history from typical timing and withhold unsupported forward information. The twelve-destination parity assessment also prioritizes Government intermediate comparison, Bio Chinese mobile explicit peers, Long Cycles Frame/measured grammar, and Hub population/exclusions inspection. Reuse accepted compositions; Build/state boards do not count as responsive product proof. Capital's explicit eventual U0 evidence matrix remains binding. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
+The next bounded action is **D1-GOV-PARITY**: Government Revenue program-version comparison at 1024px in English dark, with compatible request stages, separately displayed enacted evidence, exact retained source versions and unresolved allocation. The [twelve-destination parity matrix](DESIGN_PARITY_AND_RETURN_MATRIX_2026-11-14.md) records the remaining Cycles, Bio, Alt, Special, Hub, Policy and Capital work, plus the precise source/selection/focus return contracts. Reuse accepted compositions; Build/state boards do not count as responsive product proof. Capital's explicit eventual U0 evidence matrix remains binding. Product implementation starts only after the original design-phase acceptance is met, through Terminal's existing AppShell and incumbent domain owners.
 
 ## Preservation and evidence limits
 
