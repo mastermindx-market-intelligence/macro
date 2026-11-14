@@ -279,3 +279,9 @@ def candidates_v1(
             return _candidates_unavailable()
     finally:
         _READ_ADMISSION.release()
+
+
+# Child detail shares this module's source reader and admission at request time.
+# The child itself imports no candidate projector until after authentication.
+from app.prophet_board_detail import router as _board_detail_router  # noqa: E402
+router.include_router(_board_detail_router)
