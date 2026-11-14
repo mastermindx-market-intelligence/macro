@@ -181,6 +181,8 @@ recovery, worktree storage/reclaim, and release. Preserve no-invented signals/si
 explicit rights and identity, hold gates, human-only controls, protected shared
 runs, canonical navigation, and required paired site artifacts. This entrypoint
 is an index, not an exemption from those effect-specific controls.
+Research history is reconstructed from historical data, never awaited, and point-in-time inputs are not
+required: read `research/HISTORICAL_RECONSTRUCTION_PROTOCOL.md` before saying an input or a history is missing.
 
 ## Memory frontmatter contract
 

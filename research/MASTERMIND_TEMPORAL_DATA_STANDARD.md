@@ -9,6 +9,8 @@ and the parts of `D1`/`D9` that carry clocks.
 `git ls-files lib/dataos/` returns nothing, so it is untracked and owned by the concurrent `lib/` lane).
 This document is the normative text; that module is the executable form of §3–§7.
 
+> **Amended 2026-11-12 (Chairman ruling).** Point-in-time inputs are not a requirement for research. A caller that receives a non-point-in-time answer records the basis on its output and proceeds; it does not refuse. See `research/HISTORICAL_RECONSTRUCTION_PROTOCOL.md` section 5 for exactly which rules here change (5.1 research tier; section 11 rules 1, 8 and 12) and which do not.
+
 Every claim below carries a `path:LINE` citation or a command plus its output. VERIFIED means the author of
 this document ran it. INFERRED means it is reasoning over evidence that is itself cited. Standing
 adjudications are cited as `DNR:<KEY>`.
@@ -435,6 +437,8 @@ can (`engine/basket_membership_pit.py:629-635`):
 `pit=False` result reaching a fitted coefficient, a ranked board, or a graded ledger row is a defect in the
 caller, not in the reader.
 
+> **Amended 2026-11-12 (Chairman ruling).** Point-in-time inputs are not a requirement for research. A caller that receives a non-point-in-time answer records the basis on its output and proceeds; it does not refuse. See `research/HISTORICAL_RECONSTRUCTION_PROTOCOL.md` section 5 for exactly which rules here change (5.1 research tier; section 11 rules 1, 8 and 12) and which do not.
+
 ### 5.2 Fail-closed also means "declare the hole"
 
 A dataset that is wired into consumers but has never had a row written is a distinct state from healthy and
@@ -847,6 +851,8 @@ from one made under `v2` without cross-referencing the git timeline by hand.
 ---
 
 ## 11. RULES FOR ANY FUTURE BACKTEST IN THIS REPO
+
+> **Amended 2026-11-12 (Chairman ruling).** Point-in-time inputs are not a requirement for research. A caller that receives a non-point-in-time answer records the basis on its output and proceeds; it does not refuse. See `research/HISTORICAL_RECONSTRUCTION_PROTOCOL.md` section 5 for exactly which rules here change (5.1 research tier; section 11 rules 1, 8 and 12) and which do not.
 
 A quant session can follow this section without reading the rest of the document.
 
