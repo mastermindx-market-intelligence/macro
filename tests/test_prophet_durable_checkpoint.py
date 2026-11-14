@@ -59,7 +59,7 @@ def _python_heredocs(run: str) -> list[str]:
     blocks: list[str] = []
     current: list[str] | None = None
     for line in run.splitlines():
-        if current is None and "<<'PY'" in line and "python" in line:
+        if current is None and "<<'PY'" in line and "python" in line.lower():
             current = []
         elif current is not None and line == "PY":
             blocks.append("\n".join(current) + "\n")
@@ -531,7 +531,7 @@ def test_zero_origin_night_checkpoints_exact_source_snapshot_not_live_board(
 
 @pytest.mark.parametrize("source_state", ["missing", "malformed"])
 def test_nightly_missing_or_malformed_source_withholds_nonfatally(
-    tmp_path: Path, source_state: str
+    tmp_path: Path, source_state: str, engine_python_env: dict[str, str]
 ) -> None:
     repo = tmp_path / "repo"
     (repo / "site/prophet/plans").mkdir(parents=True)
@@ -541,7 +541,7 @@ def test_nightly_missing_or_malformed_source_withholds_nonfatally(
         board.write_bytes(b'{"as_of":"2026-09-14"')
 
     output = tmp_path / "github-output.txt"
-    env = os.environ.copy()
+    env = engine_python_env.copy()
     env.update({
         "GITHUB_WORKSPACE": str(repo),
         "RUNNER_TEMP": str(tmp_path),
@@ -966,3 +966,217 @@ def test_heatmap_reference_wedge_is_bounded_and_cannot_skip_prophet_again() -> N
     assert heatmap["timeout-minutes"] == 15
     assert heatmap["continue-on-error"] is True
     assert "--refresh-caps-only" in heatmap["run"]
+
+
+@pytest.fixture
+def engine_python_env(tmp_path: Path) -> dict[str, str]:
+    """Real isolated venv; dependency installers/producers are offline fixtures."""
+    import venv
+
+    tool_cache = tmp_path / "runner tool cache"
+    venv_path = tool_cache / "mm-venv-fixture-runner"
+    venv.EnvBuilder(with_pip=False, system_site_packages=True).create(venv_path)
+    selected = venv_path / "bin/python"
+    site_packages = Path(subprocess.check_output(
+        [str(selected), "-c", "import sysconfig; print(sysconfig.get_path('purelib'))"],
+        text=True,
+    ).strip())
+    # Imports are fixtures here; asset behavior remains covered by test_site_assets.
+    (site_packages / "rjsmin.py").write_text("# qualified dependency fixture\n")
+    (site_packages / "rcssmin.py").write_text("# qualified dependency fixture\n")
+    (site_packages / "pip.py").write_text(
+        "import json, os, sys\n"
+        "with open(os.environ['PIP_CALLS'], 'a') as out:\n"
+        "    out.write(json.dumps({'argv': sys.argv[1:], 'prefix': sys.prefix}) + '\\n')\n"
+    )
+    ambient = tmp_path / "ambient"
+    ambient.mkdir()
+    for name in ("python", "python3", "pip"):
+        path = ambient / name
+        path.write_text('#!/bin/sh\necho ambient >> "$AMBIENT_CALLS"\nexit 97\n')
+        path.chmod(0o755)
+    home = tmp_path / "home"
+    home.mkdir()
+    env = os.environ.copy()
+    env.pop("PYTHONHOME", None)
+    env.update({
+        "HOME": str(home),
+        "PATH": str(ambient) + os.pathsep + env.get("PATH", ""),
+        "RUNNER_TOOL_CACHE": str(tool_cache),
+        "RUNNER_NAME": "fixture-runner",
+        "RUNNER_TEMP": str(tmp_path),
+        "GITHUB_ENV": str(tmp_path / "github-env"),
+        "GITHUB_PATH": str(tmp_path / "github-path"),
+        "GITHUB_OUTPUT": str(tmp_path / "github-output"),
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "github-summary"),
+        "GITHUB_RUN_ID": "python-binding-test",
+        "GITHUB_RUN_ATTEMPT": "1",
+        "GITHUB_WORKSPACE": str(tmp_path / "repo"),
+        "DAILY_ENGINE_PYTHON": str(selected),
+        "PIP_CALLS": str(tmp_path / "pip-calls.jsonl"),
+        "AMBIENT_CALLS": str(tmp_path / "ambient-calls"),
+        "PRODUCER_CALLS": str(tmp_path / "producer-calls.jsonl"),
+        "FIXTURE_SITE_PACKAGES": str(site_packages),
+    })
+    return env
+
+
+def _run_engine_shell(source: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["bash", "-e", "-c", source],
+        cwd=ROOT, env=env, capture_output=True, text=True, check=False,
+    )
+
+
+def _install_producer_fixture(env: dict[str, str]) -> None:
+    """Run the real preflight; intercept expensive module boundaries only."""
+    selected = Path(env["DAILY_ENGINE_PYTHON"])
+    real = selected.with_name("python-real")
+    selected.rename(real)
+    selected.write_text(
+        "#!" + sys.executable + "\n"
+        "import json, os, sys\n"
+        "args = sys.argv[1:]\n"
+        "if args[:1] == ['-m']:\n"
+        "    with open(os.environ['PRODUCER_CALLS'], 'a') as out:\n"
+        "        out.write(json.dumps(args) + '\\n')\n"
+        "    if args[1] == os.environ.get('FAIL_MODULE'):\n"
+        "        print('controlled producer failure', file=sys.stderr)\n"
+        "        sys.exit(23)\n"
+        "    sys.exit(0)\n"
+        f"os.execv({str(real)!r}, [{str(real)!r}] + args)\n"
+    )
+    selected.chmod(0o755)
+
+
+@pytest.mark.parametrize("qualification", ["valid", "wrong_prefix", "missing_dependency"])
+def test_engine_bootstrap_binds_install_and_qualification_to_one_venv(
+    engine_python_env: dict[str, str], qualification: str,
+) -> None:
+    env = engine_python_env
+    selected = Path(env["DAILY_ENGINE_PYTHON"])
+    if qualification == "wrong_prefix":
+        (selected.parent.parent / "pyvenv.cfg").unlink()
+    elif qualification == "missing_dependency":
+        (Path(env["FIXTURE_SITE_PACKAGES"]) / "rjsmin.py").write_text(
+            "raise ImportError('required engine dependency is unavailable')\n"
+        )
+    source = _step("python 3.12 (Homebrew venv — self-hosted runner)")["run"]
+    result = _run_engine_shell(source, env)
+    assert not Path(env["AMBIENT_CALLS"]).exists()
+    if qualification != "valid":
+        assert result.returncode != 0, result.stdout + result.stderr
+        assert not Path(env["GITHUB_ENV"]).exists()
+        assert not Path(env["GITHUB_PATH"]).exists()
+        if qualification == "wrong_prefix":
+            assert not Path(env["PIP_CALLS"]).exists()
+        return
+    assert result.returncode == 0, result.stdout + result.stderr
+    calls = [json.loads(line) for line in Path(env["PIP_CALLS"]).read_text().splitlines()]
+    assert [call["argv"] for call in calls] == [
+        ["install", "--quiet", "--upgrade", "pip"],
+        ["install", "-r", "requirements.txt"],
+    ]
+    assert all(Path(call["prefix"]).samefile(selected.parent.parent) for call in calls)
+    assert Path(env["GITHUB_ENV"]).read_text() == f"DAILY_ENGINE_PYTHON={selected}\n"
+    assert Path(env["GITHUB_PATH"]).read_text() == f"{selected.parent}\n"
+
+
+@pytest.mark.parametrize(
+    ("variable", "value"),
+    [("RUNNER_TOOL_CACHE", ""), ("RUNNER_TOOL_CACHE", "relative"), ("RUNNER_NAME", "")],
+)
+def test_engine_bootstrap_refuses_unbound_runner_identity(
+    engine_python_env: dict[str, str], variable: str, value: str,
+) -> None:
+    env = engine_python_env
+    env[variable] = value
+    result = _run_engine_shell(
+        _step("python 3.12 (Homebrew venv — self-hosted runner)")["run"], env,
+    )
+    assert result.returncode != 0
+    assert not Path(env["AMBIENT_CALLS"]).exists()
+    assert not Path(env["PIP_CALLS"]).exists()
+    assert not Path(env["GITHUB_ENV"]).exists()
+
+
+@pytest.mark.parametrize(
+    "script",
+    ["daily_engine_regime_dashboard.sh", "daily_engine_prophet_nightly.sh"],
+)
+@pytest.mark.parametrize("selection", ["unset", "relative", "missing", "wrong_prefix", "missing_dependency"])
+def test_engine_consumers_never_fall_back_to_ambient_python(
+    engine_python_env: dict[str, str], script: str, selection: str,
+) -> None:
+    env = engine_python_env
+    if selection == "unset":
+        env.pop("DAILY_ENGINE_PYTHON")
+    elif selection == "relative":
+        env["DAILY_ENGINE_PYTHON"] = "python"
+    elif selection == "missing":
+        env["DAILY_ENGINE_PYTHON"] = str(Path(env["RUNNER_TEMP"]) / "missing/bin/python")
+    elif selection == "wrong_prefix":
+        (Path(env["DAILY_ENGINE_PYTHON"]).parent.parent / "pyvenv.cfg").unlink()
+    else:
+        (Path(env["FIXTURE_SITE_PACKAGES"]) / "rjsmin.py").write_text(
+            "raise ImportError('required engine dependency is unavailable')\n"
+        )
+    result = _run_engine_shell((ROOT / "scripts/ci" / script).read_text(), env)
+    assert result.returncode != 0, result.stdout + result.stderr
+    assert not Path(env["AMBIENT_CALLS"]).exists()
+    assert not (Path(env["RUNNER_TEMP"]) / "engine_libs_marker").exists()
+    assert not list(Path(env["RUNNER_TEMP"]).glob("prophet-source-*"))
+    assert not (Path(env["GITHUB_WORKSPACE"]) / "site/prophet/index.json").exists()
+
+
+@pytest.mark.parametrize("failed_module", ["engine.run", "scripts.build_site"])
+def test_critical_board_failure_is_distinct_from_optional_builder_failure(
+    engine_python_env: dict[str, str], failed_module: str,
+) -> None:
+    env = engine_python_env
+    _install_producer_fixture(env)
+    env["FAIL_MODULE"] = failed_module
+    source = (ROOT / "scripts/ci/daily_engine_regime_dashboard.sh").read_text()
+    result = _run_engine_shell(source, env)
+    calls = [
+        json.loads(line)[1]
+        for line in Path(env["PRODUCER_CALLS"]).read_text().splitlines()
+    ]
+    assert not Path(env["AMBIENT_CALLS"]).exists()
+    assert "scripts.build_site" in calls
+    assert "controlled producer failure" in Path(env["GITHUB_STEP_SUMMARY"]).read_text()
+    if failed_module == "scripts.build_site":
+        assert result.returncode == 23
+        assert "scripts.build_research_screener" not in calls
+        assert "scripts.build_foresight" not in calls
+    else:
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "scripts.build_research_screener" in calls
+        assert "scripts.build_foresight" in calls
+
+
+def test_prophet_capture_requires_actual_board_producer_success() -> None:
+    core = _step("run regime engine + build dashboard + daily brief (resilient)")
+    assert core["continue-on-error"] is True
+    assert _step(PROPHET_STEP)["if"] == (
+        "steps.leader_accepted_source.outputs.ready == 'true' && "
+        "steps.regime_dashboard.outcome == 'success'"
+    )
+    confirmation = _step("publish the provisional → nightly confirmation delta (R2 artifact)")
+    assert confirmation["if"] == "steps.regime_dashboard.outcome == 'success'"
+    assert _step(CHECKPOINT_STEP)["if"] == "steps.prophet_nightly.outputs.succeeded == 'true'"
+
+
+def test_dag_module_spelling_remains_bound_to_qualified_python() -> None:
+    """DAG extraction still sees real module calls, never ambient Python."""
+    for name in ("daily_engine_regime_dashboard.sh", "daily_engine_prophet_nightly.sh"):
+        script = (ROOT / "scripts/ci" / name).read_text()
+        assert 'python() { "$DAILY_ENGINE_PYTHON" "$@"; }' in script
+        assert '"$DAILY_ENGINE_PYTHON" -c ' in script
+    assert "python -m scripts.factor_ic_scorecard --deep" in (
+        ROOT / "scripts/ci/daily_engine_regime_dashboard.sh"
+    ).read_text()
+    assert "python -m scripts.build_ticker_pages" in (
+        ROOT / "scripts/ci/daily_engine_regime_dashboard.sh"
+    ).read_text()
+    assert "python -m scripts.build_prophet 2>&1" in _step(PROPHET_STEP)["run"]

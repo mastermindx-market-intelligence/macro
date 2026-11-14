@@ -7,6 +7,19 @@
 # Invoked as: bash scripts/ci/daily_engine_prophet_nightly.sh
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
+# This is the exact venv entry path qualified by the engine bootstrap.
+# A missing interpreter or dependency must fail before producer/receipt writes;
+# never search PATH for a replacement Python.
+case "${DAILY_ENGINE_PYTHON:-}" in
+  /*) ;;
+  *) echo "::error::qualified DAILY_ENGINE_PYTHON is required"; exit 1 ;;
+esac
+"$DAILY_ENGINE_PYTHON" -c 'import os, sys; expected = os.path.dirname(os.path.dirname(sys.argv[1])); os.path.samefile(sys.prefix, expected) or sys.exit("engine Python prefix does not match its venv"); import rjsmin, rcssmin' "$DAILY_ENGINE_PYTHON"
+# Keep the existing DAG's literal `python -m` module calls visible to its
+# conformance parser. Bash resolves this function before PATH, so no ambient
+# Python can intercept the qualified producer's module calls.
+python() { "$DAILY_ENGINE_PYTHON" "$@"; }
+
 set +e
 PROPHET_BASELINE="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.before.json"
 PROPHET_DELTA="${RUNNER_TEMP}/prophet-build-${GITHUB_RUN_ID}.delta.tsv"
@@ -20,7 +33,7 @@ export PROPHET_BASELINE PROPHET_DELTA PROPHET_SOURCE_SNAPSHOT PROPHET_SOURCE_BLO
 # immutable receipt containing only rows that actually originate is added
 # to the same manifest after the builder returns; this preserves first-add
 # provenance even if the giant engine tail never reaches its broad commit.
-python3 - <<'PY'
+"$DAILY_ENGINE_PYTHON" - <<'PY'
 import hashlib
 import json
 import os
@@ -170,7 +183,7 @@ if [ "$rc" -eq 0 ]; then
   # originated it. The raw board is hashed before/after the build and an
   # immutable byte copy is independently re-hashed here. Any mismatch or
   # unmappable new plan withholds the ENTIRE early checkpoint.
-  python3 - <<'PY'
+  "$DAILY_ENGINE_PYTHON" - <<'PY'
 import gzip
 import hashlib
 import json
@@ -329,7 +342,7 @@ PY
   # not a supported Prophet
   # operation; refusing it prevents a stale run from erasing a newer
   # immutable plan, state, or append-only ledger publication.
-  python3 - <<'PY'
+  "$DAILY_ENGINE_PYTHON" - <<'PY'
 import hashlib
 import json
 import os
