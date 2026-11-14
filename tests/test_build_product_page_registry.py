@@ -1239,3 +1239,48 @@ def test_terminal_only_refresh_rejects_non_object_baseline(tmp_path):
         overrides_path=tmp_path / 'unused.yml',
         git=lambda root, args: '' if args[0] == 'merge-base' else '[]')
     assert errors and 'expected an object' in errors[0]
+
+
+@pytest.mark.parametrize("fault", [None, "missing_native", "family", "no_marker", "removed_contract"])
+def test_explicit_native_migration_changes_only_declared_admission(monkeypatch, tmp_path, committed, fault):
+    import copy
+    baseline = copy.deepcopy(committed)
+    original = next(row for row in baseline["pages"] if row["page_id"] == "macro:macro")
+    original["known_contracts"] = ["existing-contract"]
+    if fault == "family": original["route_kind"] = "family"
+    candidate = copy.deepcopy(next(row for row in baseline["pages"] if row["repo"] == "terminal"))
+    candidate.update(page_id="terminal:macrohtml", route="/macro.html" if fault != "missing_native" else "/other",
+                     route_kind="page", lifecycle="live", access_shell="signed_in", known_contracts=[])
+    monkeypatch.setattr(reg, "derive_terminal", lambda *a, **k: ([candidate], {"available": True, "sha": "c" * 40, "ref": "c" * 40}))
+    contracts = ["existing-contract", "shared_shell:admission_withheld"]
+    if fault == "no_marker": contracts.remove("shared_shell:admission_withheld")
+    if fault == "removed_contract": contracts.remove("existing-contract")
+    overlay = tmp_path / "overrides.yml"
+    overlay.write_text("pages:\n  macro:macro:\n    lifecycle: retired\n    access_shell: internal\n    note: Native replacement.\n    known_contracts: " + json.dumps(contracts) + "\n")
+    doc, errors = reg.refresh_terminal_registry(repo_root=tmp_path, base_commit="a" * 40,
+        terminal_root=tmp_path, terminal_ref="c" * 40, as_of="2026-11-14T00:00:00Z", overrides_path=overlay,
+        native_migrations=("macro:macro",), git=lambda root, args: "" if args[0] == "merge-base" else json.dumps(baseline))
+    if fault:
+        assert errors and not doc
+        return
+    assert not errors
+    changed = next(row for row in doc["pages"] if row["page_id"] == "macro:macro")
+    assert changed["known_contracts"] == contracts
+    for key in original:
+        if key not in ("known_contracts", "source_evidence", "notes"):
+            assert changed[key] == original[key]
+    assert [r for r in doc["pages"] if r["repo"] != "terminal" and r["page_id"] != "macro:macro"] == [r for r in baseline["pages"] if r["repo"] != "terminal" and r["page_id"] != "macro:macro"]
+    assert doc["sources"]["macro"] == baseline["sources"]["macro"]
+    assert doc["sources"]["mastermind"] == baseline["sources"]["mastermind"]
+    assert doc["sources"]["terminal"]["native_migrations"] == {"macro:macro": "terminal:macrohtml"}
+
+
+def test_terminal_detailed_options_gate_preserves_paid_admission(tmp_path, monkeypatch):
+    root = tmp_path / "terminal"
+    root.mkdir()
+    monkeypatch.setitem(TERMINAL_FILES, "terminal/app/(shell)/options/page.tsx",
+                        'const access = await getLiveOptionsAccessDetail(); if (access.access === "denied") return <OptionsPaywall />;')
+    row = rows_by_id(reg.derive_terminal(root, "b" * 40, git=fake_terminal_git)[0])["terminal:options"]
+    assert row["access_shell"] == "paid"
+    assert row["payload_tier"] == "premium"
+    assert "entitlement feature terminal_live_options" in row["known_contracts"]

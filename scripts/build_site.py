@@ -6043,7 +6043,7 @@ def main() -> int:
         market_gamma = market_gamma_view(store.read("cboe", "gex"))
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         log.warning("market gamma view failed (%s)", e)
-    from engine.alerts import alert_views
+    from engine.alerts import alert_views, alert_href
     from engine.signal_stack import build_signal_stack
     # One shared view-model feeds BOTH the macro-regime page and the US Stock
     # Dashboard — the same dashboard.html.j2 is rendered twice with a `mode` flag
@@ -6759,6 +6759,14 @@ def main() -> int:
         factor_season=factor_season,         # B4: seasonal-climate chip (display-only, page furniture)
         **_master_brief_vm(),
     )
+
+    # Native shared-shell display, from exactly the same settled VM as macro.html.
+    # Explicit public allowlists exclude private Prophet/selection state.
+    for alert in vm["alerts"]:
+        if alert.get("anchor"):
+            alert["href"] = alert_href(alert["anchor"])
+    from lib.macro_dashboard_view import write_dashboard
+    write_dashboard(vm, site / "macrodata" / "dashboard.json")
 
     # DEV-ONLY fast-render cache: when MACRO_DUMP_VM is set, pickle the assembled
     # view-model so scripts/render_macro_fast.py can re-render macro.html /

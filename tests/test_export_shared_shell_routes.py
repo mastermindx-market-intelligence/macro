@@ -47,6 +47,18 @@ def test_families_expand_only_concrete_tracked_documents_and_keep_payload_gates(
     assert next(r for r in p["directory"] if r["href"] == "/macro.html")["payloadTier"] == "public_shell_premium_payload"
 
 
+def test_native_macro_migration_has_one_destination_and_no_iframe_admission():
+    predecessor = row("/macro.html", page_id="macro:macro", tier="public_shell_premium_payload")
+    predecessor["known_contracts"] = ["shared_shell:admission_withheld"]
+    native = row("/macro.html", page_id="terminal:macrohtml", repo="terminal", access="signed_in")
+    result = project(catalog(predecessor, native), ["/macro.html"])
+    assert result["nativePaths"] == ["/macro.html"]
+    assert result["legacyPaths"] == []
+    entries = [item for item in result["directory"] if item["href"] == "/macro.html"]
+    assert len(entries) == 1 and entries[0]["id"] == "terminal:macrohtml"
+    assert any(item.get("reason") == "consumer_admission_withheld" for item in result["coverage"]["excluded"])
+
+
 def test_calculator_titles_require_authored_bilingual_metadata_and_keep_historical_directory():
     historical = '- slug: cagr\n  title: CAGR Calculator\n'
     assert calculator_directory_titles(historical) == {}

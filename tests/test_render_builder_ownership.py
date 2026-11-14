@@ -168,3 +168,12 @@ def test_known_transitive_render_dependencies_stay_owned():
         "build_research_pages",
         "build_theme_detail",
     } <= owned
+
+
+def test_native_macro_projection_dependencies_are_rendered_by_existing_owner():
+    for leaf in ("lib/macro_dashboard_view.py", "lib/numeric.py"):
+        assert f'- "{leaf}"' in RENDER
+    macro_arm = next(line for line in RENDER.splitlines() if "scripts/build_site.py|" in line and "echo macro" in line)
+    assert "lib/macro_dashboard_view.py|" in macro_arm
+    # Numeric normalization also serves other builders and retains the shared lib scope.
+    assert "lib/*) echo all" in RENDER
