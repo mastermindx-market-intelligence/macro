@@ -476,7 +476,12 @@ def main() -> int:
             "state": liquidity.get("state"),
             "accel": liquidity.get("accel"),
             "total_usd_tn": liquidity.get("total_usd_tn"),
-            "impulse_13w": liquidity.get("impulse_13w"),
+            "impulse_13w": (liquidity.get("impulse_pct") or {}).get("13w"),
+            # Preserve observed coverage and clocks; raw latest dates are not
+            # substituted for the common aggregate reference date above.
+            "n_banks": liquidity.get("n_banks"),
+            "banks": liquidity.get("banks"),
+            "asof_by_bank": liquidity.get("asof_by_bank"),
         }
 
     # funding_stress: compact from funding_stress.snapshot()
@@ -531,3 +536,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

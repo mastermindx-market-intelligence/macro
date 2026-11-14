@@ -4,6 +4,77 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
+import ast
+import json
+
+
+def _compact(liquidity):
+    """Execute the actual projection statements, not a reimplemented mapping."""
+    source = Path(__file__).resolve().parents[1] / "scripts" / "build_crossasset.py"
+    module = ast.parse(source.read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    start = next(i for i, n in enumerate(main.body)
+                 if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)
+                 and n.target.id == "_liq_block")
+    body = main.body[start:start + 2]
+    assert isinstance(body[1], ast.If)
+    namespace = {"liquidity": liquidity}
+    exec(compile(ast.Module(body=body, type_ignores=[]), str(source), "exec"), namespace)
+    return json.loads(json.dumps(namespace["_liq_block"], allow_nan=False))
+
+
+@pytest.mark.parametrize("value", [-4.0, 2.6, 0.0, None])
+def test_compact_liquidity_preserves_impulse_zero_and_coverage(value):
+    snap = {"asof": "2026-10-02", "state": "expanding", "accel": "steady",
+            "total_usd_tn": 10, "impulse_pct": {"13w": value}, "n_banks": 1,
+            "banks": [{"id": "fed", "usd_tn": 10, "raw_asof": "2026-11-06"}],
+            "asof_by_bank": {"fed": "2026-11-06"}}
+    result = _compact(snap)
+    assert result["impulse_13w"] == value
+    for key in ("asof", "state", "accel", "total_usd_tn", "n_banks", "banks", "asof_by_bank"):
+        assert result[key] == snap[key]
+    assert result["asof"] != result["asof_by_bank"]["fed"]
+
+
+@pytest.mark.parametrize("snapshot", [None, {}, {"impulse_pct": None}])
+def test_compact_liquidity_absent_values_stay_unavailable(snapshot):
+    result = _compact(snapshot)
+    if snapshot is None:
+        assert result is None
+    else:
+        assert result["impulse_13w"] is None
+        assert result["banks"] is None
+
+
+@pytest.mark.parametrize("present", [("fed",), ("fed", "ecb", "boj")])
+def test_native_parquet_to_compact_liquidity(tmp_path, monkeypatch, present):
+    from lib import store
+    monkeypatch.setattr(store.config, "data_dir", lambda: tmp_path)
+    (tmp_path / "fred").mkdir()
+    (tmp_path / "yahoo").mkdir()
+    idx = pd.date_range("2024-11-15", periods=104, freq="W-FRI")
+    cfg = {"banks": {
+        "fed": {"series": "FED", "unit_mult": 1e12, "label_en": "Fed"},
+        "ecb": {"series": "ECB", "unit_mult": 1e12, "fx": "EUR", "label_en": "ECB"},
+        "boj": {"series": "BOJ", "unit_mult": 1e12, "fx": "JPY", "label_en": "BoJ"}},
+        "impulse_windows_w": [13, 52]}
+    for bid, ends in {"fed": (8, 10), "ecb": (10, 4), "boj": (6, 4)}.items():
+        if bid in present:
+            pd.DataFrame({"value": np.linspace(*ends, len(idx))}, index=idx).to_parquet(
+                tmp_path / "fred" / (bid.upper() + ".parquet"))
+    for fx in ("EUR", "JPY"):
+        pd.DataFrame({"close": np.ones(len(idx))}, index=idx).to_parquet(
+            tmp_path / "yahoo" / (fx + ".parquet"))
+    snap = gl.snapshot(cfg)
+    assert snap is not None
+    result = _compact(snap)
+    assert result["n_banks"] == len(present)
+    assert {b["id"] for b in result["banks"]} == set(present)
+    assert result["impulse_13w"] == snap["impulse_pct"]["13w"]
+    assert result["impulse_13w"] == (2.6 if len(present) == 1 else -4.0)
+    assert result["state"] == ("expanding" if len(present) == 1 else "contracting")
+    assert result["total_usd_tn"] == (10 if len(present) == 1 else 18)
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -83,3 +154,4 @@ def test_snapshot_asof_by_bank(monkeypatch):
     for b in s["banks"]:
         assert "raw_asof" in b, f"bank {b['id']!r} dict missing raw_asof"
         assert isinstance(b["raw_asof"], str) and len(b["raw_asof"]) == 10
+
