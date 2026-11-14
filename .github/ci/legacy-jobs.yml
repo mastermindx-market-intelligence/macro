@@ -312,6 +312,16 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/sector_central_carry.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -684,6 +694,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -1393,6 +1404,21 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -2860,6 +2886,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -3564,6 +3591,21 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3938,6 +3980,7 @@ jobs:
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/industrial_sources.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -4658,6 +4701,21 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -6094,6 +6152,7 @@ jobs:
     paths:
       - "engine/__init__.py"
       - "engine/local_projections.py"
+      - "engine/panel_did.py"
       - "engine/seasonality/__init__.py"
       - "engine/seasonality/contracts.py"
       - "engine/seasonality/event_study.py"
@@ -6106,6 +6165,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_local_projections.py"
+      - "tests/test_panel_did.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -6114,9 +6174,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
-      - name: local projections IRF estimator (MO-DELTA-015 acceptance)
-        run: python -m pytest tests/test_local_projections.py -q
+        run: pip install pytest pandas numpy scipy pyarrow pyyaml
+      - name: local projections and common-adoption panel DiD (MO-DELTA-015 acceptance)
+        run: python -m pytest tests/test_local_projections.py tests/test_panel_did.py -q
 
   breakdown-control-seed-determinism:
     if: ${{ false }}
@@ -6963,6 +7023,13 @@ jobs:
       - "engine/theme_graph/capability.py"
       - "engine/theme_graph/local_sources.py"
       - "engine/theme_graph/materialize.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7233,6 +7300,14 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: forward-log writer contract tests (keep-FIRST, cone edges, never-raise)
         run: python -m pytest tests/test_cycle_forward_log.py tests/test_cycle_phase_age.py tests/test_sector_cycles.py tests/test_cycle_rhythm_disclosure.py tests/test_hazard_parity.py tests/test_hazard_score.py -q -o faulthandler_timeout=480
+      # SI lane 8 (#10924, 2026-11-10): the two new sector-analytics suites join this
+      # battery — the B04/B12 boundary register and the v1.1 forecast-heads contract.
+      # This job is non-exclusive (no declared paths), so the wiring adds no closure
+      # obligations. The boundaries suite skips its data/hazard and data/baskets cases
+      # when those tracked artifacts are absent (sparse checkout); the hosted full
+      # checkout runs them.
+      - name: sector analytics boundaries and forecast heads (lane 8)
+        run: python -m pytest tests/test_sector_analytics_boundaries.py tests/test_sector_forecast_heads.py -q
 
   tier-gate:
     if: ${{ false }}
@@ -7323,6 +7398,34 @@ jobs:
       # source asserts; pytest + preinstalled node, both already on this job.
       - name: sector prophet dated context — params, allowlist, honest population, return
         run: python -m pytest tests/test_sector_prophet_context_dated.py -q
+      # PR #10929 (Sector Intelligence lane 1, 2026-11-10): the Sector
+      # generation's gated serving surface — the FastAPI route module
+      # (app/sector_generation.py) and its reader (app/sector_generation_reader.py)
+      # — registered here with the tier/paywall family that already runs the
+      # sector receiver contracts: every suite exercises the incumbent
+      # regwall/paywall gates through app.main. Install line unchanged:
+      # fastapi/httpx/numpy/pandas/pyarrow are already on it.
+      - name: sector generation API — admission, projection and gates
+        run: python -m pytest tests/test_sector_generation_api.py -q
+      - name: sector generation reader — captured generation to gated API
+        run: python -m pytest tests/test_sector_generation_reader.py -q
+      # SP01/SP02: full group-membership population through the REAL private-store
+      # publisher, reader, route and incumbent gates, over committed site/ bytes.
+      - name: sector population — one capture per read, beyond page one
+        run: python -m pytest tests/test_sector_population.py -q
+      # Carried blocks: existing committed producer artifacts re-expressed for the
+      # Sector generation (reads site/ + data/; pyarrow for the flow parquet is
+      # already on this job's install line).
+      - name: sector central carry — carried blocks over committed artifacts
+        run: python -m pytest tests/test_sector_central_carry.py -q
+      # Native view parity/disclosure/tier isolation — engine-only projection,
+      # no dependency beyond this job's install line.
+      - name: sector native view — parity, disclosure, tier isolation
+        run: python -m pytest tests/test_sector_native_view.py -q
+      # Optional typed blocks read unavailable unless produced; shares the
+      # population suite's real-bundle helpers.
+      - name: sector native view typed blocks — unavailable by default
+        run: python -m pytest tests/test_sector_native_view_typed_blocks.py -q
       - name: public dashboard preview-tier contracts (anon shell allowlist + controller caps)
         # Found unwired by the 2026-08-02 adversarial review of #4331: the suite
         # pins the public/anon split for the dashboard shells (site_access.yml
@@ -7440,6 +7543,7 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
+      - "tools/xguerrilla/tlds.py"
       - "tools/xguerrilla/validators.py"
     runs-on: ubuntu-latest
     steps:
@@ -7551,6 +7655,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7974,6 +8082,15 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -8534,6 +8651,7 @@ jobs:
       - "engine/company_intelligence/current_context_runtime.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -9299,6 +9417,21 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9994,6 +10127,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10230,7 +10371,11 @@ jobs:
         # playwright: tests/test_intraday_flow_w11_r5.py:109 does
         # `from playwright.sync_api import sync_playwright` at test level for the
         # computed-style probe — the suite died ModuleNotFoundError without it.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright
+        # scipy: engine/risk_radar_eval/scorecard.py imports scipy.stats at module
+        # level for the beta Clopper–Pearson band, so the risk_radar_eval suites
+        # wired below cannot even be collected without it (same pattern as the
+        # other scipy lines in this file; unpinned).
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly pillow requests beautifulsoup4 fastapi httpx jsonschema rjsmin==1.2.5 playwright scipy
       # tests/test_ud_b2_w1_red_first_proof.py reads site/macro.html at the pre-fold
       # commit, and this checkout is one commit deep. Fetch only that commit's trees;
       # git show then pulls the one blob it needs. fetch-depth: 0 would cost minutes.
@@ -10348,6 +10493,14 @@ jobs:
       # exercises scripts/build_aibrief.py alongside test_aibrief_w4_panels.py;
       # the same render-guard job already installs its required dependencies.
       # Keep the new suite explicit in this run step for contract-delta coverage.
+      # tests/test_risk_radar_eval.py + tests/test_risk_radar_eval_insurer.py
+      # (Risk Radar eval harness: leak/definition/scorecard/pivot/walk-forward
+      # tests for engine.risk_radar_eval) ride this step with the other
+      # test_risk_radar_* suites: same subject, synthetic prices plus the two
+      # prefix-invariance/PIT-replay tests that read the committed data/fred
+      # parquet stores this checkout already materialises, and numpy/pandas +
+      # the scipy install this step now owns (scorecard.py's module-level
+      # scipy.stats import). No new job.
       - name: render-guard + engine-contract tests (rot sweep 2026-07-02)
         run: >
           python -m pytest
@@ -10387,6 +10540,7 @@ jobs:
           tests/test_risk_radar_scorecard.py
           tests/test_vsb_radar_alert.py
           tests/test_risk_radar_intl_profiles.py
+          tests/test_risk_radar_eval.py tests/test_risk_radar_eval_insurer.py
           tests/test_gd4a_cnhk_ledger_repair.py
           tests/test_risk_radar_dlg_country_wiring.py
           tests/test_risk_radar_dlg_partial.py
@@ -12323,6 +12477,14 @@ jobs:
       # files; templates are covered by "templates/**" (#3488).
       - name: theme deep-link contract + sector-intelligence consolidation invariants
         run: python -m pytest tests/test_theme_hash_deeplink.py tests/test_sector_intelligence_page.py -q
+      # SI rotation read v1, data half (COO ruling 101): builds the read from the
+      # committed basket breadth history and membership and checks the 49-group shape,
+      # the vintage rule and the freshness coherence rule. Its own step so a red here
+      # cannot mask the consolidation invariants above. Skips only on a sparse tree;
+      # deps (pandas/pyarrow) are on this lane's line. The synthetic half runs in the
+      # code-gate unrun-scoring-engine job.
+      - name: SI rotation read on the committed inputs — shape, vintage, freshness coherence
+        run: python -m pytest tests/test_rotation_read_data.py -q
       # Wired 2026-08-05: tests/test_flow_velocity.py was named by NO job in ANY
       # workflow (`grep -rn test_flow_velocity .github/` returned nothing), so the
       # suite written specifically to catch a pinned-by-construction flow readout
@@ -12918,6 +13080,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -13621,6 +13784,21 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14606,6 +14784,10 @@ jobs:
       - "tests/test_china_universe_extras.py"
       - "tests/test_china_universe_index_constituents.py"
       - "tests/test_ths_collection_receipts.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/ledger_lane.py"
+      - "engine/member_breadth_ledger.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14769,6 +14951,10 @@ jobs:
       - "templates/china_altdata.html.j2"
       - "templates/options.html.j2"
       - "templates/stage_analysis.html.j2"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # W3.6 (R3-M3): the SAME instrument must show the SAME pos_v2/phase_v2 across every
     # page that renders it (cycle.html flagship / country_cycles / markets.html / sector),
     # within tolerance, OR carry a declared basis label explaining the difference.  A page
@@ -15275,6 +15461,11 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17595,6 +17786,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/sec_supplier_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
@@ -18482,6 +18674,21 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -19336,6 +19543,14 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "scripts/build_state_of_themes.py"
+      # SI curation tier guard (#11150): build_state_of_themes now reads the W-C2b
+      # tier rule from ontology.py, whose closure reaches probation.py and its
+      # contract schemas. Widening only.
+      - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_proposal.v1.schema.json"
+      - "contracts/theme_graph/probation_relation_event.v2.schema.json"
+      - "engine/theme_graph/ontology.py"
+      - "engine/theme_graph/probation.py"
       # U1 Theme Map (GMI seat 6f14c2da) — closure widening 2026-10-17.
       - "scripts/build_theme_tree_page.py"
       - "engine/theme_graph/hierarchy_breadth_display.py"
@@ -20694,6 +20909,16 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23054,6 +23279,15 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "tests/__init__.py"
       - "tests/test_leadership_rotation_contract.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "site/riskdata/risk_envelope.json"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LR T03/T04/T05/T08 (WS:LEADERSHIP-ROTATION-INTELLIGENCE): the measured-product contract layer
     # engine/leadership_rotation_context.py — a stateless display-only projection over the
     # rotation_events / leadership_receipt / sector_cycles / ratio_lens owners (owners imported lazily).
@@ -23153,6 +23387,10 @@ jobs:
       - "tests/test_leadership_rotation_p0.py"
       - "tests/test_leadership_rotation_run.py"
       - "tests/test_leadership_rotation_study.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -23289,6 +23527,14 @@ jobs:
       - "tests/conftest.py"
       - "tests/fixtures/leadership_rotation/measured_read_v1.json"
       - "tests/test_leadership_measured_read.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_research_handoff.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24599,6 +24845,7 @@ jobs:
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/current_context_runtime.py"
       - "engine/company_intelligence/current_company_context.py"
       - "contracts/theme_graph/activity_membership_proposal.v1.schema.json"
@@ -25634,6 +25881,10 @@ jobs:
       - "tests/test_basket_membership_pit.py"
       - "tests/test_theme_graph_contracts.py"
       - "tests/test_theme_graph_local_plane.py"
+      - "tests/test_theme_graph_tier_guard_consumers.py"
+      - "tests/test_theme_tree_ticker_lookup.py"
+      - "tests/test_build_theme_tree_page.py"
+      - "templates/theme_tree.html.j2"
       - "tests/test_theme_graph_micro_membership_research.py"
       - "tests/test_theme_graph_micro_member_addendum.py"
       - "tests/test_theme_graph_micro_curator_readiness.py"
@@ -25724,6 +25975,11 @@ jobs:
       # Activity-history receipt binding at the I/O layer (one helper, both loaders).
       - "tests/test_gmi_activity_history_binding.py"
       - "tests/fixtures/gmi_activity_binding/**"
+      # SEC annual-report segment route into the activity lane (RULING 37).
+      - "tests/test_gmi_activity_segment_route.py"
+      - "tests/test_company_pinned_relationship_candidates.py"
+      - "engine/company_intelligence/pinned_relationship_candidates.py"
+      - "engine/company_intelligence/relationship_candidates.py"
       - "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
@@ -25731,6 +25987,19 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "lib/numeric.py"
+      - "scripts/build_sector_action_board.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25741,13 +26010,20 @@ jobs:
         # pandas/numpy/pyyaml: both suites import their producers at collection time
         # (build_dt_contra_state → engine.dannytrades_chip → numpy/pandas;
         # build_subsector_membership → engine.basket_index → lib.config → yaml).
-        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2
+        # requests: tests/test_gmi_activity_segment_route.py imports
+        # tests.test_company_pinned_relationship_candidates → collectors.sec_document_spine
+        # → requests at collection time (COO ruling 99, run 43500986774 ci-pack-4).
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 requests
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py tests/test_gmi_activity_segment_route.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
+      - name: theme graph — tier guard on state-of-themes research priority and capability (activity members never change either)
+        run: TZ=UTC python -m pytest tests/test_theme_graph_tier_guard_consumers.py -q
+      - name: theme graph — tier guard on the theme-tree ticker lookup (sub/micro members never change a ticker's state)
+        run: TZ=UTC python -m pytest tests/test_theme_tree_ticker_lookup.py -q -k hierarchy_tier
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
         run: TZ=UTC python -m pytest tests/test_theme_state_owner_adapter.py tests/test_theme_state_generation_applicability.py tests/test_theme_state_native_capture.py tests/test_theme_state_production.py tests/test_build_thematic_state_shadow_graph_state.py tests/test_theme_state_generation.py tests/test_theme_phase_history_generation_filter.py tests/test_theme_state_generation_reader.py tests/test_gmi_cte_generation_bridge.py tests/test_theme_state_generation_use_reader.py tests/test_theme_state_divergence_gap.py tests/test_theme_state_bundle_encoding.py tests/test_theme_state_bundle_codec.py tests/test_build_thematic_state_activity_mode.py -q
       - name: GMI CTE successor and v1 publisher fixture compatibility
@@ -25936,6 +26212,10 @@ jobs:
       - "tests/test_sector_completion_ownership_map.py"
       - "tests/test_sector_metric_definitions.py"
       - "tests/test_cycle_forward_log_fence.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # LEADERSHIP-ROTATION T06: retained-vs-reconstructed evidence-mode fences.
     # Covers: past-asof reconstructed RS history is labelled (mode, naturally_observed=false,
     # as_of) and never built from later prices; retained ledger receipts are never rewritten
@@ -28944,6 +29224,16 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -29583,6 +29873,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -29780,6 +30078,12 @@ jobs:
       - "site/prophet/index.json"
       - "site/turn_watch/turn_watch.json"
       - "site/vol/regime.json"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     # The pack runner owns execution; keep both new source/API suites in CI.
     timeout-minutes: 12
     runs-on: ubuntu-latest
@@ -31298,6 +31602,9 @@ jobs:
       - templates/calculators/covered_call.html.j2
       - site/tools/calculators/covered-call.html
       - tests/js/covered_call_annualized_copy.test.mjs
+      - templates/calculators/short_selling.html.j2
+      - site/tools/calculators/short-selling.html
+      - tests/js/short_selling_loss_cause.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31316,6 +31623,7 @@ jobs:
           node --test tests/js/calculator_input_integrity.test.mjs
           node --test tests/js/risk_reward_warning_copy.test.mjs
           node --test tests/js/covered_call_annualized_copy.test.mjs
+          node --test tests/js/short_selling_loss_cause.test.mjs
           node tests/js/savings_goal_arithmetic.test.mjs templates/calculators/savings_goal.html.j2
           node tests/js/savings_goal_arithmetic.test.mjs site/tools/calculators/savings-goal.html
 
@@ -31878,6 +32186,7 @@ jobs:
       - engine/company_intelligence/health.py
       - engine/company_intelligence/identity.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_segment_adoption.py
       - engine/company_intelligence/issuer_disclosure_preflight.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -32567,6 +32876,21 @@ jobs:
       - "engine/earnings_narrative/__init__.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33027,6 +33351,13 @@ jobs:
       - "tests/test_crypto_t15_transition_scaffold.py"
       - "tests/test_vector_scorecard_gap_semantics.py"
       - "scripts/calibrate_rate_inflation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33340,8 +33671,10 @@ jobs:
       # subject, and pytest reports EVERY file inside ONE step, so nothing here
       # masks anything else. Stdlib + pytest only (it monkeypatches the fetchers
       # and never touches the network), so the install line above is unchanged.
+      # test_member_perf_archive.py (2026-11-11, member perf capture) rides here
+      # for the same reason: same module, same subject, same stdlib+pytest shape.
       - name: polygon universe/intraday + dead-name prices + finviz archival/tree-refresh + thetadata sessions
-        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_thetadata_tape_sessions.py -q
+        run: python -m pytest tests/test_build_polygon_universe.py tests/test_polygon_intraday.py tests/test_fetch_dead_name_prices_polygon.py tests/test_finviz_archival.py tests/test_finviz_tree_refresh.py tests/test_member_perf_archive.py tests/test_thetadata_tape_sessions.py -q
       # Enumerated in NO workflow before this (calendar-asof audit follow-up
       # 2026-08-05): the finviz collector's asof feeds these ledgers, but a PR
       # touching the track record or its heal fired no run that could see a
@@ -33833,6 +34166,20 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
+      # COO ruling 109 (PR #11039): the rotation-context capture suite moved here
+      # from unrun-builders-stores. Its engine module matches the engine/*.py
+      # glob above and scripts/collect.py is already declared; the suite file is
+      # the one closure path this job did not yet name.
+      - "tests/test_rotation_context_capture.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -33842,6 +34189,24 @@ jobs:
           python-version: "3.12"
       - name: install deps for the defense rail batteries
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 jsonschema fastapi httpx pdfplumber==0.11.10 rjsmin==1.2.5 rcssmin==1.2.2
+      # Rotation-context nightly capture (2026-11-11, SI v1.1 ruling 8), moved
+      # here from unrun-builders-stores by COO ruling 109 (PR #11039, answer to
+      # escalation #18 option (a)): the suite's closure reaches NONE of the three
+      # packing-probe files (templates/index.html, scripts/build_free_content.py,
+      # engine/prophet/plan_book.py), yet its old home is selected by all three
+      # probes, so its token cost +5 weight on every probe and pushed the
+      # free-content probe over the 10-pack line. This job is gate: code and no
+      # probe selects it, and it is the only existing job whose curated exclusive
+      # scope already covers the suite's whole import closure — the
+      # scripts/collect.py nightly closure registered above (#9037 / #10929);
+      # the suite file itself is the one path added. A non-exclusive home would
+      # inherit collect.py's opaque templates/**, scripts/**, engine/** fallbacks
+      # and become probe-selected itself. pytest+pandas+pyarrow are already on
+      # the install line above (clean-venv proof: 7 passed); hermetic fixtures,
+      # no network. Ordered before the rail batteries so a red here is not hidden
+      # behind a later step's first-nonzero abandon.
+      - name: rotation-context nightly capture contracts (SI v1.1)
+        run: python -m pytest tests/test_rotation_context_capture.py -q
       # D6-A DoD budget live rail (PR #6377): the hostile law battery for the
       # production P-1/R-1 acquisition + parser — fetch/R2-readback order, no
       # receipt without readback proof, §5b/§5b.1 row-model refusals (sign law,
@@ -34738,6 +35103,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -34997,6 +35370,12 @@ jobs:
       - "tests/conftest.py"
       - "tests/test_analytics_exclusions.py"
       - "tests/test_analytics_pages_postgres.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
       - "tests/test_analytics_query_budget.py"
     timeout-minutes: 3
     runs-on: ubuntu-latest
@@ -35134,6 +35513,13 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: page/render builders whose output ships to the site
         run: python -m pytest tests/test_ai_desk_page.py tests/test_build_chart_data.py tests/test_build_odds_observability.py tests/test_build_sector_map.py tests/test_committee_template.py tests/test_confluence_screener_page.py tests/test_contagion_card_render.py tests/test_darkpool_desk.py tests/test_options_estate_redirect_stubs.py tests/test_macro_signals_render.py tests/test_nav_icon_refresh.py tests/test_nav_submenu_icons.py tests/test_sector_nav_links.py tests/test_site_semantics_refs.py tests/test_sp500_heatmap_caps.py tests/test_stage_analysis_page.py tests/test_stocktable_data.py tests/test_template_items_footgun.py tests/test_trading_journal_xlsx.py tests/test_us_stocks_w8g_table.py tests/test_factor_seasonality.py tests/test_seasonality_now_call_strip.py tests/test_methodology_disclosures.py tests/test_seasonality_page_claims.py -q
+      # PR #10929 (2026-11-10): the ordinary factors producer emits strict finite
+      # JSON with no post-hoc repair — scripts/build_site.write_factors_json +
+      # lib/numeric.finite_json_value over the REAL committed
+      # site/factordata/factors.json plus a synthetic fixture. Own step beside
+      # this job's factor suites; numpy/pandas/plotly already installed.
+      - name: factors producer emits strict finite JSON (no post-hoc repair)
+        run: python -m pytest tests/test_factors_finite_json.py -q
 
   macro-signals-conditions:
     if: ${{ false }}  # executed inside ci-pack, not a disabled gate
@@ -35378,7 +35764,7 @@ jobs:
       # pyyaml/requests — all on the install line above — plus PIL transitively, which
       # blocking leaves 10-passed, so it is optional and stays off the line.
       - name: scripts/build_site.py panels and view-models — the dashboard organs the nightly render ships
-        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py -q
+        run: python -m pytest tests/test_action_board_coherence.py tests/test_advanced_breadth.py tests/test_basket_integration.py tests/test_breadth_panel.py tests/test_c4_dollar.py tests/test_factor_ic_panel.py tests/test_macro_glance.py tests/test_macro_signals_vm.py tests/test_market_gamma.py tests/test_market_gamma_contract.py tests/test_regime_snap.py tests/test_spark_zone_band.py tests/test_ts_u3_dashboard_surfaces.py tests/test_vol_shock_scorecard.py tests/test_wiki_pageviews.py tests/test_inflation_units.py tests/test_group_breadth_history.py tests/test_coverage_companion.py tests/test_member_breadth_ledger.py tests/test_extend_group_breadth_weekly.py tests/test_sp1500_sic_fill.py tests/test_build_tree_breadth_and_index.py -q
       # Unrun backfill 2026-08-03: the Prophet Live P1 user-facing dashboard
       # surfaces join the lane that owns the dashboard organs. (Distinct from
       # the #4331 prophet-board suites, whose staging follows that PR's merge.)
@@ -36035,6 +36421,13 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -37226,6 +37619,21 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/deploy/update.sh"
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/numeric.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -38589,6 +38997,15 @@ jobs:
       - "engine/theme_graph/structural_navigation.py"
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "engine/theme_graph/curation_assertion.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_action_board.py"
+      - "scripts/build_sector_action_board.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -38634,6 +39051,9 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      # breadth member ledger: collectors/breadth.py's lazy imports widened the closure
+      - "engine/group_breadth_history.py"
+      - "engine/member_breadth_ledger.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -38880,6 +39300,11 @@ jobs:
       - "lib/ticker_aliases.py"
       - "tests/test_thesis_monitor.py"
       - "engine/thesis_monitor.py"
+      # PR #10929 contract-delta registration (2026-11-10): the explicit-inputs
+      # sponsor capture suite and its pinned original-transform fixture (the
+      # suite's own import closure, which scope: exclusive must declare).
+      - "tests/test_sector_holdings_explicit_inputs.py"
+      - "tests/fixtures/base_sector_holdings_4eddd.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -38888,7 +39313,12 @@ jobs:
         with:
           python-version: "3.12"
       - name: install deps for the FDA supply suites
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+        # openpyxl added 2026-11-10 (PR #10929): the dispersion archiver's Excel
+        # round-trip test and the new explicit-inputs workbook suite both need a
+        # real Excel engine — without it the merge gate only ever SKIPS them
+        # (contract-delta skip_only finding). Same ordering as the sibling
+        # supply-lane installs.
+        run: pip install pytest pandas numpy pyarrow pyyaml openpyxl jinja2 requests
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py tests/test_power_scarcity.py -q
       - name: Foresight health, score and sizing suites
@@ -38912,6 +39342,13 @@ jobs:
         run: python -m pytest tests/test_thesis_monitor.py -q
       - name: Foresight page reader chips (score base, trend state, flag ledger, depth, zh)
         run: python -m pytest tests/test_foresight_page_analyst_zh.py tests/test_foresight_page_fingerprint_depth.py tests/test_foresight_page_flag_ledger.py tests/test_foresight_page_score_base.py tests/test_foresight_page_trend_state.py -q
+      # PR #10929 (2026-11-10): strict sponsor capture through the real workbook
+      # transform (collectors/sector_holdings.py) — the same collector owner as
+      # the dispersion archiver above; synthetic workbooks, no provider calls.
+      # Needs openpyxl for the Workbook fixtures, added to this job's install
+      # in the same PR.
+      - name: sector holdings explicit inputs — strict sponsor workbook capture
+        run: python -m pytest tests/test_sector_holdings_explicit_inputs.py -q
 
   earnings-economic-source-selection:
     # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
@@ -40112,6 +40549,12 @@ jobs:
       # not_supplied relationships) — receivers bind without guessing.
       - name: sector_central research handoff — B09 subject/snapshot/return-context per row
         run: python -m pytest tests/test_sector_research_handoff.py -q
+      # SI rotation read v1 (COO rulings 57/69/75/101): the builder's schema, as_of
+      # vintage rule, stale/unavailable rows, family ranks, companies map and the
+      # freshness checker's coherence rule. Synthetic fixtures under tmp_path only; no
+      # data/ or site/ read. Needs pandas/numpy/pyarrow, all on this job's line.
+      - name: SI rotation read — schema, vintage, stale rule, family ranks, freshness coherence
+        run: python -m pytest tests/test_rotation_read.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -41277,6 +41720,14 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -41803,6 +42254,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -42638,6 +43090,25 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43271,6 +43742,25 @@ jobs:
       - "tests/test_leadership_rotation_countercases.py"
       - "tests/test_sector_central_measured_panel.py"
       - "scripts/calibrate_rate_inflation.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "engine/entry_radar/replay/identity_observation_snapshot.py"
+      - "engine/neuralweb/sector_map.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_central_carry.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "templates/_sector_central_brief.js.j2"
+      - "tests/test_sector_native_view.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -45718,6 +46208,7 @@ jobs:
       - "tests/test_ticker_news_systemd.py"
       - "tests/test_verify_ticker_news.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "scripts/publish_company_disclosure.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
@@ -45959,6 +46450,21 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -46911,6 +47417,7 @@ jobs:
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/h20_reported_event.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -47161,6 +47668,21 @@ jobs:
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
       - "lib/fabric_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -48132,6 +48654,10 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -48422,6 +48948,13 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/build_sector_action_board.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -49251,6 +49784,7 @@ jobs:
       - engine/company_intelligence/current_company_context.py
       - engine/company_intelligence/current_context_runtime.py
       - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/sec_segment_adoption.py
       - engine/company_intelligence/sec_supplier_adoption.py
       - engine/company_intelligence/issuer_disclosure_publication.py
       - engine/company_intelligence/issuer_disclosure_selection.py
@@ -49390,7 +49924,7 @@ jobs:
       - name: news impact phase 1 leaf (validator, sampler, cluster, issuer, hostile corpus)
         run: python -m pytest tests/test_news_impact_validate.py tests/test_news_impact_hostile.py tests/test_news_impact_sampler.py tests/test_news_impact_sampler_startup.py tests/test_news_impact_cluster.py tests/test_news_impact_issuer.py -q
       - name: news impact W3 (transfer, observation, cascade, mechanisms, eval receipt/grade, thesis, prophet adapter, agreement, producer, section 11 registration)
-        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py -q
+        run: python -m pytest tests/test_news_impact_transfer.py tests/test_news_impact_observation.py tests/test_news_impact_cascade.py tests/test_news_impact_mechanisms.py tests/test_news_impact_eval_receipt.py tests/test_news_impact_eval_grade.py tests/test_news_impact_thesis.py tests/test_news_impact_prophet_adapter.py tests/test_news_impact_agreement.py tests/test_news_impact_producer.py tests/test_news_impact_producer_facts.py tests/test_news_impact_section11.py tests/test_news_impact_section11_report.py -q
       - name: news impact w2 benchmark (tape draw, edgar body)
         run: python -m pytest tests/test_news_impact_tape_draw.py tests/test_news_impact_edgar_body.py -q
       - name: news impact F2 negative-control repairs (amount formatting, text safety)
@@ -50972,6 +51506,10 @@ jobs:
       - "tests/test_commodity_workspace_contracts.js"
       - "tests/test_commodity_workspace_ui.js"
       - "tests/test_commodity_workspace_presentation.js"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     timeout-minutes: 7
     runs-on: ubuntu-latest
     steps:
@@ -51220,6 +51758,16 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "lib/sector_central_carry.py"
+      - "contracts/theme_graph/membership_collection.v2.schema.json"
+      - "engine/basket_membership_pit.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -51421,6 +51969,10 @@ jobs:
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
+      - "engine/sector_heads.py"
+      - "research/sector_completion_20261021/B12_V11_HEADS_PROTOCOL.md"
+      - "research/sector_completion_20261021/B12_V11_HEADS_RESULTS.md"
+      - "research/sector_completion_20261021/b12/v11_heads_result.json"
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -51887,6 +52439,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_disclosure_owner.py"
+      - "engine/company_intelligence/sec_segment_adoption.py"
       - "engine/company_intelligence/issuer_disclosure_preflight.py"
       - "engine/company_intelligence/issuer_disclosure_publication.py"
       - "engine/company_intelligence/issuer_disclosure_selection.py"
@@ -52999,6 +53552,24 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "app/sector_generation.py"
+      - "app/sector_generation_reader.py"
+      - "engine/sector_action_board.py"
+      - "engine/sector_dated_context.py"
+      - "engine/sector_native_view.py"
+      - "lib/numeric.py"
+      - "lib/sector_action_preview.py"
+      - "lib/sector_generation_contract.py"
+      - "lib/sector_generation_wire.py"
+      - "lib/sector_history_contract.py"
+      - "lib/sector_population.py"
+      - "scripts/build_sector_action_board.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53127,6 +53698,12 @@ jobs:
       - "tests/conftest.py"
       - "admin/press_audience.py"
       - "tests/test_press_account_claims.py"
+      # PR #10929 contract-delta registration (2026-11-10): exact closure
+      # paths named by scripts/check_contract_delta.py at head
+      # 595fe6b7 — widening is the safe direction.
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/vps_live_orchestrator.py"
+      - "site/flowtracker/base.json"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -53705,3 +54282,114 @@ jobs:
         run: python -m pytest tests/test_public_site_figma_import_plan.py -q
       - name: reference matrix sealing contracts
         run: python -m pytest tests/test_public_site_figma_reference_matrix.py -q
+  gmi-segment-sources-tooling:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    # Ruling 105 step 1: synthetic pin/packet/propose segment-source tooling suite.
+    # Curated exclusive closure (measured suite_dependency_closure of the suite):
+    # the owner / segment-route import chain carries opaque subprocess/glob edges
+    # that would smear a non-exclusive job across every ordinary-code packing probe;
+    # exclusive pins the exact static closure so this lane never widens the matrix.
+    paths:
+      - .github/workflows/gmi-segment-sources.yml
+      - collectors/__init__.py
+      - collectors/edgar_forensics.py
+      - collectors/fundamental_forensics_acquisition.py
+      - collectors/fundamental_forensics_companyfacts.py
+      - collectors/sec_document_spine.py
+      - collectors/sec_filing_parser.py
+      - collectors/sec_request_pacer.py
+      - config/dataset_registry.yml
+      - config/delisted_symbols.yml
+      - config/fundamental_forensics_disclosure_diff.v1.json
+      - config/issuer_group_allowlist.yml
+      - config/theme_crosswalk.yml
+      - config/theme_graph/segment_source_targets.v1.json
+      - config/theme_graph_identity_breaks.yml
+      - config/theme_sources.yml
+      - contracts/symbol_directory/symbol_directory_completion_receipt.v1.schema.json
+      - contracts/theme_graph/activity_membership_proposal.v1.schema.json
+      - contracts/theme_graph/ontology_neighborhood.v1.schema.json
+      - contracts/theme_graph/probation_proposal.v1.schema.json
+      - contracts/theme_graph/probation_relation_event.v2.schema.json
+      - engine/company_intelligence/__init__.py
+      - engine/company_intelligence/contracts.py
+      - engine/company_intelligence/current_company_context.py
+      - engine/company_intelligence/current_context_runtime.py
+      - engine/company_intelligence/documents.py
+      - engine/company_intelligence/health.py
+      - engine/company_intelligence/identity.py
+      - engine/company_intelligence/issuer_disclosure_owner.py
+      - engine/company_intelligence/issuer_disclosure_preflight.py
+      - engine/company_intelligence/issuer_disclosure_publication.py
+      - engine/company_intelligence/issuer_disclosure_selection.py
+      - engine/company_intelligence/issuer_disclosures.py
+      - engine/company_intelligence/pinned_relationship_candidates.py
+      - engine/company_intelligence/relationship_candidates.py
+      - engine/company_intelligence/sec_segment_adoption.py
+      - engine/company_intelligence/sec_supplier_adoption.py
+      - engine/company_intelligence/views.py
+      - engine/earnings_narrative/contracts.py
+      - engine/earnings_release/receipts.py
+      - engine/entry_radar/replay/identity_observation_snapshot.py
+      - engine/fundamental_forensics/__init__.py
+      - engine/fundamental_forensics/detectors.py
+      - engine/fundamental_forensics/disclosure_diff.py
+      - engine/fundamental_forensics/filing_attestation.py
+      - engine/fundamental_forensics/filing_package.py
+      - engine/fundamental_forensics/ixbrl_extraction.py
+      - engine/fundamental_forensics/models.py
+      - engine/fundamental_forensics/normalize.py
+      - engine/fundamental_forensics/pipeline.py
+      - engine/fundamental_forensics/sec_companyfacts.py
+      - engine/fundamental_forensics/sec_document_spine.py
+      - engine/fundamental_forensics/source_sync.py
+      - engine/neuralweb/market_memory_identity_candidate.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - engine/theme_graph/__init__.py
+      - engine/theme_graph/change_report.py
+      - engine/theme_graph/identity.py
+      - engine/theme_graph/identity_resolution.py
+      - engine/theme_graph/membership_evidence.py
+      - engine/theme_graph/ontology.py
+      - engine/theme_graph/probation.py
+      - engine/theme_graph/rights.py
+      - engine/theme_graph/store.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/dataos/__init__.py
+      - lib/dataos/identity.py
+      - lib/dataos/nulls.py
+      - lib/dataos/price.py
+      - lib/dataos/quality.py
+      - lib/dataos/registry.py
+      - lib/dataos/temporal.py
+      - lib/delisted_symbols.py
+      - lib/symbol_directory_receipts.py
+      - lib/ticker_aliases.py
+      - research/prophet_v4/d2/D2B2_CN_HK_FROZEN_CONTRACT_2026-08-20.md
+      - research/prophet_v4/d2/D2B2_US_FROZEN_CONTRACT_2026-08-21.md
+      - research/theme_graph/microtheme_membership_candidates_2026-10-08.json
+      - research/theme_graph/sec_supplier_20261019/NVDA_TSM_OWNER_DECISION.json
+      - research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json
+      - scripts/__init__.py
+      - scripts/build_security_master.py
+      - scripts/pin_segment_sources.py
+      - scripts/propose_activity_membership.py
+      - scripts/publish_company_disclosure.py
+      - tests/test_pin_segment_sources.py
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        # Proven install line of the GMI segment-route owner job: the suite imports
+        # collectors.sec_document_spine -> requests plus the owner chain producers.
+        run: pip install pytest pandas numpy pyyaml pyarrow jsonschema jinja2 requests
+      - name: GMI segment-source tooling (pin / packet / propose)
+        run: python -m pytest tests/test_pin_segment_sources.py -q

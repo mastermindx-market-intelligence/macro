@@ -1,174 +1,176 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-11-11",
-  "generated_at": "2026-11-12T14:44:20.366875+00:00",
+  "as_of": "2026-11-13",
+  "generated_at": "2026-11-14T11:25:27.123991+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-11-11-AMG-20261112144420-1",
-      "ticker": "AMG",
-      "name": "Affiliated Managers Group",
-      "lean": "neutral",
-      "conviction": "low",
-      "horizon_d": 20,
-      "thesis": "The engine flags a Constructive bottoming setup at a 52-week high (off_high 0%), but the 'building a base' label sits on a left-translated cycle with mixed bigger-picture trend and contracting liquidity \u2014 the validated edge here is only the risk reshape (half-size, macro tax), not forward alpha. Watch, don't chase.",
-      "evidence": [
-        "verdict: Constructive \u2014 building a base",
-        "ladder_label: BOTTOMING / TURN SIGNALED, entry_tag HALF SIZE",
-        "cycle.translation: left (bearish structural tell)",
-        "technical.off_52w_high_pct: 0.0 (at highs)",
-        "trust_tier: event-edge (confluence, not standalone alpha)"
-      ],
-      "dissent": "Momentum is intact (above 50/200dma, MACD positive, fresh swing low) and a leader can keep leading; fading it just because it's extended has been wrong ~83% of the time on this desk.",
-      "falsifier": {
-        "text": "A decisive break below the new swing low (under ~350.54) or a weekly close below the 10-day average",
-        "check": {
-          "kind": "soft",
-          "reason": "neutral lean \u2014 not scored"
-        }
-      },
-      "check_by": "2026-12-09",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-11-11-PWR-20261112144420-2",
-      "ticker": "PWR",
-      "name": "Quanta Services Inc",
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "A validated SUE leg (z 2.37) plus revisions (z 1.65) and favorable November/December seasonality support a Leader call; the engine's own caution is the accounting flag, so the constructive lean rides the event-edge while respecting the verify-before-sizing risk control.",
-      "evidence": [
-        "verdict: Leader \u00b7 accounting warning \u2014 verify before buying",
-        "selection.basis.sue: z 2.37, fresh_days 74 (validated tier)",
-        "revision z 1.65, alpha z 1.05",
-        "seasonality: Nov +3.0% avg (59% up), Dec +1.6% (57%)",
-        "cycle.translation: right"
-      ],
-      "dissent": "Quality axis is negative (-0.5) with an accounting warning, SUE is 74 days stale (past its native quarterly cadence), and the name is below both the 50dma and 200dma \u2014 the factor profile is broadly weak.",
-      "falsifier": {
-        "text": "A close below the recent cycle low near 509.06 or a fresh accounting-quality deterioration that invalidates the SUE leg",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "PWR",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 30
-        }
-      },
-      "check_by": "2026-12-23",
-      "engine_verdict": "Leader \u00b7 accounting warning \u2014 verify before buying"
-    },
-    {
-      "id": "2026-11-11-HUM-20261112144420-3",
-      "ticker": "HUM",
-      "name": "Humana",
-      "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 20,
-      "thesis": "This is not merely extended \u2014 the engine's cycle_blocked is true, entry is blocked (z -1.47), and the caution explicitly warns of chasing at 42% above trend with a crowded, stretched sector basket; this is an actual bearish/overbought-timing signal, distinct from a leader that's simply at highs.",
-      "evidence": [
-        "verdict: Extended \u2014 wait for a pullback",
-        "conviction.cycle_blocked: true",
-        "entry.z: -1.47, pct 29 (blocked)",
-        "caution: Trades 42% above long-term trend line",
-        "caution: Health Care basket crowded and stretched"
-      ],
-      "dissent": "Price is above the 50/200dma with MACD positive and revisions z 1.34; momentum can persist and the pullback may not come within the horizon.",
-      "falsifier": {
-        "text": "A pullback to at least the 10-day average followed by a resumption above the recent high, or price holding above current level for two straight weeks",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "HUM",
-          "vs": "SPY",
-          "op": ">",
-          "threshold": 0.05,
-          "horizon_d": 20
-        }
-      },
-      "check_by": "2026-12-09",
-      "engine_verdict": "Extended \u2014 wait for a pullback"
-    },
-    {
-      "id": "2026-11-11-TLN-20261112144420-4",
+      "id": "2026-11-13-TLN-20261114112527-1",
       "ticker": "TLN",
       "name": "Talen Energy",
       "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 30,
-      "thesis": "The verdict says Lagging \u2014 relative weakness, the selection axis is negative (SUE z -1.03, revisions -0.77, momentum -0.28), and fundamentals are deteriorating (negative net income, -122% NI growth, negative ROE) with a factor composite of -1.37; this is a genuinely weak name, not a leader to be given the benefit of the doubt.",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "Relative weakness, poor quality and a left-translated prior cycle outweigh the daily turn signal; the risk controls support treating the rebound cautiously rather than assuming the board rank has forward edge. The low conviction reflects the still-positive price trend and the judgment track record\u2019s sub-chance directional accuracy.",
       "evidence": [
-        "verdict: Lagging \u2014 relative weakness",
-        "selection.z: -0.68, SUE z -1.03",
-        "quality.z: -0.99, composite: -1.37",
-        "fundamentals: net_income -219M, ROE -20%, NI growth -121.9%",
-        "cycle.translation: left"
+        "Verdict: Lagging \u2014 relative weakness",
+        "Quality axis: z -0.99; accounting watch",
+        "Prior cycle left-translated",
+        "Net margin -8.5%; ROE -20.0%",
+        "Daily price remains above 50DMA and 200DMA"
       ],
-      "dissent": "Entry axis is actually positive (z 0.48, not blocked) with the name off only -13.6% from highs and a fresh swing low; the bottoming setup could spark a tactical bounce.",
+      "dissent": "The fresh swing low, positive MACD and recovery above a rising 10-day average could develop into persistent momentum despite weak fundamentals.",
       "falsifier": {
-        "text": "A confirmed swing-low hold above 316.23 followed by a weekly close above the 50dma, or a material positive revision",
+        "text": "TLN sustains its daily turn, the weekly timeframe turns bullish, and the shares outperform the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "rel_return",
           "subject_ticker": "TLN",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 30
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-12-23",
+      "check_by": "2026-12-11",
       "engine_verdict": "Lagging \u2014 relative weakness"
     },
     {
-      "id": "2026-11-11-CEG-20261112144420-5",
+      "id": "2026-11-13-CEG-20261114112527-2",
       "ticker": "CEG",
       "name": "Constellation Energy",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The engine itself says no clear edge: selection z is -0.29 (SUE -0.86, alpha -0.77), the 27% drawdown from highs means the bottoming setup is a repair attempt against a right-translated, late-investor-phase cycle with contracting liquidity; neutral is the only supported direction.",
+      "thesis": "The bullish fresh-buy cycle and clean accounting are offset by a neutral deterministic verdict and weak selection context, leaving no accountable relative-performance edge. The risk framework permits watching the improving setup without converting the unvalidated rank into a bullish forecast.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "selection.z: -0.29, SUE z -0.86",
-        "off_52w_high_pct: -27.1",
-        "cycle.investor_phase: late"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Fresh Buy with bullish weekly agreement",
+        "Entry axis unblocked",
+        "Quality axis: z 0.46; accounting clean",
+        "Selection axis: z -0.38"
       ],
-      "dissent": "Quality is clean (accruals -0.215, accounting clean) and the name is fundamentally profitable with a 9% margin; the drawdown may already price in the negative surprise, leaving room for a bounce.",
+      "dissent": "With price above both major moving averages and the daily and weekly cycles aligned, the rebound could produce meaningful S&P 500 outperformance.",
       "falsifier": {
-        "text": "A weekly close back above the 200-day average on expanding volume, confirming trend repair",
+        "text": "CEG establishes sustained relative strength versus the S&P 500 while remaining above its 50-day and 200-day averages.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-09",
+      "check_by": "2026-12-11",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-11-11-BRKR-20261112144420-6",
-      "ticker": "BRKR",
-      "name": "Bruker",
+      "id": "2026-11-13-NTRS-20261114112527-3",
+      "ticker": "NTRS",
+      "name": "Northern Trust",
+      "lean": "constructive",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The building-base verdict, unblocked entry and positive selection ordering support a tentative constructive relative lean, but elevated macro risk and an unconfirmed weekly turn sharply limit confidence. This is a fallible base-building judgment, not a claim that the rank predicts returns.",
+      "evidence": [
+        "Verdict: Constructive \u2014 building a base",
+        "Selection axis: z 0.74",
+        "Entry axis: z 0.91; unblocked",
+        "Price above 50DMA and 200DMA",
+        "Macro risk elevated; prior cycle left-translated"
+      ],
+      "dissent": "The overdue investor cycle, early-topping prior cycle and stretched Financials basket could turn the apparent base into renewed relative weakness.",
+      "falsifier": {
+        "text": "NTRS loses its daily turn and underperforms the S&P 500 over the next 20 trading days while the weekly timeframe remains unconfirmed.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "NTRS",
+          "vs": "SPY",
+          "op": "<",
+          "threshold": -0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-12-11",
+      "engine_verdict": "Constructive \u2014 building a base"
+    },
+    {
+      "id": "2026-11-13-VZ-20261114112527-4",
+      "ticker": "VZ",
+      "name": "Verizon Communications Inc",
       "lean": "neutral",
       "conviction": "low",
       "horizon_d": 20,
-      "thesis": "The recent SUE is strongly negative (z -1.69, 6 days fresh) and fundamentals are weak (negative margin, negative ROE, -107% NI growth), while the bottoming cycle is middle-translated and only approaching the band \u2014 the engine's neutral verdict correctly reflects no directional edge.",
+      "thesis": "The bottoming setup and favorable entry axis are balanced by a neutral verdict, mixed larger trend, elevated macro risk and accounting watch. With no validated directional edge, the accountable stance is neutral pending confirmation rather than extrapolating the daily bounce.",
       "evidence": [
-        "verdict: Neutral \u2014 no clear edge",
-        "selection.basis.sue: z -1.69, fresh_days 6 (validated tier, negative)",
-        "fundamentals: net_margin -0.2%, ROE -0.3%, NI growth -107.3%",
-        "cycle.translation: middle"
+        "Verdict: Neutral \u2014 no clear edge",
+        "Entry axis: z 0.91; unblocked",
+        "Weekly timeframe has not turned",
+        "Macro risk elevated",
+        "Quality accounting flag: watch"
       ],
-      "dissent": "Entry axis is positive (z 0.50, not blocked) and the name is only -6.2% off highs with momentum z +0.54 \u2014 the technical setup is actually decent.",
+      "dissent": "Positive MACD, support above both major moving averages and defensive factor exposure could allow VZ to outperform during a risk-off tape.",
       "falsifier": {
-        "text": "A daily close above the 52-week high (~66.5) on above-average volume",
+        "text": "VZ develops a confirmed bullish weekly trend and sustains outperformance versus the S&P 500 over the next 20 trading days.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-12-09",
+      "check_by": "2026-12-11",
       "engine_verdict": "Neutral \u2014 no clear edge"
+    },
+    {
+      "id": "2026-11-13-ATEN-20261114112527-5",
+      "ticker": "ATEN",
+      "name": "A10 Networks, Inc.",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 15,
+      "thesis": "ATEN is a leader with favorable selection ordering and clean accounting, but the deterministic profile says the entry is poor and the weekly turn is unconfirmed. The extension brake argues against chasing, while intact momentum argues against taking a bearish relative view solely because entry quality is weak.",
+      "evidence": [
+        "Verdict: Leader \u00b7 poor entry \u2014 wait for a base",
+        "Selection axis: z 1.11",
+        "Quality accounting flag: clean",
+        "Price 12.0% above 50DMA",
+        "Weekly timeframe has not turned; cycle not blocked"
+      ],
+      "dissent": "The recent earnings context, positive revisions and intact trend could keep momentum running before any cleaner base forms.",
+      "falsifier": {
+        "text": "ATEN forms a stable base, retains support above its major moving averages, and resumes sustained outperformance versus the S&P 500.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Leader \u00b7 poor entry \u2014 wait for a base"
+    },
+    {
+      "id": "2026-11-13-CRK-20261114112527-6",
+      "ticker": "CRK",
+      "name": "Comstock Resources, Inc.",
+      "lean": "cautious",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "The lagging verdict, weak selection ordering, accounting warning and position below the 200-day average provide actual bearish evidence despite the fresh daily buy signal. The risk controls therefore support a cautious relative lean, though the aligned bullish cycle keeps conviction low.",
+      "evidence": [
+        "Verdict: Lagging \u2014 relative weakness",
+        "Selection axis: z -1.43",
+        "Quality accounting flag: warn",
+        "Price 3.4% below 200DMA",
+        "Fresh Buy with bullish weekly agreement"
+      ],
+      "dissent": "The right-translated early investor cycle, positive MACD and rejection of the recent low could turn the rebound into sustained relative recovery.",
+      "falsifier": {
+        "text": "CRK reclaims and holds above its 200-day average while outperforming the S&P 500 over the next 20 trading days.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "CRK",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-12-11",
+      "engine_verdict": "Lagging \u2014 relative weakness"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."
