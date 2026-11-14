@@ -181,8 +181,8 @@ _BANNED_CHEESE_WORDS: tuple[str, ...] = (
 #: not the register this closes and is explicitly out of scope.
 _NUMBER_RE = re.compile(
     r"""
-    (?<![A-Za-z0-9_])[+-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:%|[xXkKmMbB])?(?![A-Za-z0-9_])
-                              # grouped count/price: 221,000, 1,234.50, $7,600,000
+    (?<![A-Za-z0-9_])[+-]*\.?\d[\d.,]*,[\d.,]*\d[%xXkKmMbB]*(?![A-Za-z0-9_]|[.,]\d)
+                              # whole comma run, including malformed signs/groups/units
     |
     [+-]?\d+\.?\d*%            # percentage: +12.3% or -5.5%
     |
@@ -197,6 +197,12 @@ _NUMBER_RE = re.compile(
     \b\d+\.?\d*[kKmMbB](?![A-Za-z0-9])  # compact count/money: 199k, 1.2m, 45B, $7.6B
     """,
     re.VERBOSE,
+)
+
+# Capture first, then validate the complete run. A licensed prefix must not
+# hide the remaining digits in "221,000,00" or a second unit in "1,000k%".
+_GROUPED_NUMBER_RE = re.compile(
+    r"[+-]?\d{1,3}(?:,\d{3})+(?:\.\d+)?(?:%|[xXkKmMbB])?\Z"
 )
 
 #: Words that put the number after them in a PRICE SLOT: a level the post is
@@ -1812,9 +1818,14 @@ def validate_copy(
     # A grouping comma is typography, not a different fact. Preserve the
     # numeric license across "221000" / "221,000" without relaxing its value.
     # This must not bless an arbitrary new figure: only comma removal is equal.
-    _grouping_normalized = {str(n).replace(",", "") for n in whitelist}
+    _grouping_normalized = {
+        str(n).replace(",", "") for n in whitelist
+        if "," not in str(n) or _GROUPED_NUMBER_RE.fullmatch(str(n))
+    }
 
     def _number_licensed(token: str) -> bool:
+        if "," in token and not _GROUPED_NUMBER_RE.fullmatch(token):
+            return False
         return token in whitelist or token.replace(",", "") in _grouping_normalized
 
     found_tokens = _extract_number_tokens(full_text)
