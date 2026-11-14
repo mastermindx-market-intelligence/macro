@@ -916,60 +916,51 @@ def brier_decomposition(
     outcomes: np.ndarray,
     n_bins: int = 10,
 ) -> dict:
-    """Murphy decomposition of the Brier score into reliability, resolution, uncertainty.
+    """Binned Murphy components and signed within-bin residual of raw Brier loss.
 
-    The Brier score is decomposed as:
+    For aligned finite 1-D probabilities in [0, 1] and binary outcomes:
+        binned_brier = reliability - resolution + uncertainty
+        brier_score = binned_brier + within_bin_residual
 
-        BS = reliability - resolution + uncertainty
+    Binned Brier is the loss after replacing each probability by its bin mean.
+    The residual is sum_k (n_k/N) * [Var_k(p) - 2 Cov_k(p, y)] using
+    population moments; it can have either sign. Fixed-width bins do not make
+    it vanish as sample size grows. Components are descriptive sample values,
+    not generally unbiased estimators of population calibration quantities.
 
-    where:
-        - uncertainty   = o̅(1 - o̅)       — irreducible noise in the outcome base rate.
-        - reliability   = Σ_k n_k/N · (ō_k - o̅_k)²  — penalty for miscalibration.
-        - resolution    = Σ_k n_k/N · (o̅_k - o̅)²    — reward for decisive forecasts.
-        - refinement    = reliability - resolution    — net skill (negative = skilled).
-        - brier_score   = reliability - resolution + uncertainty.
+    Existing keys retain their definitions and six-decimal rounding:
+    brier_score (raw mean squared error), reliability (binned calibration
+    penalty), resolution (between-bin outcome variation), uncertainty
+    (base_rate * (1 - base_rate)), refinement (reliability - resolution),
+    base_rate, n, and n_bins_used. Added keys binned_brier and
+    within_bin_residual are computed before rounding. Empty aligned arrays
+    return None for all metrics and zero for both counts.
 
-    Here ō_k is the mean forecast in bin k, o̅_k is the observed rate in bin k,
-    o̅ is the overall mean outcome (base rate), and n_k is the count in bin k.
+    Refinement is binned Brier minus same-sample climatology loss. Its sign
+    does not establish raw forecast skill; compare raw brier_score with the
+    appropriate reference loss instead. Same-sample climatology is descriptive,
+    not an out-of-sample operational reference forecast.
 
-    Parameters
-    ----------
-    probs    : 1-D array of predicted probabilities in [0, 1].
-    outcomes : 1-D binary array of realized outcomes (0 or 1), aligned to probs.
-    n_bins   : number of equal-width bins for the decomposition (default 10).
+    n_bins must be a positive integer (default 10; booleans are rejected).
+    Invalid domains raise ValueError; observations are never silently dropped.
+    Dependence affects uncertainty estimates, not automatically the mean loss.
+    Use dependence-aware inference for overlapping observations.
 
-    Returns
-    -------
-    dict with keys:
-        - 'brier_score'  : float — mean squared error (lower is better).
-        - 'reliability'  : float — calibration penalty (lower is better; 0 = perfect).
-        - 'resolution'   : float — forecast sharpness reward (higher is better).
-        - 'uncertainty'  : float — irreducible base-rate uncertainty o̅(1 - o̅).
-        - 'refinement'   : float — reliability - resolution; negative = net skill.
-        - 'base_rate'    : float — overall mean of outcomes.
-        - 'n'            : int   — total number of observations.
-        - 'n_bins_used'  : int   — number of non-empty bins (may be < n_bins).
-
-    Statistical contract: BS = reliability - resolution + uncertainty is exact for
-    equal-width bins in the limit of large n. For small n the decomposition is still
-    unbiased (in expectation) but individual terms have wide sampling distributions.
-
-    OVERLAP WARNING: on overlapping long-horizon rows, the Brier score is biased
-    toward zero (correlated errors inflate the apparent sample size). Wrap this
-    function's `brier_score` output in block_bootstrap_scalar_ci() to obtain
-    overlap-corrected uncertainty bounds.
-
-    Usage example::
-
-        probs    = np.array([0.9, 0.8, 0.1, 0.2])
-        outcomes = np.array([1,   1,   0,   0  ])
-        d = brier_decomposition(probs, outcomes)
-        # d['reliability'] ≈ 0.0  (perfectly calibrated)
-        # d['resolution']  > 0.0  (decisive forecasts)
-        # d['brier_score'] ≈ uncertainty - resolution (skilled)
+    Example: probabilities [.9, .8, .1, .2], outcomes [1, 1, 0, 0] yield
+    raw Brier .025, reliability .025, resolution .25, uncertainty .25,
+    binned Brier .025 and residual 0 with the default bins.
     """
     probs = np.asarray(probs, dtype=float)
     outcomes = np.asarray(outcomes, dtype=float)
+    if probs.ndim != 1 or outcomes.ndim != 1:
+        raise ValueError("brier_decomposition: inputs must be 1-D arrays.")
+    if (isinstance(n_bins, (bool, np.bool_))
+            or not isinstance(n_bins, (int, np.integer)) or n_bins <= 0):
+        raise ValueError("brier_decomposition: n_bins must be a positive integer.")
+    if not np.all(np.isfinite(probs)) or np.any((probs < 0) | (probs > 1)):
+        raise ValueError("brier_decomposition: probabilities must be finite and in [0, 1].")
+    if not np.all(np.isfinite(outcomes)) or np.any((outcomes != 0) & (outcomes != 1)):
+        raise ValueError("brier_decomposition: outcomes must be finite binary values.")
     if len(probs) != len(outcomes):
         raise ValueError(
             f"brier_decomposition: probs and outcomes must have the same length "
@@ -981,6 +972,7 @@ def brier_decomposition(
             "brier_score": None, "reliability": None, "resolution": None,
             "uncertainty": None, "refinement": None, "base_rate": None,
             "n": 0, "n_bins_used": 0,
+            "binned_brier": None, "within_bin_residual": None,
         }
 
     brier_score = float(np.mean((probs - outcomes) ** 2))
@@ -1010,7 +1002,11 @@ def brier_decomposition(
         resolution += w * (obs_r_k - base_rate) ** 2
 
     refinement = reliability - resolution
+    binned_brier = refinement + uncertainty
+    within_bin_residual = brier_score - binned_brier
     return {
+        "binned_brier": round(binned_brier, 6),
+        "within_bin_residual": round(within_bin_residual, 6),
         "brier_score": round(brier_score, 6),
         "reliability": round(reliability, 6),
         "resolution": round(resolution, 6),
@@ -1363,3 +1359,4 @@ def eb_shrink(
 # coupling to the not-yet-existing library. A future wave (D2-W4 or later) should
 # converge them so there is exactly ONE implementation in the entire codebase.
 # The research script is in scripts/keystone_position_gate_phase0.py.
+
