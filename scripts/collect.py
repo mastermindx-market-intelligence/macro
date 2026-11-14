@@ -867,6 +867,19 @@ def main() -> int:
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.debug("FRED per-series PIT lag record skipped: %s", e)
 
+    # Rotation-context capture (2026-11-11, SI v1.1 COO ruling 8 lane 10) — capture-ONLY.
+    # Runs AFTER both adapter phases, so the FRED, CBOE cor/vol and ETF-holdings stores
+    # it reads are the ones this night's collectors left. One immutable
+    # data/rotation_context/<session>.json.gz of stored LEVELS + each value's own obs
+    # date; no fetch, no derived field. Nightly lane only (an --only/--group refresh is
+    # not the night's record). Never raises; staged by the collect job's `git add data/`.
+    if os.environ.get("COLLECT_LANE") == "nightly" and not (args.only or args.group):
+        try:
+            from engine.rotation_context_capture import run_nightly as _rc_capture
+            _rc_capture()
+        except Exception as e:  # noqa: BLE001 — additive, never fatal
+            log.warning("rotation_context capture step failed (non-fatal): %s", e)
+
     # ---- US-scope mid-tail (us_scope gate — see definition above) --------------------
     # SEC company_tickers.json, S&P-1500 membership ledger, basket extras/OHLCV, Finviz
     # subsector classifications and membership re-author. ~7 min of US-only work that

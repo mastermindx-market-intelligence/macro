@@ -1,7 +1,6 @@
 """Build the source-bound action board consumed by US Sector Intelligence."""
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import os
@@ -15,27 +14,23 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from jinja2 import Environment, FileSystemLoader  # noqa: E402
+from engine.sector_action_board import (  # noqa: E402
+    ACTION_LANES as _ACTION_LANES, ActionBoardContractError,
+    _basket_as_of, _board_has_rows, action_board_envelope,
+    attach_two_reads, sector_setup_lookups,
+)
 log = logging.getLogger("build_sector_action_board")
-
-
-def _basket_as_of(payload: dict[str, Any]) -> str:
-    top = payload.get("as_of")
-    theme = (payload.get("theme_intel") or {}).get("as_of") \
-        if isinstance(payload.get("theme_intel"), dict) else None
-    if not isinstance(top, str) or not top:
-        raise ValueError("baskets.json carries no usable top-level as_of")
-    if not isinstance(theme, str) or not theme:
-        raise ValueError("baskets.json carries no usable theme_intel.as_of")
-    if top != theme:
-        raise ValueError(
-            f"baskets.json vintage split: as_of={top}, theme_intel.as_of={theme}"
-        )
-    return top
 
 
 def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    raw = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode()
+    # Strict JSON at the producer: a non-finite upstream value is *missing*
+    # (null), never a bare NaN literal that a strict reader must reject, and
+    # allow_nan=False makes anything the normalization misses fail the write
+    # (leaving the previous artifact) instead of publishing it.
+    from lib.numeric import finite_json_value
+    raw = json.dumps(finite_json_value(payload), separators=(",", ":"),
+                     ensure_ascii=False, allow_nan=False).encode()
     fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as handle:
@@ -57,21 +52,24 @@ def write_action_board(
     action_board: dict[str, Any],
     generated_utc: str,
 ) -> dict[str, Any]:
-    """Write a self-describing board bound to the exact basket bytes."""
-    basket_raw = baskets_path.read_bytes()
-    basket_payload = json.loads(basket_raw)
-    if not isinstance(basket_payload, dict):
-        raise ValueError("baskets.json must contain a JSON object")
+    """Bind the board to one observed basket byte snapshot and publish atomically.
+
+    The basket date/hash identify the associated basket generation. They do not
+    establish freshness or common provenance for every other board input.
+    Invalid source/board content leaves the previous artifact untouched.
+    """
     if not isinstance(action_board, dict):
-        raise ValueError("action_board must be a dictionary")
-    as_of = _basket_as_of(basket_payload)
-    payload = {
-        "schema": "sector_intelligence_action_board.v1",
-        "as_of": as_of,
-        "generated_utc": generated_utc,
-        "baskets_sha256": hashlib.sha256(basket_raw).hexdigest(),
-        "action_board": action_board,
-    }
+        raise ActionBoardContractError("action_board must be a dictionary")
+    if not _board_has_rows(action_board):
+        raise ActionBoardContractError("action_board carries no actionable rows")
+    try:
+        basket_raw = baskets_path.read_bytes()
+    except OSError as exc:
+        raise ActionBoardContractError(f"basket source is unusable: {exc}") from exc
+    payload = action_board_envelope(
+        basket_raw=basket_raw, action_board=action_board,
+        generated_utc=generated_utc,
+    )
     _atomic_json_write(output, payload)
     return payload
 
@@ -152,15 +150,7 @@ def build_action_board(
     )
 
     sector_setups = canonical.sector_setup_view(latest, sector_timing)
-    setup_lookup: dict[str, dict[str, Any]] = {}
-    two_reads: dict[str, dict[str, Any]] = {}
-    if isinstance(sector_setups, dict):
-        for row in sector_setups.get("sectors") or []:
-            if not isinstance(row, dict) or not row.get("ticker"):
-                continue
-            setup_lookup[row["ticker"]] = row
-            if isinstance(row.get("two_reads_chip"), dict):
-                two_reads[row["ticker"]] = row["two_reads_chip"]
+    setup_lookup, two_reads = sector_setup_lookups(sector_setups)
 
     board = canonical.action_board(
         sector_timing,
@@ -170,14 +160,7 @@ def build_action_board(
     )
     if not isinstance(board, dict):
         raise ValueError("canonical action_board returned a non-dictionary")
-    if two_reads:
-        for lane in (*_ACTION_LANES, "notable"):
-            for item in board.get(lane) or []:
-                if not isinstance(item, dict):
-                    continue
-                ticker = item.get("ticker")
-                if item.get("kind") == "sector" and ticker in two_reads:
-                    item["two_reads_chip"] = two_reads[ticker]
+    attach_two_reads(board, two_reads)
 
     output = site / "basketdata" / "action_board.json"
     payload = write_action_board(
@@ -193,11 +176,6 @@ def build_action_board(
         board.get("total"),
     )
     return payload
-
-
-_ACTION_LANES = (
-    "buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid",
-)
 
 
 def main() -> int:

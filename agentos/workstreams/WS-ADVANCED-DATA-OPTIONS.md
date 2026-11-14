@@ -287,6 +287,8 @@ next_action: >
   consume next --explain. Start eligible source-only LAB-E contract qualification;
   this knowledge mapping neither starts AD-2 nor grants activation/browser access.
 artifacts:
+  - terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md
+  - agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-11-14.md
   - research/ADVANCED_DATA_OPTIONS_EOD_DARK_POOL_INTELLIGENCE_OS_MASTERPLAN_2026-08-17.md
   - research/ADVANCED_DATA_OPTIONS_EOD_AD0_CURRENT_STATE_AND_CAPABILITY_LEDGER_2026-08-17.md
   - research/ADVANCED_DATA_OPTIONS_EOD_AD1_DAILY_INTELLIGENCE_BRIEF_HANDOFF_2026-08-17.md
@@ -399,3 +401,13 @@ an endpoint, issue a provider read, replay a publisher, invent a clock or enable
 Then bind and consume the supported task selector against this mapping, preserving seed,
 accepted work and exact blocked effects. MMOS owns the composite-binding CLI; do not
 implement a substitute or hand-edit TASKS.json. A task-buffer result is not runtime grant.
+
+## Current Terminal suite linkage — 14 November 2026
+
+The Chairman's current full-suite UI assignment is tracked by the existing
+WS:OPTIONS-ALPHA-INTELLIGENCE-RECOVERY continuation and its
+[14 November handoff](../handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-11-14.md).
+The Terminal plan is `terminal:docs/OPTIONS_SUITE_COMPLETION_2026-11-14.md`.
+It reuses the accepted Paper/Lab implementation and retains its exact remaining
+consumer, production and effect-custody obligations. This cross-reference does not
+change the EOD objective, AD-1T2 dependency, AD-2 closure, owner or Lab A–G statuses.

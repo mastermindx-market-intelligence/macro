@@ -537,8 +537,8 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       <span class="k"><i style="background:var(--muted)"></i>{{ t('modeled date ahead (>45d)','估算日期在后（>45天）') }}</span>
       <span class="k" style="margin-left:auto">{{ t('dot size = deal size','点大小＝交易规模') }}</span>
     </div>
-    <div class="note warn">{{ t('Don’t add into the cliff. This is a modeled lock-up calendar, not a verified release record or a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是估算禁售到期日历，并非实际解禁记录或预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip(lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
-    {% if lockup_p0 %}<div class="mini">{{ t(
+    <div class="note warn">{{ t('Don’t add into the cliff. This is a modeled lock-up calendar, not a verified release record or a forecast — history shows no reliable tradeable edge here.','临近解禁勿加仓。这是估算禁售到期日历，并非实际解禁记录或预测 —— 历史上此处没有可靠、可交易的优势。') }}{{ qtip((lockup_p0.evidence_note_en if lockup_p0 else none) or lockup_receipt_en or 'Field & Hanka document a small one-sided drift (~−1.5%, ~−3% for VC-backed names) with ~+40% volume around unlock. Our own event study of recent unlocks finds no measurable, tradeable edge on a small, survivorship-biased sample. Lock-up length is prospectus-confirmed where available, else the 180-day market standard.', (lockup_p0.evidence_note_zh if lockup_p0 else none) or lockup_receipt_zh or 'Field & Hanka 记录到解禁前后约 −1.5%（风投支持约 −3%）的小幅单边漂移，成交量约 +40%。我们对近期解禁的事件研究在小样本（含幸存者偏差）上未发现可测量、可交易的优势。禁售期长度在可得时取自招股书，否则取 180 天市场标准。') }}</div>
+    {% if lockup_p0 and lockup_p0.has_statistics %}<div class="mini">{{ t(
       'Our event study of ' ~ lockup_p0.n_names ~ ' recent un-locks (to ' ~ lockup_p0.as_of
       ~ '): the average return vs the S&P 500 ' ~ lockup_p0.window_en
       ~ ' was ' ~ lockup_p0.mean_disp ~ '; ' ~ lockup_p0.pct_negative
@@ -547,7 +547,8 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       ~ lockup_p0.window_zh ~ '相对标普500的平均回报为' ~ lockup_p0.mean_disp
       ~ '；' ~ lockup_p0.pct_negative ~ '%的标的跑输。结论：'
       ~ lockup_p0.verdict_zh ~ '。'
-    ) }}</div>{% endif %}
+    ) }}</div>{% endif %}{% if lockup_p0 and not lockup_p0.has_statistics %}
+    <div class="mini">{{ t(lockup_p0.evidence_note_en, lockup_p0.evidence_note_zh) }}</div>{% endif %}
   </div>
   {% endif %}
 

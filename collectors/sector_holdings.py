@@ -13,10 +13,15 @@
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import io
 import logging
+import math
+import re
 import time
-from datetime import date, datetime
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
 
 import pandas as pd
 
@@ -33,6 +38,141 @@ TOP_N = 20
 
 SSGA_XLSX = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/"
              "products/fund-data/etfs/us/holdings-daily-us-en-{fund}.xlsx")
+
+# --- capture provenance -------------------------------------------------------
+#
+# A holdings snapshot answers "what did the fund hold" but not "where did this
+# come from" or "when was it fetched". The capture block records both as
+# ordinary scalar columns in the per-fund parquet that already stores the
+# snapshot, under one reserved prefix:
+#
+#   * no DataFrame.attrs — those do not survive the parquet round-trip;
+#   * no side-car artifact and no new store — the block travels with the rows
+#     it describes, so a row can never be bound to a response that did not
+#     produce it;
+#   * ONE block per capture, repeated on every row of that capture, so each
+#     row is self-describing.
+#
+# The block records provenance only. It does NOT establish issuer mapping,
+# source-use rights, economic causation, historical availability, correction
+# history or any sector explanation.
+CAPTURE_PREFIX = "capture_"
+CAPTURE_SCHEMA_VERSION = "sector_holdings.capture.v1"
+CAPTURE_COLUMNS = (
+    "capture_schema_version",
+    "capture_fund",
+    "capture_source_url",
+    "capture_content_sha256",
+    "capture_content_bytes",
+    "capture_retrieved_at",
+    "capture_issuer_as_of",
+    "capture_date_origin",
+)
+# Where the index date came from. "issuer_reported" means the issuer's own
+# file stated that date; "retrieval_date_fallback" means the file stated none
+# and the index date is the retrieval date, which qualifies NOTHING about the
+# issuer's effective date; "date_origin_not_recorded" is the honest value for
+# rows written before the capture block existed and is never backfilled.
+DATE_ORIGIN_ISSUER_REPORTED = "issuer_reported"
+DATE_ORIGIN_RETRIEVAL_FALLBACK = "retrieval_date_fallback"
+DATE_ORIGIN_NOT_RECORDED = "date_origin_not_recorded"
+
+# The PIT history archive's schema is FIXED at six columns. The capture block
+# belongs to the per-fund store; copying it here would silently widen a
+# published archive for every snapshot ever taken.
+HISTORY_COLUMNS = ("as_of", "etf", "ticker", "name", "weight_pct", "rank")
+
+
+def _utc_now() -> datetime:
+    """The ONE aware-UTC reading a capture is stamped with.
+
+    Every timestamp of one capture comes from a single call of this function,
+    so the retrieval instant and the fallback index date can never disagree.
+    Nothing else in this module may read the clock.
+    """
+    return datetime.now(timezone.utc)
+
+
+def _with_capture_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Every stored frame carries the full reserved capture block.
+
+    Rows written before the capture block existed (or by any other writer) get
+    NULL metadata — never the latest capture's values backfilled onto them,
+    which would silently date a legacy snapshot to a response that never
+    produced it.
+    """
+    out = frame.copy()
+    for column in CAPTURE_COLUMNS:
+        if column not in out.columns:
+            out[column] = None
+    return out
+
+
+_ISSUER_MONTHS = {
+    key.lower(): number
+    for number, month in enumerate(
+        ("January", "February", "March", "April", "May", "June",
+         "July", "August", "September", "October", "November", "December"),
+        start=1,
+    )
+    for key in (month, month[:3])
+}
+
+
+def _parse_issuer_date(text: str) -> date:
+    """Read a complete calendar date without filling missing components.
+
+    Accepted source forms are ISO YYYY-MM-DD, explicit US month/day/year
+    with a four-digit year, and English month-name day[,] year. Numeric
+    slash dates always mean month/day/year; no locale or day-first inference.
+    Partial dates, relative words and timestamps are not issuer dates.
+    """
+    iso = re.fullmatch(r"([0-9]{4})-([0-9]{2})-([0-9]{2})", text)
+    us = re.fullmatch(r"([0-9]{1,2})/([0-9]{1,2})/([0-9]{4})", text)
+    named = re.fullmatch(r"([A-Za-z]+) +([0-9]{1,2}),? +([0-9]{4})", text)
+    try:
+        if iso:
+            year, month, day = map(int, iso.groups())
+        elif us:
+            month, day, year = map(int, us.groups())
+        elif named:
+            month = _ISSUER_MONTHS[named[1].lower()]
+            day, year = int(named[2]), int(named[3])
+        else:
+            raise ValueError("complete supported calendar date required")
+        return date(year, month, day)
+    except (KeyError, ValueError) as error:
+        raise ValueError(
+            f"holdings issuer as-of date is malformed: {text!r}") from error
+
+
+def _issuer_as_of(raw: pd.DataFrame, header_row: int) -> date | None:
+    """The issuer's own as-of date, or None when the file states none.
+
+    Every "As of" cell above the header row is a claim about the same date, so
+    two different claims are a CONFLICT: the capture is refused rather than
+    silently resolved to whichever cell happened to come last. A cell that
+    cannot be parsed is a MALFORMED claim and is refused too — a file that
+    states an unusable date must not fall back to the retrieval date, because
+    that would relabel an issuer-stated snapshot as if the issuer had said
+    nothing at all.
+    """
+    if raw.shape[1] < 2:
+        return None
+    stated: list[date] = []
+    for i in range(header_row):
+        cell = str(raw.iloc[i, 1])
+        if "As of" not in cell:
+            continue
+        text = cell.replace("As of", "", 1).strip()
+        stated.append(_parse_issuer_date(text))
+    if not stated:
+        return None
+    unique = sorted(set(stated))
+    if len(unique) > 1:
+        raise ValueError("holdings issuer as-of dates conflict: "
+                         + ", ".join(d.isoformat() for d in unique))
+    return unique[0]
 
 
 class SectorHoldingsAdapter(Adapter):
@@ -67,33 +207,72 @@ class SectorHoldingsAdapter(Adapter):
         d = config.data_dir() / self.group
         d.mkdir(parents=True, exist_ok=True)
         p = d / f"{fund}.parquet"
+        incoming = _with_capture_columns(snap)
+        incoming_dates = pd.DatetimeIndex(pd.to_datetime(incoming.index)).unique()
+        if not len(incoming_dates):
+            raise ValueError(f"sector holdings {fund}: empty capture refused")
+        incoming_max = incoming_dates.max()
         if p.exists():
             old = pd.read_parquet(p)
             old.index = pd.to_datetime(old.index)
-            old = old[old.index != snap.index[0]]  # replace same-day snapshot
-            snap = pd.concat([old, snap]).sort_index()
-        snap.to_parquet(p)
+            stored_max = old.index.max()
+            if (stored_max is not None and pd.notna(stored_max)
+                    and incoming_max < stored_max):
+                # A regressive capture must never be written: the merged file's
+                # max date would relabel an older capture as the current one,
+                # and the history archiver would then file the STORED tip
+                # under the incoming capture's identity. The stored snapshot
+                # is preserved exactly as it is.
+                raise ValueError(
+                    f"sector holdings {fund}: incoming capture dated "
+                    f"{incoming_max.date()} is older than the stored snapshot "
+                    f"{stored_max.date()} — refused")
+            old = old[~old.index.isin(incoming_dates)]  # replace same-day snapshot
+            merged = pd.concat([_with_capture_columns(old), incoming]).sort_index()
+        else:
+            merged = incoming
+        order = ([c for c in merged.columns if c not in CAPTURE_COLUMNS]
+                 + list(CAPTURE_COLUMNS))
+        merged = merged.reindex(columns=order)
+        merged.to_parquet(p)
         # PIT history archiver: append-mode dated store for dispersion analysis.
         # Columns: as_of (date), etf (str), ticker, name, weight_pct, rank.
         # Idempotent per (as_of, etf): same-day re-runs drop the old rows first.
-        # Pass only today's rows (last date in the now-merged snap).
-        today_date = snap.index.max()
-        self._append_history(fund, snap.loc[[today_date]])
+        # The archived rows are the incoming capture's OWN rows: the merged
+        # file's max date IS the incoming capture's date (a regressive capture
+        # was refused above), so the archive can never carry an older
+        # capture's identity.
+        self._append_history(fund, merged.loc[[incoming_max]])
 
     def _append_history(self, fund: str, snap: pd.DataFrame) -> None:
         """Append today's snapshot for *fund* to data/sector_holdings/history.parquet.
 
         Idempotent: if a row for (as_of, etf) already exists it is replaced, not
         duplicated.  ``snap`` carries the per-holding rows indexed by as_of date.
+
+        The archive's schema is FIXED at six columns (as_of, etf, ticker, name,
+        weight_pct, rank): the capture block belongs to the per-fund store, and
+        copying it here would widen a published archive for every snapshot ever
+        taken.
         """
         d = config.data_dir() / self.group
         as_of = snap.index[0].date()
-        rows = snap.reset_index(drop=True).copy()
+        source = snap.reset_index(drop=True)
+        missing = [c for c in HISTORY_COLUMNS[2:] if c not in source.columns]
+        if missing:
+            raise ValueError("sector holdings history row is missing column(s): "
+                             + ", ".join(missing))
+        rows = source[list(HISTORY_COLUMNS[2:])].copy()
         rows.insert(0, "as_of", as_of)
         rows.insert(1, "etf", fund)
         hist_path = d / "history.parquet"
         if hist_path.exists():
             old = pd.read_parquet(hist_path)
+            extra = [c for c in old.columns if c not in HISTORY_COLUMNS]
+            if extra:
+                log.warning("sector_holdings history: dropping unexpected column(s): %s",
+                            ", ".join(extra))
+            old = old[list(HISTORY_COLUMNS)].copy()
             old["as_of"] = pd.to_datetime(old["as_of"]).dt.date
             # Drop rows for same (as_of, etf) to ensure idempotency
             mask = ~((old["as_of"] == as_of) & (old["etf"] == fund))
@@ -103,28 +282,322 @@ class SectorHoldingsAdapter(Adapter):
         rows = rows.sort_values(["as_of", "etf", "rank"]).reset_index(drop=True)
         rows.to_parquet(hist_path, index=False)
 
-    def _fetch_fund(self, fund: str) -> pd.DataFrame:
+    def _fetch_workbook(self, fund: str) -> bytes:
+        """One incumbent HTTP/retry owner for legacy and explicit acquisition."""
         r = self.http_get(SSGA_XLSX.format(fund=fund.lower()), retries=3, timeout=60,
                           headers={"User-Agent": "Mozilla/5.0 (research)"})
-        # keep_default_na=False: 'NA' is a live listing (Nano Labs; National Bank of
-        # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
-        raw = pd.read_excel(io.BytesIO(r.content), header=None,
-                            keep_default_na=False, na_values=[""])
-        # find the header row ("Name", "Ticker", ...) and the as-of date above it
+        return r.content
+
+    def _fetch_fund(self, fund: str) -> pd.DataFrame:
+        """Live acquisition: the incumbent fetch owner plus capture provenance.
+
+        The EXACT response body handed to the parser — the decoded XLSX
+        content, not the raw wire bytes — is what a capture is identified by:
+        its digest and length travel with every stored row. ONE aware-UTC
+        instant is read after the response arrived, so the retrieval time and
+        any fallback index date can never disagree.
+        """
+        content = self._fetch_workbook(fund)
+        digest = hashlib.sha256(content).hexdigest()
+        retrieved_at = _utc_now()
+        if retrieved_at.tzinfo is None:
+            raise ValueError("sector holdings capture clock must be an aware datetime")
+        retrieved_at = retrieved_at.astimezone(timezone.utc)
+        return _snapshot_from_workbook(
+            content,
+            capture={
+                "capture_fund": fund,
+                "capture_source_url": SSGA_XLSX.format(fund=fund.lower()),
+                "capture_content_sha256": digest,
+                "capture_content_bytes": len(content),
+                "capture_retrieved_at": retrieved_at,
+            })
+
+    @classmethod
+    def capture_from_inputs(cls, *, sponsors, evaluated_at: datetime, clock):
+        """Acquire detached workbook-bound values; no config/store/history load.
+
+        The caller supplies the captured sponsor choices and observation clock.
+        Evaluation, document and observed capture times remain distinct. No
+        publication time is inferred from a document date or HTTP response.
+        """
+        from collections.abc import Mapping
+        if not isinstance(sponsors, Mapping) or not callable(clock):
+            raise HoldingsCaptureError("holdings_explicit_inputs_required")
+        captured_config = copy.deepcopy(dict(sponsors))
+        values = captured_config.get("sector_funds")
+        if (not isinstance(values, (list, tuple)) or not 0 < len(values) <= 11
+                or any(type(f) is not str or re.fullmatch(r"[A-Z0-9]{1,12}", f) is None
+                       for f in values) or len(set(values)) != len(values)):
+            raise HoldingsCaptureError("holdings_funds_invalid")
+        funds = tuple(values)
+        evaluated = _holdings_instant(evaluated_at)
+        from lib.market_session import market_local_date
+        evaluation_day = market_local_date("US", now=evaluated)
+        adapter = object.__new__(cls)  # The legacy __init__ loads ambient config.
+        snapshots, evidence, workbooks = {}, {}, {}
+        previous_capture = evaluated
+        for fund in funds:
+            raw, acquisition_error = None, None
+            try:
+                raw = adapter._fetch_workbook(fund)
+            except Exception as exc:  # Existing HTTP owner has exhausted its retries.
+                acquisition_error = exc
+            captured_at = _holdings_instant(clock())
+            if captured_at < previous_capture:
+                raise HoldingsCaptureError("holdings_capture_clock_regressed")
+            previous_capture = captured_at
+            fact = {
+                "origin": SSGA_XLSX.format(fund=fund.lower()),
+                "evaluated_at": evaluated.isoformat(),
+                "captured_at": captured_at.isoformat(),
+                "published_at": None,
+                "document_date": None, "sha256": None, "byte_length": None,
+            }
+            snapshots[fund], workbooks[fund] = None, None
+            if acquisition_error is not None:
+                response = getattr(acquisition_error, "response", None)
+                fact.update(
+                    outcome="absent" if getattr(response, "status_code", None) == 404
+                    else "unreadable",
+                    reason="http_" + type(acquisition_error).__name__)
+            else:
+                try:
+                    if type(raw) is not bytes or not 0 < len(raw) <= MAX_HOLDINGS_WORKBOOK_BYTES:
+                        raise HoldingsCaptureError("holdings_workbook_encoded_bound")
+                    workbooks[fund] = raw
+                    fact.update(sha256=hashlib.sha256(raw).hexdigest(), byte_length=len(raw))
+                    day_limit = min(evaluation_day, market_local_date("US", now=captured_at))
+                    snap = _snapshot_from_workbook(raw, strict_day=day_limit)
+                    snapshots[fund] = snap.copy(deep=True)
+                    fact.update(outcome="present", reason=None,
+                                document_date=snap.index[0].date().isoformat())
+                except HoldingsCaptureError as exc:
+                    fact.update(outcome="malformed", reason=str(exc))
+            evidence[fund] = fact
+        return SectorHoldingsCapture(
+            evaluated, previous_capture, snapshots, evidence, workbooks)
+
+
+MAX_HOLDINGS_WORKBOOK_BYTES = 8 * 1024 * 1024
+MAX_HOLDINGS_XML_BYTES = 32 * 1024 * 1024
+MAX_HOLDINGS_ZIP_MEMBERS = 256
+MAX_HOLDINGS_ROWS = 10000
+MAX_HOLDINGS_COLUMNS = 64
+MAX_HOLDINGS_CELLS = 200000
+
+
+class HoldingsCaptureError(ValueError):
+    """An explicit capture cannot establish a bounded, dated holdings value."""
+
+
+@dataclass(frozen=True)
+class SectorHoldingsCapture:
+    evaluated_at: datetime
+    captured_at: datetime
+    _snapshots: dict
+    _evidence: dict
+    _workbooks: dict
+
+    @property
+    def snapshots(self) -> dict:
+        return {fund: None if frame is None else frame.copy(deep=True)
+                for fund, frame in self._snapshots.items()}
+
+    @property
+    def evidence(self) -> dict:
+        return copy.deepcopy(self._evidence)
+
+    @property
+    def workbooks(self) -> dict:
+        return dict(self._workbooks)  # Byte values are immutable.
+
+    @property
+    def available(self) -> bool:
+        return any(frame is not None for frame in self._snapshots.values())
+
+    def assembly_arguments(self) -> dict:
+        return {"holdings": self.snapshots, "holdings_evidence": self.evidence}
+
+
+def _holdings_instant(value) -> datetime:
+    if not isinstance(value, datetime):
+        raise HoldingsCaptureError("holdings_aware_instant_required")
+    try:
+        if value.tzinfo is None or value.utcoffset() is None or pd.isna(value):
+            raise ValueError
+        return value.astimezone(timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        raise HoldingsCaptureError("holdings_aware_instant_required") from None
+
+
+def _bounded_holdings_workbook(content: bytes) -> None:
+    """Bound the XLSX envelope and worksheet geometry before the real parser."""
+    import zipfile
+    import xml.etree.ElementTree as ET
+    from pathlib import PurePosixPath
+
+    def coordinate(value):
+        match = re.fullmatch(r"([A-Z]+)([1-9][0-9]*)", value)
+        if match is None:
+            raise HoldingsCaptureError("holdings_workbook_geometry_invalid")
+        column = 0
+        for letter in match[1]:
+            column = column * 26 + ord(letter) - ord("A") + 1
+        if column > MAX_HOLDINGS_COLUMNS or int(match[2]) > MAX_HOLDINGS_ROWS:
+            raise HoldingsCaptureError("holdings_workbook_geometry_bound")
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(content)) as archive:
+            members = archive.infolist()
+            if (not 0 < len(members) <= MAX_HOLDINGS_ZIP_MEMBERS
+                    or len({m.filename for m in members}) != len(members)
+                    or sum(m.file_size for m in members) > MAX_HOLDINGS_XML_BYTES):
+                raise HoldingsCaptureError("holdings_workbook_archive_bound")
+            cells = 0
+            for member in members:
+                name = member.filename
+                if (member.flag_bits & 1 or name.startswith("/") or "\\" in name
+                        or ".." in PurePosixPath(name).parts):
+                    raise HoldingsCaptureError("holdings_workbook_archive_invalid")
+                with archive.open(member) as stream:
+                    raw = stream.read(MAX_HOLDINGS_XML_BYTES + 1)
+                if len(raw) != member.file_size or len(raw) > MAX_HOLDINGS_XML_BYTES:
+                    raise HoldingsCaptureError("holdings_workbook_archive_bound")
+                if name.endswith((".xml", ".rels")):
+                    upper = raw.upper()
+                    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+                        raise HoldingsCaptureError("holdings_workbook_xml_invalid")
+                if not (name.startswith("xl/worksheets/") and name.endswith(".xml")):
+                    continue
+                for event, element in ET.iterparse(io.BytesIO(raw), events=("start", "end")):
+                    if event == "end":
+                        element.clear()
+                        continue
+                    tag = element.tag.rsplit("}", 1)[-1]
+                    if tag == "dimension":
+                        for endpoint in element.attrib.get("ref", "").split(":"):
+                            coordinate(endpoint)
+                    elif tag == "row":
+                        number = element.attrib.get("r", "")
+                        if not number.isdigit() or not 0 < int(number) <= MAX_HOLDINGS_ROWS:
+                            raise HoldingsCaptureError("holdings_workbook_geometry_bound")
+                    elif tag == "c":
+                        coordinate(element.attrib.get("r", ""))
+                        cells += 1
+                        if cells > MAX_HOLDINGS_CELLS:
+                            raise HoldingsCaptureError("holdings_workbook_cell_bound")
+    except HoldingsCaptureError:
+        raise
+    except Exception:
+        raise HoldingsCaptureError("holdings_workbook_invalid") from None
+
+
+def _complete_holdings_date(value: str) -> date:
+    """Require all calendar components; never infer a current year/month/day."""
+    value = " ".join(value.split())
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%m/%d/%Y",
+                "%d-%b-%Y", "%d-%B-%Y", "%d %b %Y", "%d %B %Y",
+                "%b %d %Y", "%B %d %Y", "%b %d, %Y", "%B %d, %Y"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    raise HoldingsCaptureError("holdings_document_date_invalid")
+
+
+def _snapshot_from_workbook(content, *, strict_day: date | None = None,
+                            capture: dict | None = None) -> pd.DataFrame:
+    """Shared original transform, with strict capture validation around it.
+
+    ``strict_day`` (explicit-inputs acquisition) validates the workbook
+    envelope, geometry, identities and the issuer's document date against the
+    evaluation day. ``capture`` (live acquisition provenance) carries the
+    response identity — url/digest/bytes/retrieved-at — of one live fetch; the
+    snapshot's index date then comes from the issuer's own as-of claim,
+    refused when malformed or conflicting, or from the labelled retrieval
+    fallback, and every row is stamped with the reserved capture block.
+    """
+    strict = strict_day is not None
+    if strict:
+        _bounded_holdings_workbook(content)
+    try:
+        # 'NA' is a real ticker; only genuinely blank cells are missing.
+        options = {"nrows": MAX_HOLDINGS_ROWS} if strict else {}
+        raw = pd.read_excel(io.BytesIO(content), header=None,
+                            keep_default_na=False, na_values=[""], **options)
+        if strict and (raw.empty or raw.shape[1] < 2
+                       or raw.shape[1] > MAX_HOLDINGS_COLUMNS):
+            raise HoldingsCaptureError("holdings_workbook_shape_invalid")
         hdr_idx = raw.index[raw.iloc[:, 0].astype(str).str.strip() == "Name"]
         if not len(hdr_idx):
             raise ValueError("holdings header row not found")
-        asof = str(date.today())
-        for i in range(hdr_idx[0]):
-            cell = str(raw.iloc[i, 1])
-            if "As of" in cell:
-                asof = str(pd.to_datetime(cell.replace("As of", "").strip()).date())
+        if strict and len(hdr_idx) != 1:
+            raise HoldingsCaptureError("holdings_header_ambiguous")
+        issuer_as_of = None
+        date_origin = None
+        asof = None if (strict or capture is not None) else str(date.today())
+        if capture is not None:
+            # A stated issuer date is admitted only when it is unambiguous and
+            # valid; a malformed or conflicting one refuses the capture before
+            # anything is written (see _issuer_as_of).
+            issuer_as_of = _issuer_as_of(raw, int(hdr_idx[0]))
+            retrieved_at = capture["capture_retrieved_at"]
+            if issuer_as_of is None:
+                # No issuer date stated: the index date is the retrieval date,
+                # deterministically at midnight, and it is LABELLED as a
+                # retrieval fallback so it is never read as an issuer-effective
+                # date.
+                asof = str(retrieved_at.date())
+                date_origin = DATE_ORIGIN_RETRIEVAL_FALLBACK
+            else:
+                asof = str(issuer_as_of)
+                date_origin = DATE_ORIGIN_ISSUER_REPORTED
+        else:
+            dates = []
+            for i in range(hdr_idx[0]):
+                cell = str(raw.iloc[i, 1])
+                if "As of" in cell:
+                    date_text = cell.replace("As of", "").strip()
+                    parsed = (pd.Timestamp(_complete_holdings_date(date_text)) if strict
+                              else pd.to_datetime(date_text))
+                    asof = str(parsed.date())
+                    dates.append(parsed.date())
+            if strict:
+                if not dates:
+                    raise HoldingsCaptureError("holdings_document_date_missing")
+                if len(dates) != 1:
+                    raise HoldingsCaptureError("holdings_document_date_ambiguous")
+                if dates[0] > strict_day:
+                    raise HoldingsCaptureError("holdings_document_date_future")
         df = raw.iloc[hdr_idx[0] + 1:].copy()
-        df.columns = [str(c).strip().lower().replace(" ", "_") for c in raw.iloc[hdr_idx[0]]]
+        columns = [str(c).strip().lower().replace(" ", "_") for c in raw.iloc[hdr_idx[0]]]
+        if strict and (len([c for c in columns if "weight" in c]) != 1
+                       or columns.count("ticker") != 1 or columns.count("name") != 1
+                       or len(set(c for c in columns if c != "nan")) != len([c for c in columns if c != "nan"])):
+            raise HoldingsCaptureError("holdings_columns_ambiguous")
+        df.columns = columns
         df = df.rename(columns={"weight": "weight_pct"})
         wcol = next((c for c in df.columns if "weight" in c), None)
         if wcol is None or "ticker" not in df.columns:
             raise ValueError(f"unexpected columns: {list(df.columns)[:6]}")
+        if strict:
+            members = df[df["ticker"].notna() & (df["ticker"] != "-")]
+            identities = []
+            for _, row in members.iterrows():
+                ticker = row["ticker"]
+                if type(ticker) is not str or not 0 < len(ticker.strip()) <= 32 or ticker.strip() == "-":
+                    raise HoldingsCaptureError("holdings_identity_invalid")
+                identities.append(ticker.strip())
+                weight = row[wcol]
+                try:
+                    number = pd.to_numeric(weight, errors="raise")
+                    if isinstance(weight, bool) or not math.isfinite(float(number)) or not 0 <= float(number) <= 100:
+                        raise ValueError
+                except (TypeError, ValueError, OverflowError):
+                    raise HoldingsCaptureError("holdings_weight_invalid") from None
+            if len(set(identities)) != len(identities):
+                raise HoldingsCaptureError("holdings_identity_duplicate")
         df["weight_pct"] = pd.to_numeric(df[wcol], errors="coerce")
         df = (df.dropna(subset=["weight_pct", "ticker"])
                 .query("ticker != '-'")
@@ -136,7 +609,32 @@ class SectorHoldingsAdapter(Adapter):
             "rank": range(1, len(df) + 1),
         })
         out.index = pd.to_datetime([asof] * len(out))
+        if strict and out.empty:
+            raise HoldingsCaptureError("holdings_snapshot_empty")
+        if capture is not None:
+            # The same capture block on EVERY incoming row, so each row is
+            # self-describing and no separate artifact can drift away from it.
+            block = {
+                "capture_schema_version": CAPTURE_SCHEMA_VERSION,
+                "capture_fund": capture["capture_fund"],
+                "capture_source_url": capture["capture_source_url"],
+                "capture_content_sha256": capture["capture_content_sha256"],
+                "capture_content_bytes": int(capture["capture_content_bytes"]),
+                "capture_retrieved_at": capture["capture_retrieved_at"].isoformat(),
+                "capture_issuer_as_of": (issuer_as_of.isoformat()
+                                         if issuer_as_of is not None else None),
+                "capture_date_origin": date_origin,
+            }
+            for column, value in block.items():
+                out[column] = value
         return out
+    except HoldingsCaptureError:
+        raise
+    except Exception:
+        if strict:
+            raise HoldingsCaptureError("holdings_workbook_parse_failed") from None
+        raise
+
 
 def top10_union() -> list[str]:
     """Union of current top-N holdings tickers across all sectors (price feed).

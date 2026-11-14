@@ -2,7 +2,7 @@
 
 Producer-level string composition for the signed-in hub: the what-changed
 receipt, Explore chips, China/HK stock-card labels, the IPO lock-up
-line, and the hero snapshot clock-wrap. Full-page render is skipped in a
+line, and the hero website-status badge. Full-page render is skipped in a
 sparse tree (no data/ / site/).
 """
 from __future__ import annotations
@@ -411,74 +411,46 @@ def test_g_vectors_ipo_line_uses_company_name():
     assert "coming soon" not in html
 
 
-def test_hub_hero_uses_loading_skeleton_not_em_dash():
-    vm = {"risk_on": False, "risk_word": "OFF", "risk_index": 39, "momentum": -0.8,
-          "built": "2026-06-14"}
+def test_hub_hero_shows_bilingual_site_status_without_a_build_date():
+    vm = {"risk_on": False, "risk_word": "OFF", "risk_index": 39,
+          "momentum": -0.8, "built": "2026-06-14"}
     html = bv._hub_html(
         vm, {"label": "Goldilocks", "date": "2026-06-12"}, [],
         commodities={"present": False}, forex={"present": False},
         bonds={"present": False}, etf={"present": False},
         watchlist={"present": False})
-    assert "hub-snapshot-meta" in html
-    assert "hub-live-meta" not in html
-    assert "hub-clock-skel" in html
-    assert 'class="hub-clock-skel skel"' in html
-    assert 'class="hub-clock-static"' in html
-    assert "Page built" in html
-    assert "页面生成于" in html
-    assert 'data-asof="2026-06-14"' in html
-    assert "Jun 14, 2026" in html
-    assert "2026年6月14日" in html
-    assert "Live · —" not in html
-    assert "实时 · —" not in html
-    assert "Live ·" not in html
+    badge = html.split('<div class="hub-snapshot-meta">', 1)[1].split("</header>", 1)[0]
+    assert 'class="hub-site-status"' in badge
+    assert 'class="snapshot-dot" aria-hidden="true"' in badge
+    assert '<span class="l-en">SITE LIVE</span>' in badge
+    assert '<span class="l-zh">网站运行中</span>' in badge
+    assert "Page built" not in badge and "页面生成于" not in badge
+    assert "2026-06-14" not in badge
+    assert "data-asof" not in badge
+    assert "hub-clock-wrap" not in badge
+    assert 'querySelector(".hub-clock-wrap")' not in html
     assert "setInterval" not in html
-    assert "hub-clock-wrap" in html
-    assert "is-live" in html  # JS adds the class after revealing the baked as-of
-    # No-JS / never-ran: the snapshot WORD is outside .hub-clock-live so the
-    # CSS that hides the live stamp until is-live cannot blank the cell.
-    assert ".hub-clock-wrap.is-live .hub-clock-static{display:none}" in html
-    assert "@media(scripting:none){.hub-clock-skel{display:none}}" in html
     assert ".sb-tickers-code{font-family:var(--font-mono)}" in html
-    # JS-enabled-but-IIFE-crashed: stamp no-clock, hide skeleton + live stamp,
-    # keep the static snapshot word (a snapshot label is still true without a date).
-    assert 'function fail(){if(wrap&&!wrap.classList.contains("is-live"))wrap.classList.add("no-clock");}' in html
-    assert "setTimeout(fail,2000);" in html
-    assert "}catch(e){fail();}" in html
-    assert ".hub-clock-wrap.no-clock .hub-clock-skel" in html
-    assert ".hub-clock-wrap.no-clock .hub-clock-live{display:none}" in html
-    assert ".hub-clock-wrap.no-clock .hub-clock-static{display:none}" not in html
-    # Receipt line is prose in the UI face; mono stays on ticker codes only.
-    assert ".ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}" in html
-    assert "ha-read{font-family:var(--font-mono)" not in html
 
 
-def test_reconciled_hub_keeps_snapshot_shell_and_h1_clock_wrap():
-    """RED on pre-merge head 4f0a6d4a5b: that head emitted hub-live-meta + Live
-    and ticked the viewer's clock. origin/main's hub-snapshot-meta had no
-    clock-wrap skeleton. The merge must carry both: main's snapshot shell and
-    H1's clock-wrap states, with a baked civil as-of (no setInterval).
-    """
-    vm = {"risk_on": True, "risk_word": "ON", "risk_index": 2, "momentum": 0.63,
-          "built": "2026-09-18"}
-    html = bv._hub_html(
-        vm, {"label": "Goldilocks", "date": "2026-09-12"}, [],
-        commodities={"present": False}, forex={"present": False},
-        bonds={"present": False}, etf={"present": False},
-        watchlist={"present": False})
-    assert 'class="hub-snapshot-meta"' in html
-    assert "snapshot-dot" in html
-    assert "hub-clock-wrap" in html
-    assert "hub-clock-skel" in html
-    assert "Page built" in html
-    assert "页面生成于" in html
-    assert 'data-asof="2026-09-18"' in html
-    assert "Sep 18, 2026" in html
-    clock_js = html.split("querySelector(\".hub-clock-wrap\")", 1)[-1].split("hub-welcome.js", 1)[0]
-    assert "new Date()" not in clock_js
-    assert "setInterval" not in clock_js
-    assert "livepulse" not in html
-    assert "hub-live-meta" not in html
+def test_hub_site_status_does_not_claim_market_snapshot_freshness():
+    badges = []
+    for built in ("2026-09-18", "2026-06-14", ""):
+        html = bv._hub_html(
+            {"risk_on": True, "risk_word": "ON", "risk_index": 2,
+             "momentum": 0.63, "built": built},
+            {"label": "Goldilocks", "date": "2026-09-12"}, [],
+            commodities={"present": False}, forex={"present": False},
+            bonds={"present": False}, etf={"present": False},
+            watchlist={"present": False})
+        badge = html.split('<div class="hub-snapshot-meta">', 1)[1].split("</header>", 1)[0]
+        badges.append(badge)
+        assert "Page built" not in badge and "页面生成于" not in badge
+        assert "Latest market snapshot" not in badge
+        assert "Live ·" not in badge and "实时 ·" not in badge
+        assert "hub-live-meta" not in badge
+    assert badges[0] == badges[1] == badges[2]
+
 
 
 def _what_changed_alert(i=0):
