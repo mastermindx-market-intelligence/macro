@@ -38,3 +38,15 @@ returns are another company's.
 replaced; a vendor replacement series is being checked.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+## Correction (2026-11-13)
+
+Source: https://github.com/mastermindx-market-intelligence/macro/pull/11099#issuecomment-6843885382
+
+**Correction to this note (2026-11-13).**
+
+The SUPN file is not corrupt. At the 2026-11-02 merger the SUPN ticker passed to the surviving registrant, Indivior Pharmaceuticals, Inc., renamed Supernus, Inc. and trading as SUPN from 2026-11-03 ([Supernus press release, 2026-11-02](https://ir.supernus.com/news-releases/news-release-details/supernus-and-indivior-complete-merger-creating-diversified-cns)). Yahoo and Tiingo now serve that survivor's full price history under SUPN.
+
+Pre-merger Supernus Pharmaceuticals, Inc. was delisted, with each share exchanged for 1.5401 Indivior shares. Its own history is no longer served under SUPN, so any history for it before 2026-11-02 must come from a snapshot taken before the reassignment.
+
+A current pull of SUPN history dated before 2026-11-03 is therefore the survivor's history (formerly Indivior), not Supernus Pharmaceuticals'.
