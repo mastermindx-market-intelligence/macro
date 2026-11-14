@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T13:11:32.305147+00:00",
-  "count": 3367,
+  "generated_at": "2026-11-14T15:11:47.766947+00:00",
+  "count": 3373,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -323,6 +323,26 @@
       "tickers": [],
       "top_pick": false,
       "pages": 16,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-3lru6xjaafz-88693a",
+      "title": "BofA Morning Market Tidbits Adding another hike to our Fed call",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T18:35:47Z",
+      "summary_points": [
+        "Fed Hike Timeline: 25bp hikes at Dec, Jan, Mar '27 targeting 4.5-4.75% terminal rate, driven by inflation lag post-Oct CPI.",
+        "Policy Gap: Markets price ~50bp hikes next two meetings; Fed may delay/skip last hike if data softens or financial tightening intensifies.",
+        "GDP Beat: US GDP tracking unchanged at 3.9% q/q (exceeding BoFA's 3.4% forecast), driven by strong Final Sales (5.0%) and PCE (3.8%).",
+        "PPI & Speakers: Oct PPI estimate (0.3%) below prior (0.7%) signals slowing inflation; Fed speakers (Jefferson, Logan, Bowman, Collins, Daly) to shape policy expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -794,6 +814,21 @@
       "needs_metadata": false
     },
     {
+      "id": "marketdesk-9d5exjf2yte-bcd21c",
+      "title": "GS Global Equities Call GS Global Equities Call 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:51:33Z",
+      "summary_points": [],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 10,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
       "id": "marketdesk-fqf9cgsdzif-4103b6",
       "title": "GS Blekos GS 2027 Outlooks Global Equity Outlook Global Macro Outlook Nvidia Siemens Semicon Takes Ottobock Zealand Global Transport Europe Banks Tracker 13 Nov 2026",
       "institution": "S&T",
@@ -907,6 +942,27 @@
       "tickers": [],
       "top_pick": false,
       "pages": 74,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-wsjcaxpbejq-7f2942",
+      "title": "BofA Hartnett The Flow Show Why save, why short, why risk off",
+      "institution": "Bank of America",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T12:02:41Z",
+      "summary_points": [
+        "Equity Inflows vs.",
+        "Contrarian Signals: $98.3bn global equity inflows (largest since Jun'26) conflict with BoFA Bull & Bear Indicator at 7.4 (Sell zone), signaling extreme positioning despite risk-off dynamics.",
+        "Rate Hike Timeline & Liquidity Retreat: Global tightening cycle ends Apr 2027; US$ surge/gold < $54k indicates liquidity retreat, with oil down 15% and cyclical sectors pressured.",
+        "Inflation Policy Risk: Small businesses planning price hikes (highest since Jul'22) strongly correlate with ≥3.4% CPI; Fed’s credibility eroded by missed rate hike dates (Dec 9, Jan 27, Mar 17).",
+        "Cash Levels & Complacency: Cash at 3.9%-4.2% amid $1.4tn annualized equity inflows and \"boom\" expectations (47% institutional decline), indicating minimal risk aversion."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 14,
       "language": "en",
       "needs_metadata": false
     },
@@ -1144,6 +1200,46 @@
       "tickers": [],
       "top_pick": true,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-nil3lx8ka7p-b49e03",
+      "title": "GS Utilities Daily Siemens Energy Higher growth & returns of value with scope for further upgrades United Utilities Grou...",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T04:29:00Z",
+      "summary_points": [
+        "Siemens Energy: FY 2030 targets upgraded 7% with 4-5x EV/EBITDA New guidance (16% top-end profit margin before Special Items) driven by backlog margins, operational excellence, Siemens Gamesa turnaround, and trademark fee removal; capital allocation shifts to 40-60% dividends/buybacks (€27bn returns of value, 25% market cap).",
+        "Germany’s coal/oil plant legislation: Policy shift risks decarbonization Draft law mandates 30-day fuel reserves for coal/oil plants (vs 10 days for oil) until 2028, increasing fossil fuel reliance and creating supply chain risks amid gas shortages.",
+        "Saudi-Turkey Wind Infrastructure Deal: 3GW renewables partnership 3GW wind + BESS + HVDC under COP31 agreement (part of 5GW renewables deal), accelerating clean energy infrastructure investment and creating near-term opportunities.",
+        "European Electrification Acceleration: Power demand +5% pa Hyper-electrification scenario drives power demand growth, tripling PowerGen investments to €2tn; electrification spending to €3.5tn by 2026-35, requiring strong balance sheets for outperformance."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 8,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-huwifso5ohn-b6c9f2",
+      "title": "mfse fly",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T04:00:33Z",
+      "summary_points": [
+        "Market Concentration at Record Levels: Top 10 S&P 500 firms hold 38% of index (near historic highs), US equities dominate MSCI World (70%), with semiconductors (17%) and IT (38%) showing extreme sector concentration.",
+        "Geopolitical Fragmentation Drives Divergent Risks: US-China strategic competition (semiconductors, AI, critical minerals) intensifies export controls, forcing global vs. domestic-focused firms to face materially different risks (market access, capital allocation).",
+        "AI Benefits Unevenly Distributed: Adoption alone does not yield uniform benefits; key differentiators are proprietary data access, workflow integration, regulatory expertise, and execution quality—only select firms strengthen via AI.",
+        "Selectivity Essential Amid Structural Shifts: Extreme concentration, geopolitical fragmentation, and uneven AI impact necessitate deep company-specific analysis to navigate winner/loser gaps and identify adaptable firms for long-term value."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
@@ -1507,6 +1603,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 20,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-cms58ui0vfo-81feab",
+      "title": "USA Existing Home Sales Somewhat Below Expectations",
+      "institution": "Goldman Sachs",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-12T22:03:49Z",
+      "summary_points": [
+        "Housing Sales Collapse: Existing home sales fell 5.5% MoM (3.75m units), missing forecast (-3.5%) and hitting lowest level since July 2010.",
+        "Price Decline: Median home price declined 0.3% MoM, signaling sustained weakness in housing market dynamics.",
+        "GDP Downgrade: Q4 GDP tracking estimate lowered by 0.1pp to +1.8%, reflecting deteriorating economic momentum."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 4,
       "language": "en",
       "needs_metadata": false
     },
