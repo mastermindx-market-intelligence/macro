@@ -1,0 +1,68 @@
+{
+  "schema": "c4.alfred.source-qualification.v1",
+  "pr": 10783,
+  "publication_branch": "codex/market-memory-alfred-revision-context-20261105",
+  "expected_original_head": "15e96ba9aee817351fa0468e39a1704700749ab1",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "qualification_operation": "github-pr-sweep-2028-c4-pr10783-repair",
+  "qualifier_branch_push_permitted": false,
+  "mastermind_law_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "source_blobs": {
+    "contracts/market_memory/alfred_revision_source_context.v1.schema.json": "02b90778f00bb8ce78d07529fa37de685a7db340",
+    "engine/neuralweb/brain_analogues.py": "f8b05b1b0d87358fe108d60ff306c955dcd56bcc",
+    "engine/neuralweb/market_memory_alfred_revision_evidence.py": "8152fb18f55a0e6a9a2389d33e4ac50ae3cdcaf3",
+    "tests/test_market_memory_alfred_revision_evidence.py": "85535c10e400f35a92f5a0e9e5479216882e3a82",
+    ".github/ci/legacy-jobs.yml": "63c6081c7afd73a1e59295956af8e3e21a5876bc"
+  },
+  "all_four_product_schema_test_blobs_retained": true,
+  "all_75_feature_dependency_additions_retained": true,
+  "feature_dependency_owner_count": 25,
+  "focused_suite_steps_retained": true,
+  "all_other_job_metadata_exact_current_main": true,
+  "current_main_paths_order_and_duplicates_retained": true,
+  "job_count": 388,
+  "unrun_picks_gate": "data",
+  "new_main_earnings_worker_job_retained": true,
+  "local_existing_static_cases": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "cfe6a17f29a50d1745326172e51c3ffdfa376494bae858086450a54f79c9ffcc"
+  },
+  "reused_prior_evidence": {
+    "focused_cases": 74,
+    "actual_readonly_native_source_to_brain": true,
+    "newly_executed": false,
+    "source_return": "https://github.com/mastermindx-market-intelligence/Macro/pull/10783#issuecomment-6673982077"
+  },
+  "private_source_read_or_runtime_effects": false,
+  "historical_review_only": 5794320222,
+  "fresh_hosted_ci": "pending original-branch publication",
+  "merge_or_production_acceptance": false,
+  "files": {
+    "README.md": {
+      "bytes": 2064,
+      "sha256": "846331ab4aeabe8e5b62738b449e90acde27f7643a0e1c9d0694249480cda990"
+    },
+    "current-main-merge.json": {
+      "bytes": 2565,
+      "sha256": "25119b4b1418cf0691cce1c16c10b23415eb2008714d2cb2117abc09cdd64751"
+    },
+    "current-source-composition.json": {
+      "bytes": 6322,
+      "sha256": "34f4660f9e822218d1397e8125785fb7f8ed618ef99a99ec0b56fde25e8a5624"
+    },
+    "focused-manifest-tests.json": {
+      "bytes": 1746,
+      "sha256": "da063efe4f285be157b333eeb0cb32cafa34b44f560fe77c51d642b901cceae8"
+    },
+    "focused-manifest-tests.log": {
+      "bytes": 110,
+      "sha256": "cfe6a17f29a50d1745326172e51c3ffdfa376494bae858086450a54f79c9ffcc"
+    },
+    "manifest-conflict-inspection.json": {
+      "bytes": 10839,
+      "sha256": "575d3cfcf0c65e37b14bc735acf486614d3c829aaa8bf6c761227a5ea11eeed4"
+    }
+  }
+}

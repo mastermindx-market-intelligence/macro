@@ -678,3 +678,21 @@ RETAINED_CATALOG_TOOL_SCHEMA: dict = {
             "generation_id": {"type": "string"}, "generation_sha256": {"type": "string"},
         }, "required": []},
 }
+
+
+def get_alfred_revision_source_context(capability) -> dict:
+    """Return the owner-disclosed ALFRED revision source context.
+
+    This projection consumes a genuine sealed native capability produced by
+    ``engine.neuralweb.market_memory_alfred_revision_evidence``.  The source
+    owner discloses the closed, display-only context after its own current
+    state checks; a changed source, receipt, canonical file or module denies
+    the disclosure instead of refreshing or repinning anything.
+
+    It registers no tool, no tool schema, no allowlist entry and no route.
+    Source-only retrospective evidence is not customer disclosure, not a
+    feature projection and not a study admission.
+    """
+    from engine.neuralweb import market_memory_alfred_revision_evidence as evidence
+
+    return evidence.disclose_alfred_revision_evidence(capability)

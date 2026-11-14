@@ -342,6 +342,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -1613,6 +1617,10 @@ jobs:
     # reads by a joined path the resolver cannot derive.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -2530,6 +2538,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -3624,6 +3636,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8308,6 +8324,10 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -9460,6 +9480,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -12639,6 +12660,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -17341,6 +17366,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -18878,6 +18907,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/research_factory/market_memory_e0_*.py"
       - "engine/research_factory/market_memory_contextual_registration.py"
       - "tests/test_market_memory_e0_*.py"
@@ -19844,6 +19877,9 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -24794,6 +24830,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/us_board_snapshots.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -28522,6 +28561,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
@@ -29386,6 +29426,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31829,6 +31870,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -34614,6 +34659,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -36534,6 +36580,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -38060,6 +38109,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       - "engine/us_board_snapshots.py"
       - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
@@ -41233,6 +41283,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41792,6 +41843,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -43358,6 +43410,7 @@ jobs:
           tests/test_market_memory.py
           tests/test_market_memory_pit.py
           tests/test_market_memory_sources.py
+          tests/test_market_memory_alfred_revision_evidence.py
           tests/test_market_memory_source_deploy.py
           tests/test_market_memory_m0d_v2.py
           tests/test_market_memory_identity.py
@@ -44655,6 +44708,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -44796,6 +44853,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
@@ -44948,6 +45009,10 @@ jobs:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
       - "lib/cn_calendar.py"
@@ -45239,6 +45304,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -46534,6 +46603,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_source_kernel.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51992,6 +52065,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/release_target_truth.py"
+      - "engine/neuralweb/market_memory_sources.py"
+      - "engine/neuralweb/market_memory_alfred_revision_evidence.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"

@@ -1,0 +1,343 @@
+{
+  "schema": "c4.alfred.manifest-conflict-inspection.v1",
+  "head": "15e96ba9aee817351fa0468e39a1704700749ab1",
+  "integration_base": "ede58e46e40d454613b06ef0fbf1fb0f139d24a9",
+  "manifest_stage_blobs": {
+    "common": "15ae470e3b8b6bebf622948c824f331530ce663a",
+    "published": "fabea05afcff166fb8c3888739edf1d46f6a55d3",
+    "current-main": "1d9aa5eb38c327ccb33f347ec176159d76c7a185"
+  },
+  "job_counts": {
+    "common": 387,
+    "published": 387,
+    "current_main": 388
+  },
+  "top_level_nonjobs_equal": true,
+  "feature_delta": {
+    "bea-gvc-current-descriptive-consumer": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "biocatalyst-history": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "biocatalyst-serving": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "c19-wp22-dhi-traversal": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "c19-wp32-integrated-answer-correction-denial-pins": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "catalyst-loop-integrated": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "crypto-assistant-context": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "dataos-foundation": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "dataos-verification": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "dataos-web-workspace": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "eval-os-a1": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "fif-kernel-guards": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "flow-surface": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "live-flow-recovery-guards": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "market-memory-contract": {
+      "paths_added": [],
+      "paths_removed": [],
+      "nonpath_differing_fields": [
+        "steps"
+      ],
+      "added_job": false,
+      "removed_job": false
+    },
+    "market-memory-e0-contract": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "nw-lobe-unfreeze": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "ontology-explorer": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "options-matrix-code": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "qledger-cluster-honest-ci": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "research-price-panel": {
+      "paths_added": [
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "ticker-news-qbus": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_source_kernel.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "unrun-government-revenue-candidate-projection": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "unrun-government-revenue-grader": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "unrun-picks-boards": {
+      "paths_added": [
+        "engine/release_target_truth.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "washout-turn-organ": {
+      "paths_added": [
+        "engine/release_target_truth.py",
+        "engine/neuralweb/market_memory_sources.py",
+        "engine/neuralweb/market_memory_alfred_revision_evidence.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    }
+  },
+  "incoming_main_changed_jobs": 5,
+  "incoming_main_overlap_with_feature": {
+    "unrun-picks-boards": {
+      "paths_added": [
+        "engine/rate_futures_repricing.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [],
+      "added_job": false,
+      "removed_job": false
+    },
+    "washout-turn-organ": {
+      "paths_added": [
+        "collectors/rate_futures.py",
+        "engine/rate_futures_repricing.py",
+        "tests/test_prophet_whynot_receipts.py"
+      ],
+      "paths_removed": [],
+      "nonpath_differing_fields": [
+        "steps"
+      ],
+      "added_job": false,
+      "removed_job": false
+    }
+  },
+  "main_added_jobs": [
+    "earnings-worker-systemd"
+  ],
+  "main_removed_jobs": [],
+  "conflicts": [
+    {
+      "owner": "washout-turn-organ",
+      "left": "      - \"engine/release_target_truth.py\"\n      - \"engine/neuralweb/market_memory_sources.py\"\n      - \"engine/neuralweb/market_memory_alfred_revision_evidence.py\"\n",
+      "right": "      - collectors/rate_futures.py\n      - engine/rate_futures_repricing.py\n"
+    },
+    {
+      "owner": "unrun-picks-boards",
+      "left": "      - \"engine/release_target_truth.py\"\n",
+      "right": "      - engine/rate_futures_repricing.py\n"
+    }
+  ]
+}
