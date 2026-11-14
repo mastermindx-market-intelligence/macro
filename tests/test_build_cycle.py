@@ -213,7 +213,7 @@ def test_payload_census_and_shape():
 def test_native_cycle_asset_matches_script_body_without_a_second_compute(tmp_path):
     payload = {"version": 1, "order": ["gold"], "cycles": {"gold": {"bands": []}},
                "notes_as_of": "2026-11-01", "tape_as_of": None}
-    build_cycle._write_engine_assets(tmp_path, payload)
+    build_cycle._write_engine_js(tmp_path, payload)
     assets = tmp_path / "cycledata"
     js = (assets / "cycle_engine.js").read_text(encoding="utf-8")
     native = (assets / "cycle_engine.json").read_text(encoding="utf-8")
@@ -227,7 +227,7 @@ def test_emitted_js_is_valid_and_scripttag(tmp_path):
     if not any(_have(b) for _, b in cp.measured_bands()):
         pytest.skip("no measured tapes on disk")
     payload = build_cycle.compute(ROOT)
-    build_cycle._write_engine_assets(tmp_path, payload)
+    build_cycle._write_engine_js(tmp_path, payload)
     txt = (tmp_path / "cycledata" / "cycle_engine.js").read_text(encoding="utf-8")
     assert txt.startswith("/*") and "window.CYCLE_ENGINE = " in txt
     assert "fetch(" not in txt                          # NEVER a runtime fetch
