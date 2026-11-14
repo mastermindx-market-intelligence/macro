@@ -342,6 +342,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -2530,6 +2532,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -3624,6 +3628,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
@@ -8308,6 +8314,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "engine/options_r5_shock.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
@@ -9460,6 +9468,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/us_prophet_board_view.py"
       - "engine/options_r5_shock.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
@@ -12221,6 +12230,10 @@ jobs:
       - "tests/test_prophet_daily_brief_evidence_sources.py"
       # Native DailyBrief is a read-only projection over the incumbent Today owner.
       - "app/prophet_daily_brief.py"
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
+      - "tests/test_us_prophet_board_view.py"
+      - "tests/test_prophet_board_detail_api.py"
       - "app/main.py"
       - "engine/us_context_vector.py"
       - "scripts/build_stock_library.py"
@@ -12298,7 +12311,9 @@ jobs:
         run: >-
           python -m pytest tests/test_prophet_daily_brief_evidence_sources.py
           tests/test_prophet_today_provenance.py
-          tests/test_prophet_daily_brief_api.py -q
+          tests/test_prophet_daily_brief_api.py
+          tests/test_us_prophet_board_view.py
+          tests/test_prophet_board_detail_api.py -q
       - name: install observation browser
         # See the render-guards install note: bounded --with-deps first, then
         # the browser-only fallback when the hosted Ubuntu archive is down.
@@ -12631,6 +12646,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -17333,6 +17350,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -28514,6 +28533,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/us_prophet_board_view.py"
       - "engine/us_board_snapshots.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
@@ -29378,6 +29398,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/us_prophet_board_view.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -31821,6 +31842,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -34606,6 +34629,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/us_prophet_board_view.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41219,6 +41243,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/us_prophet_board_view.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -41778,6 +41803,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -45225,6 +45252,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "lib/fabric_client.py"
@@ -46520,6 +46549,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
@@ -51978,6 +52009,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "app/prophet_board_detail.py"
+      - "engine/us_prophet_board_view.py"
       - "engine/us_board_snapshots.py"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "engine/theme_graph/activity_history_bridge.py"
