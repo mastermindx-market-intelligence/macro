@@ -4888,6 +4888,15 @@ _MACRO_PROJECT = "macro-dashboard"
 _MACRO_DB = "shared.sqlite"
 _DNR_SOURCE = "research/DO_NOT_REBUILD.md"
 _PROGRAMS_REL = "config/mastermind_programs.yml"
+# This is a source pointer, not a second Initiative catalogue or a membership reader.
+# The original compiler/companion owns validation against the complete Project universe.
+# Keep the protected source revision explicit: a sibling checkout is not proof that this
+# amendment was read, that a selected workstream is assigned, or that coverage is current.
+_INITIATIVE_SOURCE_REL = (
+    "docs/superpowers/specs/"
+    "2026-09-03-linear-initiative-portfolio-v1-temporal-grain-current-epoch-amendment.md"
+)
+_INITIATIVE_SOURCE_REVISION = "6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988"
 # Record repo key -> the project this repo is registered as in the index config.
 _INDEX_PROJECTS = {
     "macro": _MACRO_PROJECT, "terminal": "terminal", "mastermind": "mastermind",
@@ -6202,6 +6211,28 @@ def compile_bundle(
                     f"quote it.",
             why=f"listed in WS:{key} artifacts",
         ))
+
+    # Reached only after the existing resolver has selected an actual workstream.
+    # Use the same bounded pointer pack and omission accounting; never open the
+    # amendment or companion, infer a membership, or add either to direct-record proof.
+    emit("artifacts", _bundle_item(
+        kind="artifact",
+        key=None,
+        path=f"mastermind:{_INITIATIVE_SOURCE_REL}",
+        locator=("https://github.com/mastermindx-market-intelligence/Mastermind/blob/"
+                 f"{_INITIATIVE_SOURCE_REVISION}/{_INITIATIVE_SOURCE_REL}"),
+        authority_class=_pointer_authority("mastermind", _INITIATIVE_SOURCE_REL, degraded),
+        status="source not read; classification not established",
+        updated=None,
+        excerpt=("pointer — source not read; classification not established. Open the "
+                 f"protected amendment at {_INITIATIVE_SOURCE_REVISION}. The original "
+                 "scripts/linear_initiative_plan.py compiler and "
+                 "config/linear_initiative_portfolio.v1.json companion own approved "
+                 "membership validation against the complete Project universe; the "
+                 "compiler fails closed on uncovered current workstreams. A title, "
+                 "program, or Paperclip goal does not establish Initiative membership."),
+        why=f"strategic source for resolved WS:{key}; no membership inferred",
+    ))
 
     # Date membership follows the original eligible item sites, not the broader
     # source digest (which also binds excluded/superseding records). Fill every

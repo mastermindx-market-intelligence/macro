@@ -1,0 +1,132 @@
+{
+  "schema": "source_patch_manifest.v1",
+  "repository": "mastermindx-market-intelligence/macro",
+  "base_commit": "0267bf8fffc083cd048504bdb5c8e775025d6396",
+  "donor_commit": "d6059039bed2caf27aca8b87aaa42af3d6024ebc",
+  "protected_governance_pin": "c065e56b4cb7c4487e51249795ca6ebf010e6ffa",
+  "protected_amendment_commit": "6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988",
+  "protected_amendment_git_blob": "b1c1554c39fe9c322b783db35b7741e5774d33e5",
+  "files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "before": {
+        "git_blob": "aa5c32757d2877734c53b20d9306fe0748a394fe",
+        "sha256": "60bd554e4d051a3f6854e5f5d7c337682ec4b9d787e78702d40bf8949737e9c7",
+        "bytes": 2670718,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "5073a48aa88ba7642302c79fb666c69de85ced82",
+        "sha256": "23e687f9f76e30fda819fcdacf34181d2effc2bf0b193e9d3402a2e26357497f",
+        "bytes": 2670920,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "config/linear_initiative_portfolio.v1.json",
+      "before": {
+        "git_blob": "ecb5eeeb66b0e71aa51bdc243fbb87e2d407fbe1",
+        "sha256": "d47b99c029901e87f020618a4012fa46a094cec30f1215f97a78e7a4cd980b39",
+        "bytes": 12411,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "65e3d896a2f2fd81858e48456e7529ad9c1b9d23",
+        "sha256": "8c0362ee9f7a0fa73a242fea5b4b8053edad016570c78d4d6f9204985de7b86c",
+        "bytes": 13237,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "scripts/linear_initiative_plan.py",
+      "before": {
+        "git_blob": "a2415b420c69addea7c47ae57f8385fd1d62d3e0",
+        "sha256": "bf81b8c101ffef22844dce86c5d4ce924bb05587399a32f78c8003836306d563",
+        "bytes": 9093,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "a36e5ba6ea603b5cdc2b3106499801ba32a820f8",
+        "sha256": "0f117c3cb29b2424e1eab5bee26656c5ba4613c71f484bd448dc52d86f769c99",
+        "bytes": 13641,
+        "mode": "100755"
+      }
+    },
+    {
+      "path": "scripts/linear_initiative_plan_legacy.py",
+      "before": null,
+      "after": {
+        "git_blob": "3a913d1ebccb2e6ff947bcf70a838e64a7a8bb33",
+        "sha256": "056052ae461c0e459edb90c5ca25dda1854d5188146611b02a0b62d17305eeab",
+        "bytes": 32186,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "tests/linear_initiative_plan_current_epoch_cases.py",
+      "before": null,
+      "after": {
+        "git_blob": "72a08363316d341a49bd439be3a39100ee1f4100",
+        "sha256": "0bb33d0f023b6bae73888bfdd41320c5f075b28f25c02eb83adc046b99d12652",
+        "bytes": 18390,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "tests/linear_portfolio_plan_live_cases.py",
+      "before": {
+        "git_blob": "d6cacf9669599fdade60204310d57aefa9023be3",
+        "sha256": "d445c69023cc49be4d5c35f619e9b94b4972ac9e8494f2d4c648763d41b1a6e4",
+        "bytes": 3971,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "9a92dea8038402e694df1cb122b7ff4932cda99d",
+        "sha256": "9967ca8ec0b5a53b7348ab2da5a6d33a39502d36eb5a5149b3f10a6832393b0d",
+        "bytes": 4143,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "scripts/agentos.py",
+      "before": {
+        "git_blob": "94fe2e7290797119cbb7f9890580e950012616d7",
+        "sha256": "ee40c96d22e12207659bbc74df506f8c7b3fbf5f713b2dc80648c11229ab0e07",
+        "bytes": 296921,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "5c2e7bfdcbf483f86313efd4622a2b687060d0c5",
+        "sha256": "9a55c5a6513b18582dc4967cd54a03d177c0222dc1705bd9cd1aee5bb4429f3d",
+        "bytes": 298902,
+        "mode": "100644"
+      }
+    },
+    {
+      "path": "tests/test_agentos_compile.py",
+      "before": {
+        "git_blob": "16fa1097403a14b6badca4433158123a01e87aae",
+        "sha256": "6abe501b3e56ac8d0bb5768caef5dcd2cefda30f2a500ad72898a7e692632fb3",
+        "bytes": 87767,
+        "mode": "100644"
+      },
+      "after": {
+        "git_blob": "f277e121b1f935b8345f367415df008a86bcf51d",
+        "sha256": "34d5d56da878c72f1ee5a36fbe28f76b4f6e8ba80a6d3b2dd525d76627aaa43d",
+        "bytes": 92754,
+        "mode": "100644"
+      }
+    }
+  ],
+  "patch_sha256": "569be0ab3846aa19d0619cff00bd14d9a164da674cfd9569b055a3c2df5b938d",
+  "patch_bytes": 109710,
+  "qualifications": {
+    "new_pointer_red_cases": 6,
+    "canonical_context_collection_with_actual_conftest_passed": 129,
+    "full_store_cases_not_available_in_cloud": 2,
+    "exact_patch_replay": true,
+    "changed_paths_overlap_accepted_native_19_file_cohort": false
+  },
+  "runtime_activation": false,
+  "linear_mutation": false
+}

@@ -1,0 +1,497 @@
+{
+  "current_active_or_candidate": 97,
+  "current_workstreams": 115,
+  "exceptions": [
+    {
+      "identity": "WS:WATCHLIST-PORTFOLIO-CEO",
+      "identity_kind": "workstream_key",
+      "reason": "compatibility_redirect"
+    },
+    {
+      "identity": "9aef6461-306a-4a3c-911b-c6a4b6635a78",
+      "identity_kind": "linear_project_id",
+      "reason": "canonical_parent_unresolved"
+    }
+  ],
+  "initiative_counts": {
+    "autonomous-ai-organization": 7,
+    "canonical-intelligence-substrate-learning": 10,
+    "global-markets-regimes-risk-command": 6,
+    "institutional-company-event-intelligence": 11,
+    "legendary-alpha-discovery-timing": 17,
+    "personal-institutional-desk": 4,
+    "trusted-production-customer-platform": 8
+  },
+  "macro_revision": "0267bf8fffc083cd048504bdb5c8e775025d6396",
+  "mapped_current_excluded": [
+    {
+      "initiative_key": "autonomous-ai-organization",
+      "status": "done",
+      "workstream_key": "WS:AGENT-OS"
+    },
+    {
+      "initiative_key": "institutional-company-event-intelligence",
+      "status": "parked",
+      "workstream_key": "WS:BIOCATALYST-CORE-PRODUCT"
+    },
+    {
+      "initiative_key": "institutional-company-event-intelligence",
+      "status": "done",
+      "workstream_key": "WS:BIOCATALYST-RECOVERY-V2"
+    },
+    {
+      "initiative_key": "global-markets-regimes-risk-command",
+      "status": "done",
+      "workstream_key": "WS:CRYPTO-INTELLIGENCE"
+    },
+    {
+      "initiative_key": "institutional-company-event-intelligence",
+      "status": "done",
+      "workstream_key": "WS:EARNINGS-INTELLIGENCE-OS"
+    },
+    {
+      "initiative_key": "canonical-intelligence-substrate-learning",
+      "status": "done",
+      "workstream_key": "WS:EVAL-OS-OUTPUT-HEALTH"
+    },
+    {
+      "initiative_key": "canonical-intelligence-substrate-learning",
+      "status": "done",
+      "workstream_key": "WS:EVAL-OS-T1-ENGINE-REGISTRY"
+    },
+    {
+      "initiative_key": "global-markets-regimes-risk-command",
+      "status": "done",
+      "workstream_key": "WS:FLOW-OBSERVATORY-V2"
+    },
+    {
+      "initiative_key": "personal-institutional-desk",
+      "status": "done",
+      "workstream_key": "WS:INSTITUTIONAL-PRODUCT-EXPERIENCE-V2"
+    },
+    {
+      "initiative_key": "legendary-alpha-discovery-timing",
+      "status": "done",
+      "workstream_key": "WS:PROPHET-CANDIDATE-ADDED-DATE"
+    }
+  ],
+  "strategy_memberships": 63,
+  "strategy_memberships_absent_from_current_records": [],
+  "strategy_source": {
+    "path": "docs/superpowers/specs/2026-09-03-linear-initiative-portfolio-v1-temporal-grain-current-epoch-amendment.md",
+    "protected_revision": "6c5c2a6225a3fa2c2ec3e3398dcc8b8629b3a988",
+    "repository": "mastermindx-market-intelligence/Mastermind"
+  },
+  "unmapped_active_or_candidate": [
+    {
+      "git_blob": "92775ec12d4575ca2973807c9202be17f840b52c",
+      "key": "BROWSER-FABRIC",
+      "path": "agentos/workstreams/WS-BROWSER-FABRIC.md",
+      "program": "executive-os",
+      "status": "active",
+      "workstream_key": "WS:BROWSER-FABRIC"
+    },
+    {
+      "git_blob": "d438a0620c3b282ad32f8d75af539007ec820b9b",
+      "key": "COMMERCIAL-ACTIVATION",
+      "path": "agentos/workstreams/WS-COMMERCIAL-ACTIVATION.md",
+      "program": "terminal-user-services",
+      "status": "active",
+      "workstream_key": "WS:COMMERCIAL-ACTIVATION"
+    },
+    {
+      "git_blob": "79e777cf901a9ce20ec90b055db31778c754a56e",
+      "key": "COMMISSION-19-DATA-INTELLIGENCE",
+      "path": "agentos/workstreams/WS-COMMISSION-19-DATA-INTELLIGENCE.md",
+      "program": "fundamental-forensics",
+      "status": "active",
+      "workstream_key": "WS:COMMISSION-19-DATA-INTELLIGENCE"
+    },
+    {
+      "git_blob": "c46e8d7d762771931689cf06bb2765b42ac63451",
+      "key": "CONSUMER-CYCLICAL-V1",
+      "path": "agentos/workstreams/WS-CONSUMER-CYCLICAL-V1.md",
+      "program": "earnings-intelligence",
+      "status": "blocked",
+      "workstream_key": "WS:CONSUMER-CYCLICAL-V1"
+    },
+    {
+      "git_blob": "774140fb64c29dd010b542fe2281bf387c00d5be",
+      "key": "CONSUMER-DEFENSIVE-CDV1",
+      "path": "agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md",
+      "program": "earnings-intelligence",
+      "status": "active",
+      "workstream_key": "WS:CONSUMER-DEFENSIVE-CDV1"
+    },
+    {
+      "git_blob": "a8e85dedceec23e4a91217cf70eabfbac8ce2b0e",
+      "key": "DATA-OS-COMPLETION",
+      "path": "agentos/workstreams/WS-DATA-OS-COMPLETION.md",
+      "program": "terminal-market-data",
+      "status": "active",
+      "workstream_key": "WS:DATA-OS-COMPLETION"
+    },
+    {
+      "git_blob": "ab6ae568e35e22f5d56ab18c63d2c7a097b26f24",
+      "key": "EVAL-OS-RELIABILITY-EXTENSIONS",
+      "path": "agentos/workstreams/WS-EVAL-OS-RELIABILITY-EXTENSIONS.md",
+      "program": "qualitative-intelligence",
+      "status": "active",
+      "workstream_key": "WS:EVAL-OS-RELIABILITY-EXTENSIONS"
+    },
+    {
+      "git_blob": "0df28e6f8dcccc8401924b08c48c63de582a0f7f",
+      "key": "EXECUTIVE-AUTONOMY-V1-CLOSURE",
+      "path": "agentos/workstreams/WS-EXECUTIVE-AUTONOMY-V1-CLOSURE.md",
+      "program": "project-active-build-control",
+      "status": "active",
+      "workstream_key": "WS:EXECUTIVE-AUTONOMY-V1-CLOSURE"
+    },
+    {
+      "git_blob": "a0a821381a3963be382dcd349c68e6805ef1402a",
+      "key": "EXECUTIVE-ECOSYSTEM-COMPLETION",
+      "path": "agentos/workstreams/WS-EXECUTIVE-ECOSYSTEM-COMPLETION.md",
+      "program": "executive-os",
+      "status": "active",
+      "workstream_key": "WS:EXECUTIVE-ECOSYSTEM-COMPLETION"
+    },
+    {
+      "git_blob": "5d92d60242a35852f8ea1707c881019bed394713",
+      "key": "FLEET-STORAGE-LIFECYCLE",
+      "path": "agentos/workstreams/WS-FLEET-STORAGE-LIFECYCLE.md",
+      "program": "executive-os",
+      "status": "blocked",
+      "workstream_key": "WS:FLEET-STORAGE-LIFECYCLE"
+    },
+    {
+      "git_blob": "1f33c15df80c491c8175d78d968e4836f6e9a657",
+      "key": "GLOBAL-LIQUIDITY-TRANSMISSION",
+      "path": "agentos/workstreams/WS-GLOBAL-LIQUIDITY-TRANSMISSION.md",
+      "program": "policy-transmission-intelligence",
+      "status": "active",
+      "workstream_key": "WS:GLOBAL-LIQUIDITY-TRANSMISSION"
+    },
+    {
+      "git_blob": "2a9d8ee3cd09907c099f3b052638fddc42c6c764",
+      "key": "GMI-COMMUNICATIONS",
+      "path": "agentos/workstreams/WS-GMI-COMMUNICATIONS.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-COMMUNICATIONS"
+    },
+    {
+      "git_blob": "5cc7e1261d6ca0127d897f6bba96c0ad93b6d084",
+      "key": "GMI-ENERGY-NUCLEAR",
+      "path": "agentos/workstreams/WS-GMI-ENERGY-NUCLEAR.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-ENERGY-NUCLEAR"
+    },
+    {
+      "git_blob": "e35f0babfaf3efd418b33106afd7da96e6333941",
+      "key": "GMI-FINANCE-INTELLIGENCE",
+      "path": "agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md",
+      "program": "sector-rotation-intelligence",
+      "status": "active",
+      "workstream_key": "WS:GMI-FINANCE-INTELLIGENCE"
+    },
+    {
+      "git_blob": "04f17e91ee98254507d946a84e6f9246b52f4ecb",
+      "key": "GMI-HEALTHCARE",
+      "path": "agentos/workstreams/WS-GMI-HEALTHCARE.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-HEALTHCARE"
+    },
+    {
+      "git_blob": "1fbe6bca70f4431cd6163df1de402019ee5df572",
+      "key": "GMI-INDUSTRIALS-FIRST-VERTICAL",
+      "path": "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md",
+      "program": "earnings-intelligence",
+      "status": "active",
+      "workstream_key": "WS:GMI-INDUSTRIALS-FIRST-VERTICAL"
+    },
+    {
+      "git_blob": "1ae8b74ebf71f54fbfb99598b0c5cdb4fd98e692",
+      "key": "GMI-MINING-M1-INTEGRATION",
+      "path": "agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-MINING-M1-INTEGRATION"
+    },
+    {
+      "git_blob": "8ab0f31f996b5406e705a33ebd30ce4a263a4dea",
+      "key": "GMI-ROBOTICS",
+      "path": "agentos/workstreams/WS-GMI-ROBOTICS.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-ROBOTICS"
+    },
+    {
+      "git_blob": "c884e91e8318eff31126525524c0e8b4877f8070",
+      "key": "GMI-SEMICONDUCTORS",
+      "path": "agentos/workstreams/WS-GMI-SEMICONDUCTORS.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-SEMICONDUCTORS"
+    },
+    {
+      "git_blob": "b0011b50dc24866bc3b2cf9d8806d66a49022c95",
+      "key": "GMI-TECHNOLOGY-EX-SEMIS",
+      "path": "agentos/workstreams/WS-GMI-TECHNOLOGY-EX-SEMIS.md",
+      "program": "gmi-theme-graph",
+      "status": "active",
+      "workstream_key": "WS:GMI-TECHNOLOGY-EX-SEMIS"
+    },
+    {
+      "git_blob": "ddf60e50fe2792ea40d5a59de75bd305b7b44f76",
+      "key": "INTL-GLOBAL-SURVEILLANCE",
+      "path": "agentos/workstreams/WS-INTL-GLOBAL-SURVEILLANCE.md",
+      "program": "international-risk-intelligence",
+      "status": "active",
+      "workstream_key": "WS:INTL-GLOBAL-SURVEILLANCE"
+    },
+    {
+      "git_blob": "5ab4b783b7a0cde0b78e263fe27504022e3ac185",
+      "key": "LEADERSHIP-ROTATION-INTELLIGENCE",
+      "path": "agentos/workstreams/WS-LEADERSHIP-ROTATION-INTELLIGENCE.md",
+      "program": "sector-rotation-intelligence",
+      "status": "active",
+      "workstream_key": "WS:LEADERSHIP-ROTATION-INTELLIGENCE"
+    },
+    {
+      "git_blob": "bb1f1f30de650b5b5d2a225b6e0de9a4b4c2e093",
+      "key": "MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT",
+      "path": "agentos/workstreams/WS-MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT.md",
+      "program": "sector-rotation-intelligence",
+      "status": "active",
+      "workstream_key": "WS:MARKET-INTELLIGENCE-INSTITUTIONAL-BUILDOUT"
+    },
+    {
+      "git_blob": "686f3e63d6c68d0e2fa60fcaa722833e5998453f",
+      "key": "MARKET-TIME-MACHINE",
+      "path": "agentos/workstreams/WS-MARKET-TIME-MACHINE.md",
+      "program": "market-memory",
+      "status": "active",
+      "workstream_key": "WS:MARKET-TIME-MACHINE"
+    },
+    {
+      "git_blob": "098c21a9e60ae50a16b30e85d18545bdde0acd87",
+      "key": "MARKETING-X-CATALYST-LOOP",
+      "path": "agentos/workstreams/WS-MARKETING-X-CATALYST-LOOP.md",
+      "program": "marketing-intelligence",
+      "status": "active",
+      "workstream_key": "WS:MARKETING-X-CATALYST-LOOP"
+    },
+    {
+      "git_blob": "def58e5640de1a97046d6e44d7c64940cf2655d5",
+      "key": "MASTERMIND-AI-FLAGSHIP",
+      "path": "agentos/workstreams/WS-MASTERMIND-AI-FLAGSHIP.md",
+      "program": "macro-mastermind-ai",
+      "status": "active",
+      "workstream_key": "WS:MASTERMIND-AI-FLAGSHIP"
+    },
+    {
+      "git_blob": "301eccf69a6b8a29e14246aea124312c7cb16429",
+      "key": "MASTERMIND-AI-ILLUSTRATIONS",
+      "path": "agentos/workstreams/WS-MASTERMIND-AI-ILLUSTRATIONS.md",
+      "program": "macro-mastermind-ai",
+      "status": "active",
+      "workstream_key": "WS:MASTERMIND-AI-ILLUSTRATIONS"
+    },
+    {
+      "git_blob": "d62824483a32ffec7dbb5bfb369f9871301eac15",
+      "key": "NATIVE-CHART-ENGINE",
+      "path": "agentos/workstreams/WS-NATIVE-CHART-ENGINE.md",
+      "program": "terminal-charting",
+      "status": "active",
+      "workstream_key": "WS:NATIVE-CHART-ENGINE"
+    },
+    {
+      "git_blob": "9581daae267503df29ceaa954c9f5a7a8acab1a2",
+      "key": "NEWS-INTELLIGENCE-ESTATE-CONVERGENCE",
+      "path": "agentos/workstreams/WS-NEWS-INTELLIGENCE-ESTATE-CONVERGENCE.md",
+      "program": "qualitative-intelligence",
+      "status": "active",
+      "workstream_key": "WS:NEWS-INTELLIGENCE-ESTATE-CONVERGENCE"
+    },
+    {
+      "git_blob": "00f75948fdcd8f77945a757c3e05b02a85d8e88a",
+      "key": "ORCHESTRATOR-PROJECT-CONTINUITY",
+      "path": "agentos/workstreams/WS-ORCHESTRATOR-PROJECT-CONTINUITY.md",
+      "program": "executive-os",
+      "status": "active",
+      "workstream_key": "WS:ORCHESTRATOR-PROJECT-CONTINUITY"
+    },
+    {
+      "git_blob": "7880120f486fbdcfd246832786aa145a56f2f670",
+      "key": "PAPER-INTERNATIONAL-WAVES",
+      "path": "agentos/workstreams/WS-PAPER-INTERNATIONAL-WAVES.md",
+      "program": "international-risk-intelligence",
+      "status": "active",
+      "workstream_key": "WS:PAPER-INTERNATIONAL-WAVES"
+    },
+    {
+      "git_blob": "4c1ad327cc9595f6d20ff05226c78251c2ec8fad",
+      "key": "PORTFOLIO-BOT-REBUILD",
+      "path": "agentos/workstreams/WS-PORTFOLIO-BOT-REBUILD.md",
+      "program": "portfolio-desk",
+      "status": "active",
+      "workstream_key": "WS:PORTFOLIO-BOT-REBUILD"
+    },
+    {
+      "git_blob": "e21fb16f15607001e2be2bb5c7ca482aa52fbb0c",
+      "key": "PROPHET-END-TO-END-R7",
+      "path": "agentos/workstreams/WS-PROPHET-END-TO-END-R7.md",
+      "program": "prophet-us",
+      "status": "active",
+      "workstream_key": "WS:PROPHET-END-TO-END-R7"
+    },
+    {
+      "git_blob": "4c56c750cd5c7e9d52e1dfacbe28565b11cc6727",
+      "key": "PROPHET-NEWS-IMPACT",
+      "path": "agentos/workstreams/WS-PROPHET-NEWS-IMPACT.md",
+      "program": "prophet-us",
+      "status": "active",
+      "workstream_key": "WS:PROPHET-NEWS-IMPACT"
+    },
+    {
+      "git_blob": "95a37de79520074a4a51e5d7cb5d65d3c5a02eab",
+      "key": "PUBLIC-INTELLIGENCE-NETWORK",
+      "path": "agentos/workstreams/WS-PUBLIC-INTELLIGENCE-NETWORK.md",
+      "program": "marketing-intelligence",
+      "status": "active",
+      "workstream_key": "WS:PUBLIC-INTELLIGENCE-NETWORK"
+    },
+    {
+      "git_blob": "223665e210455d138bb47fbaab55adf1e7b6e0bc",
+      "key": "RESEARCH-FACTORY-CODEGEN",
+      "path": "agentos/workstreams/WS-RESEARCH-FACTORY-CODEGEN.md",
+      "program": "research-factory",
+      "status": "active",
+      "workstream_key": "WS:RESEARCH-FACTORY-CODEGEN"
+    },
+    {
+      "git_blob": "ae4abaa430c9f2c45134ef25a4299de7f180698e",
+      "key": "RESEARCH-VAULT-AI-FABRIC",
+      "path": "agentos/workstreams/WS-RESEARCH-VAULT-AI-FABRIC.md",
+      "program": "qualitative-intelligence",
+      "status": "active",
+      "workstream_key": "WS:RESEARCH-VAULT-AI-FABRIC"
+    },
+    {
+      "git_blob": "7ad449229678056a1adaf372865f1a9fc189c289",
+      "key": "SECTOR-INTELLIGENCE-COMPLETION",
+      "path": "agentos/workstreams/WS-SECTOR-INTELLIGENCE-COMPLETION.md",
+      "program": "sector-rotation-intelligence",
+      "status": "active",
+      "workstream_key": "WS:SECTOR-INTELLIGENCE-COMPLETION"
+    },
+    {
+      "git_blob": "ba594f9237b15d1d9b5b4b8258cc5f07f9c8484f",
+      "key": "SOL-CAPABILITY-FABRIC",
+      "path": "agentos/workstreams/WS-SOL-CAPABILITY-FABRIC.md",
+      "program": "project-active-build-control",
+      "status": "active",
+      "workstream_key": "WS:SOL-CAPABILITY-FABRIC"
+    },
+    {
+      "git_blob": "b20ae7a477663d87d871ae875c5c74ec9a85f97d",
+      "key": "TERMINAL-FORMING-CANDLES",
+      "path": "agentos/workstreams/WS-TERMINAL-FORMING-CANDLES.md",
+      "program": "terminal-charting",
+      "status": "active",
+      "workstream_key": "WS:TERMINAL-FORMING-CANDLES"
+    },
+    {
+      "git_blob": "a3c2de526eacc482744108d3820e5cdac27c4d24",
+      "key": "TERMINAL-REPAIR-AUDIT20-2026-10",
+      "path": "agentos/workstreams/WS-TERMINAL-REPAIR-AUDIT20-2026-10.md",
+      "program": "terminal-charting",
+      "status": "active",
+      "workstream_key": "WS:TERMINAL-REPAIR-AUDIT20-2026-10"
+    },
+    {
+      "git_blob": "eafc4f1a72dbbf685c64c1c35f9629f8d98fabd4",
+      "key": "TERMINAL-TACTICAL-INTELLIGENCE",
+      "path": "agentos/workstreams/WS-TERMINAL-TACTICAL-INTELLIGENCE.md",
+      "program": "market-timing-intelligence",
+      "status": "active",
+      "workstream_key": "WS:TERMINAL-TACTICAL-INTELLIGENCE"
+    },
+    {
+      "git_blob": "870da6b0c1b946cb7e89a14244cb889d6a24e7ec",
+      "key": "TIINGO-DATA-OS",
+      "path": "agentos/workstreams/WS-TIINGO-DATA-OS.md",
+      "program": "terminal-market-data",
+      "status": "active",
+      "workstream_key": "WS:TIINGO-DATA-OS"
+    }
+  ],
+  "unmapped_nonactive": [
+    {
+      "git_blob": "8015b7f49e1f4e176ca849f6fa0720c6ca28817b",
+      "key": "CN-COMMERCIAL-SUPPLY-DILIGENCE",
+      "path": "agentos/workstreams/WS-CN-COMMERCIAL-SUPPLY-DILIGENCE.md",
+      "program": "china-system",
+      "status": "parked",
+      "workstream_key": "WS:CN-COMMERCIAL-SUPPLY-DILIGENCE"
+    },
+    {
+      "git_blob": "2440caed653ed7974b5e7c9bd11c3679990ce23b",
+      "key": "DEEPVUE-INTELLIGENCE-WORKSPACE",
+      "path": "agentos/workstreams/WS-DEEPVUE-INTELLIGENCE-WORKSPACE.md",
+      "program": "macro-mastermind-ai",
+      "status": "parked",
+      "workstream_key": "WS:DEEPVUE-INTELLIGENCE-WORKSPACE"
+    },
+    {
+      "git_blob": "3b4896abe326c2ac1c0362803943c6013853ee53",
+      "key": "PROPHET-REGIME-TIMEFRAME-RESEARCH",
+      "path": "agentos/workstreams/WS-PROPHET-REGIME-TIMEFRAME-RESEARCH.md",
+      "program": "prophet",
+      "status": "done",
+      "workstream_key": "WS:PROPHET-REGIME-TIMEFRAME-RESEARCH"
+    },
+    {
+      "git_blob": "1102d991075f725037095b42282b9aeeaa20f811",
+      "key": "QUANT-ASSESSMENT-2026-10",
+      "path": "agentos/workstreams/WS-QUANT-ASSESSMENT-2026-10.md",
+      "program": "research-factory",
+      "status": "done",
+      "workstream_key": "WS:QUANT-ASSESSMENT-2026-10"
+    },
+    {
+      "git_blob": "41559f50651fc4ab4b7c9406996315f431b7061e",
+      "key": "TERMINAL-ENHANCEMENTS20",
+      "path": "agentos/workstreams/WS-TERMINAL-ENHANCEMENTS20.md",
+      "program": "terminal-user-services",
+      "status": "done",
+      "workstream_key": "WS:TERMINAL-ENHANCEMENTS20"
+    },
+    {
+      "git_blob": "304ecfbde068dbb3d8bab42481c2cb12185ed036",
+      "key": "TERMINAL-GITHUB-CANONICAL-DEPLOYMENT",
+      "path": "agentos/workstreams/WS-TERMINAL-GITHUB-CANONICAL-DEPLOYMENT.md",
+      "program": "terminal-charting",
+      "status": "parked",
+      "workstream_key": "WS:TERMINAL-GITHUB-CANONICAL-DEPLOYMENT"
+    },
+    {
+      "git_blob": "1fbe7f0f4034e7786c65f92d7fefbab7245b298b",
+      "key": "TREND-PERSISTENCE",
+      "path": "agentos/workstreams/WS-TREND-PERSISTENCE.md",
+      "program": "research-factory",
+      "status": "done",
+      "workstream_key": "WS:TREND-PERSISTENCE"
+    },
+    {
+      "git_blob": "961e561f502164044e4035bfdabad010bcecbe51",
+      "key": "TUSHARE-ENTITLEMENT",
+      "path": "agentos/workstreams/WS-TUSHARE-ENTITLEMENT.md",
+      "program": "china-system",
+      "status": "done",
+      "workstream_key": "WS:TUSHARE-ENTITLEMENT"
+    }
+  ]
+}
