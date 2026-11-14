@@ -1,0 +1,129 @@
+FFFFFFFFFFFFF.FFF                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_door_backlog_older_sighting_survives_newer_ledger_date __________
+tests/test_us_candidate_episode_reconciler.py:1394: in test_door_backlog_older_sighting_survives_newer_ledger_date
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {
+E   AssertionError: assert {'doors:2026-11-27:T:ALFA'} == {'doors:2026-...11-27:T:ALFA'}
+E
+E     Extra items in the right set:
+E     'doors:2026-11-25:T:ALFA'
+E     Use -v to get more diff
+_______ test_door_backlog_retry_preserves_first_knowledge_and_generation _______
+tests/test_us_candidate_episode_reconciler.py:1414: in test_door_backlog_retry_preserves_first_knowledge_and_generation
+    assert len(_door_owned(tmp_path)) == 2
+E   AssertionError: assert 1 == 2
+E    +  where 1 = len([{'content_sha256': '2d3cd44c2634543eb6cc331fbe4aa8d0b8cf74b23ee071c2bfe954ef261b6188', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}])
+E    +    where [{'content_sha256': '2d3cd44c2634543eb6cc331fbe4aa8d0b8cf74b23ee071c2bfe954ef261b6188', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}] = _door_owned(PosixPath('/Volumes/Mastermind/tmp/prophet-retention-continue-20260921/pytest-door-red-final/test_door_backlog_retry_preser0'))
+_______ test_door_backlog_same_key_changed_old_bytes_refuse_before_write _______
+tests/test_us_candidate_episode_reconciler.py:1425: in test_door_backlog_same_key_changed_old_bytes_refuse_before_write
+    with pytest.raises(EpisodeContractError, match="[Ss]ource|receipt|committed"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+_________ test_door_backlog_preclose_and_future_rows_wait_without_loss _________
+tests/test_us_candidate_episode_reconciler.py:1436: in test_door_backlog_preclose_and_future_rows_wait_without_loss
+    assert {r["source_event_id"] for r in _door_owned(tmp_path)} == {"doors:2026-11-25:T:ALFA"}
+E   AssertionError: assert {'doors:2026-11-30:T:ALFA'} == {'doors:2026-11-25:T:ALFA'}
+E
+E     Extra items in the left set:
+E     'doors:2026-11-30:T:ALFA'
+E     Extra items in the right set:
+E     'doors:2026-11-25:T:ALFA'
+E     Use -v to get more diff
+_ test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[signal_ts] _
+tests/test_us_candidate_episode_reconciler.py:1451: in test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now
+    assert _door_owned(tmp_path) == []
+E   AssertionError: assert [{'content_sh...05:00Z', ...}] == []
+E
+E     Left contains one more item: {'content_sha256': 'b8783679bf6eba506212c9ce265c6696dc7c02899501f3be42d455d2c91fee2f', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}
+E     Use -v to get more diff
+_ test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[signal_known_ts] _
+tests/test_us_candidate_episode_reconciler.py:1450: in test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+tests/test_us_candidate_episode_reconciler.py:68: in _run_nightly
+    return writer.reconcile(
+scripts/reconcile_us_candidate_episodes.py:632: in reconcile
+    current_generation, previous_receipt) = _load_and_build(
+scripts/reconcile_us_candidate_episodes.py:411: in _load_and_build
+    reconciled = reconcile_observations(
+engine/us_candidate_episode.py:973: in reconcile_observations
+    event = make_event(
+engine/us_candidate_episode.py:279: in make_event
+    raise EpisodeContractError("event clocks must satisfy occurred_at <= known_at <= recorded_at")
+E   engine.us_candidate_episode.EpisodeContractError: event clocks must satisfy occurred_at <= known_at <= recorded_at
+_ test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[observed_at] _
+tests/test_us_candidate_episode_reconciler.py:1450: in test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now
+    _run_nightly(tmp_path, monkeypatch, recorded_at="2026-11-30T21:05:00Z")
+tests/test_us_candidate_episode_reconciler.py:68: in _run_nightly
+    return writer.reconcile(
+scripts/reconcile_us_candidate_episodes.py:632: in reconcile
+    current_generation, previous_receipt) = _load_and_build(
+scripts/reconcile_us_candidate_episodes.py:411: in _load_and_build
+    reconciled = reconcile_observations(
+engine/us_candidate_episode.py:973: in reconcile_observations
+    event = make_event(
+engine/us_candidate_episode.py:279: in make_event
+    raise EpisodeContractError("event clocks must satisfy occurred_at <= known_at <= recorded_at")
+E   engine.us_candidate_episode.EpisodeContractError: event clocks must satisfy occurred_at <= known_at <= recorded_at
+___ test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-26] ___
+tests/test_us_candidate_episode_reconciler.py:1460: in test_door_backlog_non_session_is_not_a_canonical_observation
+    with pytest.raises(EpisodeContractError, match="session"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+___ test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-28] ___
+tests/test_us_candidate_episode_reconciler.py:1460: in test_door_backlog_non_session_is_not_a_canonical_observation
+    with pytest.raises(EpisodeContractError, match="session"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+___ test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-29] ___
+tests/test_us_candidate_episode_reconciler.py:1460: in test_door_backlog_non_session_is_not_a_canonical_observation
+    with pytest.raises(EpisodeContractError, match="session"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+___ test_door_backlog_non_session_is_not_a_canonical_observation[not-a-date] ___
+tests/test_us_candidate_episode_reconciler.py:1460: in test_door_backlog_non_session_is_not_a_canonical_observation
+    with pytest.raises(EpisodeContractError, match="session"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE EpisodeContractError
+______ test_door_backlog_missing_anchor_remains_explicit_and_never_rearms ______
+tests/test_us_candidate_episode_reconciler.py:1474: in test_door_backlog_missing_anchor_remains_explicit_and_never_rearms
+    assert len(owned) == 2 and {r["reason"] for r in owned} == {"MISSING_STRUCTURAL_ANCHOR"}
+E   AssertionError: assert (1 == 2)
+E    +  where 1 = len([{'content_sha256': '2d3cd44c2634543eb6cc331fbe4aa8d0b8cf74b23ee071c2bfe954ef261b6188', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}])
+___________ test_door_backlog_duplicate_rows_do_not_multiply_events ____________
+tests/test_us_candidate_episode_reconciler.py:1485: in test_door_backlog_duplicate_rows_do_not_multiply_events
+    assert len(_door_owned(tmp_path)) == 2
+E   AssertionError: assert 1 == 2
+E    +  where 1 = len([{'content_sha256': '2d3cd44c2634543eb6cc331fbe4aa8d0b8cf74b23ee071c2bfe954ef261b6188', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}])
+E    +    where [{'content_sha256': '2d3cd44c2634543eb6cc331fbe4aa8d0b8cf74b23ee071c2bfe954ef261b6188', 'observation_session': '2026-11-27', 'reason': 'MISSING_STRUCTURAL_ANCHOR', 'recorded_at': '2026-11-30T21:05:00Z', ...}] = _door_owned(PosixPath('/Volumes/Mastermind/tmp/prophet-retention-continue-20260921/pytest-door-red-final/test_door_backlog_duplicate_ro0'))
+___________ test_door_backlog_report_never_publishes_or_edits_source ___________
+tests/test_us_candidate_episode_reconciler.py:1503: in test_door_backlog_report_never_publishes_or_edits_source
+    assert receipt["source_counts"]["doors"]["input"] == 2
+E   assert 1 == 2
+_ test_door_backlog_resource_limit_is_explicit_and_nonmutating[_DOOR_LEDGER_MAX_BYTES] _
+tests/test_us_candidate_episode_reconciler.py:1512: in test_door_backlog_resource_limit_is_explicit_and_nonmutating
+    monkeypatch.setattr(writer, bound, 1)
+E   AttributeError: <module 'scripts.reconcile_us_candidate_episodes' from '/Volumes/Mastermind/worktrees/prophet-door-intake-retention-20260922/scripts/reconcile_us_candidate_episodes.py'> has no attribute '_DOOR_LEDGER_MAX_BYTES'
+_ test_door_backlog_resource_limit_is_explicit_and_nonmutating[_DOOR_LEDGER_MAX_ROWS] _
+tests/test_us_candidate_episode_reconciler.py:1512: in test_door_backlog_resource_limit_is_explicit_and_nonmutating
+    monkeypatch.setattr(writer, bound, 1)
+E   AttributeError: <module 'scripts.reconcile_us_candidate_episodes' from '/Volumes/Mastermind/worktrees/prophet-door-intake-retention-20260922/scripts/reconcile_us_candidate_episodes.py'> has no attribute '_DOOR_LEDGER_MAX_ROWS'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_older_sighting_survives_newer_ledger_date
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_retry_preserves_first_knowledge_and_generation
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_same_key_changed_old_bytes_refuse_before_write
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_preclose_and_future_rows_wait_without_loss
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[signal_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[signal_known_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_explicit_future_clock_cannot_be_repainted_as_now[observed_at]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-26]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-28]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_non_session_is_not_a_canonical_observation[2026-11-29]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_non_session_is_not_a_canonical_observation[not-a-date]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_missing_anchor_remains_explicit_and_never_rearms
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_duplicate_rows_do_not_multiply_events
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_report_never_publishes_or_edits_source
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_resource_limit_is_explicit_and_nonmutating[_DOOR_LEDGER_MAX_BYTES]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_resource_limit_is_explicit_and_nonmutating[_DOOR_LEDGER_MAX_ROWS]
+16 failed, 1 passed, 56 deselected in 3.97s

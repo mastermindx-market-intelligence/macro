@@ -1,0 +1,127 @@
+{
+  "source_ref": "758b052ff0278e9842fd1b392e0b04617124d1bb",
+  "ingestion_clock": "2026-09-22T03:04:41Z",
+  "source_generation": "peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd",
+  "source_generation_recorded_at": "2026-09-18T09:08:31Z",
+  "baseline_latest_only": 6,
+  "candidate_completed_unique": 167,
+  "previously_owned": 21,
+  "newly_accounted": 146,
+  "new_event_count": 115,
+  "new_suppression_count": 31,
+  "new_suppression_reasons": {
+    "IDENTITY_UNRESOLVED": 20,
+    "MISSING_STRUCTURAL_ANCHOR": 11
+  },
+  "motivating_cases": [
+    {
+      "source_event_id": "doors:2026-09-10:T:INTC",
+      "source_receipt": "sha256:e63bc5548d10092ee7f8cb747b9639ed7270b8e7093081efc1fd2eaa1d6edb07",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T03:04:41Z",
+      "occurred_at": "2026-09-10T20:00:00Z",
+      "recorded_at": "2026-09-22T03:04:41Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-INTC:epoch_0:sa:bf66a0f3a6de6be82f076d7b:1"
+    },
+    {
+      "source_event_id": "doors:2026-09-10:T:MU",
+      "source_receipt": "sha256:643a5660144f19b7a6bbd4d3f7ef7e467ceadd43d0913e4a0f1cae85657c5d03",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T03:04:41Z",
+      "occurred_at": "2026-09-10T20:00:00Z",
+      "recorded_at": "2026-09-22T03:04:41Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-MU:epoch_0:sa:a3d9222b5339e5e8e2994499:1"
+    },
+    {
+      "source_event_id": "doors:2026-09-18:T:AMD",
+      "source_receipt": "sha256:5edf9b7b24aeaf3625b59f19568f6ba0ba98a7e4711224a44126beb83f749ff6",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T03:04:41Z",
+      "occurred_at": "2026-09-18T20:00:00Z",
+      "recorded_at": "2026-09-22T03:04:41Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-AMD:epoch_0:sa:3387a9e95425cbe74f4f489a:1"
+    }
+  ],
+  "repeat_new_events": 0,
+  "all_submitted_have_owner": true,
+  "original_events_and_suppressions_unchanged": true,
+  "all_input_files_unchanged": true,
+  "canonical_writes": false,
+  "provider_requests": false,
+  "plan_or_trade_authority_changed": false,
+  "performance_validation": false,
+  "limitations": [
+    "Nonwriting intake/core proof only; not a scheduled production run.",
+    "Stored event dates are not first publication timestamps.",
+    "Existing TURN WATCH and candidate sources are not rebuilt."
+  ],
+  "sources": [
+    {
+      "path": "data/us_prophet_rank/episodes/HEAD.json",
+      "sha256": "d7d67e582af3ddf629efd0567fed217de1f860fede1943d0ade3900cd4530206",
+      "bytes": 310
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/manifest.json",
+      "sha256": "e325bbe39f352521d17a96007f8a8f60149d338cd52cfb648900efa9910e0b31",
+      "bytes": 1112
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/all_candidates.json",
+      "sha256": "0d595a2a7534594a1439214cad7ea3f9c3319ad3f0d97ab0af64af8a1753655f",
+      "bytes": 1263888
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/current.parquet",
+      "sha256": "1eff933949dab5236c919e78532eb546f9e9ce604d5a0e2679a5e4dd7328b639",
+      "bytes": 74379
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-08.jsonl",
+      "sha256": "b47a60f891e1e8e8a512e29e88758fdd5394e6882d81c146d167d159cbc5eb06",
+      "bytes": 1493097
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-09.jsonl",
+      "sha256": "29054d16c64b689f50761f4f1115e19c60cbfd6b7fef8d6eedd0dbba932a57c0",
+      "bytes": 3659964
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/latest_receipt.json",
+      "sha256": "1c49be944acae2f07cb3330e6a6b304642e4f925b51031527f973d8aa15b0066",
+      "bytes": 2767
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-08.jsonl",
+      "sha256": "ef459116e5dc8d89b110f374c81d2bb7e27ff0c3185a646557e636cc96de2565",
+      "bytes": 5808248
+    },
+    {
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-09.jsonl",
+      "sha256": "a9564b7e1546ffe32b049d2286aadd62ea486831f3ba1c1b2b7d974708508a00",
+      "bytes": 11875719
+    },
+    {
+      "path": "data/reference/security_master.parquet",
+      "sha256": "e79801b08c975530edcc3f9a34e46f66aec21e4635bebe8830458a10b619f286",
+      "bytes": 79307
+    },
+    {
+      "path": "data/reference/vendor_aliases.parquet",
+      "sha256": "a556c88c42ab007fee1b7d3b8ce2e47d79c9124200cf88c7047f457e8cfea426",
+      "bytes": 41999
+    },
+    {
+      "path": "data/prophet_doors/flags.jsonl",
+      "sha256": "b2a6a45bf9122fc22132b3827ef5ab551ff247dd4ea638b5d6c7070fb2d3614d",
+      "bytes": 131452
+    }
+  ],
+  "elapsed_seconds": 15.265
+}

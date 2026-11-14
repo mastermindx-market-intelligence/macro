@@ -1,0 +1,40 @@
+{
+  "operation": "prophet-door-intake-retention-20260922-sol-001",
+  "procedure": "9a7ed19091dd82609f8ee405687f16c861c4d8c1",
+  "semantic_head": "d2ec700e98b584e25db695711db8f1655f2e9c6f",
+  "source_sha256": {
+    "scripts/reconcile_us_candidate_episodes.py": "efedde5a4599e6c22ee829ee0e472464b9a66fbcc00d552992c843a5a674074b",
+    "tests/test_us_candidate_episode_reconciler.py": "5e649cd91d0201b0f84e150ea7d0c86a01e2d939f2debc928f0f164361ed4341",
+    "research/prophet/cpu_leadership/door_retention_20260922/prove.py": "8cfaf4eab81af6f7f3fa6f144d7977e6af0f1cb51846bda0dbfcd8c429bc370e"
+  },
+  "tests": {
+    "fractional_clock_red": 7,
+    "owner_passed": 155,
+    "owner_failed": 0,
+    "owner_skipped": 0,
+    "composed_passed": 256,
+    "composed_failed": 0,
+    "composed_skipped": 0
+  },
+  "composition": {
+    "base": "1e767a2f5b43f302b0e1068c9a7e60b12aeb98ee",
+    "row_evidence_pr": 7227,
+    "row_evidence_head": "1f7aa1bb4e067a9a6fecd783857f984a8b6a2e87",
+    "row_evidence_tree": "baf9304444b8a1862fe8270920a4f4831db7a159",
+    "retention_pr": 7684,
+    "retention_head": "d2ec700e98b584e25db695711db8f1655f2e9c6f",
+    "combined_tree": "426d996b454c18f5b7d4617784d41a7ebdf0178f",
+    "proof_commit": "13c8768b8e87ffbd99e82c8196a4c416df368a12",
+    "worktree": "/Volumes/Mastermind/worktrees/prophet-retention-row-evidence-review-20260922",
+    "source_branches_unchanged": true
+  },
+  "full_writer_status": "refused",
+  "full_writer_summary": "final-writer-status.json",
+  "full_writer_error": "ordinary source key reused with different committed bytes",
+  "detailed_report_read": "platform-blocked; not retried or rerouted",
+  "review_boundary": "Current authenticated GitHub account is also #7227 author. No self-approval or account switch attempted; independent reviewer remains required.",
+  "canonical_ledger_writes": false,
+  "live_ranking_changes": false,
+  "production_proven": false,
+  "mission_complete": false
+}

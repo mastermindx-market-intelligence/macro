@@ -1,0 +1,73 @@
+{
+  "procedure_pin": "0471cea4f891da1ec0c9fbeff10a9391f9cdd90f",
+  "carrier": "macro#7684 / claude/prophet-door-intake-retention-20260922",
+  "predecessor": "90a65055f4d55a0766f4f5469e6928a8b27bf0e0",
+  "source_sha256": {
+    "research/prophet/cpu_leadership/door_retention_20260922/prove.py": "e7f366cc3ae160fe8ef94a6e916e539da09496afde6d27d876072a2c1b9ccedd",
+    "tests/test_us_candidate_episode_reconciler.py": "dfa6970fa84887ee7ff08912ec0f6f3b2c86ee856850da85cc194d022fa3fdf1",
+    "scripts/reconcile_us_candidate_episodes.py": "efedde5a4599e6c22ee829ee0e472464b9a66fbcc00d552992c843a5a674074b"
+  },
+  "tests": {
+    "red": 10,
+    "focused_passed": 10,
+    "owner_passed": 165,
+    "failed": 0,
+    "skipped": 0
+  },
+  "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "accepted_input_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+  "accepted_input_hash_count": 7,
+  "accepted_baseline": {
+    "ledger_sha256": true,
+    "projection_hashes": true,
+    "source_hashes": true
+  },
+  "baseline_appended_events": 0,
+  "full_writer_status": "passed",
+  "full_writer_counts": {
+    "input": 6146,
+    "mapped": 1261,
+    "suppressed": 4885,
+    "ledger_suppressions": 28382,
+    "old_events": 4977,
+    "new_events": 5092,
+    "appended_events": 115
+  },
+  "full_writer_source_counts": {
+    "candidate": {
+      "input": 2932,
+      "mapped": 892,
+      "suppressed": 2040
+    },
+    "doors": {
+      "input": 167,
+      "mapped": 125,
+      "suppressed": 42
+    },
+    "entry_radar": {
+      "input": 0,
+      "mapped": 0,
+      "suppressed": 0
+    },
+    "turn_watch": {
+      "input": 3047,
+      "mapped": 244,
+      "suppressed": 2803
+    }
+  },
+  "full_writer_appends_match_door_core": true,
+  "non_door_input_hashes_match_accepted": true,
+  "fixture_unchanged": true,
+  "current_source_acceptance": false,
+  "production_proven": false,
+  "canonical_ledger_writes": false,
+  "live_ranking_changes": false,
+  "mission_complete": false,
+  "scope": "Complete nonwriting writer on accepted historical non-Door inputs plus one current pinned Door input; not current-source acceptance or production rollback.",
+  "agentos_validation": {
+    "records": 1174,
+    "errors": 0,
+    "warnings": 315
+  },
+  "diff_check": "passed"
+}
