@@ -239,23 +239,29 @@ budget deferred DID run, correctly, so that exits 0.
 
 from __future__ import annotations
 
+import atexit
 import base64
 import datetime as dt
 import io
 import json
 import math
 import os
+import queue
 import re
 import secrets
+import shutil
+import subprocess
 import sys
+import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any
+from pathlib import Path, PurePosixPath
+from typing import Any, Callable
 
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
@@ -356,8 +362,10 @@ MAX_PULL_CAP = 128
 # live bucket is partly spent. These are deliberately pessimistic: the merge writes
 # normally charge MERGE_TOKEN, not READ_TOKEN, but counting them here makes an
 # admitted window affordable even on the fallback token.
-# Extra commit-file pagination reads shared by every PR and commit in one sweep.
-# Exhaustion keeps the affected inventory incomplete; it never clears a proof.
+# Extra reads shared by every PR and commit in one sweep: commit-file pagination
+# and the tree/blob reads that classify a legacy-manifest edit. Exhaustion keeps
+# the affected inventory incomplete or the manifest edit unbounded; it never
+# clears a proof.
 COMMIT_FILE_PAGE_READ_CAP = 100
 # 87 measured + 5 for the adaptive hosted-pool census (one queued-run read, one
 # mature-run list and up to ADAPTIVE_CENSUS_SAMPLE_RUNS job lists), charged even on
@@ -553,6 +561,275 @@ OPEN_PULL_PAGE_CAP = 10
 # `fetch_issue_comments` fails closed (returns None) past this cap, exactly like
 # `_semantic_pull_paths` does for an oversized files inventory.
 HOLD_COMMENT_PAGE_CAP = 5
+
+# --- bounded legacy-manifest edits ---------------------------------------------
+#
+# `.github/ci/legacy-jobs.yml` is ONE file holding ~375 independent pack jobs, so
+# the CI-definition rule above used to read a one-job edit exactly like a rewrite
+# of the whole pipeline. Measured 2026-11-01/02 (548 main commits, 34.7 h): 54
+# main commits touched `.github/ci/`, 53 of them only as a bounded, job-local
+# manifest delta, and each one staled every clean armed pull request at once
+# against a refresh allowance that was already zero.  11 of the 79 armed PRs were
+# clean and parked on exactly that verdict; #10365 was one of them.
+#
+# A main commit whose ONLY check-definition file is this manifest, and whose edit
+# the pack planner's own `_classify_bounded_manifest_job_delta` accepts as
+# job-local, changes nothing but the jobs it names (J_M).  The planner selects each
+# job from that job's own definition; an unchanged sibling selects identically
+# before and after.  So the pull request's green still describes every job
+# outside J_M, and J_M is judged per pull request: the green stays current only
+# when NONE of J_M could have been selected for, or named, the pull request's
+# own files under either the old or the new definition.  Anything else — an
+# unreadable blob, a merge commit, a second `.github/ci/` file, a non-exclusive
+# code job, a pull request that itself edits the manifest or a planner-global
+# input, an exhausted read allowance, scoping switched off — keeps the historical
+# re-prove.  A stale green never lands on a newly added pin (#4583): the pin's
+# job is in J_M, and a pull request whose files match its paths is re-proven.
+#
+# These are MIRRORS of `scripts/run_ci_pack.py`, not imports: the sweeper's sparse
+# checkout does not carry the planner's own imports (`ci_scope_dependencies.py`),
+# so importing it here fails closed into permanent staleness.  Parity with the
+# planner is a test (`tests/test_merge_on_green.py`), not a hope.  The one thing
+# never mirrored is the planner's VALIDATION: every document a bounded verdict
+# compares is first accepted by the planner's own `load_legacy_jobs`, run from a
+# separate checkout in its own process (`PlannerManifestValidator`).
+LEGACY_MANIFEST_PATH = ".github/ci/legacy-jobs.yml"
+MANIFEST_PACK_JOB_ID = "ci-pack"
+MANIFEST_JOB_GATES = ("code", "data")
+# `ci.yml` plans with `vars.CI_SCOPE_MODE`; the workflow passes the same value. A
+# PR proof that ran the full manifest (scoping off) has no per-job selection to
+# preserve, so only an explicit "active" enables the bounded-manifest verdict.
+CI_SCOPE_MODE_ENV = "MERGE_ON_GREEN_CI_SCOPE_MODE"
+MANIFEST_GLOBAL_INVALIDATORS = (
+    ".github/workflows/**",
+    ".github/ci/**",
+    ".github/ci/legacy-jobs.yml",
+    ".github/workflows/ci.yml",
+    "scripts/run_ci_pack.py",
+    "scripts/ci_scope_dependencies.py",
+    "scripts/check_ci_trigger_closure.py",
+    "scripts/audit_unrun_tests.py",
+    "config/dag.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "config/synapse.yml",  # ci-trigger-closure: data — global-invalidator pattern, matched by name, never opened
+    "conftest.py",
+    "**/conftest.py",
+    "requirements*.txt",
+    "**/requirements*.txt",
+    "constraints*.txt",
+    "**/constraints*.txt",
+    "pyproject.toml",
+    "**/pyproject.toml",
+    "setup.cfg",
+    "**/setup.cfg",
+    "setup.py",
+    "**/setup.py",
+    "tox.ini",
+    "**/tox.ini",
+    "pytest.ini",
+    "**/pytest.ini",
+    "package.json",
+    "**/package.json",
+    "package-lock.json",
+    "**/package-lock.json",
+    "uv.lock",
+    "**/uv.lock",
+    "poetry.lock",
+    "**/poetry.lock",
+)
+MANIFEST_TRACKED_ROOTS = (
+    "app",
+    "admin",
+    "config",
+    "content",
+    "docs",
+    "engine",
+    "research",
+    "scripts",
+    "site",
+    "templates",
+    "tests",
+)
+MANIFEST_SCOPE_REFERENCE_RE = re.compile(
+    r"\b(?:" + "|".join(MANIFEST_TRACKED_ROOTS) + r")/[A-Za-z0-9_./-]+"
+)
+_MANIFEST_GLOB_CACHE: dict[str, re.Pattern[str]] = {}
+
+
+def _manifest_glob_regex(pattern: str) -> re.Pattern[str]:
+    """`run_ci_pack._glob_to_regex`: `**` crosses `/`, a single `*` does not."""
+    cached = _MANIFEST_GLOB_CACHE.get(pattern)
+    if cached is not None:
+        return cached
+    source = pattern + "**" if pattern.endswith("/") else pattern
+    out: list[str] = []
+    index = 0
+    while index < len(source):
+        char = source[index]
+        if source.startswith("**/", index):
+            out.append("(?:.*/)?")
+            index += 3
+        elif source.startswith("**", index):
+            out.append(".*")
+            index += 2
+        elif char == "*":
+            out.append("[^/]*")
+            index += 1
+        elif char == "?":
+            out.append("[^/]")
+            index += 1
+        else:
+            out.append(re.escape(char))
+            index += 1
+    compiled = re.compile("^" + "".join(out) + "$")
+    _MANIFEST_GLOB_CACHE[pattern] = compiled
+    return compiled
+
+
+def _manifest_matches_any(patterns: Any, path: str) -> bool:
+    return any(_manifest_glob_regex(pattern).match(path) for pattern in patterns)
+
+
+def _classify_bounded_manifest_job_delta(
+    base_document: object,
+    candidate_document: object,
+) -> tuple[str, ...] | None:
+    """`run_ci_pack._classify_bounded_manifest_job_delta`, verbatim in behavior.
+
+    The changed job ids of a job-local manifest edit, or None when the edit is
+    global: a document-shape change, a non-`jobs` key change, an incumbent job
+    removed/renamed/reordered, a job moving between gate planes, or an added
+    synthetic pack job.
+    """
+    if not isinstance(base_document, dict) or not isinstance(candidate_document, dict):
+        return None
+    if set(base_document) != set(candidate_document):
+        return None
+    for key in base_document:
+        if key != "jobs" and base_document[key] != candidate_document[key]:
+            return None
+    base_jobs = base_document.get("jobs")
+    candidate_jobs = candidate_document.get("jobs")
+    if not isinstance(base_jobs, dict) or not isinstance(candidate_jobs, dict):
+        return None
+    base_order = list(base_jobs)
+    candidate_order = list(candidate_jobs)
+    if any(job_id not in candidate_jobs for job_id in base_order):
+        return None
+    if [job_id for job_id in candidate_order if job_id in base_jobs] != base_order:
+        return None
+    changed_job_ids: list[str] = []
+    for job_id in candidate_order:
+        after = candidate_jobs[job_id]
+        if job_id not in base_jobs:
+            if job_id == MANIFEST_PACK_JOB_ID or not isinstance(after, dict):
+                return None
+            changed_job_ids.append(str(job_id))
+            continue
+        before = base_jobs[job_id]
+        if before == after:
+            continue
+        if not isinstance(before, dict) or not isinstance(after, dict):
+            return None
+        if before.get("gate", "code") != after.get("gate", "code"):
+            return None
+        changed_job_ids.append(str(job_id))
+    return tuple(changed_job_ids)
+
+
+MANIFEST_COMMAND_GLOB_RE = re.compile(
+    r"\b(?:" + "|".join(MANIFEST_TRACKED_ROOTS) + r")/[A-Za-z0-9_./-]*[*?\[{]"
+)
+# `workflow_run_source.resolve_run_source`: a one-line `bash scripts/ci/<x>.sh`
+# step is read by the census as that script's text, which this sweeper does not
+# fetch. Zero manifest jobs delegate this way today; one that does fails closed.
+MANIFEST_DELEGATED_BODY_RE = re.compile(r"\bscripts/ci/[^\s'\"]+\.sh\b")
+
+
+def _manifest_job_run_text(definition: dict[str, Any]) -> list[str]:
+    """Every `run:` body and `with:` value of one job, as the census reads them."""
+    steps = definition.get("steps")
+    if not isinstance(steps, list):
+        return []
+    text: list[str] = []
+    for step in steps:
+        if not isinstance(step, dict):
+            continue
+        if "run" in step:
+            text.append(str(step["run"]))
+        if isinstance(step.get("with"), dict):
+            text += [str(value) for value in step["with"].values()]
+    return text
+
+
+def _manifest_job_hit(
+    job_id: str,
+    versions: tuple[dict[str, Any] | None, dict[str, Any] | None],
+    files: list[str],
+) -> str | None:
+    """Why changed job ``job_id`` could touch this pull request, else None.
+
+    ``versions`` is ``(before, after)``; ``before`` is None for an added job.
+    Each clause is the planner or a PR-time audit seeing the pull request's
+    own files through that job under EITHER definition:
+
+    * a code job that is not `scope: exclusive` derives an owned surface from
+      its commands and the tree's import closure, which this sweeper cannot
+      evaluate — fail closed;
+    * a declared `paths` entry matches a changed file (selection);
+    * a command names a tracked directory/file the changed file lives at or
+      under (owned-scope inference and the curated closure audit);
+    * a command names the changed file's path or basename (the unrun-suite
+      census's own substring rule);
+    * a command globs a tracked path (the literal prefix before the first
+      wildcard is matched, a superset of the glob) or delegates its body to a
+      `scripts/ci/*.sh` file this sweeper does not read — fail closed.
+    """
+    for label, definition in zip(("old", "new"), versions):
+        if definition is None:
+            continue
+        gate = definition.get("gate", "code")
+        if gate not in MANIFEST_JOB_GATES:
+            return f"{label} {job_id} has unknown gate {gate!r}"
+        if gate == "code" and definition.get("scope") != "exclusive":
+            return f"{label} {job_id} infers its scope from the tree"
+        paths = definition.get("paths", [])
+        if not isinstance(paths, list) or not all(
+            isinstance(entry, str) and entry for entry in paths
+        ):
+            return f"{label} {job_id} has unreadable paths"
+        if gate == "code" and not paths:
+            return f"{label} {job_id} declares no paths"
+        for name in files:
+            if _manifest_matches_any(paths, name):
+                return f"{label} {job_id} paths select {name}"
+        run_text = _manifest_job_run_text(definition)
+        for body in run_text:
+            delegated = MANIFEST_DELEGATED_BODY_RE.search(body)
+            if delegated:
+                return f"{label} {job_id} delegates a step body to {delegated.group(0)}"
+        globbed = {
+            match[:-1]
+            for body in run_text
+            for match in MANIFEST_COMMAND_GLOB_RE.findall(body)
+        }
+        for name in files:
+            for prefix in globbed:
+                if name.startswith(prefix):
+                    return f"{label} {job_id} commands glob {prefix}*"
+        references = {
+            match.split("::", 1)[0].rstrip(".,;:'\")")
+            for body in run_text
+            for match in MANIFEST_SCOPE_REFERENCE_RE.findall(body)
+        }
+        for name in files:
+            basename = name.rsplit("/", 1)[-1]
+            for reference in references:
+                root = reference.rstrip("/")
+                if root and (name == root or name.startswith(root + "/")):
+                    return f"{label} {job_id} commands reference {reference}"
+            if any(name in body or basename in body for body in run_text):
+                return f"{label} {job_id} commands name {name}"
+    return None
 
 
 def _annotate(level: str, title: str, message: str) -> None:
@@ -2127,6 +2404,334 @@ def _commit_identity(payload: Any) -> tuple[str, str, tuple[str, ...]] | None:
     return sha, tree_sha, tuple(parent_shas)
 
 
+# --- the planner's own manifest validation ---------------------------------------
+#
+# The bounded verdict trusts the planner's classifier, and the classifier's contract
+# is that BOTH documents it compares already passed `run_ci_pack.load_legacy_jobs`:
+# job, step, runtime, semantic-proof and scope-coverage metadata, not just a parse.
+# The sweeper cannot import that loader (see the planner mirrors), and a validator
+# written here would be one more policy to drift from it, so the sweeper asks the
+# planner.  The workflow checks the loader's import closure out a second time
+# (`.ci-planner`, named by `MERGE_ON_GREEN_PLANNER_ROOT`), and a child process there
+# runs `load_legacy_jobs` on each manifest the bounded path reads.  Only "valid"
+# admits a document.  A rejection, a missing module, a crash, a timeout or a garbled
+# reply is a reason, and a reason keeps the historical re-prove.
+#
+# The loader's one repository question (does a path a job's commands read, outside
+# the job's declared scope, exist?) is not that checkout's to answer: it is sparse,
+# and it is not the commit being judged.  The child asks the sweeper instead, which
+# answers from the judged commit's own root tree (`_tree_path_exists`), so a verdict
+# belongs to a manifest blob AND a root tree.  Identical bytes can stop being valid
+# when a path their scope does not cover appears.  A sweeper that cannot answer
+# aborts that verdict, and a loader that reaches past the question for the
+# checkout's own filesystem ends the planner for the sweep.
+PLANNER_ROOT_ENV = "MERGE_ON_GREEN_PLANNER_ROOT"
+# The only variables the planner child inherits: never the sweep's tokens.  HOME
+# keeps a `pip --user` yaml parser importable.
+_PLANNER_ENV_KEYS = ("HOME", "PATH", "LANG", "LC_ALL", "LC_CTYPE", "TMPDIR")
+PLANNER_START_TIMEOUT_SECONDS = 120.0
+PLANNER_CALL_TIMEOUT_SECONDS = 60.0
+# A slow planner costs one sweep this much of its 15-minute job, never more, and
+# spending it only re-proves.
+PLANNER_TOTAL_BUDGET_SECONDS = 300.0
+_PLANNER_REASON_CHARS = 300
+_PLANNER_VALIDATOR_PROGRAM = r'''
+import json, os, sys
+from pathlib import Path
+
+# Replies travel on a private copy of stdout. Descriptor 1 itself becomes stderr,
+# so nothing the planner (or a process it runs) prints can corrupt a verdict.
+protocol = os.fdopen(os.dup(1), "w", encoding="utf-8")
+os.dup2(2, 1)
+sys.stdout = sys.stderr
+sys.path.insert(0, str(Path.cwd().resolve()))
+
+
+def reply(**payload):
+    protocol.write(json.dumps(payload) + "\n")
+    protocol.flush()
+
+
+# BaseExceptions, so no `except Exception` inside the loader can swallow them.
+class Aborted(BaseException):
+    """The sweeper could not answer an existence question: no verdict follows."""
+
+
+class Unbound(BaseException):
+    """The loader asked this checkout's filesystem instead of the judged tree."""
+
+
+def unbound(*_args, **_kwargs):
+    raise Unbound()
+
+
+def exists(reference):
+    reply(exists=reference)
+    try:
+        answer = json.loads(sys.stdin.readline())
+    except ValueError:
+        answer = None
+    if isinstance(answer, dict) and isinstance(answer.get("exists"), bool):
+        return answer["exists"]
+    raise Aborted()
+
+
+try:
+    from scripts import run_ci_pack
+
+    run_ci_pack.planner_path_exists = unbound
+    run_ci_pack.planner_path_is_file = unbound
+    run_ci_pack.planner_tracked_path_inventory = unbound
+    reply(ready=True)
+    for line in iter(sys.stdin.readline, ""):
+        manifest = Path(json.loads(line)["manifest"])
+        try:
+            run_ci_pack.load_legacy_jobs(manifest, path_exists=exists)
+        except Aborted:
+            reply(verdict="aborted")
+        except Unbound:
+            reply(verdict="unbound")
+        except run_ci_pack.ManifestError as exc:
+            reply(verdict="rejected", reason=str(exc))
+        except Exception as exc:
+            reply(verdict="rejected", reason=f"{type(exc).__name__}: {exc}")
+        else:
+            reply(verdict="valid")
+except BaseException as exc:
+    reply(unavailable=f"{type(exc).__name__}: {exc}")
+    raise SystemExit(1)
+'''
+
+
+def _summarize_planner_findings(reason: str) -> str:
+    """The planner's first finding, and how many more it raised."""
+    findings = [line.strip() for line in reason.splitlines() if line.strip()]
+    if not findings:
+        return "the planner rejected it without a finding"
+    summary = findings[0][:_PLANNER_REASON_CHARS]
+    if len(findings) > 1:
+        summary += f" (+{len(findings) - 1} more)"
+    return summary
+
+
+class PlannerManifestValidator:
+    """``run_ci_pack.load_legacy_jobs``, asked of the planner in its own process.
+
+    Called with a manifest's bytes and the existence oracle of the tree they came
+    from: ``None`` when the planner accepts them, else the reason it does not. It
+    never raises for the planner's own failures — an unavailable planner is a
+    reason like any other, so the caller re-proves. What the ORACLE raises (an
+    unreadable tree, a spent allowance, a quota refusal) is the caller's evidence
+    failure, not a verdict: the child is told to abandon that manifest and the
+    exception propagates. The child starts on the first call, so a sweep with no
+    manifest commit in its window never pays for it, and one child then answers
+    the whole sweep.
+    """
+
+    def __init__(
+        self,
+        root: Path | str | None = None,
+        *,
+        start_timeout: float = PLANNER_START_TIMEOUT_SECONDS,
+        call_timeout: float = PLANNER_CALL_TIMEOUT_SECONDS,
+        total_budget: float = PLANNER_TOTAL_BUDGET_SECONDS,
+    ) -> None:
+        if root is None:
+            root = os.environ.get(PLANNER_ROOT_ENV) or _ROOT
+        self.root = Path(root)
+        self.start_timeout = start_timeout
+        self.call_timeout = call_timeout
+        self.total_budget = total_budget
+        # Manifests actually handed to the planner; verdict caching is the caller's.
+        self.calls = 0
+        self._started = False
+        self._process: subprocess.Popen[str] | None = None
+        self._replies: queue.Queue[str | None] = queue.Queue()
+        self._stderr: Any = None
+        self._scratch: str | None = None
+        self._deadline = 0.0
+        self._unavailable: str | None = None
+
+    def __call__(self, content: bytes, path_exists: Callable[[str], bool]) -> str | None:
+        if not self._started:
+            self._start()
+        if self._unavailable is not None:
+            return self._unavailable
+        assert self._scratch is not None
+        self.calls += 1
+        manifest = Path(self._scratch) / "legacy-jobs.yml"
+        try:
+            manifest.write_bytes(content)
+        except OSError as exc:
+            return self._fail(f"the manifest could not be staged ({exc})")
+        if not self._send({"manifest": str(manifest)}):
+            assert self._unavailable is not None
+            return self._unavailable
+        while True:
+            reply = self._reply(self.call_timeout)
+            if reply is None:
+                assert self._unavailable is not None
+                return self._unavailable
+            if "exists" not in reply:
+                break
+            reference = reply["exists"]
+            if not isinstance(reference, str):
+                return self._fail(f"it asked about {str(reference)[:80]!r}")
+            try:
+                answer = path_exists(reference)
+                if not isinstance(answer, bool):
+                    raise RuntimeError(
+                        f"the tree answered {answer!r} about {reference[:80]!r}"
+                    )
+            except Exception:
+                self._abort()
+                raise
+            if not self._send({"exists": answer}):
+                assert self._unavailable is not None
+                return self._unavailable
+        verdict = reply.get("verdict")
+        if verdict == "valid":
+            return None
+        reason = reply.get("reason")
+        if verdict == "rejected" and isinstance(reason, str):
+            return _summarize_planner_findings(reason)
+        if verdict == "unbound":
+            return self._fail(
+                "the loader looked a path up in the planner checkout, not the judged tree"
+            )
+        return self._fail(f"it answered {str(reply)[:80]!r} instead of a verdict")
+
+    def _send(self, payload: dict[str, Any]) -> bool:
+        process = self._process
+        if process is None or process.stdin is None:
+            self._fail("it is not running")
+            return False
+        try:
+            process.stdin.write(json.dumps(payload) + "\n")
+            process.stdin.flush()
+        except (OSError, ValueError) as exc:
+            self._fail(f"the request could not be sent ({exc})")
+            return False
+        return True
+
+    def _abort(self) -> None:
+        """Tell the child the pending manifest has no answer, and see it let go."""
+        if not self._send({"abort": True}):
+            return
+        reply = self._reply(self.call_timeout)
+        if reply is not None and reply.get("verdict") != "aborted":
+            self._fail(f"it answered {str(reply)[:80]!r} to an abort")
+
+    def _start(self) -> None:
+        self._started = True
+        self._deadline = time.monotonic() + self.total_budget
+        try:
+            self._scratch = tempfile.mkdtemp(prefix="merge-on-green-manifest-")
+            self._stderr = tempfile.TemporaryFile(
+                mode="w+", encoding="utf-8", errors="replace"
+            )
+            self._process = subprocess.Popen(
+                [sys.executable, "-E", "-c", _PLANNER_VALIDATOR_PROGRAM],
+                cwd=self.root,
+                env={key: os.environ[key] for key in _PLANNER_ENV_KEYS if key in os.environ},
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=self._stderr,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+        except (OSError, ValueError) as exc:
+            self._fail(f"it could not start under {self.root} ({exc})")
+            return
+        atexit.register(self.close)
+        threading.Thread(
+            target=self._read_replies, args=(self._process.stdout,), daemon=True
+        ).start()
+        reply = self._reply(self.start_timeout)
+        if reply is None:
+            return
+        if reply.get("ready") is not True:
+            why = reply.get("unavailable")
+            self._fail(f"it did not start ({why if isinstance(why, str) else str(reply)[:80]})")
+
+    def _read_replies(self, stream: Any) -> None:
+        try:
+            for line in stream:
+                self._replies.put(line)
+        except (OSError, ValueError):
+            pass
+        finally:
+            self._replies.put(None)
+
+    def _reply(self, timeout: float) -> dict[str, Any] | None:
+        """The child's next reply, or None once the child is ruled unavailable."""
+        remaining = min(timeout, self._deadline - time.monotonic())
+        if remaining <= 0:
+            self._fail("its time budget for this sweep is spent")
+            return None
+        try:
+            line = self._replies.get(timeout=remaining)
+        except queue.Empty:
+            self._fail(f"it did not answer within {remaining:.0f}s")
+            return None
+        if line is None:
+            self._fail("it exited")
+            return None
+        try:
+            reply = json.loads(line)
+        except ValueError:
+            reply = None
+        if not isinstance(reply, dict):
+            self._fail(f"it wrote {line[:80]!r} instead of a reply")
+            return None
+        return reply
+
+    def _fail(self, why: str) -> str:
+        message = f"the planner's manifest validator is unavailable: {why}"
+        tail = self._stderr_tail()
+        if tail:
+            message += f"; its last stderr line: {tail}"
+        self._unavailable = message[: 2 * _PLANNER_REASON_CHARS]
+        self.close()
+        return self._unavailable
+
+    def _stderr_tail(self) -> str:
+        if self._stderr is None:
+            return ""
+        try:
+            self._stderr.seek(0)
+            lines = [line.strip() for line in self._stderr.read().splitlines()]
+        except (OSError, ValueError):
+            return ""
+        lines = [line for line in lines if line]
+        return lines[-1][:_PLANNER_REASON_CHARS] if lines else ""
+
+    def close(self) -> None:
+        """Stop the child and drop its scratch files. Idempotent; atexit runs it."""
+        self._started = True
+        if self._unavailable is None:
+            self._unavailable = "the planner's manifest validator is unavailable: it was closed"
+        process, self._process = self._process, None
+        if process is not None:
+            try:
+                if process.stdin is not None:
+                    process.stdin.close()
+            except OSError:
+                pass
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+        stderr, self._stderr = self._stderr, None
+        if stderr is not None:
+            stderr.close()
+        scratch, self._scratch = self._scratch, None
+        if scratch is not None:
+            shutil.rmtree(scratch, ignore_errors=True)
+
+
 class ProofFreshness:
     """Per-sweep answer to: has main moved under this pull request's proof?
 
@@ -2152,6 +2757,8 @@ class ProofFreshness:
         token: str,
         gates: list[dict[str, Any]],
         commits: list[dict[str, Any]],
+        manifest_validator: Callable[[bytes, Callable[[str], bool]], str | None]
+        | None = None,
     ) -> None:
         self.repo = repo
         self.token = token
@@ -2173,6 +2780,9 @@ class ProofFreshness:
         self._commit_files: dict[str, tuple[list[str], bool]] = {}
         self._commit_tree_shas: dict[str, str] = {}
         self._root_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
+        # Listings with an entry no path lookup can trust: unnamed, nested,
+        # duplicated, untyped or without an object ID.
+        self._ambiguous_trees: set[str] = set()
         self._recursive_trees: dict[str, dict[str, tuple[str, str, str]]] = {}
         self._blobs: dict[str, bytes] = {}
         self._pr_files: dict[Any, list[str] | None] = {}
@@ -2183,6 +2793,26 @@ class ProofFreshness:
         self._proof_bound_sha: str | None = None
         self.commit_file_reads = 0
         self._commit_file_page_reads = 0
+        # Main commit -> ordered parent IDs, from the same `files_of` body.
+        self._commit_parents: dict[str, tuple[str, ...]] = {}
+        # Main commit -> {job: (before, after)} for a bounded manifest edit, or the
+        # reason it is not one. Shared by every pull request in the sweep.
+        self._manifest_deltas: dict[str, dict[str, tuple[Any, Any]] | str] = {}
+        # Manifests by blob ID, two at most, as (bytes, parsed document): a 2.4 MB
+        # document per slot, and newest-first classification only ever needs a
+        # commit and its parent. The bytes are what the planner is handed.
+        self._manifest_documents: dict[str, tuple[bytes, Any]] = {}
+        # Blobs YAML cannot parse, whatever tree they sit in.
+        self._manifest_parse_failures: dict[str, str] = {}
+        # The planner's verdict per (manifest blob, root tree), shared by every pull
+        # request: pairs it accepted, and why each other pair is not admissible.
+        # Never per blob alone, because the loader's scope check reads the tree.
+        self.manifest_validator = (
+            PlannerManifestValidator() if manifest_validator is None else manifest_validator
+        )
+        self._manifest_valid: set[tuple[str, str]] = set()
+        self._manifest_rejections: dict[tuple[str, str], str] = {}
+        self.ci_scope_active = os.environ.get(CI_SCOPE_MODE_ENV, "") == "active"
 
     # -- construction ---------------------------------------------------------
 
@@ -2389,21 +3019,36 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"root tree {tree_sha[:12]} unreadable")
+        if not _is_full_sha(tree_sha) or payload.get("sha") != tree_sha:
+            raise RuntimeError(f"root tree {tree_sha[:12]} identity mismatch")
         if payload.get("truncated") is True:
             raise RuntimeError(f"root tree {tree_sha[:12]} was truncated")
+        if payload.get("truncated") is not False or not isinstance(payload.get("tree"), list):
+            raise RuntimeError(f"root tree {tree_sha[:12]} has no complete listing")
         entries: dict[str, tuple[str, str, str]] = {}
-        for raw in payload.get("tree") or []:
-            entry = raw or {}
+        ambiguous = False
+        for raw in payload["tree"]:
+            if not isinstance(raw, dict):
+                raise RuntimeError(f"root tree {tree_sha[:12]} has a malformed entry")
+            entry = raw
             path = str(entry.get("path") or "")
+            kind = str(entry.get("type") or "")
+            object_sha = str(entry.get("sha") or "")
+            if (
+                not path
+                or "/" in path
+                or path in entries
+                or kind not in ("blob", "tree", "commit")
+                or not _is_full_sha(object_sha)
+            ):
+                ambiguous = True
             if not path:
                 continue
-            entries[path] = (
-                str(entry.get("type") or ""),
-                str(entry.get("mode") or ""),
-                str(entry.get("sha") or ""),
-            )
+            entries[path] = (kind, str(entry.get("mode") or ""), object_sha)
         if not entries:
             raise RuntimeError(f"root tree {tree_sha[:12]} had no usable entries")
+        if ambiguous:
+            self._ambiguous_trees.add(tree_sha)
         self._root_trees[tree_sha] = entries
         return entries
 
@@ -2420,9 +3065,12 @@ class ProofFreshness:
             raise _read_failed(
                 status, payload, f"git commit {commit_sha[:12]} unreadable"
             )
-        tree_sha = str(((payload.get("tree") or {}).get("sha")) or "")
-        if not tree_sha:
-            raise RuntimeError(f"git commit {commit_sha[:12]} has no root tree")
+        if not _is_full_sha(commit_sha) or payload.get("sha") != commit_sha:
+            raise RuntimeError(f"git commit {commit_sha[:12]} identity mismatch")
+        tree = payload.get("tree")
+        tree_sha = str(tree.get("sha") or "") if isinstance(tree, dict) else ""
+        if not _is_full_sha(tree_sha):
+            raise RuntimeError(f"git commit {commit_sha[:12]} has no valid root tree")
         self._commit_tree_shas[commit_sha] = tree_sha
         return tree_sha
 
@@ -2467,6 +3115,8 @@ class ProofFreshness:
         )
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"blob {blob_sha[:12]} unreadable")
+        if payload.get("sha") != blob_sha:
+            raise RuntimeError(f"blob {blob_sha[:12]} identity mismatch")
         if str(payload.get("encoding") or "") != "base64":
             raise RuntimeError(f"blob {blob_sha[:12]} has unsupported encoding")
         try:
@@ -2590,7 +3240,7 @@ class ProofFreshness:
     ) -> list[str] | None:
         """Complete a truncated inventory, or retain its conservative verdict.
 
-        The tree shortcut runs first. This fallback accepts at most ten 100-row
+        The tree shortcut runs first. This fallback accepts at most thirty 100-row
         pages of the same SHA/tree/ordered parents, ending in a short page. The
         sweep shares an additional-read budget and caches incomplete results too.
         Every original file/rename binding must survive the completed inventory.
@@ -2629,7 +3279,7 @@ class ProofFreshness:
             return None
         collected: dict[str, tuple[Any, str | None]] = {}
         rows: list[dict[str, Any]] = []
-        for page in range(1, 11):
+        for page in range(1, 31):
             if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
                 return None
             self._commit_file_page_reads += 1
@@ -2670,6 +3320,10 @@ class ProofFreshness:
         self.commit_file_reads += 1
         if status >= 400 or not isinstance(payload, dict):
             raise _read_failed(status, payload, f"commit {sha[:12]} unreadable")
+        identity = _commit_identity(payload)
+        if identity is not None and identity[0] == sha:
+            self._commit_tree_shas.setdefault(sha, identity[1])
+            self._commit_parents[sha] = identity[2]
         file_rows = payload.get("files") or []
         names = _changed_file_paths(file_rows)
         # GitHub's truncation threshold counts file rows, not our expanded old+new
@@ -2846,6 +3500,238 @@ class ProofFreshness:
         shown = ", ".join(sorted(base[:12] for base in bases))
         return None, f"proof anchor base(s) lie outside the frozen main window ({shown})"
 
+    # -- bounded legacy-manifest edits ----------------------------------------
+
+    def _charge_manifest_read(self) -> None:
+        """Spend one read of the sweep's shared extra-read allowance, or refuse."""
+        if self._commit_file_page_reads >= COMMIT_FILE_PAGE_READ_CAP:
+            raise RuntimeError("the sweep's shared extra-read allowance is spent")
+        self._commit_file_page_reads += 1
+        self.commit_file_reads += 1
+
+    def _manifest_tree(self, tree_sha: str) -> dict[str, tuple[str, str, str]]:
+        """One complete, unambiguous tree listing, charged once per sweep."""
+        if tree_sha not in self._root_trees:
+            self._charge_manifest_read()
+        entries = self._root_tree(tree_sha)
+        if tree_sha in self._ambiguous_trees:
+            raise RuntimeError(f"tree {tree_sha[:12]} lists an entry no path lookup can trust")
+        return entries
+
+    def _tree_path_exists(self, root_tree_sha: str, reference: str) -> bool:
+        """Whether a repository path is tracked in one exact root tree.
+
+        The planner's scope check asks it about each path a job's commands read
+        that neither the job's scope nor a global invalidator covers. A path is
+        absent only when every listing on the way to it is complete and says so;
+        an unreadable, truncated or ambiguous listing, a submodule or symlink on
+        the way, or a path that is not lexically canonical raises, and the caller
+        re-proves.
+        """
+        path = PurePosixPath(reference)
+        parts = path.parts
+        if not parts or path.is_absolute() or any(part in (".", "..") for part in parts):
+            raise RuntimeError(f"{reference[:80]!r} is not a canonical repository path")
+        tree_sha = root_tree_sha
+        for depth, name in enumerate(parts, start=1):
+            entry = self._manifest_tree(tree_sha).get(name)
+            if entry is None:
+                return False
+            if depth == len(parts):
+                return True
+            kind, mode, object_sha = entry
+            if kind == "blob" and mode in ("100644", "100755"):
+                return False
+            if kind == "blob":
+                # A checkout resolves a symlink on the way to a path, and the
+                # tree cannot say what it points at.
+                raise RuntimeError(
+                    f"{'/'.join(parts[:depth])} is a {mode} blob the planner would follow"
+                )
+            if kind != "tree":
+                raise RuntimeError(
+                    f"{'/'.join(parts[:depth])} is a {kind} entry, not a directory"
+                )
+            tree_sha = object_sha
+        raise AssertionError("unreachable")  # pragma: no cover
+
+    def _manifest_blob_sha(self, root_tree_sha: str) -> str:
+        """The manifest's blob ID under one root tree, one tree level per read.
+
+        Three small non-recursive listings rather than one recursive listing of
+        the whole repository, which GitHub truncates long before 375 jobs' worth
+        of tree. Neighbouring commits share `.github` and `ci` subtree IDs, so
+        the cache usually answers the second and third levels.
+        """
+        object_sha = root_tree_sha
+        entry: tuple[str, str, str] | None = None
+        for name, kind in ((".github", "tree"), ("ci", "tree"), ("legacy-jobs.yml", "blob")):
+            entry = self._manifest_tree(object_sha).get(name)
+            if entry is None or entry[0] != kind or not _is_full_sha(entry[2]):
+                raise RuntimeError(f"{LEGACY_MANIFEST_PATH} has no readable {kind} at {name}")
+            object_sha = entry[2]
+        if entry is None or entry[1] not in ("100644", "100755"):
+            raise RuntimeError(f"{LEGACY_MANIFEST_PATH} is not a regular file")
+        return object_sha
+
+    def _manifest_document(self, blob_sha: str, root_tree_sha: str) -> Any:
+        """One manifest, as the planner reads it in one commit: `yaml.safe_load`
+        parses the blob and the planner's own `load_legacy_jobs` accepts it against
+        that commit's root tree, or a RuntimeError says why not.
+
+        A verdict is per (blob, tree) and kept for the sweep, so neither a rejected
+        pair nor an accepted one evicted from the two slots is asked about twice.
+        An evidence failure while the planner asks about the tree is not a verdict
+        and is not kept here; a broken read or a quota refusal propagates as itself.
+        """
+        failure = self._manifest_parse_failures.get(blob_sha)
+        if failure is not None:
+            raise RuntimeError(failure)
+        key = (blob_sha, root_tree_sha)
+        rejection = self._manifest_rejections.get(key)
+        if rejection is not None:
+            raise RuntimeError(rejection)
+        slot = self._manifest_documents.pop(blob_sha, None)
+        if slot is None:
+            if blob_sha not in self._blobs:
+                self._charge_manifest_read()
+            content = self._blob(blob_sha)
+            # The slot is the cache; a second copy of the bytes would only double it.
+            self._blobs.pop(blob_sha, None)
+            try:
+                import yaml  # local: same contract as load_pr_gates
+            except ImportError as exc:  # pragma: no cover - environment, not logic
+                raise RuntimeError(f"PyYAML is unavailable: {exc}") from exc
+            try:
+                document = yaml.safe_load(content.decode("utf-8"))
+            except (UnicodeDecodeError, yaml.YAMLError) as exc:
+                message = f"manifest blob {blob_sha[:12]} does not parse"
+                self._manifest_parse_failures[blob_sha] = message
+                raise RuntimeError(message) from exc
+            slot = (content, document)
+        # Kept before the verdict, so an interrupted validation never re-reads it.
+        self._manifest_documents[blob_sha] = slot
+        while len(self._manifest_documents) > 2:
+            self._manifest_documents.pop(next(iter(self._manifest_documents)))
+        if key not in self._manifest_valid:
+            tree_failures: list[Exception] = []
+
+            def path_exists(reference: str) -> bool:
+                try:
+                    return self._tree_path_exists(root_tree_sha, reference)
+                except Exception as exc:
+                    tree_failures.append(exc)
+                    raise
+
+            try:
+                reason = self.manifest_validator(slot[0], path_exists)
+            except RuntimeError:  # the tree could not answer (RateLimited included)
+                raise
+            except Exception as exc:
+                if tree_failures:  # a broken read of the tree, not the planner's answer
+                    raise
+                # A validator that breaks admits nothing.
+                reason = f"the manifest validator raised {type(exc).__name__}: {exc}"
+            if reason is not None:
+                message = (
+                    f"the planner's own validation does not admit manifest blob "
+                    f"{blob_sha[:12]} under tree {root_tree_sha[:12]}: {reason}"
+                )
+                self._manifest_rejections[key] = message
+                raise RuntimeError(message)
+            self._manifest_valid.add(key)
+        return slot[1]
+
+    def _manifest_job_delta(self, sha: str) -> dict[str, tuple[Any, Any]] | str:
+        """``{job: (before, after)}`` for a bounded manifest edit, else why not.
+
+        The delta is the main commit against its ONLY parent. A merge commit has
+        no single "before", so it is never bounded here.
+        """
+        cached = self._manifest_deltas.get(sha)
+        if cached is not None:
+            return cached
+        delta: dict[str, tuple[Any, Any]] | str
+        try:
+            parents = self._commit_parents.get(sha)
+            if parents is None:
+                raise RuntimeError("its parent identity was not readable")
+            if len(parents) != 1:
+                raise RuntimeError(f"it has {len(parents)} parents")
+            documents = []
+            for commit_sha in (sha, parents[0]):
+                if commit_sha not in self._commit_tree_shas:
+                    self._charge_manifest_read()
+                tree_sha = self._commit_tree_sha(commit_sha)
+                documents.append(
+                    self._manifest_document(self._manifest_blob_sha(tree_sha), tree_sha)
+                )
+            after, before = documents
+            changed = _classify_bounded_manifest_job_delta(before, after)
+            if changed is None:
+                raise RuntimeError("its edit is not job-local")
+            before_jobs = {str(job): body for job, body in before["jobs"].items()}
+            after_jobs = {str(job): body for job, body in after["jobs"].items()}
+            delta = {job: (before_jobs.get(job), after_jobs[job]) for job in changed}
+        except RateLimited:
+            # A quota refusal is weather, not an answer about this commit: never
+            # cache it, and let the caller defer instead of re-proving.
+            raise
+        except RuntimeError as exc:
+            delta = str(exc)
+        self._manifest_deltas[sha] = delta
+        return delta
+
+    def _bounded_manifest_hold(
+        self,
+        sha: str,
+        number: Any,
+        definition_files: set[str],
+        commit_files: list[str],
+    ) -> str | None:
+        """Why a check-definition commit still re-proves this pull request.
+
+        ``None`` only when the commit changes the legacy manifest alone, its edit
+        is job-local, and no changed job could select or name this pull request's
+        own files under its old or its new definition.
+        """
+        if not self.ci_scope_active:
+            return "pull-request CI scoping is not active, so every job ran"
+        if definition_files != {LEGACY_MANIFEST_PATH}:
+            return "it changed more than the legacy job manifest"
+        # The job-delta judgement below is the planner's, so it only holds while
+        # the planner and its other inputs stay as they were: a commit that also
+        # edits the planner, a workflow or a dependency pin re-proves everyone.
+        for name in commit_files:
+            if name != LEGACY_MANIFEST_PATH and _manifest_matches_any(
+                MANIFEST_GLOBAL_INVALIDATORS, name
+            ):
+                return f"it also changed planner input {name}"
+        # Inferred scopes also depend on ordinary suite/source content. A mixed
+        # commit can change an unchanged sibling job's selected scope without
+        # appearing in the manifest delta. Only a manifest-only commit proves
+        # those sibling inputs stayed fixed; coarse workflow roots cannot.
+        if any(name != LEGACY_MANIFEST_PATH for name in commit_files):
+            return "it also changed files outside the legacy job manifest"
+        delta = self._manifest_job_delta(sha)
+        if isinstance(delta, str):
+            return f"its manifest delta is not bounded: {delta}"
+        files = self.pull_files(number)
+        if not files:
+            return "the pull request's own changed files could not be established"
+        for name in files:
+            if name == LEGACY_MANIFEST_PATH or _manifest_matches_any(
+                MANIFEST_GLOBAL_INVALIDATORS, name
+            ):
+                return f"the pull request itself changes planner input {name}"
+        if MANIFEST_PACK_JOB_ID in delta:
+            return f"it changed the {MANIFEST_PACK_JOB_ID} job"
+        for job_id, versions in delta.items():
+            hit = _manifest_job_hit(job_id, versions, files)
+            if hit is not None:
+                return hit
+        return None
+
     # -- the decision ---------------------------------------------------------
 
     def surface_of(self, number: Any) -> set[str] | None:
@@ -2950,6 +3836,7 @@ class ProofFreshness:
 
         candidates: set[str] = set()
         product_commits = 0
+        bounded_manifest_commits = 0
         for commit in window:
             message = str(commit.get("message") or "")
             if skip_ci_in_message(message):
@@ -2972,15 +3859,27 @@ class ProofFreshness:
                     f"proof, more than the {MAIN_COMMIT_FILE_CAP} this sweep will "
                     "classify"
                 )
-            if any(
-                name.startswith(CI_DEFINITION_TREES)
-                or name in self.ci_definition_files
+            definition_files = {
+                name
                 for name in files
-            ):
-                return True, (
-                    f"main commit {commit['sha'][:12]} changed the check definitions "
-                    "themselves, so no existing green describes the checks that run now"
+                if name.startswith(CI_DEFINITION_TREES) or name in self.ci_definition_files
+            }
+            if definition_files:
+                held = self._bounded_manifest_hold(
+                    commit["sha"], number, definition_files, files
                 )
+                if held is not None:
+                    return True, (
+                        f"main commit {commit['sha'][:12]} changed the check definitions "
+                        "themselves, so no existing green describes the checks that run "
+                        f"now ({held})"
+                    )
+                # A job-local manifest edit none of whose changed jobs could select
+                # or name this pull request's files: every job the PR's planner
+                # selects is defined byte-for-byte as it was when the green ran.
+                # The manifest stays in `files`, so its own path-filter owners
+                # still face the ordinary surface test below.
+                bounded_manifest_commits += 1
             if files and all(name.startswith(PIPELINE_TREES) for name in files):
                 continue  # a render/nightly bake, not an edit
             for name in files:
@@ -2999,10 +3898,16 @@ class ProofFreshness:
                 if not matched_specific:
                     continue
 
+        manifest_note = (
+            f" ({bounded_manifest_commits} of them a job-local manifest edit to jobs "
+            "this pull request's checks do not select)"
+            if bounded_manifest_commits
+            else ""
+        )
         if not candidates:
             return False, (
                 f"main took {len(window)} commit(s) since the proof, none of them "
-                "inside any gate's path filter"
+                f"inside any gate's path filter{manifest_note}"
             )
 
         surface = self.surface_of(number)
@@ -3022,7 +3927,7 @@ class ProofFreshness:
                 f"main took {len(window)} commit(s) since the proof, none inside this "
                 f"pull request's tested surface — its {file_count} changed file(s) own "
                 "no path-filtered gate entry, so the exact-head checks that ran are "
-                "the whole proof"
+                f"the whole proof{manifest_note}"
             )
         hit = sorted(candidates & surface)
         if hit:
@@ -3032,7 +3937,7 @@ class ProofFreshness:
             )
         return False, (
             f"main took {len(window)} commit(s) since the proof, none inside this "
-            "pull request's tested surface"
+            f"pull request's tested surface{manifest_note}"
         )
 
 
