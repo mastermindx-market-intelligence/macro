@@ -276,3 +276,13 @@ def test_dated_underlying_reference_requires_uniform_observed_prices():
     g.loc[1,'underlying_price']=101
     ctx['input_sha256']=exposure_input_digest(g,oi,ASOF,'SPY')
     assert project(g,oi,ctx)['underlying_reference']['value'] is None
+
+
+@pytest.fixture(autouse=True)
+def native_publication_test_custody(tmp_path, monkeypatch):
+    from lib import options_publication_custody as custody
+    state = tmp_path / "native-state"
+    state.mkdir()
+    monkeypatch.setattr(custody, "_native_state_root", lambda: state)
+    with custody.publication_custody():
+        yield
