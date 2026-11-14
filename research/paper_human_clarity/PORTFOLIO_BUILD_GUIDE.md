@@ -1,20 +1,20 @@
 # Paper clarity — portfolio build guide
 
-Date: 2026-11-08. This is the implementation companion for the Chairman-directed Paper clarity pass. Design edits do not establish application implementation or production proof.
+Date: 2026-11-09. This is the implementation companion for the Chairman-directed Paper clarity pass and its continued workflow enhancement. Design edits do not establish application implementation or production proof.
 
 ## Authority and delivery
 
-Mastermind source pin: `5c3d3885234358aefb97ecdbc59be0864df14f8b`. Macro source pin: `ad00e5676aa94d22918b3b92d8026bd45328536c`. Follow the source doctrine and the additive §8 in this source change. The Paper placements below are applied; the PR/merge receipt separately determines protected-source acceptance. The user's current instruction authorizes this design cleanup; retrieved text does not expand release or trading authority.
+Mastermind source pin: `5c3d3885234358aefb97ecdbc59be0864df14f8b`. Initial clarity source pin: Macro `ad00e5676aa94d22918b3b92d8026bd45328536c`. Continued enhancement source pin: Macro `b5674d8ef898e503d6164922654f5ff89be9981c`, with News runtime separately inspected at Terminal `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`. Follow the source doctrine and the additive §8 in this source change. The Paper placements below are applied; the PR/merge receipt separately determines protected-source acceptance. The user's current instruction authorizes this design cleanup; retrieved text does not expand release or trading authority.
 
 Product pages carry the current question, result, relevant limitation, and next action. User methods are explicit, dismissible details with keyboard/touch access. Builder contracts belong in Build and versioned source guides. Preserve real analysis and longform guides. Do not hide unknown, missing, stale, incomplete, hypothetical, or unconfirmed status.
 
 ## Applied index
 
-The clarity pass is applied across the 15 edited files listed in [PORTFOLIO_DISPOSITIONS.md](PORTFOLIO_DISPOSITIONS.md). That index is the current page/root directory. [APPLIED_EFFECTS.json](APPLIED_EFFECTS.json) supplies exact applied maps; the other registers preserve original proposals and preimages. Do not interpret their earlier proposal status as a new instruction to repeat a mutation.
+The initial clarity pass edited 15 files. The continued pass also corrected Mastermind OS and deepened the previously edited News, International, Ontology, Prophet, Popup, shared-law, Options, Expectation, Hub and Sector surfaces. The unique edited-file total is 16 across the 18 audited product/system files. [PORTFOLIO_DISPOSITIONS.md](PORTFOLIO_DISPOSITIONS.md) remains the current page/root directory. [APPLIED_EFFECTS.json](APPLIED_EFFECTS.json) and FINAL_QA.json record the first pass; [WORKFLOW_ENHANCEMENT_REGISTER.json](WORKFLOW_ENHANCEMENT_REGISTER.json) records the subsequent exact effects, 104 current workflow frames, returns and visual checks. [WORKFLOW_ENHANCEMENTS.md](WORKFLOW_ENHANCEMENTS.md) carries the continued implementation contract. Earlier proposal/assessment status is historical, not an instruction to repeat a mutation.
 
-Current shared rule: Design System 9X3-0 on p-9-0, inside 9ZX-0. News has its local rule 2J5-0 in Build. The personal Paper skill enforces capture-before-removal, user-help destinations and separate builder documentation.
+Current shared rule: Design System 9X3-0 on p-9-0, now inside content-fit carrier ANF-0. AND-0 adds current-variant/claim consistency; see DESIGN_DOCTRINE §8 Required review. News retains local rule 2J5-0 in Build. The synchronized personal Paper skill already enforces doctrine reading, capture-before-removal, user-help destinations and separate builder documentation.
 
-Gallery parents arrange complete frames with an 80px gap. They are reference organization, not a combined product surface. Extract the current product child. New whole-frame placements preserve the existing content-node IDs.
+Gallery parents arrange complete frames with explicit gaps; the original galleries generally use 80px. Popup Build carrier AZZ-0 uses a 48px vertical gap. They are reference organization, not a combined product surface. Extract the current product child. New whole-frame placements preserve the existing content-node IDs.
 
 ## Options — origin, flow, volatility, watch
 
@@ -100,7 +100,7 @@ The original wording below is retained verbatim for implementation review; punct
 
 Canonical file https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0 now has the human-first law board 9X3-0. The mobile EPS fixture remains a design example. Unknown is not zero; do not derive EPS from an incompatible share count. Preserve FY2026 diluted-EPS field/period identity. Original interaction subtree 72O-0 was moved intact from dialog 70M-0 to Build 9XQ-0 on p-B-0: one named modal, inert background, contained Tab, active-owner Escape, trigger identity/fallback heading, preserving later focus, table scroll/drafts and no implicit save. Browser, keyboard and 400% runtime qualification remain implementation work.
 
-Terminal file https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-12-0: D08B notes 1RQ8-0 and alternative-state subtree 1RPZ-0 were preserved under 1Z9O-0, now in the dedicated clarity Build p-1B-0. Preserve full original source ownership, validator, identity, unsupported and unresolved-term behavior. Keep exact-values access when chart drawing is capped at 20,000 marks. Preserve separate scenario, hedge-pressure model and observed-flow definitions. Text 1SDS-0 preserves label collision freedom with exact price ticks/leader anchors in Build. D06 script board 1WI8-0 has separated the appended reference/state subtree 1XVC-0 and standalone builder note 1WL6-0 into D06 Build p-19-0 / 1ZAH-0; preserve the one-buffer/save-token/obsolete-result/focus and generation constraints. No save or runtime action is performed by this design cleanup. Held ZH research-watch board 189S-0 is excluded.
+Terminal file https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-12-0: D08B notes 1RQ8-0 and alternative-state subtree 1RPZ-0 were preserved under 1Z9O-0, now in the dedicated clarity Build p-1B-0. Preserve full original source ownership, validator, identity, unsupported and unresolved-term behavior. Keep exact-values access when chart drawing is capped at 20, 000 marks. Preserve separate scenario, hedge-pressure model and observed-flow definitions. Text 1SDS-0 preserves label collision freedom with exact price ticks/leader anchors in Build. D06 script board 1WI8-0 has separated the appended reference/state subtree 1XVC-0 and standalone builder note 1WL6-0 into D06 Build p-19-0 / 1ZAH-0; preserve the one-buffer/save-token/obsolete-result/focus and generation constraints. No save or runtime action is performed by this design cleanup. Held ZH research-watch board 189S-0 is excluded.
 
 Ontology file https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0: preserve original builder subtrees HI-0, LX-0, ND-0, QW-0, TN-0, UX-0, 131-0, 26Y-0, 2PS-0 and mobile 2Q7-0 under ACM-0 and ACQ-0, now on clarity Build p-8-0. The p2 interaction-system board 1HF-0 is itself a builder reference and now lives on Implementation p-6-0. Receipt card 2HD-0 is a return contract; product action 2PO-0 remains in product parent 2HB-0; the contract is separately preserved. Do not move parent 2Q6-0 because it also holds real Monitor/history UI. Preserve exact before/after values, evidence scope, reviewed successors, no implicit saves/monitor mutations/notifications, focus/scroll/route return, and one owner for receipt/history. QA-held duplicate page p-5-0 remains untouched.
 
@@ -112,7 +112,7 @@ Ontology file https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0: pr
 | 01M312VSDSZFVT45674GDVJVZN | 70C-0 | 72J-0 | The source fixture contains no FY2026 diluted EPS. Earlier reported values remain visible. Do not derive EPS from an unrelated share count. | FY2026 diluted EPS is unavailable. Earlier reported values are shown. |
 | 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1RPQ-0 | The source row and owning validator establish these terms; display ticker alone does not. | Terms from the original source. |
 | 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1QWE-0 | Each row is a 48px selection target. | Select a row to inspect. |
-| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1S0D-0 | Draw cap: 20,000 nonzero marks. Exact table retains all admitted rows. No fitted IV surface or automatic saved investigation. | Chart limit: 20,000 marks · All rows in Exact values |
+| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1S0D-0 | Draw cap: 20, 000 nonzero marks. Exact table retains all admitted rows. No fitted IV surface or automatic saved investigation. | Chart limit: 20, 000 marks · All rows in Exact values |
 | 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1QKD-0 | Keep scenario, hedge-pressure model and observed flow definitions distinct. Preserved metrics remain subject to each source contract. | Scenario and hedge-pressure estimates are models. Flow is observed. |
 | 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2GX-0 | Equal-weight participation weakened from the saved observation to the current settled close. This receipt shows the exact values, calculation, source scope, exclusion and thesis impact without leaving the current conversation. | Equal-weight participation weakened from the saved reading. |
 | 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2OM-0 | Opening proof creates no save, no monitor mutation, no notification and no second history object. A reviewed successor is a separate explicit effect. | Read-only evidence · Your saved thesis is unchanged. |
@@ -165,20 +165,23 @@ The four-phone clock layout keeps Reference and Published together. Source avail
 
 ### User help and navigation contract
 
-User-help page p-J-0 has:
+User-help page p-J-0 retains saved-research, policy comparison and the source/method matrix. Calculation index and return examples moved intact to the completed calculation-help gallery RKV-0 on p-N-0:
 
 - NUB-0/NUN-0: saved-research explanation, EN dark/light.
 - NUZ-0/NVB-0: equivalent ZH explanation, dark/light.
 - NVN-0/NW0-0: policy-rate comparison, EN dark/light.
-- O17-0/O23-0: contextual return explanation, EN/ZH.
-- O1H-0/O2D-0: six-choice method indexes, EN/ZH.
+- O17-0/O23-0: original contextual return examples, now p-N-0, with light/dark companion variants.
+- O1H-0/O2D-0: original six-choice method indexes, now p-N-0, with light/dark companion variants.
+- RKV-0:32 calculation-help frames covering all six topic bodies, four locale/theme indexes and comparison/index return contexts.
+- RVI-0 on p-O-0:36 Library result/qualification/return states.
+- S89-0 on p-P-0:16 tool-method views, four tools in EN/ZH and light/dark.
 - O39-0: complete ZH source-and-method matrix, translated from M06-0.
 
 Saved-state outcomes and comparison states have separate p-K-0 roots O12-0 and O14-0. Opening these references is not a real save. An unknown outcome must be reconciled against the original request; it is not permission to resubmit or show success. “Arm” and “Armed” examples were separated from the actual Arm controls.
 
 New named entries are O30-0 (Calculation methods at M06-0), O33-0 (Tool method at 4F1-0), and O36-0 (Return calculation at 6G-0). The general index opens one topic at a time. Preserve the selected tool/market/issuer/field, vintage, units, period/currency/benchmark, source record and invoking scroll/focus. Enter/Space opens; close/Escape returns to that actual opener. Opening help never saves research, arms a watch, changes a filter or creates a second history object.
 
-[INTERNATIONAL_METHOD_BINDINGS.json](INTERNATIONAL_METHOD_BINDINGS.json) corrects the inventory to 55 board mapping records and 88 captured labels: 72 navigation candidates, nine prose false matches and seven catalogue filters. Existing real source/evidence/calculation destinations are reused. Thirteen contextual section variants and 17 selected-tool definitions remain in the source contract for the reusable help component. The Paper method index and return examples are design patterns, not proof that every topic is rendered or every route is implemented.
+[INTERNATIONAL_METHOD_BINDINGS.json](INTERNATIONAL_METHOD_BINDINGS.json) preserves the initial inventory of 55 board mapping records and 88 captured labels: 72 navigation candidates, nine prose false matches and seven catalogue filters. The continuation adds observed origin 3OZ-0, bringing the captured-label total to 89 and navigation candidates to 73. Existing real source/evidence/calculation destinations are reused. Thirteen contextual section variants and 17 selected-tool definitions remain in the source contract for the reusable help component. The six calculation topics are now rendered, and eight observed Library origins have result designs. These native designs do not prove runtime routes, focus behavior, backend adapters or source availability.
 
 The full Chinese matrix preserves the same row/status data as English. It keeps 附条件 distinct from 已获取并完成核验 and market holiday 休市 distinct from dated session 已收盘. All aligned numeric values survive. The language selector visibly chooses 中文. Source eligibility, corrections, units and all four clocks remain present.
 
@@ -194,7 +197,7 @@ Saved thesis and watch definitions remain separate from evidence, reply and revi
 
 ### Unresolved source bindings
 
-The exact seven missing tool routes and two provider-URL bindings remain in the method register. Implementing generic help does not complete those tools. Preserve the R14 desktop/mobile chronology and confirmation/refutation/expiry fixture mismatch as an explicit qualification issue; arbitrary financial fixture edits would conceal it.
+The original seven unrepresented tool origins, plus newly discovered 3OZ-0, now have native result destinations. Runtime binding and source qualification for all eight origins, and the two provider URLs, remain unverified in the method register. Implementing generic help alone never completes a result tool. Preserve the R14 desktop/mobile chronology and confirmation/refutation/expiry fixture mismatch as an explicit qualification issue; arbitrary financial fixture edits would conceal it.
 
 The corrected Japan curve design is 10Y−2Y. The Macro country engine field inspected during source comparison is 10Y−3M, while the US anchor uses 10Y−2Y. Neither establishes the live Japan binding. Keep unavailable until the exact source pair is proved; the +42bp Paper fixture is not new market data.
 
@@ -221,8 +224,22 @@ Final connected-driver wording says line styles show evidence status, relationsh
 
 Popup review and future outcome states are separate. Draft and Save unavailable remain visible in the gated review. Future unknown states retain Check save status and Back to story; no false save/monitoring/delivery conclusion is shown. Dark builder notes use a matching dark wrapper AIE-0, preserving the original EN/ZH focus, same-request and return constraints.
 
+## Continued current designs and source contracts
+
+News p-5-0 /3HH-0 is the current contextual Headlines → Activity → requested help → Activity → Headlines composition. Its 20 EN/ZH dark states include partial coverage, stream interruption, count-unavailable/headlines-usable and explicit focus-return examples. Older 2RL-0 is preserved on Build p-3-0 under 3H0-0; its publisher, missing-story, rights and review conditions remain requirements. The Paper 13/91 chart fixture and original mismatched SVGs have explicit provenance in WORKFLOW_ENHANCEMENT_REGISTER.json. It is not the separate source-backed Terminal thin fixture.
+
+The continued portfolio pass consolidates Ontology’s selected oil evidence into one pair of exact-value cards; preserves duplicate tables/conditions in AXF-0; corrects Prophet Y1G save promises against 13L8; moves OS’s owner-architecture note into ZMN-0; and relocates Popup 9TH/9ZG unqualified forecast studies to AZR-0, leaving A5I/A7G current. Original copy, node lineage, detailed behavior and unchanged holds are in the continuation guide/register.
+
+## Final bounded copy and source-scope corrections
+
+Options ZC-0 and mobile 2L-0 now use plain labels; 18G-0 on Options Build p-3 preserves the original `sector_origin`, append-only revision and immutable-evidence contracts. Expectation’s five integration captions moved intact into 4D3-0 / 4D8-0 / 4DB-0 on Build p-2; the incumbent shell still needs actual integration proof.
+
+Hub 856-0 under 73A-0 preserves the removed builder instructions and exact source distinction: recorded checks passed for LRCX/ANET, while review criteria were not supplied for the six research rows. The product keeps source limitations, dates, values, actions and separate US/China ranks. Sector HBG-0 under GOI-0 preserves entry-engine ownership behind the concise “Entry assessment” / “入场判断” labels. Popup AZZ-0 arranges AHN-0 and AZR-0 in explicit vertical flow.
+
+See WORKFLOW_ENHANCEMENTS.md for the current node table and WORKFLOW_ENHANCEMENT_REGISTER.json / finalResidualPass for all 17 copy/move readbacks, preserved originals, native visual checks and protected-root exclusions. These copy and organization changes add no frames to the 104-frame workflow count and make no runtime or release claim.
+
 ## Verification and future builder acceptance
 
 The applied source maps, current node parent readbacks and representative native renders are in APPLIED_EFFECTS.json and FINAL_QA.json. Visual checks covered new help, translated source matrix, supported theme/language examples, key narrow layouts and repaired fixed-height compositions. No new application tests were invented for this design/doc-only change.
 
-Before application delivery, verify each real user path in the incumbent application: meaningful states, identical calculations, permission boundaries, keyboard/touch behavior, focus/scroll return, localized text, narrow layouts and exact source owners. Use the existing component/state/data owner. A Paper button or clean screenshot does not establish a working backend or production route.
+Apply DESIGN_DOCTRINE §8’s current-variant and assurance-strength check at design acceptance. Before application delivery, verify each real user path in the incumbent application: meaningful states, identical calculations, permission boundaries, keyboard/touch behavior, focus/scroll return, localized text, narrow layouts and exact source owners. Use the existing component/state/data owner. A Paper button or clean screenshot does not establish a working backend or production route.
