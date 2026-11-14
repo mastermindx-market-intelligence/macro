@@ -3713,6 +3713,13 @@ on:
       - "tests/test_risk_radar_review.py"
       - "tests/test_shock_deescalation.py"
       - "tests/test_w7_llm_determinism.py"
+      # Capacity Fabric cutover of the special-situations extractor (estate
+      # migration outcome #3). Both halves are listed: the collector SUBJECT and
+      # the two suites that own it — a guard the guarded change cannot trigger
+      # is not a guard (#3474, the lesson the tier-gate list above restates).
+      - "collectors/special_situations.py"
+      - "tests/test_special_situations.py"
+      - "tests/test_special_situations_fabric_cutover.py"
       # unrun-neuralweb-cortex
       - "tests/test_build_active_build_map.py"
       - "tests/test_build_cycle_pattern_state.py"
