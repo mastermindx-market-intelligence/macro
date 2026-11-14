@@ -1,0 +1,16 @@
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 64%]
+........................................................................ [ 85%]
+................................................                         [100%]
+=============================== warnings summary ===============================
+tests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes
+  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3036: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[:, None]
+
+tests/test_forex.py::test_calibrate_pair_signs_inverted_and_normalizes
+  /opt/homebrew/lib/python3.14/site-packages/numpy/lib/_function_base_impl.py:3037: RuntimeWarning: invalid value encountered in divide
+    c /= stddev[None, :]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+336 passed, 2 warnings in 38.46s
