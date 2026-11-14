@@ -33,6 +33,11 @@ PERCENT_TARGET_SERIES: tuple[str, ...] = (
 )
 PAYROLL_TARGET_SERIES: tuple[str, ...] = ("PAYEMS",)
 SUPPORTED_SERIES: tuple[str, ...] = PERCENT_TARGET_SERIES + PAYROLL_TARGET_SERIES
+# Presentation-only NSA index cohorts. Not forecast targets and never admissible
+# to target reconstruction or model scoring. The ALFRED collector may reuse its
+# existing manifest-and-parquet writer for these optional series.
+CHART_ONLY_INDEX_SERIES: tuple[str, ...] = ("PPIFID", "CPIAUCNS", "CPILFENS")
+VINTAGE_STORE_SERIES: tuple[str, ...] = SUPPORTED_SERIES + CHART_ONLY_INDEX_SERIES
 
 TARGET_IDS: Mapping[str, str] = {
     "CPIAUCSL": "cpi_headline_mom",
@@ -112,7 +117,7 @@ def normalize_full_vintage_frame(
         out["series"] = _validate_series(series_id)
     else:
         out["series"] = out["series"].astype(str).str.upper().str.strip()
-        unknown = sorted(set(out["series"].dropna()) - set(SUPPORTED_SERIES))
+        unknown = sorted(set(out["series"].dropna()) - set(VINTAGE_STORE_SERIES))
         if unknown:
             raise ReleaseTargetTruthError(
                 f"unsupported series in full-vintage frame: {unknown}"
@@ -211,6 +216,8 @@ def reconstruct_release_target(
     value from another vintage.
     """
     series = _validate_series(series_id)
+    if series not in SUPPORTED_SERIES:
+        raise ReleaseTargetTruthError("chart_only_index_must_not_be_reconstructed_as_forecast_target")
     target_period = _coerce_month(period, "period")
     prior_period = target_period - pd.offsets.MonthBegin(1)
     normalized = normalize_full_vintage_frame(vintages, series_id=series)
@@ -425,10 +432,10 @@ def _row_provenance(row: pd.Series) -> dict[str, object]:
 
 def _validate_series(series_id: str) -> str:
     series = str(series_id).upper().strip()
-    if series not in SUPPORTED_SERIES:
+    if series not in VINTAGE_STORE_SERIES:
         raise ReleaseTargetTruthError(
-            f"unsupported release-target series {series!r}; "
-            f"supported={list(SUPPORTED_SERIES)}"
+            f"unsupported release-target vintage series {series!r}; "
+            f"supported={list(VINTAGE_STORE_SERIES)}"
         )
     return series
 
@@ -486,6 +493,8 @@ __all__ = [
     "SCHEMA_VERSION",
     "SOURCE_OUTPUT_TYPE",
     "SUPPORTED_SERIES",
+    "CHART_ONLY_INDEX_SERIES",
+    "VINTAGE_STORE_SERIES",
     "TARGET_IDS",
     "ReleaseTargetTruthError",
     "default_vintage_path",
