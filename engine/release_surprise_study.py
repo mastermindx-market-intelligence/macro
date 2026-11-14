@@ -132,6 +132,8 @@ def forward_outcomes(
                     "quadrant": event.get("quadrant", "not_a_pair"), "agreement": event.get("agreement"),
                     "cpi_surprise": event.get("cpi_surprise"), "ppi_surprise": event.get("ppi_surprise"),
                     "price_source_refs": sorted({bar["source_ref"] for bar in window}),
+                    "event_source_refs": list(event.get("source_refs", [])),
+                    "display_derived_allowed": event.get("display_derived_allowed") is True,
                     "regime_features": dict(event.get("regime_features", {})),
                     "regime_source_refs": dict(event.get("regime_source_refs", {})),
                 })
@@ -348,14 +350,18 @@ def forecast_at(rows: Iterable[dict], target: dict, *, features: Sequence[str] =
                   "round_trip_cost_bps": next(iter(costs)),
                   "shrunk_quadrant_forecast_pct": cell_forecast,
                   "fit_basis": "train_only_standardization_fixed_ridge",
-                  "training_receipt": digest(train), "target_features_receipt": digest(vector(target))}
+                  "training_receipt": digest(train), "target_features_receipt": digest(vector(target)),
+                  "display_derived_allowed": target.get("display_derived_allowed") is True
+                      and all(row.get("display_derived_allowed") is True for row in train)}
     return {"status": "computed", "prediction": prediction}
 
 
 def prepare_shadow_proposals(rows: Iterable[dict], events: Iterable[dict], session_closes: Sequence[str], *,
                              symbols: Sequence[str] = DEFAULT_SYMBOLS, horizons: Sequence[int] = DEFAULT_HORIZONS,
                              asof: str, features: Sequence[str] = FEATURES, min_train: int = 60,
-                             protocol_receipt: str, evidence_class: str = "synthetic") -> dict:
+                             protocol_receipt: str, evidence_class: str = "synthetic",
+                             dataset_display_derived_allowed: bool = False,
+                             dataset_rights_ref: str | None = None) -> dict:
     """Prepare current forecasts with no outcome labels; persistence is MRI's job.
 
     A supplied asof is a research cutoff, NOT a trusted capture clock. The original
@@ -366,6 +372,10 @@ def prepare_shadow_proposals(rows: Iterable[dict], events: Iterable[dict], sessi
         raise EvidenceError("protocol_receipt_required")
     if evidence_class not in {"synthetic", "retrospective_pit", "prospective_capture"}:
         raise EvidenceError("invalid_shadow_evidence_class")
+    if type(dataset_display_derived_allowed) is not bool:
+        raise EvidenceError("dataset_publication_permission_requires_boolean")
+    if dataset_display_derived_allowed and (not isinstance(dataset_rights_ref, str) or not dataset_rights_ref.strip()):
+        raise EvidenceError("dataset_publication_rights_reference_required")
     proposals, reasons = [], Counter()
     for event in events:
         known = instant(event["known_at"])
@@ -390,6 +400,11 @@ def prepare_shadow_proposals(rows: Iterable[dict], events: Iterable[dict], sessi
                             "data_evidence_class": evidence_class,
                             "prepared_asof": iso(cutoff), "entry_at": iso(sessions[entry_index]),
                             "prediction": prediction, "authority": authority(),
+                            "publication": {"destination": "original_mri_forward_ledger",
+                                "display_derived_allowed": dataset_display_derived_allowed
+                                    and prediction["display_derived_allowed"],
+                                "rights_ref": dataset_rights_ref,
+                                "basis": "all_used_macro_inputs_and_dataset_derived_rights"},
                             "release": event["pair_id"], "period": event["period"],
                             "model": "msc_fixed_ridge_v1", "asof_night": iso(known)[:10]}
                 proposal["proposal_digest"] = digest(proposal)

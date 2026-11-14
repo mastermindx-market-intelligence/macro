@@ -79,3 +79,65 @@ danger_areas:
 The implementation task tree and corrections are in `research/release_forecast/MACRO_SURPRISE_CONFIRMATION_MASTERPLAN_2026-11-13.md`; the operational/statistical contract is `docs/RELEASE_SURPRISE_CONFIRMATION.md`. Source commits already published before this phase are `ca697bfa8ffe106eee4666ddcd994f9e8164faa1` and `71c1fd515f0967003e116ee5f1057a8f8378bf11`. The next source commit adds the completed forward-capture path, browser evidence, hardening, CI registration and these knowledge links. Resolve the exact PR from this unique branch instead of conducting an estate census.
 
 No worker, daemon, watcher, live capture schedule, trading rule, external data purchase or independent reviewer was launched. Principal self-checks apply under the Web review waiver; actual repository protections and non-author approval requirements, when present, remain binding. A saved handoff is not the stop condition: continue the highest-value safe authorized release/data phase until the parent outcome is proven or its real remaining boundaries are recorded.
+
+
+## Recovery and integration hardening - 2026-11-13
+
+The assigned session recovered original PR #11226 at `f25ef6754b86ca63eb7fdcdb854f76c7d4952205`
+and its existing managed workspace. No second worker, source branch, data provider
+or uncertain write replay was created. Retained the six unpublished UI/root-binding
+repairs and the existing screenshot delta; original custody/status was read back.
+
+Source hardening now protects the private consensus archive from Git publication,
+requires full input/dataset derived-data rights for public forward-ledger captures,
+preflights batches before append, registers the input with existing DAG/Synapse
+owners, and expands 31 existing CI scopes for 76 newly reached dependencies.
+The incumbent MRI job is explicitly curated against its complete concrete import
+closure so an unrelated free-content edit does not select its opaque fallback.
+No required test, threshold, CI guard or permission is weakened.
+
+Focused post-recovery contracts: **92 passed in 7.82 seconds** (synthetic/temporary
+roots). The real committed-data dry run previously returned zero eligible matched
+events, missing economist history and explicit actual-source defects; it wrote no
+tracked data/site bytes. Those are honest unavailable states, not evidence of alpha.
+
+The dated organizational handoff is now compiler-visible at
+`agentos/handoffs/RATES-INFLATION-COMMAND-2026-11-13.md`; its former suffixed path
+was not a canonical latest-handoff name. Wider RIC wave status is unchanged.
+
+Related PR #11232 is an intentionally stacked, separately owned chart/visible
+Events-dialog extension of #11226. Preserve that original writer/branch. Its
+existence is not merged or live consumer proof. Current release acceptance still
+requires CI contract/packing repair, fresh visual receipts, exact-head qualified
+source release, a covering production render and real consumer readback.
+
+
+### Current recovery verification
+
+- Focused CI closure/packing assertions: 2 passed, 302 deselected in 162.78s.
+- Affected MRI/Prophet/Sector/Radar regressions: 357 passed, 6 skipped, 5 warnings
+  in 38.50s. Skips remain explicit sparse-data-dependent tests, not passes.
+- Registry: 652 artifacts, zero violations; factor boundary guard clean.
+- Agent OS: 2330 records, zero errors; 164 pre-existing advisory warnings.
+- The unique comparison component now lives inside `#dlg-events`, not the hidden
+  grid data host. DOM-ready rendering consumes the existing MRI snapshot without
+  another fetch/timer. Full-page anonymous browser diagnostic returned the existing
+  sign-in sheet, no JavaScript errors and exactly one MRI fetch. This is correct
+  access enforcement, not authenticated production proof. A synthetic signed-in
+  browser case and exact-source visual recapture remain to run.
+
+
+### Visible native Events integration proof
+
+The actual dashboard template was rendered in an isolated fake origin and opened
+through its native Events card. Three browser cases passed with zero JavaScript
+errors: anonymous retains sign-in; synthetic allowed-user desktop (1280) and
+mobile (390) show the unique comparison, use the original MRI fetch once, and
+open its disclosure with Enter. The probe waits for actual native opacity and
+uses stable screenshots, avoiding blank mid-transition captures. Both native
+screenshots were visually inspected. No live authentication was changed or
+claimed. Receipts and source SHA-256 bindings are in
+`research/release_forecast/msc_evidence_20261113/native-dialog-proof.json`.
+
+The legacy P4 source-equivalence visual guard still needs genuine recapture at
+the committed current render source. The native proof above does not waive it.

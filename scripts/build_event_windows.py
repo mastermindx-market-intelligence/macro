@@ -141,6 +141,8 @@ def _stamp_forward_log(
     close: pd.Series,
     vol_payload: dict | None,
     gamma_regime: str | None,
+    *,
+    log_path: Path | None = None,
 ) -> int:
     """Stamp T-1 rows for any release landing within the next 2 trading days.
 
@@ -195,6 +197,7 @@ def _stamp_forward_log(
             release_date=release_date,
             ex_ante_dict=ex,
             t_minus_1_snap=snap,
+            path=log_path,
         )
         if did_write:
             written += 1
@@ -262,14 +265,15 @@ def main() -> int:
     if spy is not None:
         from engine.event_window import grade_forward_log
         spy_closes = {ts.date().isoformat(): float(v) for ts, v in spy.items()}
-        graded = grade_forward_log(spy_closes=spy_closes)
+        graded = grade_forward_log(spy_closes=spy_closes, path=root / "data/event_windows/forward_log.jsonl")
         if graded:
             log.info("build_event_windows: graded %d forward-log row(s)", graded)
 
     # ── Stamp T-1 forward-log rows (lane-gated) ───────────────────────────
     n_stamped = 0
     if spy is not None and snap.get("available"):
-        n_stamped = _stamp_forward_log(snap, spy, vol_payload, gamma_regime)
+        n_stamped = _stamp_forward_log(snap, spy, vol_payload, gamma_regime,
+                                       log_path=root / "data/event_windows/forward_log.jsonl")
     else:
         log.info("build_event_windows: forward-log stamp skipped (snap unavailable or no SPY)")
 

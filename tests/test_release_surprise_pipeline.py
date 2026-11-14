@@ -175,3 +175,66 @@ def test_config_variants_remain_in_same_trial_family(tmp_path):
                         round_trip_cost_bps=5)
     assert changed["matrix"]["configuration_trials_seen"] == 2
     assert TrialLedger(path, family=FAMILY).literal_n() == 2
+
+
+def test_event_windows_binds_ledger_writes_to_original_producer_root(tmp_path, monkeypatch):
+    import pandas as pd
+    from engine import event_window as engine
+    from lib import config
+    from scripts import build_event_windows as producer
+    calls = []
+    monkeypatch.setattr(producer, "_root", lambda: tmp_path)
+    monkeypatch.setattr(producer, "_spy_close", lambda: pd.Series([100., 101.], index=pd.to_datetime(["2026-11-10", "2026-11-11"])))
+    monkeypatch.setattr(producer, "_spy_vol_payload", lambda: None)
+    monkeypatch.setattr(producer, "_vol_regime_snap", lambda: None)
+    monkeypatch.setattr(producer, "_release_forecast_integrity_chip", lambda _: None)
+    monkeypatch.setattr(engine, "snapshot", lambda *a, **kw: {"available": True, "asof": ASOF})
+    monkeypatch.setattr(engine, "grade_forward_log", lambda **kw: calls.append(("grade", kw["path"])) or 0)
+    monkeypatch.setattr(producer, "_stamp_forward_log", lambda *a, **kw: calls.append(("stamp", kw["log_path"])) or 0)
+    monkeypatch.setattr(config, "load", lambda: {"storage": {"site_dir": str(tmp_path / "site")}})
+    assert producer.main() == 0
+    expected = tmp_path / "data/event_windows/forward_log.jsonl"
+    assert calls == [("grade", expected), ("stamp", expected)]
+    snapshot = json.loads((tmp_path / "site/event_windows/snapshot.json").read_text())
+    assert snapshot["macro_surprise_context"]["authority"] == authority()
+
+
+@pytest.mark.parametrize("scopes", ["internal_research,display_derived", ["internal_research", "unknown"], None])
+def test_dataset_scope_contract_is_typed_before_trial_write(tmp_path, scopes):
+    data = dataset_fixture()
+    data["use_scopes"] = scopes
+    ledger = tmp_path / "trials.jsonl"
+    with pytest.raises(EvidenceError, match="dataset_use_scopes_invalid"):
+        run_study(tmp_path, data, asof=ASOF, trial_ledger=ledger)
+    assert not ledger.exists()
+
+
+def test_private_archive_permissions_and_publication_boundary(tmp_path, monkeypatch):
+    from pathlib import Path
+    import stat
+    import yaml
+    monkeypatch.setattr(ingestion, "datetime", CaptureClock)
+    source = tmp_path / "authorized.jsonl"
+    source.write_text(json.dumps(poll_fixture(actual_fixture()[0])) + "\n")
+    target = tmp_path / CONSENSUS_PATH
+    target.parent.mkdir(parents=True)
+    target.write_text("")
+    target.chmod(0o644)
+    ingestion.ingest(source, tmp_path, commit=True)
+    assert stat.S_IMODE(target.stat().st_mode) == 0o600
+    root = Path(__file__).resolve().parents[1]
+    assert "/" + CONSENSUS_PATH in (root / ".gitignore").read_text().splitlines()
+    registry = yaml.safe_load((root / "config/synapse.yml").read_text())
+    def entries(value):
+        if isinstance(value, dict):
+            if value.get("path") == CONSENSUS_PATH:
+                yield value
+            for nested in value.values():
+                yield from entries(nested)
+        elif isinstance(value, list):
+            for nested in value:
+                yield from entries(nested)
+    records = list(entries(registry))
+    assert len(records) == 1
+    assert records[0]["storage"] == "gitignored-local"
+    assert records[0]["producer"] == "scripts/ingest_release_consensus.py"

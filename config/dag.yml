@@ -1662,6 +1662,8 @@ lanes:
                    config/release_forecast_model_registry.yml,
                    research/release_forecast/PREREG_COHERENT_RIDGE_V1.md,
                    data/release_forecast/official_actuals.jsonl,
+                   data/release_forecast/official_actual_defects.json,
+                   data/release_forecast/consensus_snapshots.jsonl,
                    data/release_forecast/defect_notices.json,
                    data/cleveland_nowcast/nowcast.parquet,
                    data/regime/latest.json]

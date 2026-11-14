@@ -825,12 +825,40 @@ def capture_macro_shadow(ledger_path: Path, proposals: list[dict]) -> dict:
                     raise ValueError("immutable_macro_return_receipt_conflict")
                 indexed[key] = row
         return indexed
-    results = []
+    def require_publication(proposal):
+        publication = proposal.get("publication")
+        prediction = proposal.get("prediction")
+        if (not isinstance(publication, dict) or not isinstance(prediction, dict)
+                or publication.get("destination") != "original_mri_forward_ledger"
+                or publication.get("display_derived_allowed") is not True
+                or prediction.get("display_derived_allowed") is not True
+                or not isinstance(publication.get("rights_ref"), str)
+                or not publication["rights_ref"].strip()):
+            raise ValueError("macro_return_publication_rights_unqualified")
+
+    # Validate the complete batch before the first append. A malformed later
+    # proposal must not turn a clean refusal into an undisclosed partial write.
+    if not isinstance(proposals, list):
+        raise ValueError("macro_return_proposals_must_be_list")
+    initial = read_owner()
     for proposal in proposals:
-        if proposal.get("schema") != "macro_return_shadow_forecast.v1" or proposal.get("row_type") != "macro_return_forecast" or not valid_authority(proposal.get("authority")):
+        if not isinstance(proposal, dict) or proposal.get("schema") != "macro_return_shadow_forecast.v1" or proposal.get("row_type") != "macro_return_forecast" or not valid_authority(proposal.get("authority")):
             raise ValueError("invalid_macro_return_proposal")
         if proposal.get("proposal_digest") != digest({k: v for k, v in proposal.items() if k != "proposal_digest"}):
             raise ValueError("macro_return_proposal_digest_mismatch")
+        if not isinstance(proposal.get("forecast_id"), str) or not proposal["forecast_id"]:
+            raise ValueError("macro_return_forecast_identity_required")
+        if ("macro_return_forecast", proposal["forecast_id"]) not in initial:
+            require_publication(proposal)
+            prepared = instant(proposal["prepared_asof"])
+            decision = instant(proposal["prediction"]["decision_at"])
+            entry = instant(proposal["entry_at"])
+            if decision > prepared or prepared >= entry:
+                raise ValueError("macro_return_proposal_clock_order_invalid")
+            if prepared > datetime.now(timezone.utc):
+                raise ValueError("macro_return_proposal_from_future")
+    results = []
+    for proposal in proposals:
         forecast_id = proposal["forecast_id"]
         owner = read_owner()
         existing = owner.get(("macro_return_forecast", forecast_id))
@@ -842,6 +870,9 @@ def capture_macro_shadow(ledger_path: Path, proposals: list[dict]) -> dict:
                             "capture_eligible": bool(capture and capture.get("capture_eligible") is True),
                             "proposal_changed": existing.get("proposal_digest") != proposal["proposal_digest"]})
             continue
+        # This incumbent ledger is Git-published. Internal-research rights alone
+        # cannot authorize recording derived forecasts into its public stream.
+        require_publication(proposal)
         now = datetime.now(timezone.utc)
         if instant(proposal["prepared_asof"]) > now or instant(proposal["prediction"]["decision_at"]) > now:
             raise ValueError("macro_return_proposal_from_future")

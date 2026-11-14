@@ -72,6 +72,9 @@ def ingest(source: Path, root: Path, *, commit: bool = False) -> dict:
             if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):
                 raise EvidenceError("consensus_target_binding_changed_before_append")
             try:
+                # Creation mode does not narrow a pre-existing archive. Keep
+                # private evidence private even after an older manual import.
+                os.fchmod(fd, 0o600)
                 appended = append_receipts(out, novel)
                 live = out.stat(follow_symlinks=False)
                 if (bound.st_dev, bound.st_ino) != (live.st_dev, live.st_ino):

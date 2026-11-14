@@ -12254,6 +12254,7 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/release_surprise_confirmation.py
       - engine/release_actuals.py
       - scripts/watch_release_publications.py
     notes: >
@@ -12282,12 +12283,41 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/release_surprise_confirmation.py
       - scripts/build_release_forecast.py
     notes: >
       Append-only, keep-first receipts normalized from verified BLS, BEA, and
       DOL publication facts. Each receipt freezes target identity, first-seen
       time, official URL, content SHA-256, parser version, unit, and print.
       Later differing documents remain non-scoring correction candidates.
+
+  # Private evidence in MRI's existing directory; no public raw-data export.
+  release-economist-consensus:
+    path: data/release_forecast/consensus_snapshots.jsonl
+    format: jsonl
+    producer: scripts/ingest_release_consensus.py
+    known_extra_writers: []
+    owner_program: macro-release-intel
+    cadence: on-demand
+    storage: gitignored-local
+    asof_field: recorded_at
+    freshness_sla_hours: 30
+    schema: release_consensus.v1
+    tier: shadow
+    horizon_role: context
+    weights: none
+    scored_path_surfaces: []
+    consumers:
+      - engine/release_surprise_confirmation.py
+      - scripts/build_release_forecast.py
+      - scripts/research_release_surprise.py
+      - scripts/ingest_release_consensus.py
+    notes: >
+      Authorized economist-poll snapshots with original writer capture clocks.
+      Raw archive remains local and gitignored; ordinary data staging must not
+      publish it. No provider, schedule, rights exception or historical vintage
+      is admitted by this registration. Missing input remains unavailable.
+      Only rights-qualified projections may enter the existing MRI public artifact.
 
   # --- display: release forecast latest snapshot ---
   release-forecast-latest:
@@ -12306,6 +12336,7 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - engine/release_surprise_confirmation.py
       - engine/master_brain.py
       - engine/forward_calendar_context.py
       - engine/inflation_intelligence.py
@@ -12342,6 +12373,7 @@ artifacts:
     weights: none
     scored_path_surfaces: []
     consumers:
+      - scripts/research_release_surprise.py
       - scripts/build_release_forecast.py
       - engine/chronicle/adapters.py
       - engine/inflation_intelligence.py
@@ -12406,7 +12438,8 @@ artifacts:
     horizon_role: context
     weights: none
     scored_path_surfaces: []
-    consumers: []
+    consumers:
+      - engine/release_surprise_confirmation.py
     external_consumers:
       - site
     notes: >

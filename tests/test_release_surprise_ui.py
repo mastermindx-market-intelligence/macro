@@ -53,7 +53,22 @@ def test_radar_uses_existing_fetch_and_no_new_action_plane():
 def test_component_compiles_in_native_template_loader():
     from jinja2 import Environment, FileSystemLoader
     env = Environment(loader=FileSystemLoader(str(ROOT / "templates")))
-    assert "MMXReleaseSurprise" in env.get_template("_release_surprise_confirmation.html.j2").render()
+    rendered = env.get_template("_release_surprise_confirmation.html.j2").render()
+    assert "MMXReleaseSurprise" in rendered
+    assert "consensus" not in rendered.lower()  # incumbent MRI-R5 display vocabulary
+
+
+def test_confirmation_is_single_visible_dialog_child_not_offscreen_host():
+    from bs4 import BeautifulSoup
+    from tests.test_release_radar_render import _render
+    page = BeautifulSoup(_render("macro"), "html.parser")
+    comparisons = page.select("#rr-confirmation")
+    assert len(comparisons) == 1
+    assert comparisons[0].find_parent(id="dlg-events") is not None
+    assert comparisons[0].find_parent(id="rr-content") is None
+    dashboard = (ROOT / "templates/dashboard.html.j2").read_text()
+    assert "snapshot once its visible comparison node exists" in dashboard
+    assert "payload && payload.surprise_confirmation" in dashboard
 
 
 def browser_proof(outdir: Path | None = None) -> dict:
@@ -145,10 +160,130 @@ def browser_proof(outdir: Path | None = None) -> dict:
     return result
 
 
+def native_dialog_browser_proof(outdir: Path) -> dict:
+    """Full rendered dashboard, local fixture routes; never live auth proof.
+
+    The anonymous case retains the real access gate. The display case substitutes
+    only its signed-in decision in this isolated fake origin, so it can exercise
+    the real card click, dialog, MRI fetch and component without a credential.
+    The authenticated API contract is tested separately in the API test suite.
+    """
+    import hashlib
+    import mimetypes
+    from urllib.parse import urlparse
+    from playwright.sync_api import sync_playwright
+    from tests.test_release_radar_render import _render
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    html = _render("macro")
+    evidence = evidence_fixture()
+    payload = {"schema": "release_forecast.v2", "asof": evidence["asof"],
+               "upcoming": [], "surprise_confirmation": evidence}
+    errors, cases = [], []
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch(headless=True)
+        try:
+            for signed_in, width in ((False, 1280), (True, 1280), (True, 390)):
+                requests = []
+                page = browser.new_page(viewport={"width": width, "height": 1000})
+                page.on("pageerror", lambda e: errors.append(str(e)))
+
+                def route(request):
+                    url = urlparse(request.request.url)
+                    requests.append(url.path)
+                    if url.hostname != "msc-native.test":
+                        request.abort()
+                        return
+                    if url.path == "/":
+                        request.fulfill(status=200, content_type="text/html", body=html)
+                        return
+                    if url.path == "/macrodata/release_forecast.json":
+                        request.fulfill(status=200, content_type="application/json", body=json.dumps(payload))
+                        return
+                    for base in (ROOT / "templates", ROOT / "site"):
+                        asset = (base / url.path.lstrip("/")).resolve()
+                        if (asset.is_relative_to(base.resolve()) and asset.is_file()
+                                and asset.suffix in {".css", ".js", ".svg", ".png", ".woff2"}):
+                            request.fulfill(status=200, body=asset.read_bytes(), content_type=
+                                mimetypes.guess_type(asset.name)[0] or "application/octet-stream")
+                            return
+                    request.fulfill(status=404, body="synthetic fixture resource unavailable")
+
+                page.route("**/*", route)
+                page.goto("http://msc-native.test/", wait_until="networkidle")
+                assert not page.locator("#dlg-events").is_visible()
+                if signed_in:
+                    # Only the test origin gets a synthetic allowed decision.
+                    # No production source, session, token or permission changes.
+                    page.evaluate("window.MMXAccessPreview.isAnon = function(){return false;}")
+                page.locator('[onclick="mx5OpenDlg(\'dlg-events\')"]').first.click()
+                if not signed_in:
+                    assert not page.locator("#dlg-events").is_visible()
+                    page.locator("html.obm-lock").wait_for(state="attached", timeout=5000)
+                    cases.append({"signed_in_decision_mocked": False, "width": width,
+                                  "anonymous_gate_retained": True})
+                    page.close()
+                    continue
+                comparison = page.locator("#rr-confirmation")
+                # Native dialogs animate their panel/body. Geometry visibility
+                # alone can screenshot a fully transparent transition frame.
+                page.wait_for_function("""() => {
+                    let node = document.getElementById('rr-confirmation');
+                    if (!node || !document.querySelector('#dlg-events.mx5-dlg-in')) return false;
+                    for (; node; node=node.parentElement) {
+                        const style=getComputedStyle(node);
+                        if (Number(style.opacity)<0.99 || style.display==='none' || style.visibility==='hidden') return false;
+                    }
+                    return true;
+                }""", timeout=5000)
+                comparison.scroll_into_view_if_needed()
+                assert comparison.is_visible() and page.locator("#dlg-events").is_visible()
+                assert "Consumer above; producer below" in comparison.inner_text()
+                assert page.locator("#rr-confirmation").count() == 1
+                assert requests.count("/macrodata/release_forecast.json") == 1
+                summary = comparison.locator("summary")
+                summary.focus()
+                page.keyboard.press("Enter")
+                assert comparison.locator("details").evaluate("node => node.open") is True
+                dimensions = comparison.evaluate("""node => {
+                    const r=node.getBoundingClientRect();
+                    return {x:r.x,width:r.width,viewport:innerWidth,
+                            client:node.clientWidth,scroll:node.scrollWidth};
+                }""")
+                assert dimensions["x"] >= -1
+                assert dimensions["x"] + dimensions["width"] <= width + 1
+                assert dimensions["scroll"] <= dimensions["client"] + 1
+                filename = f"native-events-dialog-{width}.png"
+                page.screenshot(path=str(outdir / filename), animations="disabled")
+                cases.append({"signed_in_decision_mocked": True, "width": width,
+                              "native_card_click": True, "visible": True,
+                              "single_existing_mri_fetch": True, "keyboard_disclosure": True,
+                              "dimensions": dimensions, "screenshot": filename})
+                page.close()
+        finally:
+            browser.close()
+    assert not errors, errors
+    paths = ["templates/dashboard.html.j2", "templates/_release_surprise_confirmation.html.j2",
+             "templates/release_surprise_confirmation.js", "tests/test_release_surprise_ui.py"]
+    result = {"schema": "macro_surprise_native_dialog_proof.v1",
+              "evidence_class": "synthetic_full_dashboard_ui",
+              "live_authenticated_acceptance": False, "network_requests_allowed": False,
+              "production_auth_modified": False, "cases": cases, "page_errors": errors,
+              "input_sha256": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in paths}}
+    (outdir / "native-dialog-proof.json").write_text(json.dumps(result, indent=2) + "\n")
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--outdir", type=Path, required=True)
+    parser.add_argument("--native-dialog", action="store_true")
     args = parser.parse_args()
+    if args.native_dialog:
+        result = native_dialog_browser_proof(args.outdir)
+        print(json.dumps({"cases": len(result["cases"]), "page_errors": result["page_errors"],
+                          "live_authenticated_acceptance": False}))
+        return
     result = browser_proof(args.outdir)
     print(json.dumps({"checks": len(result["checks"]), "screenshots": len(result["screenshots"]), "page_errors": result["page_errors"]}))
 

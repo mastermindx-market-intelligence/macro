@@ -34,7 +34,8 @@ def proposals(evidence_class="retrospective_pit"):
     return prepare_shadow_proposals(study_rows(), [event("2026-11-13T13:31:00Z")], SESSIONS,
         symbols=["SPY"], horizons=[20], asof="2026-11-13T14:00:00Z",
         protocol_receipt=digest({"synthetic_test_protocol": True}), min_train=8,
-        evidence_class=evidence_class)["proposals"]
+        evidence_class=evidence_class, dataset_display_derived_allowed=True,
+        dataset_rights_ref="synthetic-fixture-permission-not-real-data")["proposals"]
 
 
 def test_unlabelled_target_can_be_forecast_without_fake_zero_outcome():
@@ -160,3 +161,49 @@ def test_capture_never_rewrites_existing_forecast_on_model_change(tmp_path, monk
     result = producer.capture_macro_shadow(path, changed)
     assert result["results"][0]["proposal_changed"] is True
     assert path.read_bytes() == before
+
+
+@pytest.mark.parametrize("permission", [False, None, "true", 1])
+def test_publication_rights_are_checked_before_any_batch_write(tmp_path, monkeypatch, permission):
+    monkeypatch.setattr(producer, "datetime", WriterClock)
+    good = proposals()[0]
+    denied = copy.deepcopy(good)
+    denied["forecast_id"] = "msc_forecast:" + "a" * 24
+    denied["publication"]["display_derived_allowed"] = permission
+    denied["proposal_digest"] = digest({k: v for k, v in denied.items() if k != "proposal_digest"})
+    path = tmp_path / "forward_ledger.jsonl"
+    with pytest.raises(ValueError, match="publication_rights_unqualified"):
+        producer.capture_macro_shadow(path, [good, denied])
+    assert not path.exists()
+
+
+def test_restricted_training_input_cannot_publish_derived_forecast(tmp_path, monkeypatch):
+    monkeypatch.setattr(producer, "datetime", WriterClock)
+    rows = study_rows()
+    rows[0]["display_derived_allowed"] = False
+    prepared = prepare_shadow_proposals(rows, [event("2026-11-13T13:31:00Z")], SESSIONS,
+        symbols=["SPY"], horizons=[20], asof="2026-11-13T14:00:00Z", min_train=8,
+        protocol_receipt=digest({"restricted_training_test": True}),
+        dataset_display_derived_allowed=True, dataset_rights_ref="synthetic")
+    item = prepared["proposals"][0]
+    assert item["prediction"]["display_derived_allowed"] is False
+    assert item["publication"]["display_derived_allowed"] is False
+    path = tmp_path / "forward_ledger.jsonl"
+    with pytest.raises(ValueError, match="publication_rights_unqualified"):
+        producer.capture_macro_shadow(path, [item])
+    assert not path.exists()
+
+
+def test_dataset_research_permission_does_not_imply_publication():
+    result = prepare_shadow_proposals(study_rows(), [event("2026-11-13T13:31:00Z")], SESSIONS,
+        symbols=["SPY"], horizons=[20], asof="2026-11-13T14:00:00Z", min_train=8,
+        protocol_receipt=digest({"internal_only": True}))
+    assert result["proposals"][0]["publication"]["display_derived_allowed"] is False
+
+
+def test_malformed_later_proposal_is_rejected_before_first_append(tmp_path, monkeypatch):
+    monkeypatch.setattr(producer, "datetime", WriterClock)
+    path = tmp_path / "forward_ledger.jsonl"
+    with pytest.raises(ValueError, match="invalid_macro_return_proposal"):
+        producer.capture_macro_shadow(path, [proposals()[0], None])
+    assert not path.exists()

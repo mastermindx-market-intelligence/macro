@@ -93,7 +93,7 @@ artifacts:
   - research/rates_inflation_command/seat_20261014/F0_COVERAGE.md
   - research/release_forecast/MACRO_SURPRISE_CONFIRMATION_MASTERPLAN_2026-11-13.md
   - docs/RELEASE_SURPRISE_CONFIRMATION.md
-  - agentos/handoffs/RATES-INFLATION-COMMAND-2026-11-13-macro-surprise.md
+  - agentos/handoffs/RATES-INFLATION-COMMAND-2026-11-13.md
 next_action: >
   E2E completion programme (Chairman masterplan 2026-10-13, Fable Meta-CEO seat fc3dfe4b). Wave 1 is
   merged: R0/B0 records #9206, E0+P0 #9212, F0 gap #9222, F1 #9232, B0 #9233, D0 #9252, T0 #9253,

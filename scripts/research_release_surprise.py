@@ -42,7 +42,12 @@ def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
             raise EvidenceError("dataset_" + field + "_missing")
     if dataset.get("evidence_class") not in {"synthetic", "retrospective_pit", "prospective_capture"}:
         raise EvidenceError("dataset_evidence_class_required")
-    if "internal_research" not in dataset.get("use_scopes", []):
+    scopes = dataset.get("use_scopes")
+    if (not isinstance(scopes, list) or any(not isinstance(v, str) or v not in
+            {"internal_research", "display_derived", "display_raw"} for v in scopes)
+            or len(set(scopes)) != len(scopes)):
+        raise EvidenceError("dataset_use_scopes_invalid")
+    if "internal_research" not in scopes:
         raise EvidenceError("dataset_research_rights_not_supplied")
     if not isinstance(dataset.get("session_closes"), list) or not isinstance(dataset.get("bars"), list):
         raise EvidenceError("dataset_calendar_or_prices_missing")
@@ -87,13 +92,16 @@ def run_study(root: Path, dataset: dict, *, asof: str, trial_ledger: Path,
     challenger = walk_forward(outcomes["rows"], min_train=min_train, features=config["features"])
     proposed = prepare_shadow_proposals(outcomes["rows"], pairs, dataset["session_closes"],
         symbols=symbols, horizons=horizons, asof=asof, features=config["features"],
-        min_train=min_train, protocol_receipt=trial_receipt, evidence_class=dataset["evidence_class"])
+        min_train=min_train, protocol_receipt=trial_receipt, evidence_class=dataset["evidence_class"],
+        dataset_display_derived_allowed="display_derived" in dataset["use_scopes"],
+        dataset_rights_ref=dataset["rights_ref"])
     forward_rows, forward_meta = read_jsonl(root / "data/release_forecast/forward_ledger.jsonl")
     shadow_evaluation = evaluate_shadow_captures(forward_rows, outcomes["rows"], asof=asof) if forward_meta["status"] in {"ready", "empty", "missing"} else {"status": "forward_ledger_invalid", "authority": authority()}
     result = {"schema": SCHEMA, "asof": asof, "status": "evaluated_exploratory" if outcomes["rows"] else "insufficient_data",
               "authority": authority(), "research_status": "not_validated_for_live_use",
               "dataset_evidence_class": dataset["evidence_class"],
               "prospective_validation_claim": False,
+              "report_publication": "internal_research_only_not_a_public_export",
               "input_receipts": {"actuals": actual_meta, "consensus": consensus_meta,
                                  "dataset_sha256": digest(dataset), "calendar_source_ref": dataset["calendar_source_ref"],
                                  "price_source_ref": dataset["price_source_ref"], "rights_ref": dataset["rights_ref"]},

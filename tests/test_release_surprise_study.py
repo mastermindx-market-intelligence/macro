@@ -18,7 +18,8 @@ SESSIONS = [f"2026-11-{d:02d}T21:00:00Z" for d in (9, 10, 11, 12, 13, 16, 17, 18
 def event(known="2026-11-10T13:31:00Z", **overrides):
     row = {"event_id": "pair:fixture", "pair_id": "cpi_headline_ppi_headline",
            "period": "2026-10", "known_at": known, "quadrant": "cpi_hot_ppi_cold",
-           "agreement": False, "cpi_surprise": 0.1, "ppi_surprise": -0.1}
+           "agreement": False, "cpi_surprise": 0.1, "ppi_surprise": -0.1,
+           "display_derived_allowed": True}
     row.update(overrides)
     return row
 
@@ -53,7 +54,8 @@ def study_rows(n=80):
                      "quadrant": quadrant, "agreement": agreement,
                      "cpi_surprise": cpi, "ppi_surprise": ppi,
                      "net_return_pct": float(0.5 + 1.5 * agreement + rng.normal(0, 0.5)),
-                     "max_drawdown_pct": -1.0, "round_trip_cost_bps": 0.0})
+                     "max_drawdown_pct": -1.0, "round_trip_cost_bps": 0.0,
+                     "display_derived_allowed": True})
     return rows
 
 

@@ -108,3 +108,28 @@ The implementation plan and evolving proof are in `research/release_forecast/MAC
 Statistical interpretation reference: ASA President's Task Force, *Statement on Statistical Significance and Replicability* (2021), paragraphs on uncertainty, selection, multiplicity and practical significance: https://magazine.amstat.org/blog/2021/08/01/task-force-statement-p-value/ (HTML inspected 2026-11-13). The reference supports careful interpretation, not this signal's profitability.
 
 Resampling provenance: Politis and Romano, *The Stationary Bootstrap*, JASA 89(428), 1994, 1303-1313, DOI 10.1080/01621459.1994.10476870. Bibliographic/abstract-level provenance only in this session; full text was not inspected. The implemented primitive is reused from `engine/challenger_spa_comparison.py`, not independently re-derived from an inaccessible article. Financial nonstationarity remains a limitation, not something bootstrap resampling removes.
+
+
+## Publication and private evidence
+
+`data/release_forecast/consensus_snapshots.jsonl` is the existing MRI private-input
+archive, now explicitly gitignored and registered as `gitignored-local`. The ingest
+owner keeps its file mode at 0600, including an already-existing archive. Keep
+provider input files outside publishable source/data trees; do not force-add the
+archive. Source admission, pre-release vintage proof and commercial rights remain
+separate from this storage registration.
+
+Research datasets must declare a typed `use_scopes` list. `internal_research` does
+not imply `display_derived`. The research report is an internal diagnostic, not a
+public export. The existing MRI forward ledger is Git-published, so new forecast
+capture requires explicit dataset derived-publication rights and derived rights
+for every macro observation actually used by the fit and target. The dataset
+rights declaration covers its price/calendar/regime inputs; the incumbent data
+owner must qualify that declaration and its `rights_ref`. Missing rights default
+to nonpublication. Forecast preparation can still run internally; capture refuses
+before writing. No new private/public ledger or publication authority is created.
+
+The original capture writer preflights the complete proposal batch before its
+first append. Malformed or unqualified later proposals cannot leave an unreported
+partial batch. Actual append/readback interruptions retain the original uncertain
+effect and reconciliation rules; caller clocks never replace writer time.

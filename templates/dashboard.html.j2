@@ -9532,7 +9532,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       <span class="l-en">Forward model · display-only · benchmarks · scored in public</span>
       <span class="l-zh">前瞻模型 · 仅展示 · 基准对比 · 公开评分</span>
     </div>
-    {% include "_release_surprise_confirmation.html.j2" %}
     <div id="rr-content">
       <div class="rr-placeholder">
         <span class="l-en">Loading release projections…</span>
@@ -11731,6 +11730,17 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       if (!document.hidden) _rrRefreshForecast();
     });
 
+    /* The Events dialog is parsed after this script. Reuse the original MRI
+       snapshot once its visible comparison node exists; no extra fetch/timer. */
+    document.addEventListener('DOMContentLoaded', function(){
+      if (!window.MMXReleaseSurprise) return;
+      var payload = null;
+      try { if (_rrForecastSignature) payload = JSON.parse(_rrForecastSignature); }
+      catch(e) { /* retain honest unavailable state */ }
+      window.MMXReleaseSurprise.render(
+        document.getElementById('rr-confirmation'), payload && payload.surprise_confirmation);
+    }, {once:true});
+
     /* Deep-link hook: jump the inline Release Radar panel to its default covered date
        (the "Open Release Radar" button was retired — the panel is always visible in
        dlg-events). Kept as the stable RR-script tail symbol. */
@@ -12917,6 +12927,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           </div>
         </div>
         {% endif %}
+
+        {# MRI comparison belongs to the visible Events dialog, not its offscreen data host. #}
+        {% include "_release_surprise_confirmation.html.j2" %}
 
         {# — W4 EVW collision chip (display-only, RIC program) — #}
         {# Shown ONLY when a collision state is active: plain-word copy, no scoring, no internal state names. #}
