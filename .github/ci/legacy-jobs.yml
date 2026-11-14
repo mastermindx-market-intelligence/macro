@@ -43314,6 +43314,7 @@ jobs:
       - "tests/test_earnings_worker_launchd.py"
       - "tests/test_edgar_filing_identity_join.py"
       - "tests/test_earnings_release_binding.py"
+      - "tests/test_company_intelligence_vehicle_guidance.py"
       - "tests/test_edgar_earnings_8k.py"
       - "tests/test_marketing_edgar_earnings_wire.py"
       - "ops/earnings_worker_requirements.txt"
@@ -43332,6 +43333,7 @@ jobs:
           python -m pytest
           tests/test_edgar_filing_identity_join.py
           tests/test_earnings_release_binding.py
+          tests/test_company_intelligence_vehicle_guidance.py
           tests/test_edgar_earnings_8k.py
           tests/test_marketing_edgar_earnings_wire.py
           tests/test_earnings_worker_launchd.py -q -rs
