@@ -1,0 +1,25 @@
+{
+  "schema": "market_navigator.client_browser_proof/v1",
+  "evidence_class": "SYNTHETIC_LOCAL_BROWSER",
+  "browser": "151.0.7922.34",
+  "production_proof": false,
+  "paper_applied": false,
+  "authenticated_source_read": false,
+  "network_requests": 0,
+  "page_errors": [],
+  "checks": [
+    "loading_clears_content",
+    "superseded_read_aborted",
+    "current_response_delivered",
+    "late_response_ignored",
+    "microsecond_mismatch_rejected",
+    "errors_sanitized",
+    "no_automatic_retry",
+    "clear_cancels_inflight_result",
+    "all_payload_authority_false",
+    "no_browser_storage_access"
+  ],
+  "passed": 10,
+  "final_state": "empty",
+  "storage_accesses": 0
+}

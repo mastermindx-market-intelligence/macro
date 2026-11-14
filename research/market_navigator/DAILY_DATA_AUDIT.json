@@ -1,0 +1,89 @@
+{
+  "evidence_class": "PUBLIC_RECONSTRUCTION_FEASIBILITY_NOT_PREDICTIVE_VALIDATION",
+  "raw_data_committed": false,
+  "research_finding": "Daily data can audit measurement coverage; intraday rule validation still needs time-stamped joint observations.",
+  "retrieved_at": "2026-10-22T08:27:44.404396+00:00",
+  "schema": "market_navigator.daily_feasibility/v1",
+  "sources": [
+    {
+      "columns": [
+        "DATE",
+        "OPEN",
+        "HIGH",
+        "LOW",
+        "CLOSE"
+      ],
+      "cutoff": "2026-10-21",
+      "duplicate_dates": 0,
+      "first_date": "2022-05-13",
+      "frequency": "daily",
+      "future_rows_excluded": 0,
+      "last_date": "2026-10-21",
+      "malformed_rows": 0,
+      "operational_pit": false,
+      "original_availability_timestamps": "not_present",
+      "raw_bytes": 55531,
+      "raw_sha256": "6c83aba5425e1d9107dd352c1fb996f2fce52f2468cb10776f26c7da511348ff",
+      "rows_through_cutoff": 1114,
+      "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX1D_History.csv",
+      "supports_intraday_trigger_ordering": false,
+      "symbol": "VIX1D",
+      "threshold_6_88_descriptive_only": {
+        "daily_close_at_or_below": 0,
+        "daily_low_at_or_below": 78,
+        "eligible_daily_rows": 1114,
+        "low_hit_but_close_above": 78,
+        "warning": "A daily low gives neither first-touch time nor contemporaneous SPY/option conditions."
+      }
+    },
+    {
+      "columns": [
+        "DATE",
+        "OPEN",
+        "HIGH",
+        "LOW",
+        "CLOSE"
+      ],
+      "cutoff": "2026-10-21",
+      "duplicate_dates": 0,
+      "first_date": "1990-01-02",
+      "frequency": "daily",
+      "future_rows_excluded": 0,
+      "last_date": "2026-10-21",
+      "malformed_rows": 0,
+      "operational_pit": false,
+      "original_availability_timestamps": "not_present",
+      "raw_bytes": 473992,
+      "raw_sha256": "9355bb6a65841239c1b17877d981812adcdf725acabac3be8655eb1f23e1cf1f",
+      "rows_through_cutoff": 9299,
+      "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+      "supports_intraday_trigger_ordering": false,
+      "symbol": "VIX"
+    },
+    {
+      "columns": [
+        "DATE",
+        "OPEN",
+        "HIGH",
+        "LOW",
+        "CLOSE"
+      ],
+      "cutoff": "2026-10-21",
+      "duplicate_dates": 0,
+      "first_date": "2009-09-18",
+      "frequency": "daily",
+      "future_rows_excluded": 0,
+      "last_date": "2026-10-21",
+      "malformed_rows": 0,
+      "operational_pit": false,
+      "original_availability_timestamps": "not_present",
+      "raw_bytes": 219274,
+      "raw_sha256": "8299688f87e1afdf2b885fd36fd2c8ebeb7c89114b9a2b0b949b54fb897bbe6d",
+      "rows_through_cutoff": 4299,
+      "source_url": "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX3M_History.csv",
+      "supports_intraday_trigger_ordering": false,
+      "symbol": "VIX3M"
+    }
+  ],
+  "trading_authority": false
+}
