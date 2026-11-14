@@ -1369,6 +1369,9 @@ class TestKeyDriftTripwire:
         monkeypatch.setattr(ftr, "PERF_PATH", tmp_path / "perf_snapshot.json")
         monkeypatch.setattr(ftr, "SUBSECTOR_PERF_HISTORY_PATH", tmp_path / "sub.jsonl")
         monkeypatch.setattr(ftr, "TREE_HISTORY_PATH", tmp_path / "tree.jsonl")
+        # member perf archive (2026-11-11): main() writes it on the perf path;
+        # unredirected, the end-to-end tests would write into the real data/ dir.
+        monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
 
         # map_perf answers with ONE stale key and ONE key the tree does not carry.
@@ -1397,6 +1400,9 @@ class TestKeyDriftTripwire:
         monkeypatch.setattr(ftr, "PERF_PATH", tmp_path / "perf_snapshot.json")
         monkeypatch.setattr(ftr, "SUBSECTOR_PERF_HISTORY_PATH", tmp_path / "sub.jsonl")
         monkeypatch.setattr(ftr, "TREE_HISTORY_PATH", tmp_path / "tree.jsonl")
+        # member perf archive (2026-11-11): main() writes it on the perf path;
+        # unredirected, the end-to-end tests would write into the real data/ dir.
+        monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
         monkeypatch.setattr(ftr, "fetch_subsector_perf",
                             lambda: {"t00s0": {"1D": 1.0}, "t00s1": {"1D": 0.5}})
@@ -1456,6 +1462,9 @@ class TestMemberCoverageTripwire:
         monkeypatch.setattr(ftr, "PERF_PATH", tmp_path / "perf_snapshot.json")
         monkeypatch.setattr(ftr, "SUBSECTOR_PERF_HISTORY_PATH", tmp_path / "sub.jsonl")
         monkeypatch.setattr(ftr, "TREE_HISTORY_PATH", tmp_path / "tree.jsonl")
+        # member perf archive (2026-11-11): main() writes it on the perf path;
+        # unredirected, the end-to-end tests would write into the real data/ dir.
+        monkeypatch.setattr(ftr, "MEMBER_PERF_ARCHIVE_DIR", tmp_path / "mpa")
         ftr.TREE_PATH.write_bytes(ftr._tree_json_bytes(tree))
         keys = [s["key"] for t in tree for s in t["subsectors"]]
         monkeypatch.setattr(ftr, "fetch_subsector_perf", lambda: {k: {"1D": 0.0} for k in keys})

@@ -1,0 +1,29 @@
+{
+ "schema": "theme_graph.segment_propose_manifest/v1",
+ "rows": [
+  {
+   "ticker": "ARM",
+   "issuer": "co:us:ARM",
+   "theme": "theme:semiconductor_ip_licensing",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/ARM_0001973239-26-000097_single-operating-segment_496b8c7259c8_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/ARM_0001973239-26-000097_single-operating-segment_496b8c7259c8_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  },
+  {
+   "ticker": "SMCI",
+   "issuer": "co:us:SMCI",
+   "theme": "theme:ai_server_board_integration",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/SMCI_0001375365-26-000022_one-operating-segment_c4ceaf3a7506_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/SMCI_0001375365-26-000022_one-operating-segment_c4ceaf3a7506_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  }
+ ]
+}

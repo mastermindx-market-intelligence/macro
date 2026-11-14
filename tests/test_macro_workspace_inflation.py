@@ -15,6 +15,7 @@ import json
 import sys
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,8 +23,11 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from engine.market_os.macro_workspaces import contract, inflation  # noqa: E402
+from engine.inflation_intelligence import write_inflation_intelligence  # noqa: E402
+from engine.market_os.macro_workspaces.build import build_all  # noqa: E402
+from scripts.build_macro_suite_pages import SUITE_PAGES, read_workspace  # noqa: E402
 
-from lib import macro_suite_view  # noqa: E402
+from lib import macro_suite_labels, macro_suite_view  # noqa: E402
 
 BUILT_AT = "2026-09-04T00:00:00Z"
 REAL_ARTIFACT = ROOT / "data" / "release_forecast" / "inflation_intelligence.json"
@@ -585,3 +589,149 @@ def test_builds_and_validates_from_real_owner_artifact() -> None:
     assert snap["generation"]["calculation_as_of"] == intel.get("asof")
     assert snap["authority"]["can_size"] is False
     assert snap["workspace"]["id"] == "inflation_system"
+
+
+# --------------------------------------------------------------------------- #
+# actual owner -> atomic publication -> manifest reader -> consumer view
+# --------------------------------------------------------------------------- #
+def _published_owner_fixture(tmp_path: Path, *, missing_annual_endpoint: bool = False) -> dict:
+    """All inputs are temporary, fixed-date collector shapes; no ambient feeds.
+
+    The real owner calculates the rates. The publisher receives its actual
+    artifact path, rather than assuming that a FRED directory invokes the owner.
+    Distinct endpoints make headline/core and annual/monthly swaps observable.
+    """
+    collector = tmp_path / "collector"
+    fred = collector / "data" / "fred"
+    fred.mkdir(parents=True)
+    dates = pd.date_range("2025-08-01", periods=13, freq="MS")
+    cohorts = {
+        "CPIAUCSL": ("headline_cpi", [100 + 2 * i / 11 for i in range(12)] + [103.02]),
+        "CPILFESL": ("core_cpi", [200 + 4 * i / 11 for i in range(12)] + [204.0]),
+        "STICKCPIM157SFRBATL": ("sticky_cpi", [0.2] * 13),
+        "FLEXCPIM157SFRBATL": ("flex_cpi", [0.1] * 13),
+    }
+    for sid, (column, values) in cohorts.items():
+        frame = pd.DataFrame({column: values}, index=dates)
+        if missing_annual_endpoint and sid == "CPIAUCSL":
+            # Keep 13 observations, but replace the exact annual endpoint with
+            # an older month. A positional 12-row lag would invent a YoY rate.
+            earlier = pd.DataFrame({column: [98.0]}, index=pd.DatetimeIndex(["2025-07-01"]))
+            frame = pd.concat([earlier, frame.iloc[1:]])
+            assert len(frame) == 13 and pd.Timestamp("2025-08-01") not in frame.index
+        frame.to_parquet(fred / f"{sid}.parquet")
+
+    radar = collector / "radar.json"
+    radar.write_text(json.dumps({"asof": "2026-09-04", "upcoming": []}), encoding="utf-8")
+    ledger = collector / "forward.jsonl"
+    ledger.write_text("", encoding="utf-8")
+    owner, owner_path = write_inflation_intelligence(
+        root=collector, as_of="2026-09-04",
+        radar_latest_path=radar, forward_ledger_path=ledger,
+    )
+    owner_bytes = owner_path.read_bytes()
+    regime = tmp_path / "regime.json"
+    regime.write_text("{}", encoding="utf-8")
+    absent = tmp_path / "unrelated-inputs-absent"
+    out = tmp_path / "site" / "macrodata"
+    receipts = build_all(
+        out_root=out, regime_latest_path=regime,
+        inflation_intel_path=owner_path,  # The owner-to-publisher handoff under test.
+        rates_command_path=absent / "rates.json", intl_risk_path=absent / "risk.json",
+        glt_latest_path=absent / "glt.json", glt_history_meta_path=absent / "glt-history.json",
+        fred_dir=fred, zori_path=absent / "zori.parquet",
+        capital_structure_projection_path=absent / "capital.json",
+        treasury_dir=absent / "treasury", treasury_auctions_path=absent / "auctions.json",
+        bis_dir=absent / "bis", bonds_latest_path=absent / "bonds.json",
+        built_at=BUILT_AT, code_version="synthetic-inflation-owner-publication",
+    )
+    page = next(page for page in SUITE_PAGES if page.workspace_id == "inflation_system")
+    snapshot, artifact = read_workspace(out, page)
+    view = macro_suite_view.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    assert owner_path.read_bytes() == owner_bytes  # Consumer work cannot rewrite its owner.
+    return {
+        "owner": owner, "owner_path": owner_path, "out": out,
+        "receipts": receipts, "snapshot": snapshot, "artifact": artifact, "view": view,
+    }
+
+
+def test_real_owner_rates_survive_publication_and_reader_with_monthly_dates(tmp_path: Path) -> None:
+    result = _published_owner_fixture(tmp_path)
+    owner, snap, artifact, view = (result[key] for key in ("owner", "snapshot", "artifact", "view"))
+    expected = {
+        "headline_cpi_yoy_pct": ("headline", "yoy_pct", "pct_yoy", 3.02),
+        "headline_cpi_mom_pct": ("headline", "mom_pct", "pct_mom", 1.0),
+        "core_cpi_yoy_pct": ("core", "yoy_pct", "pct_yoy", 2.0),
+        "core_cpi_mom_pct": ("core", "mom_pct", "pct_mom", 0.0),
+    }
+    metrics = {row["metric_id"]: row for row in snap["metrics"]["items"]}
+    displayed = {row["metric_id"]: row for row in view["metrics"]}
+    for metric_id, (group, field, unit, value) in expected.items():
+        upstream, metric, shown = owner["released_state"][group], metrics[metric_id], displayed[metric_id]
+        assert upstream[field] == pytest.approx(value)
+        assert metric["value"] == upstream[field]
+        assert metric["status"] == "PRESENT" and metric["null_reason"] is None
+        assert shown["value"] is not None and shown["absence"] is None
+        assert float(shown["value"]["en"]) == pytest.approx(value)
+        assert float(shown["value"]["zh"]) == pytest.approx(value)
+        assert metric["reference_period"] == shown["reference_period"] == "2026-08"
+        assert metric["unit"] == unit
+        assert metric["basis"] == "seasonally_adjusted_not_original_vintage"
+        assert shown["unit"] == macro_suite_labels.label("unit", unit)
+        assert shown["basis"] == macro_suite_labels.label("basis", metric["basis"])
+        assert shown["freshness"] == macro_suite_labels.label("freshness", "LATE_WITHIN_TOLERANCE")
+        assert metric["owner_ref"] == f"engine.inflation_intelligence.released_state.{group}"
+        assert metric["definition_id"] == f"released_state.{group}.{field}"
+        assert metric["source_refs"] == shown["source_refs"] == [metric["owner_ref"]]
+        assert upstream["revision_basis"] == "latest_local_fred_not_original_release_vintage"
+        assert metric["freshness"] == "LATE_WITHIN_TOLERANCE"
+        for clock in ("released_at", "available_at", "collected_at", "revised_at"):
+            assert metric[clock] is None
+
+    assert {row["source_asof"] for row in view["context"]["required"]} == {"2026-08"}
+    assert snap["availability"]["state"] == "LATE_WITHIN_TOLERANCE"
+    assert snap["generation"]["calculation_as_of"] == owner["asof"] == "2026-09-04"
+    source = next(row for row in snap["sources"]["items"] if row["source_id"] == "cpi_headline_core")
+    assert source["artifact_ref"] == "data/release_forecast/inflation_intelligence.json"
+    for clock in ("released_at", "first_known_at", "collected_at", "revised_at"):
+        assert source[clock] is None
+
+    manifest_path = result["out"] / "workspaces" / "manifest.json"
+    manifest_bytes = manifest_path.read_bytes()
+    manifest = json.loads(manifest_bytes)
+    assert manifest == result["receipts"]["_manifest"]["manifest"]
+    entry = manifest["workspaces"]["inflation_system/US"]
+    body_path = result["out"] / entry["path"]
+    assert json.loads(body_path.read_bytes()) == snap == result["receipts"]["inflation_system/US"]["snapshot"]
+    assert entry["content_sha256"] == artifact["sha256"] == contract.content_digest(snap)
+    assert entry["generation_id"] == snap["generation"]["generation_id"]
+    assert entry["bytes"] == artifact["bytes"] == len(body_path.read_bytes())
+    assert manifest["generated_at"] == BUILT_AT
+    assert view["evidence"]["artifact"] == artifact
+    assert view["evidence"]["generation"]["content_sha256"] == artifact["sha256"]
+    assert owner["display_only"] is True and owner["authority"] is False
+    assert set(owner["allowed_actions"]) == {"may_rank", "may_score", "may_size", "may_gate", "may_escalate", "may_trade"}
+    assert all(value is False for value in owner["allowed_actions"].values())
+    flags = view["evidence"]["authority"]["flags"]
+    assert len(flags) == 5 and all(flag["value"] is False for flag in flags)
+
+
+def test_missing_exact_annual_endpoint_keeps_monthly_rate_and_core_zero(tmp_path: Path) -> None:
+    result = _published_owner_fixture(tmp_path, missing_annual_endpoint=True)
+    owner = result["owner"]["released_state"]
+    metrics = {row["metric_id"]: row for row in result["snapshot"]["metrics"]["items"]}
+    displayed = {row["metric_id"]: row for row in result["view"]["metrics"]}
+    assert owner["headline"]["available"] is True
+    assert owner["headline"]["yoy_pct"] is None
+    assert metrics["headline_cpi_yoy_pct"]["value"] is None
+    assert metrics["headline_cpi_yoy_pct"]["status"] == "ABSENT"
+    assert metrics["headline_cpi_yoy_pct"]["null_reason"] == "SOURCE_FAILED"
+    assert displayed["headline_cpi_yoy_pct"]["value"] is None
+    assert displayed["headline_cpi_yoy_pct"]["absence"] is not None
+    assert displayed["headline_cpi_yoy_pct"]["absence"]["token"] == "SOURCE_FAILED"
+    for metric_id, value in (("headline_cpi_mom_pct", 1.0), ("core_cpi_yoy_pct", 2.0), ("core_cpi_mom_pct", 0.0)):
+        assert metrics[metric_id]["value"] == pytest.approx(value)
+        assert displayed[metric_id]["value"] is not None
+        assert float(displayed[metric_id]["value"]["en"]) == pytest.approx(value)
+        assert float(displayed[metric_id]["value"]["zh"]) == pytest.approx(value)
+        assert displayed[metric_id]["reference_period"] == "2026-08"

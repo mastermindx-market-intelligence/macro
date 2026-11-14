@@ -1,0 +1,79 @@
+{
+  "schema": "paper.returns_source_characterization.v1",
+  "status": "CURRENT_HELPER_REUSE_HAZARD_REPRODUCED_NOT_PRODUCT_ACCEPTANCE",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "pin": "aec7f387badcdf69c9a947fafbc73b4c68470c7d",
+    "path": "engine/sp500_heatmap.py",
+    "sha256": "94607542cae6a31485bd7116a5af4cbe12a5d21d8fb36f33e8e86289f0853682"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "pandas": "2.2.3",
+    "numpy": "2.3.5"
+  },
+  "cases": [
+    {
+      "id": "historical_endpoint",
+      "requested_session": "2026-10-15",
+      "latest_available_session": "2026-10-16",
+      "helper_1d_pct": 20.0,
+      "required_selected_session_return_pct": 10,
+      "acceptance_reason": null
+    },
+    {
+      "id": "pre_sliced_control",
+      "requested_session": "2026-10-15",
+      "latest_available_session": "2026-10-15",
+      "helper_1d_pct": 10.0,
+      "required_selected_session_return_pct": 10,
+      "acceptance_reason": null
+    },
+    {
+      "id": "missing_expected_previous_session",
+      "requested_session": "2026-10-16",
+      "latest_available_session": "2026-10-16",
+      "helper_1d_pct": 32.0,
+      "required_selected_session_return_pct": null,
+      "acceptance_reason": "Expected previous session observation missing"
+    },
+    {
+      "id": "flat_path_zero",
+      "requested_session": "2026-10-15",
+      "latest_available_session": "2026-10-15",
+      "helper_1d_pct": 0.0,
+      "required_selected_session_return_pct": 0,
+      "acceptance_reason": null
+    },
+    {
+      "id": "invalid_previous_price",
+      "requested_session": "2026-10-15",
+      "latest_available_session": "2026-10-15",
+      "helper_1d_pct": null,
+      "required_selected_session_return_pct": null,
+      "acceptance_reason": null
+    }
+  ],
+  "arithmetic_specification_example": {
+    "inputs": {
+      "previous_close": 100,
+      "regular_open": 105,
+      "endpoint": 102
+    },
+    "simple_gap_pct": 5.000000000000004,
+    "simple_regular_pct": -2.857142857142858,
+    "simple_total_pct": 2.0000000000000018,
+    "incorrect_simple_sum_pct": 2.1428571428571463,
+    "compounded_total_pct": 2.0000000000000018,
+    "log_gap": 0.04879016416943205,
+    "log_regular": -0.028987536873252298,
+    "log_total": 0.01980262729617973,
+    "scope": "Formula identity only; no claim of an installed Returns adapter."
+  },
+  "limits": [
+    "The source helper's asof is an anchor date, not a historical-session selector. This is a reuse hazard, not a proven live Returns Calendar bug.",
+    "Only exact AST definitions executed; no package initialization, collector, API, source build, route or publication.",
+    "The pre-sliced case is a controlled input. A production adapter must also resolve the expected previous session through its existing calendar owner.",
+    "No claim of adjustment, dividend treatment, finality, completeness, historical availability, or runtime acceptance."
+  ]
+}

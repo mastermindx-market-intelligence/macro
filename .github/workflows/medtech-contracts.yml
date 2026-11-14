@@ -82,6 +82,17 @@ jobs:
             /tests/conftest.py
             /pytest.ini
             /pyproject.toml
+      - name: checkout identity guard (fail-closed on event mismatch)
+        # Preserve the PR synthetic merge or pushed/dispatched event commit.
+        # The main-only push filter already excludes queue-ref pushes.
+        run: |
+          set -euo pipefail
+          workspace_sha="$(git rev-parse HEAD)"
+          if [ "$workspace_sha" != "$GITHUB_SHA" ]; then
+            echo "::error::checkout identity mismatch — workspace HEAD ${workspace_sha} != event head ${GITHUB_SHA}; refusing to evaluate medtech contracts on a different tree (fail-closed)." >&2
+            exit 1
+          fi
+          echo "checkout identity verified: ${workspace_sha} == event head ${GITHUB_SHA}."
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"

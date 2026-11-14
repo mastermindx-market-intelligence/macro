@@ -50,10 +50,11 @@ one owner, one verified return binding and a real identity. A transport receipt,
 queued job or terminal handle alone proves neither Worker START nor a wakeable
 parent. No watcher is added merely to decorate safe foreground work.
 
-An explicit permission or safety refusal ends that effect's retry. Never change
-accounts, tools, models or carriers to obtain the refused effect. A known human-only
-control needs no repeated probing. Diagnose ordinary technical failures within the
-assignment; apply a boundary only to the action that depends on it. EFFECT_UNKNOWN
+A tool failure is not a universal stop. Classify the receipt as input-size, schema,
+capacity, transport, access restriction or uncertain side effect. Diagnose and
+repair technical causes within existing grants; protect the actual restricted
+operation and continue unrelated authorized lanes. A human-only control still
+needs actual consent rather than repeated prompting. EFFECT_UNKNOWN
 stays on its original carrier until reconciled. A new chat does not clear effects,
 transfer a started job or displace a live source writer. Existing holds and real
 review/release protections remain binding.
