@@ -142,24 +142,36 @@ class TestEtfPerfund:
 
     def test_scrape_never_raises_on_bad_url(self, monkeypatch):
         _patch_store(monkeypatch)
-        # Monkeypatch config to enable scrape with a broken URL.
-        # We patch at the module level that etf_perfund imports from, so we
-        # don't need to worry about lru_cache on the original function.
+        # Exercise the native request-exception path without a real connection.
         import lib.config as cfg_mod
+        import requests
 
         base = dict(cfg_mod.load())
         base["btc_etf_perfund"] = {
             "scrape_enabled": True,
-            "url": "http://localhost:1",   # nothing listening
+            "url": "http://localhost:1",
             "timeout_s": 1,
         }
-        base.setdefault("sponsors", {}).setdefault("user_agent", "test/1.0")
+        base["sponsors"] = {**base.get("sponsors", {}), "user_agent": "test/1.0"}
         monkeypatch.setattr(cfg_mod, "load", lambda: base)
+
+        calls = []
+
+        def fail_get(url, **kwargs):
+            calls.append((url, kwargs))
+            raise requests.ConnectionError("synthetic connection failure")
+
+        monkeypatch.setattr(requests, "get", fail_get)
 
         from engine import etf_perfund
         result = etf_perfund.scrape_and_append()
         assert isinstance(result, dict)
         assert result["ok"] is False
+        assert result["reason"] == "ConnectionError: synthetic connection failure"
+        assert len(calls) == 1
+        assert calls[0][0] == "http://localhost:1"
+        assert calls[0][1]["timeout"] == 1
+        assert calls[0][1]["headers"]["User-Agent"] == "test/1.0"
 
     def test_read_perfund_with_synthetic_parquet(self, monkeypatch, tmp_path):
         """read_perfund works when the parquet exists."""
