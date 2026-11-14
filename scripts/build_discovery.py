@@ -41,6 +41,8 @@ from engine.top_picks import (ALPHA_W, TILT_LEGS, TILT_W,  # noqa: E402
                               band, compute_scores, entry_meta)
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.site_assets import copy_asset  # noqa: E402
+from scripts.optimize_assets import make_optimizer  # noqa: E402
 from scripts.check_signal_gate_coherence import (  # noqa: E402 — one shared predicate
     BUCKETS as COHERENCE_BUCKETS, incoherent_tickers, stale_side)
 
@@ -371,6 +373,12 @@ def main() -> int:
         as_of=alpha.get("as_of"), windows=alpha.get("windows") or {},
         gate_validity=_gate_validity(site),
         n=len(rows), n_buyable=n_buyable, built=built)
+    for asset in ("discovery.js", "discovery-controls.css"):
+        copy_asset(asset, config.ROOT / "templates" / asset, site)
+    optimize = make_optimizer(site)
+    for tag in ('<script src="discovery.js"></script>',
+                '<link rel="stylesheet" href="discovery-controls.css">'):
+        html = html.replace(tag, optimize(tag, site))
     write_page(site / "discovery.html", html)
     log.info("wrote %s/discovery.html (%d names, %d sectors, %d buy-zone, %d KB)",
              site, len(rows), len(by_sector), len(buyzone), len(html) // 1024)
