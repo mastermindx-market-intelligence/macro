@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3.12",
+    "-B",
+    "scripts/run_ci_pack.py",
+    "--workflow",
+    ".github/ci/legacy-jobs.yml",
+    "--gate",
+    "code",
+    "--validate-only",
+    "--pack-count",
+    "12"
+  ],
+  "exit_code": 0,
+  "hosted_execution": false,
+  "manifest_sha256": "fafdf78a742b21f58828195075337939458898858cbdc289c96b88642ef5ab6a",
+  "schema": "factor_atlas.s3.ci_manifest_preflight/v1",
+  "stderr_tail": "",
+  "stdout_bytes": 327,
+  "stdout_sha256": "1d75ee9862d3dc9d8a1b40b81afa54222c06fad79fbc86a7f66d58147af309c0",
+  "stdout_tail": "::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed\nValidated 204 legacy jobs; 204 in scope (full suite: changed-file set unavailable); pack weights=[1400, 332, 331, 331, 331, 331, 332, 332, 331, 330, 330, 330]; selected pack 0 (1 jobs).\nSelected jobs: ci-control-plane-contracts\n"
+}

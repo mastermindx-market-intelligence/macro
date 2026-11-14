@@ -788,25 +788,28 @@ def test_every_stamped_public_asset_is_on_the_immutable_matcher():
 
 
 def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
-    """A path with any hand stamp still needs the short cache lifetime.
+    """The short-cache carve-out remains necessary for manually stamped refs.
 
-    The matcher covers every version of a path. Only flag paths whose observed
-    stamps all match the asset body, as happened with mtf.js and mm_brain.js.
+    A path can serve both manual and content-hashed references. Preserve every
+    reference: discovery order must not decide its cache policy. lib.pages
+    rehashes only lowercase eight-hex stamps and preserves other queries. Flag
+    a current content hash only when no publisher-preserved stamp remains.
     """
     if not SITE.is_dir():
         pytest.skip("site/ not checked out")
     stamps = _served_stamps()
     wrong = []
     for path in _caddy_path_list("watchlist_shell_versioned"):
-        observed = stamps.get(path)
-        if observed is None:
+        served = stamps.get(path)
+        if served is None:
             continue
         body = SITE / path.lstrip("/")
         if not body.is_file():
             continue
-        current = hashlib.sha256(body.read_bytes()).hexdigest()[:8]
-        if observed == {current}:
-            wrong.append(f"{path}?v={current}")
+        current_stamp = hashlib.sha256(body.read_bytes()).hexdigest()[:8]
+        only_hash_stamps = all(re.fullmatch(r"[0-9a-f]{8}", stamp) for stamp in served)
+        if current_stamp in served and only_hash_stamps:
+            wrong.append(f"{path}?v={current_stamp}")
     assert not wrong, (
         "these are content-hash stamped, so the 300s carve-out is wrong for them "
         f"— move them to @public_versioned: {wrong}"
@@ -841,6 +844,66 @@ def test_hand_stamp_carve_out_reads_all_references(tmp_path, monkeypatch, stamp_
     else:
         with pytest.raises(AssertionError, match=rf"/watchstore\.js\?v={current}"):
             test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+
+
+@pytest.mark.parametrize(
+    "stamp_kinds, refuses",
+    [
+        (("manual", "current"), False),
+        (("current", "manual"), False),
+        (("manual",), False),
+        (("current",), True),
+        (("old_hash", "current"), True),
+        (("current", "old_hash"), True),
+    ],
+)
+def test_hand_stamp_census_preserves_mixed_refs_and_hash_only_refusals(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stamp_kinds: tuple[str, ...],
+    refuses: bool,
+) -> None:
+    asset = b"console.log('stamp census fixture');\n"
+    (tmp_path / "watchstore.js").write_bytes(asset)
+    stamps = {
+        "manual": "12",
+        "current": hashlib.sha256(asset).hexdigest()[:8],
+        "old_hash": "deadbeef",
+    }
+    for index, kind in enumerate(stamp_kinds):
+        (tmp_path / f"page-{index}.html").write_text(
+            f'<script src="watchstore.js?v={stamps[kind]}"></script>',
+            encoding="utf-8",
+        )
+    caddy = (
+        "@public_static {\n    path /watchstore.js\n}\n"
+        "@public_versioned {\n    path /other.js\n}\n"
+        "@watchlist_shell_versioned {\n    path /watchstore.js\n}\n"
+    )
+    monkeypatch.setitem(globals(), "SITE", tmp_path)
+    monkeypatch.setitem(globals(), "CADDY", caddy)
+    assert _served_stamps() == {
+        "/watchstore.js": {stamps[kind] for kind in stamp_kinds},
+    }
+    test_every_stamped_public_asset_is_on_the_immutable_matcher()
+    if refuses:
+        with pytest.raises(AssertionError, match="content-hash stamped"):
+            test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+    else:
+        test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+
+    # Retaining mixed refs must not excuse an asset absent from both matchers.
+    monkeypatch.setitem(
+        globals(),
+        "CADDY",
+        caddy.replace(
+            "@watchlist_shell_versioned {\n    path /watchstore.js\n",
+            "@watchlist_shell_versioned {\n    path /other.js\n",
+        ),
+    )
+    with pytest.raises(AssertionError, match="absent from @public_versioned"):
+        test_every_stamped_public_asset_is_on_the_immutable_matcher()
+
 
 
 # ── R1A-M Intelligence Hub Market Pulse controller (freeze §10) ────────────
