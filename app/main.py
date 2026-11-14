@@ -2515,6 +2515,8 @@ app.include_router(research_router)
 # Registered-user Macro Command reads use the qualified served publication.
 from app.macro_command import router as macro_command_router  # noqa: E402
 app.include_router(macro_command_router)
+from app.macro_dashboard import router as macro_dashboard_router  # noqa: E402
+app.include_router(macro_dashboard_router)
 
 # Sector source-to-screen reads stay in this API process and existing resource gates.
 from app.sector_generation import create_router as create_sector_generation_router  # noqa: E402

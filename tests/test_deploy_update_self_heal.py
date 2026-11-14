@@ -1081,6 +1081,8 @@ MUST_RESTART = [
     "lib/config.py",
     "lib/ai_costs.py",
     "lib/mastermind_response_log.py",
+    "lib/macro_dashboard_view.py",
+    "lib/numeric.py",
 ]
 
 # NOT import-cached by macro-api -> restarting would blip /api for nothing.

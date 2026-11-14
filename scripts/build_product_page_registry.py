@@ -1183,6 +1183,7 @@ _TOP_HREF_RE = re.compile(r'href:\s*"([^"]+)"')
 _TERMINAL_GATES: tuple[tuple[str, str, str], ...] = (
     ("isAdminRequest", "admin", "terminal/lib/adminGate.ts"),
     ("hasLiveOptions", "paid", "terminal/lib/entitlement.ts"),
+    ("getLiveOptionsAccessDetail", "paid", "terminal/lib/entitlement.ts"),
     ("SignupGate", "signed_in", "terminal/components/gates/SignupGate.tsx"),
 )
 
@@ -1710,6 +1711,7 @@ def build_registry(*, repo_root: Path, terminal_root: Path, terminal_ref: str,
 def refresh_terminal_registry(*, repo_root: Path, base_commit: str,
                               terminal_root: Path, terminal_ref: str,
                               as_of: Optional[str], overrides_path: Path,
+                              native_migrations: tuple[str, ...] = (),
                               git: GitRunner = run_git) -> tuple[dict, list[str]]:
     """Refresh one source owner without reclassifying unrelated Macro pages.
 
@@ -1739,7 +1741,8 @@ def refresh_terminal_registry(*, repo_root: Path, base_commit: str,
             or not re.fullmatch(r"[0-9a-f]{40}", terminal_ref)
             or source.get("sha") != terminal_ref or not rows):
         return {}, ["Terminal refresh requires an available exact immutable source"]
-    overrides = {key: value for key, value in load_overrides(overrides_path).items()
+    declared_overrides = load_overrides(overrides_path)
+    overrides = {key: value for key, value in declared_overrides.items()
                  if key.startswith("terminal:")}
     errors = apply_overrides(rows, overrides, source_name=str(overrides_path.name))
     if errors:
@@ -1750,11 +1753,44 @@ def refresh_terminal_registry(*, repo_root: Path, base_commit: str,
         row["notes"] = list(dict.fromkeys(row["notes"]))
     doc = copy.deepcopy(baseline)
     retained = [row for row in doc["pages"] if row["repo"] != "terminal"]
+    # A native migration changes only the selected predecessor's shell admission.
+    # Its standalone access/lifecycle and every unrelated owner remain intact.
+    # Route discovery still comes from the immutable Terminal source, never YAML.
+    migrations = {}
+    for page_id in dict.fromkeys(native_migrations):
+        predecessor = next((row for row in retained if row["page_id"] == page_id), None)
+        if (predecessor is None or predecessor["repo"] != "macro"
+                or predecessor["route_kind"] != "page" or predecessor["lifecycle"] != "live"):
+            return {}, [f"native migration requires an exact live Macro predecessor: {page_id}"]
+        candidates = [row for row in rows if row["route"] == predecessor["route"]
+                      and row["route_kind"] == "page" and row["lifecycle"] == "live"
+                      and row["access_shell"] in ("anonymous", "signed_in", "paid")
+                      and "shared_shell:admission_withheld" not in row["known_contracts"]]
+        if len(candidates) != 1:
+            return {}, [f"native migration requires one eligible exact Terminal counterpart: {page_id}"]
+        declaration = declared_overrides.get(page_id, {})
+        marker = "shared_shell:admission_withheld"
+        contracts = declaration.get("known_contracts")
+        expected = set(predecessor.get("known_contracts", [])) | {marker}
+        if not isinstance(contracts, list) or any(not isinstance(c, str) for c in contracts) or set(contracts) != expected:
+            return {}, [f"native migration may only add its admission marker, preserving contracts: {page_id}"]
+        selected = {"known_contracts": contracts}
+        for field in ("evidence", "note"):
+            if field in declaration:
+                selected[field] = declaration[field]
+        errors = apply_overrides([predecessor], {page_id: selected}, source_name=str(overrides_path.name))
+        if errors:
+            return {}, errors
+        predecessor["source_evidence"] = list(dict.fromkeys(predecessor["source_evidence"]))
+        predecessor["notes"] = list(dict.fromkeys(predecessor["notes"]))
+        migrations[page_id] = candidates[0]["page_id"]
     # Baseline order is canonical; preserve other source rows exactly.
     doc["pages"] = sorted(retained + [{f: row[f] for f in FIELD_ORDER} for row in rows],
                           key=lambda row: (row["repo"], row["route"], row["page_id"]))
     source["registry_base_commit"] = base_commit
     source["registry_base_sha256"] = hashlib.sha256((raw or "").encode()).hexdigest()
+    if migrations:
+        source["native_migrations"] = migrations
     doc["sources"]["terminal"] = source
     doc["generated_at"] = as_of or datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     return doc, []
@@ -1774,12 +1810,16 @@ def main(argv: Optional[list[str]] = None) -> int:
                     help="pin generated_at (ISO8601) so diffs stay clean")
     ap.add_argument("--refresh-terminal-from", metavar="COMMIT",
                     help="refresh only Terminal from an immutable protected registry; retain other owners and source pins")
+    ap.add_argument("--native-migration", action="append", default=[], metavar="MACRO_PAGE_ID",
+                    help="with scoped refresh, apply only a declared shell admission marker for an exact native replacement")
     ap.add_argument("--with-prs", action="store_true",
                     help="one `gh pr list` call to attach open PRs (OFF by "
                          "default: the GitHub REST pool is shared fleet-wide)")
     ap.add_argument("--check", action="store_true",
                     help="validate the committed JSON without deriving anything")
     args = ap.parse_args(argv)
+    if args.native_migration and not args.refresh_terminal_from:
+        ap.error("--native-migration requires --refresh-terminal-from")
 
     if args.check:
         try:
@@ -1809,6 +1849,7 @@ def main(argv: Optional[list[str]] = None) -> int:
             repo_root=REPO_ROOT, base_commit=args.refresh_terminal_from,
             terminal_root=args.terminal_root, terminal_ref=args.terminal_ref,
             as_of=args.as_of, overrides_path=args.overrides,
+            native_migrations=tuple(args.native_migration),
         )
     else:
         doc, errors = build_registry(

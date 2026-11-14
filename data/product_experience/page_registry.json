@@ -1,6 +1,6 @@
 {
   "schema": "mastermind.page_registry.v1",
-  "generated_at": "2026-11-03T04:25:04Z",
+  "generated_at": "2026-11-14T11:35:00Z",
   "sources": {
     "macro": {
       "available": true,
@@ -50,13 +50,16 @@
       ]
     },
     "terminal": {
-      "root": "/Volumes/Mastermind/agent-workspaces/terminal/web/beta-intelligence-integration-20261103-sol",
-      "ref": "7063a8e1324c75f69361688161f1e2a90bf87951",
+      "root": "../terminal-source",
+      "ref": "6aba1efb8dfe920a3b6e0fdc7616bde26f28474f",
       "available": true,
-      "sha": "7063a8e1324c75f69361688161f1e2a90bf87951",
-      "page_modules": 32,
-      "registry_base_commit": "aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551",
-      "registry_base_sha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
+      "sha": "6aba1efb8dfe920a3b6e0fdc7616bde26f28474f",
+      "page_modules": 39,
+      "registry_base_commit": "daec304a0d7582586dda975e4474bbaf5741cb17",
+      "registry_base_sha256": "ee0708b3be98e37268af469bb67c936a7c3135eb6775388051078d90fe2484dd",
+      "native_migrations": {
+        "macro:macro": "terminal:macrohtml"
+      }
     },
     "mastermind": {
       "root": "/Volumes/Mastermind 2/agent-workspaces/claude/44ff44e73b840f81/shared-shell-registry-mastermind-c245-c35a5115e973cfc5",
@@ -6500,7 +6503,9 @@
         "en",
         "zh"
       ],
-      "known_contracts": [],
+      "known_contracts": [
+        "shared_shell:admission_withheld"
+      ],
       "open_prs": [],
       "source_evidence": [
         "config/site_access.yml",
@@ -6508,9 +6513,12 @@
         "scripts/build_site.py:8147",
         "site/macro.html",
         "templates/_navlinks.html.j2",
-        "templates/dashboard.html.j2"
+        "templates/dashboard.html.j2",
+        "terminal/app/(shell)/macro.html/page.tsx"
       ],
-      "notes": []
+      "notes": [
+        "Native Terminal /macro.html replaces only Shared Shell iframe admission. Standalone Macro access and publication remain owned by Macro."
+      ]
     },
     {
       "page_id": "macro:macro_family",
@@ -13889,6 +13897,88 @@
       ]
     },
     {
+      "page_id": "terminal:briefs_deliveryid_sharing",
+      "repo": "terminal",
+      "route": "/briefs/<deliveryId>/sharing",
+      "route_kind": "family",
+      "source_template": "terminal/app/(shell)/briefs/[deliveryId]/sharing/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "utility",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/briefs/[deliveryId]/sharing/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
+      "page_id": "terminal:briefs_shared_deliveryid",
+      "repo": "terminal",
+      "route": "/briefs/shared/<deliveryId>",
+      "route_kind": "family",
+      "source_template": "terminal/app/(shell)/briefs/shared/[deliveryId]/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/briefs/shared/[deliveryId]/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
       "page_id": "terminal:dev_chart_bench",
       "repo": "terminal",
       "route": "/dev/chart-bench",
@@ -14040,6 +14130,86 @@
       "open_prs": [],
       "source_evidence": [
         "terminal/app/dev/options-plan/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "under app/dev/ — developer surface, not customer content"
+      ]
+    },
+    {
+      "page_id": "terminal:dev_sector_cycles",
+      "repo": "terminal",
+      "route": "/dev/sector-cycles",
+      "route_kind": "page",
+      "source_template": "terminal/app/dev/sector-cycles/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "unknown",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "dev_only",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/dev/sector-cycles/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "under app/dev/ — developer surface, not customer content"
+      ]
+    },
+    {
+      "page_id": "terminal:dev_sector_depth",
+      "repo": "terminal",
+      "route": "/dev/sector-depth",
+      "route_kind": "page",
+      "source_template": "terminal/app/dev/sector-depth/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "unknown",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "dev_only",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/dev/sector-depth/page.tsx",
         "terminal/app/layout.tsx",
         "terminal/lib/i18n.tsx"
       ],
@@ -14462,6 +14632,57 @@
       ]
     },
     {
+      "page_id": "terminal:macrohtml",
+      "repo": "terminal",
+      "route": "/macro.html",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/macro.html/page.tsx",
+      "builder": [],
+      "data_sources": [
+        "/api/shared-shell/macro-dashboard"
+      ],
+      "access_shell": "signed_in",
+      "payload_tier": "public_shell_premium_payload",
+      "nav_family": "app_nav.rail",
+      "archetype": "regime_dashboard",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "What is the market backdrop, what could change it, and which evidence should I investigate?",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "P0",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [
+        "Existing ShellMember and reading-scope identity; no guest payload or account crossover",
+        "Display-only Macro publication; current, historical, measured, hazard and policy readings retain their source clocks"
+      ],
+      "open_prs": [],
+      "source_evidence": [
+        "app/macro_dashboard.py",
+        "lib/macro_dashboard_view.py",
+        "terminal/app/(shell)/macro.html/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/components/macro/MacroDashboard.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module",
+        "Native beta consumer of the incumbent Macro build. Registry admission is not a claim of deployed browser acceptance."
+      ]
+    },
+    {
       "page_id": "terminal:monitor",
       "repo": "terminal",
       "route": "/monitor",
@@ -14510,8 +14731,8 @@
       "source_template": "terminal/app/(shell)/options/page.tsx",
       "builder": [],
       "data_sources": [],
-      "access_shell": "unknown",
-      "payload_tier": "unknown",
+      "access_shell": "paid",
+      "payload_tier": "premium",
       "nav_family": "app_nav.rail",
       "archetype": "chart_workspace",
       "design_system": {
@@ -14530,7 +14751,9 @@
         "en",
         "zh"
       ],
-      "known_contracts": [],
+      "known_contracts": [
+        "entitlement feature terminal_live_options"
+      ],
       "open_prs": [],
       "source_evidence": [
         "terminal/app/(shell)/options/page.tsx",
@@ -14541,6 +14764,7 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
+        "gate marker `getLiveOptionsAccessDetail` in the page module",
         "terminal_live_options feature — essential + pro (incl. trial); anonymous and free get OptionsPaywall"
       ]
     },
@@ -14584,7 +14808,7 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
-        "gate marker `hasLiveOptions` in the page module"
+        "gate marker `getLiveOptionsAccessDetail` in the page module"
       ]
     },
     {
@@ -14627,7 +14851,7 @@
       ],
       "notes": [
         "Next.js App Router page module (the module IS the page)",
-        "gate marker `hasLiveOptions` in the page module"
+        "gate marker `getLiveOptionsAccessDetail` in the page module"
       ]
     },
     {
@@ -14719,6 +14943,45 @@
       ]
     },
     {
+      "page_id": "terminal:prophet_evaluation",
+      "repo": "terminal",
+      "route": "/prophet/evaluation",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/prophet/evaluation/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "unknown",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/prophet/evaluation/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)"
+      ]
+    },
+    {
       "page_id": "terminal:research",
       "repo": "terminal",
       "route": "/research",
@@ -14750,6 +15013,47 @@
       "open_prs": [],
       "source_evidence": [
         "terminal/app/(shell)/research/page.tsx",
+        "terminal/app/layout.tsx",
+        "terminal/components/gates/SignupGate.tsx",
+        "terminal/lib/i18n.tsx"
+      ],
+      "notes": [
+        "Next.js App Router page module (the module IS the page)",
+        "gate marker `SignupGate` in the page module"
+      ]
+    },
+    {
+      "page_id": "terminal:research_assistant",
+      "repo": "terminal",
+      "route": "/research-assistant",
+      "route_kind": "page",
+      "source_template": "terminal/app/(shell)/research-assistant/page.tsx",
+      "builder": [],
+      "data_sources": [],
+      "access_shell": "signed_in",
+      "payload_tier": "unknown",
+      "nav_family": "none",
+      "archetype": "chart_workspace",
+      "design_system": {
+        "compliant": false
+      },
+      "primary_user_question": "",
+      "owner": "unowned",
+      "lifecycle": "live",
+      "priority": "unclassified",
+      "generated": false,
+      "bilingual": true,
+      "themes": [
+        "dark"
+      ],
+      "locales": [
+        "en",
+        "zh"
+      ],
+      "known_contracts": [],
+      "open_prs": [],
+      "source_evidence": [
+        "terminal/app/(shell)/research-assistant/page.tsx",
         "terminal/app/layout.tsx",
         "terminal/components/gates/SignupGate.tsx",
         "terminal/lib/i18n.tsx"
