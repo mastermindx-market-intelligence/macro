@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T13:11:32.305147+00:00",
-  "count": 3367,
+  "generated_at": "2026-11-14T13:42:01.503031+00:00",
+  "count": 3368,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1144,6 +1144,26 @@
       "tickers": [],
       "top_pick": true,
       "pages": 15,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-huwifso5ohn-b6c9f2",
+      "title": "mfse fly",
+      "institution": "Other",
+      "side": "independent",
+      "desk": "",
+      "published_at": "2026-11-13T04:00:33Z",
+      "summary_points": [
+        "Market Concentration at Record Levels: Top 10 S&P 500 firms hold 38% of index (near historic highs), US equities dominate MSCI World (70%), with semiconductors (17%) and IT (38%) showing extreme sector concentration.",
+        "Geopolitical Fragmentation Drives Divergent Risks: US-China strategic competition (semiconductors, AI, critical minerals) intensifies export controls, forcing global vs. domestic-focused firms to face materially different risks (market access, capital allocation).",
+        "AI Benefits Unevenly Distributed: Adoption alone does not yield uniform benefits; key differentiators are proprietary data access, workflow integration, regulatory expertise, and execution quality—only select firms strengthen via AI.",
+        "Selectivity Essential Amid Structural Shifts: Extreme concentration, geopolitical fragmentation, and uneven AI impact necessitate deep company-specific analysis to navigate winner/loser gaps and identify adaptable firms for long-term value."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 5,
       "language": "en",
       "needs_metadata": false
     },
