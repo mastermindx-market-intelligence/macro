@@ -4539,6 +4539,8 @@ CURATED_EXCLUSIVE = {
     "gmi-segment-sources-tooling",
     # Preserve V91 coverage while bounding newly enrolled policy regressions.
     "news-v91-vertical-proofs",
+    # Dividend copy feedback owns only its dependency-free test and two sources.
+    "dividend-copy-feedback",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
