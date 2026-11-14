@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SON-BULL-20260617",
-  "asof": "2026-11-09",
+  "asof": "2026-11-14",
   "phase": "overtime",
   "detection_phase": "overtime",
-  "management_confidence": 22.1,
-  "raw_confidence": 21.7,
-  "delta_vs_base": -37.9,
+  "management_confidence": 20.8,
+  "raw_confidence": 20.2,
+  "delta_vs_base": -39.2,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 26.7,
+    "validity": 17.4,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 41.0,
-    "overlay": 27.0
+    "retention": 39.5,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.376,
+    "dist_to_stop_r": 0.274,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 177.8,
-    "p1": -0.4158,
-    "p2": -0.2079,
+    "horizon_pct_used": 188.9,
+    "p1": -0.4843,
+    "p2": -0.2421,
     "p3": null,
-    "move_r": -0.624,
+    "move_r": -0.726,
     "mfe_r": 0.0,
     "mae_r": -0.809
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 80,
-  "tau": 1.7778,
+  "days_elapsed": 85,
+  "tau": 1.8889,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

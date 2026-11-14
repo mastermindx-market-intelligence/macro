@@ -32,7 +32,7 @@ import sys
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parent
@@ -1583,6 +1583,40 @@ def _display_name(value: object) -> str:
     return ""
 
 
+def _research_priority_evidence(
+    theme_nodes: Mapping[str, Any],
+    hierarchy_ids: set[str],
+    edges: Any,
+) -> tuple[set[str], dict[str, list[str]]]:
+    """Count the evidence rows behind each theme node: ``(touched, dates_by_node)``.
+
+    One recorded date per edge row touching a theme node (a self-loop counts once).
+    W-C2b tier guard: a ``MEMBER_OF`` row whose ``dst`` is a hierarchy node
+    (macro_category, sub_theme, micro_theme) is skipped. Those company memberships
+    arrive through the curated activity route; counting them would let curation
+    reorder this list, and hierarchy nodes are display-only.
+    """
+    dates_by_node: dict[str, list[str]] = {nid: [] for nid in theme_nodes}
+    touched: set[str] = set()
+    if edges is None or not len(edges):
+        return touched, dates_by_node
+    has_type = "type" in edges.columns
+    columns = ["src", "dst", "evidence_time"] + (["type"] if has_type else [])
+    for rec in edges[columns].itertuples(index=False):
+        src = "" if rec.src is None else str(rec.src)
+        dst = "" if rec.dst is None else str(rec.dst)
+        if has_type and str(rec.type) == "MEMBER_OF" and dst in hierarchy_ids:
+            continue
+        raw = "" if rec.evidence_time is None else str(rec.evidence_time)
+        # dict.fromkeys de-duplicates a self-loop (src == dst) while keeping
+        # order: §2.1 clause 2 counts EDGE ROWS, one per row.
+        for nid in dict.fromkeys((src, dst)):
+            if nid in theme_nodes:
+                touched.add(nid)
+                dates_by_node[nid].append(raw)
+    return touched, dates_by_node
+
+
 def load_research_priority(root: Path) -> dict[str, Any]:
     """Read the theme-graph current-belief view and return the §2.4 payload.
 
@@ -1609,9 +1643,18 @@ def load_research_priority(root: Path) -> dict[str, Any]:
         nodes = store.read_nodes(current=True)
         edges = store.read_edges(latest_belief=True)
 
+        from engine.theme_graph.ontology import is_hierarchy_tier_node  # noqa: PLC0415
+
         theme_nodes: dict[str, tuple[str, str]] = {}
+        hierarchy_ids: set[str] = set()
         dropped_unnamed = 0
         if nodes is not None and len(nodes):
+            if "tier" in nodes.columns:
+                for rec in nodes[["node_id", "kind", "tier"]].itertuples(index=False):
+                    if is_hierarchy_tier_node(
+                        {"kind": rec.kind, "tier": rec.tier}
+                    ):
+                        hierarchy_ids.add("" if rec.node_id is None else str(rec.node_id))
             node_view = nodes[["node_id", "kind", "name_en", "name_zh", "status"]]
             for rec in node_view.itertuples(index=False):
                 if str(rec.kind) != "theme":
@@ -1631,20 +1674,9 @@ def load_research_priority(root: Path) -> dict[str, Any]:
                     continue
                 theme_nodes[nid] = (name_en, name_zh)
 
-        dates_by_node: dict[str, list[str]] = {nid: [] for nid in theme_nodes}
-        touched: set[str] = set()
-        if edges is not None and len(edges):
-            edge_view = edges[["src", "dst", "evidence_time"]]
-            for rec in edge_view.itertuples(index=False):
-                src = "" if rec.src is None else str(rec.src)
-                dst = "" if rec.dst is None else str(rec.dst)
-                raw = "" if rec.evidence_time is None else str(rec.evidence_time)
-                # dict.fromkeys de-duplicates a self-loop (src == dst) while keeping
-                # order: §2.1 clause 2 counts EDGE ROWS, one per row.
-                for nid in dict.fromkeys((src, dst)):
-                    if nid in theme_nodes:
-                        touched.add(nid)
-                        dates_by_node[nid].append(raw)
+        touched, dates_by_node = _research_priority_evidence(
+            theme_nodes, hierarchy_ids, edges
+        )
 
         themes = [
             rp.ThemeEvidence(

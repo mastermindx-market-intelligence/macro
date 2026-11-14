@@ -60,6 +60,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
 
 from engine import us_board_rank as ubr                      # noqa: E402
+from engine import us_board_snapshots                        # noqa: E402
 from scripts.prophet_fusion_arena import (                   # noqa: E402
     ForbiddenCompositeRefusal,
     FoldRefusal,
@@ -493,15 +494,19 @@ def load_snapshots(path: Path | str | None = None) -> dict[str, dict[str, Any]]:
     the adapter records it rather than re-deriving it.
     """
     target = Path(path) if path is not None else (_REPO_ROOT / SNAPSHOTS_JSONL)
-    if not target.exists():
+    try:
+        present = us_board_snapshots.exists(target)
+    except us_board_snapshots.SnapshotLedgerError as exc:
+        raise RaceRefusal(f"board snapshots unreadable at {target}: {exc}") from exc
+    if not present:
         raise RaceRefusal(
             f"board snapshots not found at {target} — G0/G2/G3/G4 replay the champion "
             f"from the FROZEN PUBLISHED PAYLOAD and have no other source; a race that "
             f"reconstructed the inputs from today's stores would be leakage, not a "
             f"replay (§9.1).")
     out: dict[str, dict[str, Any]] = {}
-    with target.open(encoding="utf-8") as handle:
-        for line in handle:
+    try:
+        for line in us_board_snapshots.iter_lines(target):
             line = line.strip()
             if not line:
                 continue
@@ -509,6 +514,8 @@ def load_snapshots(path: Path | str | None = None) -> dict[str, dict[str, Any]]:
             as_of = str(doc.get("as_of") or "")[:10]
             if as_of:
                 out[as_of] = doc
+    except us_board_snapshots.SnapshotLedgerError as exc:
+        raise RaceRefusal(f"board snapshots unreadable at {target}: {exc}") from exc
     return out
 
 

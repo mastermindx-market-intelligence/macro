@@ -1,7 +1,7 @@
 {
   "schema": "thematic_rotation_phase0.v1",
   "region": "canada",
-  "generated_at": "2026-11-09T09:18:27.335746+00:00",
+  "generated_at": "2026-11-13T13:52:45.174423+00:00",
   "cost_bps": 10.0,
   "universes": {
     "sectors": {
@@ -22,8 +22,8 @@
           "worst_decile_ret": -0.0565
         },
         "top3_mom12_rel": {
-          "cagr": 0.1424,
-          "sharpe": 0.85,
+          "cagr": 0.1435,
+          "sharpe": 0.86,
           "max_dd": -0.4332,
           "calmar": 0.33,
           "n_months": 277,
@@ -31,25 +31,25 @@
           "worst_decile_ret": -0.0554
         },
         "top3_mom6_rel": {
-          "cagr": 0.1203,
-          "sharpe": 0.72,
+          "cagr": 0.1216,
+          "sharpe": 0.73,
           "max_dd": -0.5006,
           "calmar": 0.24,
           "n_months": 279,
-          "dsr": 0.966,
+          "dsr": 0.968,
           "worst_decile_ret": -0.0585
         },
         "top3_mom12_dual": {
-          "cagr": 0.115,
-          "sharpe": 0.84,
+          "cagr": 0.1161,
+          "sharpe": 0.85,
           "max_dd": -0.2427,
-          "calmar": 0.47,
+          "calmar": 0.48,
           "n_months": 277,
-          "dsr": 0.99,
+          "dsr": 0.991,
           "worst_decile_ret": -0.0475
         },
         "top4_mom12_dual": {
-          "cagr": 0.105,
+          "cagr": 0.1059,
           "sharpe": 0.88,
           "max_dd": -0.2032,
           "calmar": 0.52,
@@ -60,8 +60,8 @@
       },
       "rank_ic": {
         "1m": {
-          "mean_ic": 0.0503,
-          "ic_t_hac": 1.834,
+          "mean_ic": 0.051,
+          "ic_t_hac": 1.862,
           "hit": 0.549,
           "n_steps": 277
         },
@@ -74,34 +74,34 @@
       },
       "tsmom_conditional": {
         "above_trend": {
-          "mean": 0.0088,
+          "mean": 0.0089,
           "std": 0.0566,
           "sharpe": 0.54,
           "p05": -0.0814,
           "n": 1496
         },
         "below_trend": {
-          "mean": 0.0129,
-          "std": 0.0798,
-          "sharpe": 0.56,
+          "mean": 0.0127,
+          "std": 0.0796,
+          "sharpe": 0.55,
           "p05": -0.104,
           "n": 755
         },
-        "mean_diff_t": -1.26,
-        "mean_diff_p": 0.2067
+        "mean_diff_t": -1.19,
+        "mean_diff_p": 0.2342
       },
       "extension_drawdown": {
         "fwd_days": 63,
         "cohorts": {
           "normal": {
-            "mean_fwd_maxdd": -0.0667,
-            "p05_fwd_maxdd": -0.222,
-            "n": 33409
+            "mean_fwd_maxdd": -0.0668,
+            "p05_fwd_maxdd": -0.2219,
+            "n": 33443
           },
           "stretched": {
-            "mean_fwd_maxdd": -0.0564,
-            "p05_fwd_maxdd": -0.1788,
-            "n": 8731
+            "mean_fwd_maxdd": -0.0565,
+            "p05_fwd_maxdd": -0.1787,
+            "n": 8733
           },
           "parabolic": {
             "mean_fwd_maxdd": -0.0658,
