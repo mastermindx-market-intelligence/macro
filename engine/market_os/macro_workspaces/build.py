@@ -54,6 +54,9 @@ from engine.market_os.macro_workspaces import (
     trade_flows,
 )
 from engine.market_os.macro_workspaces.publication_prior import apply_producer_prior_seal
+from engine.market_os.macro_workspaces.history import attach_workspace_history, load_economic_histories
+from engine.market_os.macro_workspaces.payroll_revisions import attach_payroll_revisions
+from engine.market_os.macro_workspaces.payroll_revision_sources import load_payroll_revisions
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUT_ROOT = ROOT / "site" / "macrodata"
@@ -406,6 +409,7 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
               glt_latest_path: Path | str = DEFAULT_GLT_LATEST,
               glt_history_meta_path: Path | str = DEFAULT_GLT_HISTORY_META,
               fred_dir: Path | str = DEFAULT_FRED_DIR,
+              release_target_dir: Path | str | None = None,
               zori_path: Path | str = DEFAULT_ZORI_NATIONAL,
               capital_structure_projection_path: Path | str = DEFAULT_CAPITAL_STRUCTURE_PROJECTION,
               treasury_dir: Path | str = DEFAULT_TREASURY_DIR,
@@ -460,6 +464,15 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
         sid: _load_series_rows(Path(fred_dir) / f"{sid}.parquet", column)
         for sid, column in _TRADE_FRED_COLUMNS.items()
     }
+    # Shared component histories are loaded once, before any publication. An
+    # unreadable existing source fails this build before body or manifest writes.
+    histories = load_economic_histories(
+        fred_dir=fred_dir, treasury_dir=treasury_dir, built_at=built_at,
+    )
+    # Keep this source cohort in the caller's data family. A fixture/custom
+    # FRED root must not silently read a different checkout's live vintages.
+    payroll_root = Path(release_target_dir) if release_target_dir is not None else Path(fred_dir).parent / "fred_vintage" / "release_targets"
+    payroll = load_payroll_revisions(payroll_root, built_at=built_at)
 
     out = Path(out_root)
     manifest_entries: dict[str, dict] = {}
@@ -499,6 +512,9 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
             trade_fred_frames=trade_fred_frames,
             built_at=built_at,
             prior_snapshot=prior, code_version=code_version)
+        body = attach_workspace_history(body, histories.get(wid))
+        if wid == "labor_markets":
+            body = attach_payroll_revisions(body, payroll)
         body = apply_producer_prior_seal(body, prior)
         snapshot = contract.finalize(body)
         contract.validate(snapshot)
@@ -546,3 +562,4 @@ def build_all(*, out_root: Path | str = DEFAULT_OUT_ROOT,
 
     receipts["_manifest"] = {"manifest": manifest, "path": str(manifest_path) if write else None}
     return receipts
+

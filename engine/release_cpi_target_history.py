@@ -41,10 +41,11 @@ from engine.release_cpi_official_truth import (
 )
 from engine.release_target_truth import (
     SOURCE_OUTPUT_TYPE,
-    load_full_vintage_parquets,
     reconstruct_release_target,
     round_published_1dp,
 )
+
+from engine import release_target_cohort as _cohort
 
 HISTORY_SCHEMA = "release_cpi_target_history.v1"
 TARGET_ROW_SCHEMA = "release_cpi_target.v1"
@@ -152,10 +153,10 @@ def build_cpi_target_history(
     logical_root = _logical_root(repo_root)
     resolved_paths = _resolve_vintage_paths(repo_root, vintage_paths)
     resolved_manifest = _resolve_manifest_path(repo_root, manifest_path)
-    manifest, manifest_receipt = _load_and_bind_manifest(
+    frames, manifest, manifest_receipt, bound_artifacts = _cohort.read_release_target_cohort(
         resolved_manifest,
-        resolved_paths,
-        logical_root=logical_root,
+        {series_id: resolved_paths[release] for release, series_id in CPI_SERIES_BY_RELEASE.items()},
+        logical_root=logical_root, error_type=CpiTargetHistoryError,
     )
     gap_evidence, gap_receipt = _load_preregistered_nonpublications(
         repo_root,
@@ -170,18 +171,9 @@ def build_cpi_target_history(
     rejected_periods: list[dict[str, Any]] = []
 
     for release, series_id in CPI_SERIES_BY_RELEASE.items():
-        path = resolved_paths[release]
-        entry = _manifest_series_entry(manifest, series_id)
-        artifact = _artifact_receipt(
-            path,
-            entry,
-            manifest_receipt,
-            logical_root=logical_root,
-        )
+        artifact = bound_artifacts[series_id]
         source_artifacts[series_id] = artifact
-
-        frame = load_full_vintage_parquets(path, series_id=series_id)
-        _validate_loaded_frame_against_manifest(frame, entry, series_id)
+        frame = frames[series_id]
         release_targets, series_rejections, series_rejected_periods = (
             _build_series_history(
                 frame,
@@ -846,144 +838,26 @@ def _validate_preregistered_nonpublication_evidence(
 
 
 def _load_and_bind_manifest(
-    path: Path,
-    vintage_paths: Mapping[str, Path],
-    *,
-    logical_root: Path | None,
+    path: Path, vintage_paths: Mapping[str, Path], *, logical_root: Path | None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    payload = _read_json_mapping(path, kind="collector manifest")
-    if payload.get("schema") != COLLECTOR_MANIFEST_SCHEMA:
-        raise CpiTargetHistoryError(
-            f"collector manifest schema must be {COLLECTOR_MANIFEST_SCHEMA!r}"
-        )
-    if payload.get("integrity_profile") != COLLECTOR_INTEGRITY_PROFILE:
-        raise CpiTargetHistoryError(
-            "collector manifest lacks the required exact-byte integrity profile"
-        )
-    if payload.get("source_output_type") != SOURCE_OUTPUT_TYPE:
-        raise CpiTargetHistoryError("collector manifest source_output_type must be 2")
-    if payload.get("status") != "ok":
-        raise CpiTargetHistoryError(
-            f"collector manifest status must be 'ok', got {payload.get('status')!r}"
-        )
-    completed_at = _normalize_governed_timestamp(
-        payload.get("completed_at"),
-        field="collector manifest completed_at",
-        error_type=CpiTargetHistoryError,
+    return _cohort.load_and_bind_manifest(
+        path, {sid: vintage_paths[release] for release, sid in CPI_SERIES_BY_RELEASE.items()},
+        logical_root=logical_root, error_type=CpiTargetHistoryError,
     )
 
-    # Force every required entry through exact byte/hash verification now.
-    manifest_receipt = {
-        "schema": payload["schema"],
-        "integrity_profile": payload["integrity_profile"],
-        "source_output_type": payload["source_output_type"],
-        "collected_at": payload.get("collected_at"),
-        "completed_at": completed_at,
-        "path": _logical_path(path, logical_root),
-        "artifact_bytes": path.stat().st_size,
-        "artifact_sha256": _sha256_file(path),
-    }
-    for release, series_id in CPI_SERIES_BY_RELEASE.items():
-        entry = _manifest_series_entry(payload, series_id)
-        _artifact_receipt(
-            vintage_paths[release],
-            entry,
-            manifest_receipt,
-            logical_root=logical_root,
-        )
-    return payload, manifest_receipt
+
+def _manifest_series_entry(manifest: Mapping[str, Any], series_id: str) -> Mapping[str, Any]:
+    return _cohort.manifest_series_entry(manifest, series_id, error_type=CpiTargetHistoryError)
 
 
-def _manifest_series_entry(
-    manifest: Mapping[str, Any], series_id: str
-) -> Mapping[str, Any]:
-    series = manifest.get("series")
-    if not isinstance(series, Mapping) or not isinstance(
-        series.get(series_id), Mapping
-    ):
-        raise CpiTargetHistoryError(
-            f"collector manifest has no bound entry for {series_id}"
-        )
-    entry = series[series_id]
-    if entry.get("status") not in {"written", "sealed"}:
-        raise CpiTargetHistoryError(
-            f"collector manifest entry {series_id} is not durably written or sealed"
-        )
-    return entry
+def _artifact_receipt(path: Path, entry: Mapping[str, Any], manifest_receipt: Mapping[str, Any], *,
+                      logical_root: Path | None = None) -> dict[str, Any]:
+    return _cohort.artifact_receipt(
+        path, entry, manifest_receipt, logical_root=logical_root, error_type=CpiTargetHistoryError)
 
 
-def _artifact_receipt(
-    path: Path,
-    entry: Mapping[str, Any],
-    manifest_receipt: Mapping[str, Any],
-    *,
-    logical_root: Path | None = None,
-) -> dict[str, Any]:
-    expected_sha = entry.get("artifact_sha256")
-    expected_bytes = entry.get("artifact_bytes")
-    if not isinstance(expected_sha, str) or not re.fullmatch(
-        r"[0-9a-f]{64}", expected_sha
-    ):
-        raise CpiTargetHistoryError(
-            f"manifest entry for {path.name} has no valid artifact_sha256"
-        )
-    if not isinstance(expected_bytes, int) or expected_bytes <= 0:
-        raise CpiTargetHistoryError(
-            f"manifest entry for {path.name} has no valid artifact_bytes"
-        )
-    recorded_path = entry.get("path")
-    if recorded_path and Path(str(recorded_path)).name != path.name:
-        raise CpiTargetHistoryError(
-            f"manifest basename mismatch for {path}: recorded={recorded_path!r}"
-        )
-    actual_bytes = path.stat().st_size
-    actual_sha = _sha256_file(path)
-    if actual_bytes != expected_bytes:
-        raise CpiTargetHistoryError(
-            f"source parquet byte-count mismatch for {path.name}: "
-            f"manifest={expected_bytes} actual={actual_bytes}"
-        )
-    if actual_sha != expected_sha:
-        raise CpiTargetHistoryError(
-            f"source parquet SHA-256 mismatch for {path.name}: "
-            f"manifest={expected_sha} actual={actual_sha}"
-        )
-    return {
-        "path": _logical_path(path, logical_root),
-        "artifact_bytes": actual_bytes,
-        "artifact_sha256": actual_sha,
-        "manifest_artifact_sha256": manifest_receipt["artifact_sha256"],
-        "manifest_bound": True,
-        "manifest_entry_status": entry.get("status"),
-        "rows": entry.get("rows"),
-        "periods": entry.get("periods"),
-        "release_dates": entry.get("release_dates"),
-        "period_min": entry.get("period_min"),
-        "period_max": entry.get("period_max"),
-    }
-
-
-def _validate_loaded_frame_against_manifest(
-    frame: pd.DataFrame,
-    entry: Mapping[str, Any],
-    series_id: str,
-) -> None:
-    if frame.empty:
-        raise CpiTargetHistoryError(f"{series_id} full-vintage frame is empty")
-    expected_rows = entry.get("rows")
-    if isinstance(expected_rows, int) and len(frame) != expected_rows:
-        raise CpiTargetHistoryError(
-            f"{series_id} row-count mismatch: manifest={expected_rows} loaded={len(frame)}"
-        )
-    expected_periods = entry.get("periods")
-    actual_periods = int(frame["period"].nunique())
-    if isinstance(expected_periods, int) and actual_periods != expected_periods:
-        raise CpiTargetHistoryError(
-            f"{series_id} period-count mismatch: "
-            f"manifest={expected_periods} loaded={actual_periods}"
-        )
-    if set(frame["series"]) != {series_id}:
-        raise CpiTargetHistoryError(f"{series_id} source contains another series")
+def _validate_loaded_frame_against_manifest(frame: pd.DataFrame, entry: Mapping[str, Any], series_id: str) -> None:
+    _cohort.validate_loaded_frame(frame, entry, series_id, error_type=CpiTargetHistoryError)
 
 
 def _build_series_history(
@@ -2302,3 +2176,4 @@ __all__ = [
     "evaluate_preregistered_parity",
     "load_official_table1_receipts",
 ]
+

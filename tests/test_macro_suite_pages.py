@@ -336,8 +336,18 @@ _ENGINE_CONTRADICTION_KINDS = (
     "broad_stress_vs_risk_appetite",
 )
 
-_KIND_LITERAL = re.compile(r'(?:kind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
+# Match the complete constructor keyword, not input_kind/source_kind suffixes.
+_KIND_LITERAL = re.compile(r'(?:\bkind\s*=\s*|"kind"\s*:\s*)"([^"]+)"')
 _CJK_ADJOINING_SPACE = re.compile(r"(?:[\u3400-\u9fff] )|(?: [\u3400-\u9fff])")
+
+
+@pytest.mark.parametrize("source,expected", [
+    ('Alert(kind = "new_unreviewed_kind")', {"new_unreviewed_kind"}),
+    ('{"kind": "new_unreviewed_kind", "input_kind": "metric"}', {"new_unreviewed_kind"}),
+    ('result.update(input_kind="component", source_kind="metric", kind_extra="other")', set()),
+])
+def test_kind_scanner_preserves_real_kinds_without_matching_identifier_suffixes(source, expected):
+    assert {match.group(1) for match in _KIND_LITERAL.finditer(source)} == expected
 
 
 def test_every_engine_contradiction_kind_has_a_reviewed_label() -> None:
