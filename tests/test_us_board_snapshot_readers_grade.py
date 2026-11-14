@@ -239,3 +239,43 @@ def test_prophet_pit_replay_capture_us_snapshot_row_falls_back_to_base_file(tmp_
     result = prophet_pit_replay.capture_us_snapshot_row(
         vintage, session=session, work=work)
     assert result == {"ok": True, "row": base_row}
+
+
+def test_prophet_fusion_race_load_snapshots_keeps_an_override_out_of_snapshot_parts(tmp_path):
+    """The ``--snapshots`` file beside the canonical ledger reads only its own rows."""
+    base = _layout(
+        tmp_path,
+        [_board("2026-06-30", "NATIVE_BASE")],
+        [_board("2026-07-01", "PART_MEMBER"), _board("2026-07-02", "PART_MEMBER")],
+    )
+    override = base.parent / "snapshots-before-rollover.jsonl"
+    override.write_text(
+        _line({"as_of": "2026-06-30", "buy": []})
+        + _line(_board("2026-07-01", "ALT_ONLY"))
+        + _line(_board("2026-07-02", "ALT_ONLY")),
+        encoding="utf-8")
+    snaps = prophet_fusion_race.load_snapshots(override)
+    assert sorted(snaps) == ["2026-06-30", "2026-07-01", "2026-07-02"]
+    assert snaps["2026-07-01"]["buy"] == [{"ticker": "ALT_ONLY"}]
+    assert snaps["2026-07-02"]["buy"] == [{"ticker": "ALT_ONLY"}]
+
+
+def test_prophet_fusion_race_cli_hands_the_snapshots_override_to_the_race(tmp_path, monkeypatch):
+    """The flag is wired to ``load_snapshots``' input, not parsed and dropped."""
+    seen: dict[str, object] = {}
+
+    def fake_run_race(**kwargs):
+        seen.update(kwargs)
+        return {
+            "frame": {"name": "fake", "n_dates": 0, "n_candidates": 0},
+            "replay_validation": {"v2_dates_byte_exact": 0},
+            "results": {"headline": {"table": {}}},
+        }
+
+    monkeypatch.setattr(prophet_fusion_race, "run_race", fake_run_race)
+    override = tmp_path / "snapshots-before-rollover.jsonl"
+    override.write_text(_line(_board("2026-07-01", "ALT_ONLY")), encoding="utf-8")
+    out = tmp_path / "out"
+    assert prophet_fusion_race.main(["--snapshots", str(override), "--out", str(out)]) == 0
+    assert seen["snapshots_path"] == str(override)
+    assert (out / "report.json").exists()

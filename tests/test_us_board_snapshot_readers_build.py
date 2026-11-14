@@ -219,3 +219,37 @@ def test_exit_policy_study_reads_rows_in_snapshot_parts(tmp_path):
     assert "ONLYPART" in days["2026-11-02"]
     assert invalidation[("2026-11-02", "ONLYPART")] == 12.5
     assert prov["n_days_snapshots"] == 2
+
+
+def test_prophet_board_since_explicit_override_keeps_its_own_membership(tmp_path):
+    """An override beside the canonical ledger cannot borrow the parts' names.
+
+    The canonical part publishes ``PART_MEMBER`` on both days; the selected file
+    records ``ALT_ONLY``. Membership and tenure must come from the selected file
+    alone — before the identity repair ``PART_MEMBER`` was the proven member and
+    ``ALT_ONLY`` had no start at all.
+    """
+    pbs._us_obs_cache.clear()
+    base = _ledger(
+        tmp_path,
+        [{"as_of": "2026-06-30", "buy": [{"ticker": "NATIVE_BASE"}]}],
+        [{"as_of": "2026-07-01", "buy": [{"ticker": "PART_MEMBER"}]},
+         {"as_of": "2026-07-02", "buy": [{"ticker": "PART_MEMBER"}]}],
+    )
+    override = base.parent / "snapshots-before-rollover.jsonl"
+    override.write_text(
+        "".join(_line(row) + "\n" for row in (
+            {"as_of": "2026-06-30", "buy": []},
+            {"as_of": "2026-07-01", "buy": [{"ticker": "ALT_ONLY"}]},
+            {"as_of": "2026-07-02", "buy": [{"ticker": "ALT_ONLY"}]},
+        )),
+        encoding="utf-8")
+    obs = pbs.observations_from_us_snapshots_jsonl(override)
+    assert dict(obs) == {
+        "2026-06-30": frozenset(),
+        "2026-07-01": frozenset({"ALT_ONLY"}),
+        "2026-07-02": frozenset({"ALT_ONLY"}),
+    }
+    assert pbs.current_continuous_membership_start(obs, "ALT_ONLY") == (
+        "2026-07-01", "absence_proof")
+    assert pbs.current_continuous_membership_start(obs, "PART_MEMBER") is None
