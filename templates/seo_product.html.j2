@@ -80,7 +80,7 @@
     <p class="est-dek">{{ page.description }}</p>
     {% if cta %}
     <div class="prod-cta">
-      <a class="gbtn gbtn-lg gbtn-cta" href="{% if cta.href.startswith('http') %}{{ cta.href }}{% else %}{{ rel }}{{ cta.href.lstrip('/') }}{% endif %}">{{ cta.label }} →</a>
+      <a class="gbtn gbtn-lg gbtn-cta" href="{% if cta.href.startswith('http') %}{{ cta.href }}{% else %}{{ rel }}{{ cta.href.lstrip('/') }}{% endif %}">{{ t(cta.label, cta.label_zh) if cta.get('label_zh') else cta.label }} →</a>
     </div>
     {% endif %}
   </div>
