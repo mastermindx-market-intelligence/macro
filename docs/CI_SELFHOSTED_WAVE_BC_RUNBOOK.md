@@ -39,14 +39,52 @@ all 68,481 blobs in the current `origin/main` tree with lazy fetching disabled.
 
 The cache owner is `root`; the `macroci-cache-readers` group has read/traverse only.
 CI users cannot mutate it. `/usr/local/libexec/mastermind-ci-cache-update` serializes
-the only mutation with `flock`, advances only `refs/heads/main`, runs a connectivity
-check, and never prunes, repacks, or runs GC during migration.
+the only mutation with `flock` and never fetches directly over active `main`. It stages
+origin `main` at `refs/mastermind/cache-update-candidate`, suppresses the remote's normal
+refmap, and publishes only through one Git ref transaction that advances all of:
+
+- `refs/heads/main`;
+- `refs/remotes/origin/main`; and
+- `refs/mastermind/cache-validated-main`.
+
+The durable validation ref must equal active `main` before a fetch. A candidate may
+advance it only by fast-forward. With lazy fetching disabled, the updater enumerates and
+resolves only objects newly reachable from the candidate and not the durable boundary;
+a non-fast-forward, missing boundary, missing object, ref drift, or stale expected OID
+refuses without moving active refs. The private candidate ref is removed on every exit.
 
 The peer source was a partial clone, so the cache is shallow-bound at the audited
-bootstrap main commit. Integrity checks enumerate and verify every object reachable
-from that maintained shallow `main`; they do not claim that unreachable historical
-promisor fragments form complete history. Full current-tree checkout with lazy fetch
-disabled is the materialization acceptance boundary.
+bootstrap main commit. The pre-2026-09-16 updater proved every object reachable from the
+maintained shallow `main` and then touched `.last-update-ok`, but that timestamp does not
+cryptographically bind a commit and is never accepted as the durable boundary. During the
+one supervised production migration, the operator reconciled the last successful full
+scan, exact active/remote refs and updater lock before creating
+`refs/mastermind/cache-validated-main`. A brand-new or recovered cache must likewise pass
+its out-of-band current-tree materialization proof and have the durable validation ref
+created explicitly before the timer is enabled. Unreachable historical promisor fragments
+are still outside the claim. Full current-tree checkout with lazy fetch disabled remains
+the materialization acceptance boundary.
+
+### Cache-updater contention incident and resource law
+
+On 2026-09-16 the runner pool was alive but congested. The apparent whole-matrix deaths
+were explicit cancellation sweeps plus ordinary per-PR supersession; the three runners
+continued completing packs and no CI cgroup OOM occurred. The common host-pressure source
+was instead the cache timer: every three minutes it fed roughly 7.4 million reachable
+objects through one `cat-file --batch-check` process outside the CI slice. A production
+cycle consumed 1 minute 22 seconds of CPU and peaked at 14.2 GiB, repeatedly competing
+with all three pack slots and render.
+
+The permanent updater therefore uses the durable-boundary delta described above. The
+supervised live migration checked 43 new objects in 1.85 seconds at a 246,636 KiB peak;
+the immediate unchanged-main cycle checked zero objects in 1.10 seconds at a 120,624 KiB
+peak. The systemd service is deliberately outside `mastermind-ci.slice` but subordinate
+to product work: `Nice=10`, idle-class I/O, `CPUQuota=100%`, `MemoryHigh=2G`,
+`MemoryMax=4G`, and `TimeoutStartSec=5min`. A regression to the old whole-estate scan
+therefore fails as disposable acceleration rather than jamming CI or render. The timer
+uses `OnUnitInactiveSec=3min`, so a slow or refused run can never create a back-to-back
+activation loop, plus a 30-second randomized delay to avoid a fixed host contention edge.
+No prune, repack, or GC belongs in this update path.
 
 Before candidate materialization, the root-owned prewarm program:
 

@@ -27,6 +27,7 @@ owns_paths:
   - "scripts/check_runner_queue_hostage.py"
   - "tests/test_runner_queue_hostage.py"
   - "tests/test_ci_canary_tools.py"
+  - "tests/test_ci_cache_update.py"
   - "tests/test_ci_canary_workflows.py"
 depends_on: []
 waves:
@@ -110,6 +111,7 @@ discoveries:
   - DSC:PERSISTENT-RUNNER-TEMP-PACKS-CAN-BREACH-THE-HOST-DISK-GUARD
   - DSC:REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES
   - DSC:SEALED-PC-CI-REPLAY-AND-PORTABILITY-NEED-EXPLICIT-RUNTIME-BINDINGS
+  - DSC:PC-CI-CACHE-FULL-ESTATE-SCAN-JAMS-TRUSTED-POOL
   - DSC:DELABELLING-AN-ONLINE-RUNNER-IS-INVISIBLE-TO-EVERY-LIVENESS-INSTRUMENT
 artifacts:
   - research/RUNNER_FLEET_RESILIENCE_ARCHITECTURE_FREEZE_2026-08-20.md
@@ -176,6 +178,15 @@ landmines:
     accepted four-listener job receipts. W5 owns coherent live-registry reconciliation;
     do not widen W3's route-only cutover into those liveness fields.
   - >
+    `.last-update-ok` is a liveness timestamp, not a commit-bound validation receipt.
+    The PC shared cache may advance only from the explicit
+    `refs/mastermind/cache-validated-main` boundary after exact equality with active
+    main; missing/drifted/non-fast-forward state refuses before publication.
+  - >
+    The cache updater is deliberately outside `mastermind-ci.slice`; therefore its own
+    `Nice`, idle I/O, CPU, memory and timeout bounds are load-bearing. A root process
+    can starve all three CI slots even while every runner cgroup remains healthy.
+  - >
     Merging a new root-owned admission tuple does not deploy it to a persistent PC
     listener. P3A deployed identical admission hash
     e4ff74a96e9949a0ce4707e3fdb58cfffc251057d5e8c69a7309fe2871e11202 after
@@ -204,6 +215,15 @@ do_not_redo:
     Do not cite a canary artifact's accepted:true bit as the <60s pickup proof. Pickup
     is a two-source receipt: GitHub Actions run/job timing metadata plus the uniquely
     named run_id + run_attempt artifact containing job_started_at_observed.
+  - >
+    Do not restore `rev-list` plus `cat-file --batch-check` over the complete reachable
+    cache estate on every timer activation. Ordinary updates validate only the
+    candidate-minus-explicit-boundary delta; full current-tree proof is a supervised
+    bootstrap/recovery act, never hot-path maintenance.
+  - >
+    Do not interpret a non-empty queue after the cache repair as proof the repair
+    failed. Three trusted runners remain a separate structural capacity limit, and
+    pc-ci-4 activation still requires its own authorized host/registration proof.
 next_action: >
   W3 is Sol-accepted and closed. Keep the overall workstream active: W2 is closed
   from its accepted soak plus measured storage recovery above the 200 GiB root floor.
@@ -265,6 +285,45 @@ render routing. It does **not** own merge semantics. Any edit to
 `.github/workflows/merge-on-green.yml` or `scripts/merge_on_green.py` is commissioned
 through `WS:CI-MERGE-CONTROL-PLANE`; W1-A supplies environment/capacity proof only and
 W1-B is the separately reviewed route cutover.
+
+## PC shared-cache contention repair — 2026-09-16
+
+This dated section preserves the September 16 host observations. The current #7222
+source integration does not establish a new host installation or live acceptance; the
+current frontmatter next action and later recovery records remain authoritative for
+ongoing work.
+
+The three trusted PC listeners remained online and continued completing packs during the
+September 16 jam; their aggregate cgroup recorded no OOM kill. The apparent matrix deaths
+were explicit workflow-cancellation sweeps plus ordinary per-PR supersession, while the
+long-lived queue also reflected the accepted three-slot capacity ceiling. The shared
+failure-domain pressure came from a fourth actor outside that slice: the root cache-update
+timer. Every roughly three minutes it traversed about 7.4 million reachable objects through
+`cat-file --batch-check`; one journaled cycle consumed 1 minute 22.539 seconds of CPU and
+peaked at 14.2 GiB while CI and render shared the host.
+
+The live repair preserves the one canonical Git cache and adds no scheduler or retry plane.
+Origin `main` is fetched into a private candidate ref with the normal remote refmap
+suppressed. Active `main`, `origin/main`, and the explicit
+`refs/mastermind/cache-validated-main` boundary must agree before work starts. Ordinary
+fast-forwards validate only candidate-minus-boundary objects with lazy fetch disabled, then
+one Git ref transaction publishes both active refs and the new durable boundary while
+deleting the candidate. Missing boundary, drift, non-fast-forward ancestry, missing objects,
+or stale expected OIDs refuse without publication. `.last-update-ok` remains liveness only.
+
+Production measurements converted the common-cause pressure into bounded overhead: the first
+incremental migration checked 43 objects in 1.85 seconds at 246,636 KiB peak; an unchanged
+cycle checked zero objects in 1.10 seconds at 120,624 KiB; later scheduled fast-forwards
+completed at about 1.8 seconds CPU. The service now yields through `Nice=10`, idle-class I/O,
+`CPUQuota=100%`, `MemoryHigh=2G`, `MemoryMax=4G`, and a five-minute timeout. The timer waits
+three minutes from service inactivity and adds jitter, so a slow/refused update cannot loop
+back-to-back. Cancellation audit rows after the repair were empty.
+
+Capability split: the live host repair is `PROVEN_LIVE`; its repository carrier remains
+`BUILT_NOT_PROVEN` until exact-head CI, squash merge, and exact merged-byte installation are
+verified. The remaining queue is `PARTIAL` three-slot capacity, not evidence this repair
+failed and not authorization for the separately gated fourth-slot activation. Evidence and
+future operating law: DSC:PC-CI-CACHE-FULL-ESTATE-SCAN-JAMS-TRUSTED-POOL.
 
 ## W3 Sol acceptance — 2026-08-22
 

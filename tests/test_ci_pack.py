@@ -4885,6 +4885,12 @@ CURATED_EXCLUSIVE = {
     # Exclusivity drops only those three opaque fallback roots while retaining
     # every executable, template, fixture, receipt, and helper input it owns.
     "stock-dashboard-first-frame",
+    # 2026-09-18 cache-updater contention repair. This job is exclusive at
+    # birth: its four declared paths are the updater script, service, timer,
+    # and the contract suite that reads those exact files. Register it here so
+    # the manifest's exclusive declarations and the curated closure authority
+    # cannot drift apart.
+    "trusted-ci-cache-update",
     # 2026-09-22 main-red repair. Six jobs entered the broad
     # templates/index.html probe after the 64f8c248 calibration even though
     # none owns that page; market-ontology-f09-usgs-mcs separately entered the
@@ -5793,6 +5799,21 @@ def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> 
         assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
     selected, reason = PACK.select_jobs([job], ["scripts/build_free_content.py"])  # ci-trigger-closure: data
     assert not selected, reason
+
+
+def test_trusted_ci_cache_update_keeps_its_exact_merge_gate_scope() -> None:
+    """The cache updater must stay narrow, merge-binding, and closure-auditable."""
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["trusted-ci-cache-update"]
+
+    assert job.gate == "code"
+    assert job.exclusive
+    assert tuple(job.definition["paths"]) == (
+        "ops/runner-host/pc/mastermind_ci_cache_update.sh",
+        "ops/runner-host/pc/mastermind-ci-cache-update.service",
+        "ops/runner-host/pc/mastermind-ci-cache-update.timer",
+        "tests/test_ci_cache_update.py",
+    )
 
 
 def test_research_vault_source_lineage_is_curated_to_its_recovered_package() -> None:
