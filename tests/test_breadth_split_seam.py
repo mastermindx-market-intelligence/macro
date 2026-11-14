@@ -348,7 +348,8 @@ def test_window_admission_uses_config_and_preserves_full_history(tmp_path, monke
     assert calls==(['max'] if full_history else ['4y'])
 
 @pytest.mark.parametrize('case', ['short260', 'equal780', 'complete', 'calendar_roll', 'gap', 'anchor_missing', 'anchor_nan'])
-def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, case):
+@pytest.mark.parametrize('direction', [1, -1])
+def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, case, direction):
     from collectors import breadth as module, base
     from lib import config, store
     monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
@@ -356,7 +357,7 @@ def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, c
     monkeypatch.setattr(config, 'load', lambda: {'storage':{'run_status_file':'run_status.json'}})
     names=[f'T{i:03}' for i in range(400)]
     dates=pd.bdate_range(end=pd.Timestamp.now().normalize(),periods=901)
-    truth=pd.DataFrame(np.repeat((100+np.arange(901)*.1)[:,None],400,axis=1),index=dates,columns=names)
+    truth=pd.DataFrame(np.repeat((200+direction*np.arange(901)*.1)[:,None],400,axis=1),index=dates,columns=names)
     a=BreadthAdapter.__new__(BreadthAdapter)
     a.cfg={'lookback_days_live':1100,'ma_windows':[50,200],'nhnl_window':252}
     a.ycfg={'batch_size':80,'retries':2,'backoff_base_s':0}
@@ -395,6 +396,9 @@ def test_native_replacement_preserves_cumulative_origin(tmp_path, monkeypatch, c
         assert aggregate.read_bytes()==before_aggregate
     else:
         published=store.read(a.group,'breadth')
-        assert published.ad_line.diff().dropna().eq(400).all()
+        assert published.ad_line.diff().dropna().eq(400*direction).all()
         expected=a.compute(coherent)
         assert published.ad_line.iloc[-1]==expected.ad_line.iloc[-1]
+        shared=published.index.intersection(expected.index)
+        pd.testing.assert_series_equal(published.loc[shared, 'nh'], expected.loc[shared, 'nh'], check_freq=False, check_dtype=False)
+        pd.testing.assert_series_equal(published.loc[shared, 'nl'], expected.loc[shared, 'nl'], check_freq=False, check_dtype=False)
