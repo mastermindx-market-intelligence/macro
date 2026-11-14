@@ -28,18 +28,6 @@
   {
    "ticker": "PENG",
    "issuer": "co:us:PENG",
-   "theme": "theme:embedded_storage_solutions",
-   "role": "component_supplier",
-   "knowledge_cutoff": "2026-11-14T12:30:00Z",
-   "created": "2026-11-14T12:30:00Z",
-   "spec_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SEGMENT_OWNER_DECISION.json",
-   "policy_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SOURCE_POLICY.json",
-   "exposure_role": "secondary",
-   "profit_driver": false
-  },
-  {
-   "ticker": "PENG",
-   "issuer": "co:us:PENG",
    "theme": "theme:nand_enterprise_storage",
    "role": "component_supplier",
    "knowledge_cutoff": "2026-11-14T12:30:00Z",
@@ -48,18 +36,6 @@
    "policy_path": "research/theme_graph/sec_segment_20261114/PENG_0001616533-26-000050_Integrated-Memory_49dcaf09f322_SOURCE_POLICY.json",
    "exposure_role": "secondary",
    "profit_driver": false
-  },
-  {
-   "ticker": "WDC",
-   "issuer": "co:us:WDC",
-   "theme": "theme:nearline_hard_disk_drives",
-   "role": "component_supplier",
-   "knowledge_cutoff": "2026-11-14T12:30:00Z",
-   "created": "2026-11-14T12:30:00Z",
-   "spec_path": "research/theme_graph/sec_segment_20261114/WDC_0001628280-26-057139_HDD_b96fac6ef64e_SEGMENT_OWNER_DECISION.json",
-   "policy_path": "research/theme_graph/sec_segment_20261114/WDC_0001628280-26-057139_HDD_b96fac6ef64e_SOURCE_POLICY.json",
-   "exposure_role": "primary",
-   "profit_driver": true
   },
   {
    "ticker": "DELL",
