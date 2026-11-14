@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-11-14T22:57:02.549739+00:00",
-  "count": 3382,
+  "generated_at": "2026-11-14T23:12:05.565349+00:00",
+  "count": 3383,
   "institutions": [
     "2027 Outlook",
     "ABN Amro",
@@ -1032,6 +1032,25 @@
       "tickers": [],
       "top_pick": false,
       "pages": 1,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-i9ozhrfydpi-99f3bc",
+      "title": "GS Duttenhoefer Duttenhoefers Daily 13.11.2026 13 Nov 2026",
+      "institution": "S&T",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-11-13T13:33:05Z",
+      "summary_points": [
+        "Geopolitical Risk: US military warns Israel on Iran war resumption (contradicting Trump's stance), escalating Middle East tensions as key risk factor.",
+        "Semiconductor Sector: Drawdown overdone; 35 GW 2027 deployments in progress (low execution risk); NVDA/AVGO at attractive entry points.",
+        "AI Capex Driver: 2027 real business fixed investment growth forecasted at 8% (AI dominant driver), moderating US equity P/E to 18.5x (from 100th percentile)."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 3,
       "language": "en",
       "needs_metadata": false
     },
