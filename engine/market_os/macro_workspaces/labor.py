@@ -73,6 +73,8 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.source_bindings import LABOR_SOURCE_COMPONENT_MAP as _SOURCE_COMPONENT_MAP
+
 from engine.market_os.macro_workspaces.publication_prior import (
     apply_headline_publication_fields,
     attach_prior_publication,
@@ -972,13 +974,6 @@ def _alert_contract() -> dict:
     }
 
 
-_SOURCE_COMPONENT_MAP: dict[str, tuple[str, ...]] = {
-    "claims": ("claims_momentum",),
-    "indeed": ("job_postings_momentum",),
-    "withheld_tax": ("income_growth_proxy",),
-    "sahm": ("sahm_rule_level",),
-    "recession_claims": ("claims_recession_subscore",),
-}
 
 
 def _prior_component_raw(prior_snapshot, component_id):
@@ -1068,3 +1063,4 @@ def _sources(asof, vintages, stale_inputs) -> list[dict]:
         _src("recession_claims", "Claims-based recession subscore", "基于初请的衰退子评分",
              "engine.regime.recession", "Mastermind recession composite", "recession_claims"),
     ]
+

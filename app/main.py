@@ -1429,6 +1429,7 @@ class BrainChatRequest(BaseModel):
     history: list[dict] | None = Field(None, description="Client-sent fallback history (max 12 turns; used only when thread store is absent)")
     context: dict | None = Field(None, description="Optional page/symbol context hint")
     company_source_span: dict | None = Field(None, description="Optional closed exact-source reference; source bytes are never accepted from the client")
+    macro_history_observation: dict | None = Field(None, description="Closed coordinates of one Macro history observation; values are resolved from the qualified publication")
     mode: str = Field("chat", description="'chat' (default) or 'research' (W6b Deep Research — forces pro lane, raises tool budget, structured multi-section cited report; requires pro quota)")
     images: list[str] | None = Field(None, max_length=4, description="Optional image attachments (W6c vision) — base64 data URIs or https URLs; served by a vision model (Haiku on Fast, Opus on Pro). Invalid/oversized dropped. Max 4.")
 
@@ -1680,6 +1681,7 @@ def brain_chat(body: BrainChatRequest, request: Request, background: BackgroundT
         history=history,
         context=body.context,
         company_source_span=body.company_source_span,
+        macro_history_observation=body.macro_history_observation,
         root=REPO,
         mode=mode,
         images=body.images,
@@ -1755,6 +1757,7 @@ def brain_stream(body: BrainChatRequest, request: Request, background: Backgroun
             history=history,
             context=body.context,
             company_source_span=body.company_source_span,
+            macro_history_observation=body.macro_history_observation,
             root=REPO,
             mode=mode,
             images=body.images,
@@ -1876,7 +1879,8 @@ def brain_me(request: Request, user: dict = Depends(_brain_user_or_guest)):
     # email from the Supabase-verified session only (never body/headers) — drives the
     # unlimited-operator UI unlock, matching the backend's BRAIN_UNLIMITED_ALLOWLIST bypass.
     user_email = (user.get("email") or "").strip().lower()
-    return gw.get_user_quotas(user_id, root=REPO, user_email=user_email)
+    result = gw.get_user_quotas(user_id, root=REPO, user_email=user_email)
+    return {**result, "exact_source_kinds": ["macro_history_observation.v1"]}
 
 
 # ── CMX W2 — Chart state mirror (Terminal → gateway; masterplan §2.2) ──────────

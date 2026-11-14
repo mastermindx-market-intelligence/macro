@@ -7508,6 +7508,33 @@ def _resolve_company_source_attachment(
     )
 
 
+
+def _resolve_macro_source_attachment(
+    reference: object, user_id: str, *, is_guest: bool, incompatible: bool,
+) -> _ExactSourceAttachment:
+    # The API supplies the verified identity. No second auth, entitlement, loader,
+    # quota owner or model call: free_registered is the incumbent reader boundary.
+    failure = ("macro_auth_required" if is_guest or not user_id or user_id == "unknown" or user_id.startswith("guest:")
+               else "macro_context_incompatible" if incompatible else None)
+    resolved = None
+    if failure is None:
+        from app import macro_command as _macro  # noqa: PLC0415
+        try:
+            resolved = _macro.resolve_macro_history_observation(reference)
+        except _macro.MacroHistoryReferenceError as exc:
+            failure = exc.code
+    if failure:
+        receipt = {"schema": "mastermind.exact-source-receipt/v1", "kind": "macro_history_observation",
+                   "state": "refused", "code": failure, "authority": "context_only"}
+        return _ExactSourceAttachment(None, failure, json.dumps(receipt, sort_keys=True))
+    return _ExactSourceAttachment(resolved, None, json.dumps(resolved.receipt, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+
+
+def _macro_plain_context(context: object) -> bool:
+    return context is None or (isinstance(context, dict) and not (set(context) - {"lang"})
+                               and context.get("lang", "en") in ("en", "zh"))
+
+
 def _dispatch_brain_tool(
     tool_name: str,
     tool_params: dict,
@@ -13687,6 +13714,7 @@ def chat(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    macro_history_observation: dict | None = None,
 ) -> dict:
     """Process a brain chat request (non-streaming).
 
@@ -13727,6 +13755,7 @@ def chat(
 
     # W3: install the server-owned block (and strip any forged one) before ANY consumer of
     # `context` runs — the loop, the language resolver and the suggestion screen all read it.
+    macro_context_compatible = _macro_plain_context(context)
     context = _server_turn_context(context, account_prefs=account_prefs)
 
     root = _repo_root(root)
@@ -13800,10 +13829,17 @@ def chat(
     # resolved source bytes outside `context`, thread persistence, and response logs.
     # Spec item 4: NEVER resolved on an F11-grounded turn (the closed corpus is the source).
     source_attachment = None
-    if company_source_span is not None and not _grounded:
+    if macro_history_observation is not None:
+        source_attachment = _resolve_macro_source_attachment(
+            macro_history_observation, user_id, is_guest=is_guest,
+            incompatible=(mode != "chat" or _grounded or company_source_span is not None
+                          or bool(images) or not macro_context_compatible),
+        )
+    elif company_source_span is not None and not _grounded:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
+    if source_attachment is not None:
         if source_attachment.failure:
             return {
                 "ok": False, "error": source_attachment.failure,
@@ -14264,6 +14300,7 @@ def chat_stream(
     guest_ip: str = "",
     account_prefs: dict | None = None,
     user_jwt: str = "",
+    macro_history_observation: dict | None = None,
 ) -> Generator[str, None, None]:
     """Process a brain chat request (streaming). Yields SSE strings per contract.
 
@@ -14288,6 +14325,8 @@ def chat_stream(
     from lib import ai_costs as _ac  # noqa: PLC0415
 
     # W3: server-owned turn block installed (and any forged one stripped) before use.
+    macro_source_receipt_event = None
+    macro_context_compatible = _macro_plain_context(context)
     context = _server_turn_context(context, account_prefs=account_prefs)
 
     root = _repo_root(root)
@@ -14328,6 +14367,8 @@ def chat_stream(
     clean_msg, err = _sanitize_brain_message(message, max_len=2000)
     if err:
         yield f"data: {json.dumps({'type': 'meta', 'lane': lane, 'model': 'none', 'thread_id': None, 'quota': {}})}\n\n"
+        if macro_source_receipt_event:
+            yield macro_source_receipt_event
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': {}, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
         return
 
@@ -14351,16 +14392,28 @@ def chat_stream(
 
     # Spec item 4: the exact-source resolver is NEVER called on an F11-grounded turn.
     source_attachment = None
-    if company_source_span is not None and not _grounded:
+    if macro_history_observation is not None:
+        source_attachment = _resolve_macro_source_attachment(
+            macro_history_observation, user_id, is_guest=is_guest,
+            incompatible=(mode != "chat" or _grounded or company_source_span is not None
+                          or bool(images) or not macro_context_compatible),
+        )
+    elif company_source_span is not None and not _grounded:
         source_attachment = _resolve_company_source_attachment(
             company_source_span, user_id, root, terminal_data_dir / "tx"
         )
+    if source_attachment is not None:
         if source_attachment.failure:
             receipt = json.loads(source_attachment.receipt_json)
             yield f"data: {json.dumps({'type': 'meta', 'lane': lane, 'model': 'none', 'thread_id': None, 'quota': {}})}\n\n"
+            if macro_source_receipt_event:
+                yield macro_source_receipt_event
             yield f"data: {json.dumps({'type': 'exact_source_receipt', **receipt})}\n\n"
             yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': {}, 'usage': {}, 'filtered': False, 'degraded': True, 'is_context_only': True, 'exact_source_receipt': receipt})}\n\n"
             return
+
+    if macro_history_observation is not None and source_attachment and source_attachment.resolved:
+        macro_source_receipt_event = "data: " + json.dumps({"type": "exact_source_receipt", **source_attachment.resolved.receipt}) + "\n\n"
 
     # 2. Tier + quota (guests never touch Supabase — synthetic 'guest' tier).
     if is_guest:
@@ -14377,6 +14430,8 @@ def chat_stream(
         pro_allowance = _get_allowance(tier, status, "pro", root)
         if pro_allowance["limit"] == 0:
             yield f"data: {json.dumps({'type': 'meta', 'lane': 'pro', 'model': 'none', 'thread_id': None, 'quota': {}})}\n\n"
+            if macro_source_receipt_event:
+                yield macro_source_receipt_event
             yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': {}, 'usage': {}, 'filtered': False, 'degraded': True, 'quota_exhausted': True, 'mode': 'research', 'upgrade': '/plans.html', 'is_context_only': True})}\n\n"
             return
 
@@ -14387,6 +14442,8 @@ def chat_stream(
         allowed, quota_info = _check_and_increment_quota(user_id, lane, tier, status, cpe, root, device_key=device_key, user_email=user_email)
     if not allowed:
         yield f"data: {json.dumps({'type': 'meta', 'lane': lane, 'model': 'none', 'thread_id': None, 'quota': quota_info})}\n\n"
+        if macro_source_receipt_event:
+            yield macro_source_receipt_event
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': True, 'quota_exhausted': True, 'is_context_only': True})}\n\n"
         return
 
@@ -14399,6 +14456,8 @@ def chat_stream(
             _append_message(screened_tid, "user", clean_msg)
             _append_message(screened_tid, "assistant", _screen)
         yield f"data: {json.dumps({'type': 'meta', 'lane': lane, 'model': 'screened', 'thread_id': screened_tid, 'quota': quota_info})}\n\n"
+        if macro_source_receipt_event:
+            yield macro_source_receipt_event
         yield f"data: {json.dumps({'type': 'delta', 'text': _screen})}\n\n"
         yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': {}, 'filtered': False, 'degraded': False, 'screened': True, 'is_context_only': True})}\n\n"
         _log_brain_response(
@@ -14418,6 +14477,8 @@ def chat_stream(
     if _selection_notice:
         yield "data: " + json.dumps({"type": "meta", "lane": lane, "model": "none",
                                      "thread_id": None, "quota": quota_info}) + "\n\n"
+        if macro_source_receipt_event:
+            yield macro_source_receipt_event
         yield _ctx_receipt_event
         yield "data: " + json.dumps({"type": "delta", "text": _selection_notice}) + "\n\n"
         yield "data: " + json.dumps({"type": "done", "citations": [], "quota": quota_info,
@@ -14450,6 +14511,8 @@ def chat_stream(
             if _nf_thread_id:
                 _append_message(_nf_thread_id, "user", clean_msg)
         yield f"data: {json.dumps({'type': 'meta', 'lane': lane, 'model': 'native-fact.v1', 'thread_id': _nf_thread_id, 'quota': quota_info})}\n\n"
+        if macro_source_receipt_event:
+            yield macro_source_receipt_event
         yield _ctx_receipt_event
         yield _status_event("native", _instant_t0, _STAGE_LABELS["native"],
                             detail=_native_plan_hit.symbol)

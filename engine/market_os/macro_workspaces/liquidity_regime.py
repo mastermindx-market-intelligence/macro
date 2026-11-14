@@ -34,6 +34,8 @@ import copy
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.source_bindings import LIQUIDITY_SOURCE_COMPONENT_MAP as _SOURCE_COMPONENT_MAP
+
 from engine.market_os.macro_workspaces.publication_prior import (
     apply_headline_publication_fields,
     attach_prior_publication,
@@ -951,12 +953,6 @@ def _alert_contract() -> dict:
 
 
 # F8: which axis components' owner-native raw values back which named source.
-_SOURCE_COMPONENT_MAP: dict[str, tuple[str, ...]] = {
-    "net_liquidity": ("liquidity_overlay_level", "liquidity_quality_level", "net_liquidity_roc"),
-    "nfci": ("nfci_pctile",),
-    "ofr_fsi": ("ofr_fsi_pctile",),
-    "hy_oas": ("hy_oas_z",),
-}
 
 
 def _prior_component_raw(prior_snapshot, component_id):
@@ -1061,3 +1057,4 @@ def _sources(asof, vintages, lq, stale_inputs) -> list[dict]:
              "engine.regime.liquidity_quality", "ICE BofA / FRED",
              _get(vintages, "hy_oas", "asof"), "hy_oas"),
     ]
+

@@ -22,10 +22,14 @@
  *         `context_receipt` reply either way.
  *   getCompanySourceSpan: fn()->closed company_source_span reference for the next
  *         explicit turn only. The widget never stores or serializes source bytes.
+ *   getExactSourceReference: exclusive one-turn successor for company or Macro
+ *         coordinates. It never falls back to a legacy getter after null/throw.
  *   onClose: fn()->true when the host restored focus to the exact invoking object.
  *         Called only when focus was inside the Brain at close; returning true keeps
  *         the widget from replacing the host's focus return with launcher focus.
- * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true,
+ * mountWorkspace(element) moves this singleton into a native route and returns
+ * an owner-checked release callback for the route's unmount.
+ * Public API: window.MMBrain = { open, close, toggle, expand, mountWorkspace, mounted:true,
  *   submitOptionsQuestion(reference):boolean, clearOptionsQuestion(reference):boolean }
  *   — stage (or withdraw) an Options Matrix selection question reference
  *   (options.selection_question/v1). Staging opens the existing composer; the
@@ -37,6 +41,9 @@
   if (window.MMBrain && window.MMBrain.mounted) return;
   var CFG = window.MM_BRAIN_CFG || {};
   var ANCHOR = CFG.anchor || 'br';
+  var workspaceHost = null;
+  var depthReview = null;
+  var openingControl = null;
   var API = (CFG.api || '').replace(/\/$/, '');
   var DOC = document;
 
@@ -126,9 +133,52 @@
   }
 
 
-  function captureCompanySourceSpan() {
-    try { return (typeof CFG.getCompanySourceSpan === 'function') ? CFG.getCompanySourceSpan() : null; }
+  function captureExactSourceReference() {
+    // One owner, one read. Null/throw from the generic slot never revives legacy context.
+    try {
+      if (typeof CFG.getExactSourceReference === 'function') return CFG.getExactSourceReference();
+      return (typeof CFG.getCompanySourceSpan === 'function') ? CFG.getCompanySourceSpan() : null;
+    }
     catch (e) { return null; }
+  }
+  var macroServiceReady = false, macroObservationExpected = false, macroObservationOwner = null;
+  var macroNoticeNode = null;
+  var MACRO_REFERENCE_KEYS = ['schema', 'kind', 'authority', 'workspace_id', 'region', 'manifest_sha256', 'content_sha256', 'generation_id', 'artifact_bytes', 'series_id', 'source_id', 'observation'];
+  function macroReference(value) {
+    return !!(value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === MACRO_REFERENCE_KEYS.length &&
+      MACRO_REFERENCE_KEYS.every(function (key) { return Object.prototype.hasOwnProperty.call(value, key); }) &&
+      value.schema === 'mastermind.research-context-ref/v1' && value.kind === 'macro_history_observation' && value.authority === 'context_only' && value.region === 'US' &&
+      ['workspace_id', 'generation_id', 'series_id', 'source_id'].every(function (key) { return typeof value[key] === 'string' && /^[A-Za-z0-9_.:-]{1,160}$/.test(value[key]); }) &&
+      ['manifest_sha256', 'content_sha256'].every(function (key) { return typeof value[key] === 'string' && /^[a-f0-9]{64}$/.test(value[key]); }) &&
+      Number.isSafeInteger(value.artifact_bytes) && value.artifact_bytes > 0 && value.artifact_bytes <= 2097152 &&
+      typeof value.observation === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.observation));
+  }
+  function sameMacroReceipt(receipt, reference) {
+    return !!(receipt && receipt.schema === 'mastermind.exact-source-receipt/v1' && receipt.kind === 'macro_history_observation' &&
+      receipt.state === 'verified' && receipt.authority === 'context_only' && macroReference(receipt.reference) && macroReference(reference) &&
+      MACRO_REFERENCE_KEYS.every(function (key) { return receipt.reference[key] === reference[key]; }));
+  }
+  function macroMessage(code) {
+    if (code === 'macro_quota_exhausted') return L('Your chat allowance is used. No answer was generated for this observation.', '聊天额度已用完。尚未为此观察值生成回答。');
+    if (code === 'macro_publication_changed') return L('The economic publication changed. Return to the observation, refresh it and attach it again.', '经济数据发布已更改。请返回观察值，刷新后重新附加。');
+    if (code === 'macro_auth_required') return L('Sign in again, then attach the observation from its source view.', '请重新登录，然后从来源视图重新附加观察值。');
+    return L('The exact observation could not be verified. Return to its source view and attach it again.', '无法核验此精确观察值。请返回来源视图并重新附加。');
+  }
+  function withdrawMacroObservation() {
+    if (macroObservationOwner && CFG.getExactSourceReference === macroObservationOwner && typeof CFG.clearExactSourceReference === 'function') CFG.clearExactSourceReference();
+    macroObservationExpected = false; macroObservationOwner = null;
+    if (macroNoticeNode) { macroNoticeNode.remove(); macroNoticeNode = null; }
+  }
+  function showMacroNotice(message) {
+    if (macroNoticeNode) macroNoticeNode.remove();
+    macroNoticeNode = el('p', 'mmb-meta'); macroNoticeNode.setAttribute('role', 'status');
+    var text = el('span'); text.textContent = message; macroNoticeNode.appendChild(text);
+    if (macroObservationExpected) {
+      var remove = el('button', 'mmb-sources-trigger'); remove.type = 'button';
+      remove.textContent = L('Remove observation', '移除观察值');
+      remove.addEventListener('click', withdrawMacroObservation); macroNoticeNode.appendChild(remove);
+    }
+    boxEl.parentNode.insertBefore(macroNoticeNode, boxEl);
   }
 
   /* ── i18n mini-helper (mirrors the site l-en/l-zh idiom) ── */
@@ -380,7 +430,8 @@
   .mmb-ti{position:relative;display:flex;align-items:center;margin:2px 8px;padding:9px 11px;border-radius:10px;cursor:pointer;border:1px solid transparent}
   .mmb-ti:hover{background:color-mix(in srgb,var(--mmb-ink) 6%,transparent)}
   .mmb-ti.on{background:color-mix(in srgb,var(--mmb-info) 14%,transparent);border-color:color-mix(in srgb,var(--mmb-info) 30%,transparent)}
-  .mmb-ti-body{flex:1;min-width:0}
+  .mmb-ti-body{flex:1;min-width:0;padding:0;border:0;background:transparent;color:inherit;text-align:left;cursor:pointer}
+  .mmb-ti-body .tt,.mmb-ti-body .tm{display:block}
   .mmb-ti .tt{font:600 13px/1.3 var(--mmb-font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mmb-ti .tm{font:500 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* row action buttons (rename/delete) — reveal on hover; always 0.7 on coarse */
@@ -1013,6 +1064,110 @@
   .mmb-exp:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info,var(--link)) 70%,transparent);outline-offset:2px}
   @media (hover:none),(pointer:coarse){.mmb-exp{opacity:1;pointer-events:auto}}
   @media(prefers-reduced-motion:reduce){.mmb-exp{transition:none}}
+
+  /* One Brain, with an in-flow research workspace or a contextual chart reader. */
+  #mmb-root[data-workspace]{display:flex;flex:1;min-width:0;min-height:0;overflow:hidden}
+  #mmb-root[data-workspace] #mmb-panel{position:relative;inset:auto;margin:0;flex:1;width:100%;
+    height:100%;max-width:none;max-height:none;z-index:0;border:0;border-radius:0;box-shadow:none;
+    background:var(--mmb-reading-plane);backdrop-filter:none;-webkit-backdrop-filter:none}
+  #mmb-root[data-workspace] :is(#mmb-scrim,#mmb-launch,[data-act="max"],[data-act="close"]){display:none}
+  #mmb-root[data-reading] .mmb-main{position:relative}
+  #mmb-root[data-reading] .mmb-head{min-height:58px;padding:4px clamp(10px,3vw,30px);border-color:var(--mmb-line)}
+  #mmb-root[data-reading] .mmb-head .ttl{font-size:17px;font-weight:600;letter-spacing:-.025em}
+  #mmb-root[data-reading] .mmb-head .dot:not(.busy){display:none}
+  #mmb-root[data-reading] .mmb-head .mmb-icon{width:44px;height:44px}
+  #mmb-root[data-reading] .mmb-scroll{padding:clamp(16px,3vw,40px) max(16px,calc((100% - 720px)/2));gap:22px}
+  #mmb-root[data-reading] .mmb-comp{padding:14px max(16px,calc((100% - 720px)/2)) max(16px,env(safe-area-inset-bottom))}
+  #mmb-root[data-reading] .mmb-bub{font-size:clamp(15px,1.25vw,18px);line-height:1.65}
+  #mmb-root[data-reading] .mmb-empty{text-align:center;align-items:center;gap:16px}
+  #mmb-root[data-reading] .mmb-hero h1{max-width:16ch;margin:0 auto;font-size:clamp(30px,4vw,52px);
+    line-height:1.08;font-weight:550;letter-spacing:-.055em;text-wrap:balance}
+  @media(min-height:650px){
+    #mmb-root[data-reading] .mmb-main:has(.mmb-empty) .mmb-scroll{flex:0 1 auto;margin-top:auto}
+    #mmb-root[data-reading] .mmb-main:has(.mmb-empty) .mmb-comp{margin-bottom:auto}
+  }
+  #mmb-root[data-reading] .mmb-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 10px;margin:0}
+  #mmb-root[data-reading] .mmb-comp > .mmb-cards{margin:12px auto 0;max-width:100%}
+  #mmb-root[data-reading] .mmb-comp .mmb-cardp{flex-direction:row;align-items:center;justify-content:center;
+    border-color:transparent;background:none;box-shadow:none;animation:none}
+  #mmb-root[data-reading] .mmb-comp .mmb-cardp:hover{background:var(--mmb-panel2);border-color:var(--mmb-line)}
+  #mmb-root[data-reading] .mmb-cardp{border-radius:var(--r-tile,10px);min-height:44px;padding:7px 10px;
+    background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+  #mmb-root[data-reading] .mmb-cardp .ci{width:18px;background:transparent}
+  #mmb-root[data-reading] .mmb-box{border-radius:var(--r-card,14px);box-shadow:none}
+  #mmb-root[data-reading] .mmb-box:focus-within{border-color:var(--mmb-info)}
+  #mmb-root[data-reading] .mmb-ta{font-size:16px}
+  #mmb-root[data-reading] .mmb-search{display:flex}
+  #mmb-root[data-reading] .mmb-search .x{width:32px;height:32px}
+  #mmb-root[data-reading] :is(.mmb-ti-body,.mmb-signin,.mmb-tbtn,.mmb-send,.mmb-abtn){min-height:44px}
+  #mmb-root[data-workspace] .mmb-threads{visibility:hidden}
+  #mmb-root[data-workspace] .show-side .mmb-threads{visibility:visible}
+  #mmb-root[data-workspace] .mmb-th-h{padding-right:10px}
+  .mmb-history-close,.mmb-chart-return,.mmb-expand-label{display:none}
+  #mmb-root[data-focus] #mmb-panel.max{inset:0;margin:0;width:100%;height:100vh;height:100dvh;
+    max-width:none;max-height:none;border:0;border-radius:0;box-shadow:none;background:var(--mmb-reading-plane)}
+  #mmb-root[data-focus] .mmb-head [data-act="close"]{display:none}
+  #mmb-root[data-focus] .mmb-head [data-act="return-host"],#mmb-root[data-hosted]:not([data-workspace]) .mmb-head [data-act="max"]{
+    width:auto;min-height:44px;padding:0 10px;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  #mmb-root[data-hosted]:not([data-workspace]) .mmb-expand-label{display:inline;font:500 12px/1 var(--mmb-font)}
+  @media(max-width:560px){
+    #mmb-root[data-focus] .mmb-head [data-act="max"]{display:none!important}
+    #mmb-root[data-focus] .mmb-head{gap:3px}
+    #mmb-root[data-focus] .mmb-chart-return{padding:0 6px}
+    #mmb-root[data-focus] .mmb-head .ttl{font-size:15px}
+  }
+  #mmb-root[data-workspace] .mmb-history-close{display:grid;width:44px;height:44px}
+  #mmb-root[data-workspace] .mmb-sidescrim{top:0}
+  #mmb-root[data-reading] .mmb-answer-context{max-width:100%;margin:12px 0;color:var(--mmb-muted);font:13px/1.55 var(--mmb-font)}
+  .mmb-depth-trigger{width:max-content;max-width:100%;height:auto;padding:7px 10px;min-height:44px;font-size:13px;color:var(--mmb-text)}
+  .mmb-depth-review{width:min(420px,calc(100vw - 32px));box-sizing:border-box;padding:clamp(20px,4vw,32px);
+    color:var(--mmb-text);background:var(--mmb-panel);border:1px solid var(--mmb-line);border-radius:var(--r-card,16px);
+    box-shadow:var(--mmb-shadow-panel);font:15px/1.5 var(--mmb-font)}
+  .mmb-sources-trigger{display:none}
+  #mmb-root[data-reading] .mmb-source-group>.mmb-cites{display:none}
+  #mmb-root[data-reading] .mmb-sources-trigger{display:inline-flex;align-items:center;gap:8px;min-height:44px;
+    background:transparent;color:var(--mmb-text);border:0;padding:4px 0;cursor:pointer;font:500 13px/1.4 var(--mmb-font)}
+  .mmb-source-sheet{position:fixed;box-sizing:border-box;inset:16px 16px 16px auto;margin:0;width:min(460px,calc(100% - 32px));
+    height:calc(100% - 32px);max-height:none;max-width:none;padding:0;border:1px solid var(--mmb-line);border-radius:var(--r-card,16px);
+    color:var(--mmb-text);background:var(--mmb-panel);font:15px/1.5 var(--mmb-font);box-shadow:var(--mmb-shadow-panel)}
+  .mmb-source-sheet[open]{display:flex;flex-direction:column}
+  .mmb-source-sheet::backdrop{background:var(--mmb-scrim);opacity:var(--mmb-scrim-o-max)}
+  .mmb-source-sheet header,.mmb-source-sheet footer{padding:12px 20px}
+  .mmb-source-sheet header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--mmb-line)}
+  .mmb-source-sheet h2{margin:0;font:600 22px/1.3 var(--mmb-font);letter-spacing:-.025em;color:var(--mmb-text)}
+  .mmb-source-sheet button{min-width:44px;min-height:44px;border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);
+    background:transparent;color:var(--mmb-text);font:500 14px var(--mmb-font);cursor:pointer}
+  .mmb-source-sheet header button{border:0;font-size:22px}
+  .mmb-source-sheet ol{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;margin:0;padding:4px 24px 12px 54px}
+  .mmb-source-sheet li{padding:16px 0;border-bottom:1px solid var(--mmb-line);overflow-wrap:anywhere}
+  .mmb-source-sheet a{color:var(--mmb-info);text-decoration:underline;text-underline-offset:3px}
+  .mmb-source-sheet footer button{width:100%}
+  @media(max-width:560px){
+    .mmb-source-sheet{inset:auto 0 0;width:100%;height:auto;max-height:calc(100dvh - 44px);border-radius:var(--r-panel,18px) var(--r-panel,18px) 0 0}
+    .mmb-source-sheet footer{padding-bottom:max(12px,env(safe-area-inset-bottom))}
+  }
+  .mmb-depth-review::backdrop{background:var(--mmb-scrim);opacity:var(--mmb-scrim-o-max)}
+  .mmb-depth-review h2{margin:0 0 14px;font:600 24px/1.2 var(--mmb-font)}
+  .mmb-depth-review .mmb-depth-question{font-weight:600;color:var(--mmb-text);overflow-wrap:anywhere}
+  .mmb-depth-review p{margin:12px 0;color:var(--mmb-muted)}
+  .mmb-depth-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap}
+  .mmb-depth-actions button{border:1px solid var(--mmb-line);border-radius:var(--r-ctl,8px);padding:8px 14px;min-height:44px;
+    color:var(--mmb-text);background:var(--mmb-panel2);cursor:pointer}
+  .mmb-depth-actions button:last-child{background:var(--mmb-info);color:var(--mmb-plate)}
+  .mmb-answer-context summary{cursor:pointer;color:var(--mmb-text);padding:8px 0}
+  .mmb-answer-context p{margin:0}
+  #mmb-root[data-hosted]:not([data-workspace]) #mmb-panel.mmb-top:not(.max){width:min(480px,calc(100vw - 36px))}
+  #mmb-root[data-hosted]:not([data-workspace]) .mmb-head{min-height:48px}
+  @media(max-width:560px){
+    #mmb-root[data-workspace] .mmb-scroll{padding:16px;gap:16px}
+    #mmb-root[data-workspace] .mmb-comp{padding:8px 10px max(10px,env(safe-area-inset-bottom))}
+    #mmb-root[data-reading] .mmb-comp > .mmb-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+    #mmb-root[data-reading] .mmb-comp .mmb-cardp{justify-content:flex-start;padding-inline:12px}
+    #mmb-root[data-workspace] .mmb-cardp{padding:5px 8px}
+    #mmb-root[data-workspace] .mmb-actions{opacity:1}
+    #mmb-root[data-hosted]:not([data-workspace]) #mmb-panel.mmb-top:not(.max){width:100%}
+  }
+
   `;
 
   /* ── glyphs ── */
@@ -1136,6 +1291,7 @@
   /* ── DOM ─────────────────────────────────────────────────────────────── */
   var root = DOC.createElement('div');
   root.id = 'mmb-root';
+  if (ANCHOR === 'top') root.setAttribute('data-hosted', '');
   var st = DOC.createElement('style'); st.textContent = CSS; root.appendChild(st);
 
   var launchHtml = ANCHOR === 'br' ? (
@@ -1155,7 +1311,8 @@
         '<button class="mmb-icon" data-act="home" title="Dashboard">' + ic('<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>') + '</button>' +
         '<div class="sp"></div>' +
       '</div>' +
-      '<div class="mmb-threads"><div class="mmb-th-h"><span>' + LB('Chats', '对话') + '</span></div>' +
+      '<div class="mmb-threads" id="mmb-history"><div class="mmb-th-h"><span>' + LB('Chats', '对话') + '</span>' +
+        '<button type="button" class="mmb-icon mmb-history-close" data-act="side" aria-label="' + esc(L('Close history', '关闭记录')) + '">' + ic('<path d="M6 6l12 12M18 6L6 18"/>') + '</button></div>' +
         '<div class="mmb-search" id="mmb-search">' + ic('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>') +
           '<input id="mmb-search-in" type="text" autocomplete="off" data-ph-en="Search chats" data-ph-zh="搜索对话" placeholder="' + L('Search chats', '搜索对话') + '">' +
           '<button class="x" data-act="search-clear" title="Clear">' + ic('<path d="M6 6l12 12M18 6L6 18"/>') + '</button></div>' +
@@ -1163,10 +1320,11 @@
       '</div>' +
       '<div class="mmb-main"><div class="mmb-sidescrim" data-act="side"></div>' +
         '<div class="mmb-head">' +
-          '<button class="mmb-icon mmb-menu" data-act="side" title="Chats">' + ic('<path d="M4 6h16M4 12h16M4 18h16"/>') + '</button>' +
+          '<button class="mmb-icon mmb-menu" data-act="side" aria-controls="mmb-history" title="Chats">' + ic('<path d="M4 6h16M4 12h16M4 18h16"/>') + '</button>' +
           '<span class="ttl"><span class="dot"></span>' + LB('Mastermind Brain', '操盘大脑') + '</span>' +
           '<div class="sp"></div>' +
-          '<button class="mmb-icon" data-act="max" title="Expand">' + ic('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>') + '</button>' +
+          '<button class="mmb-icon" data-act="max" title="Expand">' + ic('<path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/>') + '<span class="mmb-expand-label">' + LB('Focus view', '专注视图') + '</span></button>' +
+          '<button type="button" class="mmb-icon mmb-chart-return" data-act="return-host">' + ic('<path d="m10 5-7 7 7 7M4 12h16"/>') + '<span></span></button>' +
           '<button class="mmb-icon" data-act="new" title="New chat">' + ic('<path d="M12 5v14M5 12h14"/>') + '</button>' +
           '<button class="mmb-icon" data-act="close" title="Close">' + ic('<path d="M6 6l12 12M18 6L6 18"/>') + '</button>' +
         '</div>' +
@@ -2236,7 +2394,8 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (epoch !== historyEpoch) return;
-        if (!d) { if (!authed) enterGuest(false); return; }
+        if (!d) { macroServiceReady = false; if (!authed) enterGuest(false); return; }
+        macroServiceReady = authed && d.tier !== 'guest' && Array.isArray(d.exact_source_kinds) && d.exact_source_kinds.indexOf('macro_history_observation.v1') >= 0;
         quotas = d.quotas || {};
         /* Signed-out + tier 'guest' → guest mode ON; signed-out + anything else → gate. */
         if (!authed) enterGuest(d.tier === 'guest');
@@ -2244,7 +2403,7 @@
         proEligible = !!(quotas.pro && quotas.pro.limit !== 0);
         restorePrefs();   /* re-apply the remembered lane (or clear it if Pro just lapsed) */
         renderQuota();
-      }).catch(function () { if (epoch === historyEpoch && !authed) enterGuest(false); });
+      }).catch(function () { if (epoch === historyEpoch) { macroServiceReady = false; if (!authed) enterGuest(false); } });
   }
   function renderQuota() {
     var q = quotas[researchMode ? 'pro' : lane];
@@ -2286,12 +2445,16 @@
   function buildThreadItem(t) {
     var d = el('div', 'mmb-ti' + (t.id === threadId ? ' on' : '')); d.dataset.id = t.id;
     var date = ''; try { date = new Date(t.updated_at).toLocaleDateString(); } catch (e) {}
-    var body = el('div', 'mmb-ti-body');
-    var tt = el('div', 'tt'); tt.textContent = t.title || L('Untitled', '未命名');
-    var tm = el('div', 'tm'); tm.textContent = (t.lane || 'fast') + ' · ' + date;
+    var body = el('button', 'mmb-ti-body'); body.type = 'button';
+    var tt = el('span', 'tt'); tt.textContent = t.title || L('Untitled', '未命名');
+    var tm = el('span', 'tm'); tm.textContent = (t.lane || 'fast') + ' · ' + date;
     body.appendChild(tt); body.appendChild(tm);
     /* row-open (guarded so action clicks don't also open the thread) */
-    body.addEventListener('click', function () { openThread(t.id); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); });
+    body.addEventListener('click', function () {
+      openThread(t.id);
+      if (workspaceHost && panel.classList.contains('show-side')) toggleSide();
+      else if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side');
+    });
     d.appendChild(body);
 
     var acts = el('div', 'mmb-ti-acts');
@@ -2392,9 +2555,9 @@
         if (generation !== historyOpenGeneration || epoch !== historyEpoch) return;
         if (!d || !d.thread || d.thread.id !== id || !Array.isArray(d.messages) ||
             !d.messages.every(function (m) { return m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string'; })) throw new Error('invalid history');
-        threadId = id;
+        threadId = id; lastTurn = null; priorTurn = null;
         root.querySelectorAll('.mmb-ti').forEach(function (node) { node.classList.toggle('on', node.dataset.id === id); });
-        clearMsgs(); scroll.textContent = '';
+        clearMsgs();
         var lastDay = '';
         d.messages.forEach(function (m) {
           var ms = 0; try { ms = m.created_at ? new Date(m.created_at).getTime() : 0; } catch (e) {}
@@ -2464,10 +2627,14 @@
      last user turn). Called whenever messages change. */
   function markLastAssistant() {
     var msgs = scroll.querySelectorAll('.mmb-msg.assistant');
-    for (var i = 0; i < msgs.length; i++) msgs[i].classList.toggle('mmb-last', i === msgs.length - 1);
+    for (var i = 0; i < msgs.length; i++) {
+      msgs[i].classList.toggle('mmb-last', i === msgs.length - 1);
+      var replay = msgs[i].querySelector('.mmb-regen'); if (replay) replay.disabled = !lastTurn;
+    }
   }
   function appendMsg(role, content, ts) {
-    var es = $('#mmb-emptystate'); if (es) es.remove();
+    var es = $('#mmb-emptystate');
+    if (es) { es.remove(); clearComposerStarters(); }
     var d = el('div', 'mmb-msg ' + role);
     var b = el('div', 'mmb-bub');
     if (role === 'user') {
@@ -2512,17 +2679,27 @@
 
   /* [icon-paths, EN, ZH] — kept dual-language so the chips re-localize on a live
      language switch (the array is built once at load; text is picked at render). */
+  var WORKSPACE_PROMPTS = [
+    ['M3 17l6-6 4 3 8-10', 'What changed today?', '今天发生了什么变化？'],
+    ['M5 19V9M12 19V4M19 19v-7', 'Compare two stocks', '比较两只股票'],
+    ['M3 3v18h18|M6 15l4-5 4 3 5-7', 'Explain a chart', '解读图表']
+  ];
   var PROMPTS = [
     ['M3 3v18h18|M7 14l4-4 3 3 5-6', 'What regime are we in and what’s driving it?', '现在是什么市场周期？由什么驱动？'],
     ['M4 20V10M10 20V4M16 20v-7M22 20H2', 'Which themes have the strongest momentum?', '哪些主题动量最强？'],
     ['M12 3a9 9 0 1 0 9 9|M12 7v5l3 2', 'What should I be watching this week?', '这周该关注什么？'],
     ['M4 5h16M4 12h16M4 19h10', 'How is my watchlist doing?', '我的自选股表现如何？']
   ];
+  function clearComposerStarters() {
+    var starters = $('.mmb-comp > .mmb-cards');
+    if (starters) starters.remove();
+  }
   function renderEmpty() {
+    clearComposerStarters();
     var name = '';
     try { var u = window.MDXAuth && window.MDXAuth.user && window.MDXAuth.user(); if (u) { name = (u.user_metadata && (u.user_metadata.display_name || u.user_metadata.name)) || (u.email ? u.email.split('@')[0] : ''); } } catch (e) {}
     name = name ? (name.charAt(0).toUpperCase() + name.slice(1)) : '';
-    var cards = PROMPTS.map(function (p, i) {
+    var cards = (root.hasAttribute('data-reading') ? WORKSPACE_PROMPTS : PROMPTS).map(function (p, i) {
       var paths = p[0].split('|').map(function (d) { return '<path d="' + d + '"/>'; }).join('');
       var txt = L(p[1], p[2]);
       return '<button class="mmb-cardp" style="--i:' + i + '" data-p="' + esc(txt) + '"><div class="ci"><svg viewBox="0 0 24 24">' + paths + '</svg></div><span class="cp">' + esc(txt) + '</span></button>';
@@ -2532,6 +2709,11 @@
       '<span class="g2">' + L('What do you want to know?', '你想了解什么？') + '</span></h1>' +
       '<p>' + L('Your desk copilot — it reads the live signals, regimes and flow on this dashboard and the Terminal, and explains what they mean.', '你的桌面副驾 — 读取本看板与终端的实时信号、周期与资金流，并解释其含义。') + '</p></div>' +
       '<div class="mmb-cards">' + cards + '</div></div>';
+    if (root.hasAttribute('data-reading')) {
+      hero = '<div class="mmb-empty" id="mmb-emptystate"><div class="mmb-hero"><h1>' +
+        LB('What would you like to know?', '你想了解什么？') + '</h1></div></div>';
+      boxEl.insertAdjacentHTML('afterend', '<div class="mmb-cards">' + cards + '</div>');
+    }
     scroll.innerHTML = hero;
   }
 
@@ -2577,6 +2759,9 @@
        lane instead of the ordinary thread send. Incompatible companions are
        rejected BEFORE any send — images and research mode never ride the
        question path, and the staged reference survives for a clean retry. */
+    if (macroObservationExpected && (!macroServiceReady || !authed || optionsQuestion.active() || optionsQuestion.busy() || researchMode || imgs.length || !macroObservationOwner || CFG.getExactSourceReference !== macroObservationOwner)) {
+      showMacroNotice(macroMessage('macro_context_incompatible')); return;
+    }
     if (optionsQuestion.active()) {
       if (!text || imgs.length || researchMode || !optionsQuestion.staged() || optionsQuestion.busy()) return;
       sendOptionsQuestionTurn(text);
@@ -2590,10 +2775,20 @@
        one-turn panel after the shared context has captured it. */
     var ctx = buildTurnContext();
     if (explainPanel) explainPanel = null;
-    var sourceSpan = captureCompanySourceSpan();
-    var payload = { text: text, imgs: imgs, lane: researchMode ? 'pro' : lane, mode: researchMode ? 'research' : 'chat', ctx: ctx, sourceSpan: sourceSpan };
+    var reference = captureExactSourceReference();
+    if (macroObservationExpected && !macroReference(reference)) { showMacroNotice(macroMessage('macro_reference_invalid')); return; }
+    var macroObservation = reference && reference.kind === 'macro_history_observation' ? reference : null;
+    if (macroObservation && (!macroObservationExpected || !macroServiceReady || !authed || researchMode || imgs.length)) {
+      macroObservationExpected = true; macroObservationOwner = null; showMacroNotice(macroMessage('macro_context_incompatible')); return;
+    }
+    // Capture an immutable coordinate reference. The host's security/chart envelope
+    // never accompanies a Macro observation, and the widget never supplies its value.
+    if (macroObservation) { macroObservation = JSON.parse(JSON.stringify(macroObservation)); ctx = { lang: zh() ? 'zh' : 'en' }; }
+    var sourceSpan = macroObservation ? null : reference;
+    var payload = { text: text, imgs: imgs, lane: researchMode ? 'pro' : lane, mode: researchMode ? 'research' : 'chat', ctx: ctx, sourceSpan: sourceSpan, macroObservation: macroObservation };
+    if (macroObservation) { macroObservationExpected = false; macroObservationOwner = null; if (macroNoticeNode) { macroNoticeNode.remove(); macroNoticeNode = null; } }
     priorTurn = lastTurn;   /* retracting this turn must not leave Regenerate replaying it */
-    lastTurn = { text: text, imgs: imgs, lane: payload.lane, mode: payload.mode, sourceSpan: sourceSpan };
+    lastTurn = { text: text, imgs: imgs, lane: payload.lane, mode: payload.mode, sourceSpan: sourceSpan, macroObservation: macroObservation };
     pendingImages = []; renderThumbs();
     ta.value = ''; autosize(); clearDraft(); syncSend(); updateCounter(); closeSlash();
     /* the composer answers the keystroke: one settle, retriggerable on a fast second send */
@@ -2605,8 +2800,8 @@
   function regenerate() {
     if (streaming || (optionsQuestion && optionsQuestion.active()) || !lastTurn) return;
     refreshCtx();
-    runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null,
-                ctx: buildTurnContext() }, false);
+    runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null, macroObservation: lastTurn.macroObservation || null,
+                ctx: lastTurn.macroObservation ? { lang: zh() ? 'zh' : 'en' } : buildTurnContext() }, false);
   }
   /* ── durable turns ───────────────────────────────────────────────────────────
      A turn is owned by the SERVER (app/brain_runs.py), not by the socket that
@@ -2648,11 +2843,21 @@
     try {
       runStore.setItem(key, JSON.stringify({
         id: T.runId, cursor: T.cursor, thread: T.threadId || threadId || null,
-        q: (T.payload && T.payload.text) || '', ts: Date.now(), chart_handed: !!T.chartHanded
+        q: (T.payload && T.payload.text) || '', ts: Date.now(), chart_handed: !!T.chartHanded,
+        macro_reference: T.payload && T.payload.macroObservation || undefined
       }));
     } catch (e) {}
   }
-  function loadRun() { var key = runKey(); try { return JSON.parse((key && runStore && runStore.getItem(key)) || 'null'); } catch (e) { return null; } }
+  function loadRun() {
+    var key = runKey();
+    try {
+      var saved = JSON.parse((key && runStore && runStore.getItem(key)) || 'null');
+      // Keep the incumbent age rule in its reader, so a closed composer also
+      // retires an expired record before deciding whether another turn is busy.
+      if (saved && (!saved.ts || Date.now() - saved.ts > RUN_MAX_AGE_MS)) { clearRun(); return null; }
+      return saved;
+    } catch (e) { return null; }
+  }
   function clearRun() { var key = runKey(); try { if (key && runStore) runStore.removeItem(key); } catch (e) {} }
 
   /* Per-turn UI + parse state. Shared by the opening POST and by every later
@@ -2880,12 +3085,30 @@
   function handleEvent(j, T) {
     if (!T || T.stopped || T.doneSeen || T.epoch !== historyEpoch) return false;
     if (j.type === 'run') { T.runId = j.run_id; if (j.thread_id) T.threadId = j.thread_id; saveRun(T); return false; }
+    if (T.payload.macroObservation) {
+      if (j.type === 'exact_source_receipt') {
+        if (!sameMacroReceipt(j, T.payload.macroObservation)) { failTurn(T, macroMessage(j.code)); return true; }
+        T.macroReceipt = j;
+        if (T.recoveredMacro) {
+          // Only the original run's verified receipt admits its saved coordinates
+          // as the displayed answer's replay identity. No host selection is read.
+          lastTurn = { text: T.payload.text, imgs: [], lane: T.payload.lane, mode: T.payload.mode,
+            sourceSpan: null, macroObservation: JSON.parse(JSON.stringify(T.payload.macroObservation)) };
+          priorTurn = null; markLastAssistant();
+        }
+        return true;
+      }
+      if (j.type === 'done' && j.quota_exhausted && T.macroReceipt) { failTurn(T, macroMessage('macro_quota_exhausted')); return true; }
+      if (!T.macroReceipt && ['meta', 'context_receipt', 'status', 'error'].indexOf(j.type) < 0) {
+        failTurn(T, macroMessage('macro_receipt_missing')); return true;
+      }
+    }
     T.tries = 0;   /* bytes are flowing again — reset the reconnect backoff */
     if (j.type === 'meta') { if (j.thread_id) { threadId = j.thread_id; T.threadId = j.thread_id; } if (j.quota) { quotas[j.quota.lane] = j.quota; renderQuota(); } }
     /* W1-C: the deterministic visible-context receipt, always right after meta and
        before any delta/tool event — replayed VERBATIM by a resumed run (same code
        path via readSse -> handleEvent), so a reconnect never recomputes it. */
-    else if (j.type === 'context_receipt') { handleContextReceipt(j); }
+    else if (j.type === 'context_receipt') { rememberTurnContext(T, j); handleContextReceipt(j); }
     /* stage narration; anything arriving after `done` is stale noise */
     else if (j.type === 'status') { if (!T.doneSeen) thinkStatus(T.tl, j); }
     else if (j.type === 'tool') { ensureBub(T); if (!T.doneSeen) thinkTool(T.tl, j); stickAfter(); }
@@ -2938,12 +3161,18 @@
     /* `done` also carries the SAME context_receipt the dedicated event already
        applied; if that event was somehow missed (an older buffered chunk), this
        still applies it exactly the same gated way. */
-    if (j && j.context_receipt) handleContextReceipt(j.context_receipt);
+    if (j && j.context_receipt) { rememberTurnContext(T, j.context_receipt); handleContextReceipt(j.context_receipt); }
+    if (T.macroReceipt && !(j.citations || []).some(function (c) { return sameMacroReceipt(c, T.payload.macroObservation); })) j.citations = [T.macroReceipt].concat(j.citations || []);
     ensureBub(T); thinkTeardown(T.tl);
     if (j && (j.filtered || j.degraded)) clearVisuals(T.bub);
     else if (j && Array.isArray(j.charts)) j.charts.slice(0, 4).forEach(function (v) { if (v && v.visual) mountChart(T.bub.querySelector('.mmb-charts') || T.bub, v); });
     T.stream.finalize(function () {
       if (j && j.citations && j.citations.length) addCites(T.bub, j.citations);
+      if (T.contextUsed) addTurnContext(T.bub, T.contextUsed);
+      if (ANCHOR === 'top' && !j.filtered && !j.degraded && T.sawDelta &&
+          T.payload.mode === 'chat' && T.payload.ctx && !T.payload.sourceSpan && !T.payload.macroObservation && !T.payload.imgs.length) {
+        addResearchReview(T);
+      }
       if (T.suggestions && T.suggestions.length) addSuggest(T.bub, T.suggestions);
       bumpTime(T.bub); stickAfter();
     });
@@ -3037,6 +3266,8 @@
      answer behind. Paint the thread's tail if it is the reply we were waiting for. */
   function threadTail(T) {
     if (T.stopped || T.epoch !== historyEpoch) return;
+    // A text-only thread tail cannot replace an exact-source receipt.
+    if (T.payload.macroObservation) { failTurn(T, macroMessage('macro_receipt_missing')); return; }
     if (!threadId || guestMode) { failTurn(T, ''); return; }
     withAuth().then(function (h) { return fetch(API + '/api/brain/threads/' + encodeURIComponent(threadId), { headers: h, credentials: 'include' }); })
       .then(function (r) { return r.ok ? r.json() : null; })
@@ -3081,6 +3312,7 @@
   /* runStream(payload, showUser): runs one SSE turn. showUser=false skips drawing a new
      user bubble (used by regenerate — the user turn is already on screen). */
   function runStream(payload, showUser) {
+    if (payload.macroObservation && (!macroServiceReady || !authed || !macroReference(payload.macroObservation))) { errorCard(payload, macroMessage('macro_auth_required')); return; }
     historyOpenGeneration++;  /* a late history read cannot replace a new or retried turn */
     /* only the latest reply carries follow-up chips — clear any stale rows */
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
@@ -3105,7 +3337,7 @@
     T.tl = thinkInit(typing.querySelector('.mmb-bub'), payload.mode);
     activeStream = T;
     var apiText = payload.text || L('Please analyze the attached image.', '请分析所附图片。');
-    var body = JSON.stringify({ message: apiText, lane: payload.lane, mode: payload.mode, thread_id: threadId || undefined, context: payload.ctx, company_source_span: payload.sourceSpan || undefined, images: (payload.imgs && payload.imgs.length) ? payload.imgs : undefined });
+    var body = JSON.stringify({ message: apiText, lane: payload.lane, mode: payload.mode, thread_id: threadId || undefined, context: payload.ctx, company_source_span: payload.sourceSpan || undefined, macro_history_observation: payload.macroObservation || undefined, images: (payload.imgs && payload.imgs.length) ? payload.imgs : undefined });
     if (streamAbort) { try { streamAbort.abort(); } catch (e) {} }
     var ac = (typeof AbortController !== 'undefined') ? new AbortController() : null; streamAbort = ac;
     withAuth({ 'Content-Type': 'application/json' }).then(function (h) {
@@ -3197,6 +3429,7 @@
     if (T.ub) {
       dropRow(T.ub);
       restoreComposer(T.payload);
+      if (T.payload.macroObservation) { macroObservationExpected = true; macroObservationOwner = null; showMacroNotice(macroMessage('macro_reattach_required')); }
       lastTurn = priorTurn; priorTurn = null;   /* Regenerate points at the previous turn again */
     }
     markLastAssistant();
@@ -3245,8 +3478,15 @@
       .then(function (r) { return r && r.ok ? r.json() : null; })
       .then(function (s) {
         if (!resumeCurrent(openGeneration)) return;
-        if (!s) { clearRun(); return; }        /* gone — the thread store is the record now */
+        if (!s) { clearRun(); if (st.macro_reference) showMacroNotice(macroMessage('macro_receipt_missing')); return; }        /* gone — no receipt may be reconstructed from text */
         if (s.cancelled) { clearRun(); return; }
+        if (st.macro_reference) {
+          if (!macroReference(st.macro_reference)) { clearRun(); showMacroNotice(macroMessage('macro_reference_invalid')); return; }
+          // Reuse this run's buffer from its receipt, never re-resolve or resend.
+          lastTurn = null; priorTurn = null; clearMsgs(); threadId = s.thread_id || null;
+          if (st.q) appendMsg('user', st.q);
+          attachFresh(s, 0, st.q, st.macro_reference); return;
+        }
         if (s.thread_id) {
           if (s.done) { clearRun(); if (s.thread_id !== threadId) openThread(s.thread_id); return; }
           if (s.thread_id !== threadId) {
@@ -3276,19 +3516,19 @@
   }
   /* Build a fresh turn around an existing server run and attach to it. `question` is
      carried so a Retry on the error card can still replay the real turn. */
-  function attachFresh(status, cursor, question) {
+  function attachFresh(status, cursor, question, macroObservation) {
     if (optionsQuestion && (optionsQuestion.active() || optionsQuestion.busy())) return;
     root.querySelectorAll('.mmb-sugg').forEach(function (n) { n.remove(); });
     var typing = el('div', 'mmb-msg assistant');
     typing.innerHTML = '<div class="mmb-bub"><span class="mmb-orbmark"><svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg></span></div>';
     scroll.appendChild(typing); stick();
-    var T = newTurn({ text: question || '', imgs: [], lane: status.lane || 'fast', mode: status.mode || 'chat' }, typing);
+    var T = newTurn({ text: question || '', imgs: [], lane: status.lane || 'fast', mode: status.mode || 'chat', macroObservation: macroObservation || null }, typing);
     /* replayed status events fast-forward the strip to the run's live stage */
     T.tl = thinkInit(typing.querySelector('.mmb-bub'), status.mode);
     T.runId = status.run_id; T.threadId = status.thread_id || null; T.cursor = cursor || 0;
     // A reconstructed reply restores text/visuals, never chart execution authority.
     var priorRun = loadRun();
-    T.chartReplay = true;
+    T.chartReplay = true; T.recoveredMacro = !!macroObservation;
     T.chartHanded = !!(priorRun && priorRun.id === status.run_id && priorRun.chart_handed);
     if (T.chartHanded) chartEffectNote(T, L('Recovered answer. Chart actions were not replayed. Check the chart for their current state.',
       '已恢复回复。图表操作未重新执行；请检查图表的当前状态。'));
@@ -3321,7 +3561,7 @@
     var d = el('div', 'mmb-msg assistant'); var b = el('div', 'mmb-bub');
     var orb = el('span', 'mmb-orbmark'); orb.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>'; b.appendChild(orb);
     var card = el('div', 'mmb-errcard');
-    var line = el('div', 'mmb-errline'); line.textContent = L("The reply didn't make it through.", '回复没有送达。'); card.appendChild(line);
+    var line = el('div', 'mmb-errline'); line.textContent = payload.macroObservation ? (["macro_publication_changed", "macro_auth_required", "macro_quota_exhausted", "macro_receipt_missing"].some(function (code) { return msg === macroMessage(code); }) ? msg : macroMessage("macro_receipt_missing")) : L("The reply didn't make it through.", '回复没有送达。'); card.appendChild(line);
     var retry = el('button', 'mmb-retry'); retry.type = 'button';
     retry.innerHTML = ic('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>') + '<span class="mmb-l" data-en="Retry" data-zh="重试">' + L('Retry', '重试') + '</span>';
     retry.setAttribute('aria-label', L('Retry', '重试'));
@@ -3347,22 +3587,153 @@
   }
   /* Cites/suggestions flow INSIDE the assistant content, above the action row. */
   function insertBeforeActions(bub, node) { var act = bub.querySelector('.mmb-actions'); if (act) bub.insertBefore(node, act); else bub.appendChild(node); }
+  // Keep the answer's own accepted server receipt. Never look at the current chart
+  // to reconstruct a historical answer, and never promote a selection to a citation.
+  function rememberTurnContext(turn, receipt) {
+    var sent = turn.payload.ctx && turn.payload.ctx.ai_context;
+    var origin = receipt && receipt.origin;
+    if (!sent || !origin || typeof sent.origin_id !== 'string' || !sent.origin_id ||
+        !Number.isInteger(sent.context_revision) || origin.origin_id !== sent.origin_id ||
+        origin.context_revision !== sent.context_revision ||
+        typeof receipt.request_id !== 'string' || !receipt.request_id ||
+        (turn.receiptRequest && turn.receiptRequest !== receipt.request_id)) return;
+    var effective = receipt.effective_context;
+    if (!effective || !Array.isArray(effective.entities)) return;
+    var symbols = effective.entities.slice(0, 6).filter(function (entity) {
+      return entity && typeof entity.id === 'string' && entity.id.length > 0 && entity.id.length <= 128;
+    }).map(function (entity) { return entity.id; });
+    if (!symbols.length) return;
+    turn.receiptRequest = receipt.request_id;
+    turn.contextUsed = { source: effective.source, symbols: symbols, page: sent.ambient && sent.ambient.page };
+  }
+  // A research follow-up can use only a completed, text-only turn that still
+  // belongs to this conversation. The review never changes lane preferences.
+  function addResearchReview(turn) {
+    var trigger = el('button', 'mmb-abtn mmb-depth-trigger'); trigger.type = 'button';
+    trigger.innerHTML = LB('Go deeper…', '深入研究…');
+    var issuedThread = threadId;
+    trigger.addEventListener('click', function () {
+      if (streaming || !turn.bub.isConnected || historyEpoch !== turn.epoch ||
+          threadId !== issuedThread || depthReview || optionsQuestion.active()) return;
+      if (!proEligible) {
+        if (guestMode) showUpgrade({ feature: 'pro' });
+        else { upgradeEl.style.display = 'block'; upgradeEl.textContent = L('Pro research is unavailable on this account.', '此账户无法使用 Pro 深度研究。'); }
+        return;
+      }
+      var dialog = el('dialog', 'mmb-depth-review');
+      depthReview = dialog;
+      var heading = el('h2'); heading.id = 'mmb-depth-title'; heading.textContent = L('Research depth', '研究深度');
+      dialog.setAttribute('aria-labelledby', heading.id);
+      var question = el('p', 'mmb-depth-question'); question.textContent = turn.payload.text;
+      var detail = el('p'); detail.textContent = L('Start a Pro research follow-up on this question and its original context.', '根据此问题及其原始上下文开始 Pro 深度研究。');
+      var meter = el('p'); var quota = quotas.pro;
+      meter.textContent = quota && Number.isFinite(quota.remaining) && quota.limit > 0
+        ? L('Pro messages remaining: ', 'Pro 剩余次数：') + quota.remaining
+        : L('A usage estimate is unavailable for this request.', '暂无此次请求的用量估算。');
+      var actions = el('div', 'mmb-depth-actions');
+      var cancel = el('button'); cancel.type = 'button'; cancel.textContent = L('Cancel', '取消');
+      var start = el('button'); start.type = 'button'; start.textContent = L('Start research', '开始研究');
+      [heading, question, detail, meter, actions].forEach(function (child) { dialog.appendChild(child); });
+      actions.appendChild(cancel); actions.appendChild(start); root.appendChild(dialog);
+      dialog.addEventListener('close', function () {
+        if (depthReview === dialog) depthReview = null;
+        dialog.remove(); if (trigger.isConnected && !streaming) trigger.focus();
+      }, { once: true });
+      cancel.addEventListener('click', function () { dialog.close(); });
+      dialog.addEventListener('keydown', function (event) { if (event.key === 'Escape') event.stopPropagation(); });
+      start.addEventListener('click', function () {
+        if (start.disabled) return;
+        start.disabled = true;
+        dialog.close();
+        if (streaming || !proEligible || !turn.bub.isConnected || historyEpoch !== turn.epoch ||
+            threadId !== issuedThread || optionsQuestion.active()) return;
+        runStream({ text: turn.payload.text, ctx: turn.payload.ctx, imgs: [], lane: 'pro', mode: 'research' }, true);
+      });
+      dialog.showModal(); cancel.focus();
+    });
+    insertBeforeActions(turn.bub, trigger);
+  }
+  function addTurnContext(bub, context) {
+    var details = el('details', 'mmb-answer-context');
+    var summary = el('summary'); summary.textContent = L('Context used', '回答使用的上下文');
+    var explanation = el('p');
+    var label = ctxSourceLabel(context.source, context.page);
+    explanation.textContent = [label, context.symbols.join(', ')].filter(Boolean).join(' · ');
+    details.appendChild(summary); details.appendChild(explanation);
+    insertBeforeActions(bub, details);
+  }
   function addCites(bub, cites) {
     var wrap = DOC.createElement('div'); wrap.className = 'mmb-cites';
-    var retained = cites.filter(function (c) { return !!retainedSourceCitation(c); });
-    var other = cites.filter(function (c) { return !retainedSourceCitation(c); });
+    var retained = cites.filter(function (c) { return !!(retainedSourceCitation(c) || macroSourceCitation(c)); });
+    var other = cites.filter(function (c) { return !(retainedSourceCitation(c) || macroSourceCitation(c)); });
     retained.concat(other).slice(0, Math.max(8, Math.min(9, retained.length))).forEach(function (c) {
-      var source = retainedSourceCitation(c);
+      var source = retainedSourceCitation(c) || macroSourceCitation(c);
       var a = DOC.createElement('a'); a.className = 'mmb-cite';
       a.textContent = source ? L(source.labelEn, source.labelZh) : String(c).replace(/\.(json|parquet)$/, '').split('/').pop();
       if (source) {
         a.className += ' mmb-l';
         a.setAttribute('data-en', source.labelEn); a.setAttribute('data-zh', source.labelZh);
+        if (source.receipt) a._macroReceipt = source.receipt;
       }
       var page = citeToPage(c); if (page) { a.href = page; a.target = '_blank'; a.rel = 'noopener noreferrer'; }
       wrap.appendChild(a);
     });
-    insertBeforeActions(bub, wrap); stickAfter();
+    if (ANCHOR !== 'top' && !workspaceHost) { insertBeforeActions(bub, wrap); stickAfter(); return; }
+    var group = el('div', 'mmb-source-group');
+    var trigger = el('button', 'mmb-sources-trigger'); trigger.type = 'button';
+    trigger.setAttribute('aria-haspopup', 'dialog');
+    trigger.innerHTML = LB('Sources', '来源') + ' · ' + wrap.childElementCount + ' <span aria-hidden="true">›</span>';
+    trigger.addEventListener('click', function () { showAnswerSources(group, trigger, wrap); });
+    group.appendChild(trigger); group.appendChild(wrap);
+    insertBeforeActions(bub, group); stickAfter();
+  }
+
+  function macroSourceCitation(c) {
+    if (!c || !sameMacroReceipt(c, c.reference) || !c.label || typeof c.label.en !== 'string' || typeof c.label.zh !== 'string') return null;
+    return { labelEn: c.label.en.slice(0, 180) + ' · ' + c.reference.observation,
+      labelZh: c.label.zh.slice(0, 180) + ' · ' + c.reference.observation, receipt: c };
+  }
+
+  // The citation row and the reader share the exact same bounded, resolved sources.
+  // Keeping the dialog under its answer removes it on a thread or principal change.
+  function showAnswerSources(group, trigger, citations) {
+    if (group.querySelector('dialog')) return;
+    var dialog = el('dialog', 'mmb-source-sheet');
+    var title = L('Sources', '来源');
+    dialog.setAttribute('aria-label', title);
+    var header = el('header'); var heading = el('h2'); heading.textContent = title;
+    var dismiss = el('button'); dismiss.type = 'button'; dismiss.textContent = '×';
+    dismiss.setAttribute('aria-label', L('Close sources', '关闭来源'));
+    header.appendChild(heading); header.appendChild(dismiss); dialog.appendChild(header);
+    var list = el('ol');
+    Array.prototype.forEach.call(citations.children, function (cite) {
+      var item = el('li');
+      if (cite.hasAttribute('href')) {
+        var link = cite.cloneNode(true); link.classList.remove('mmb-cite'); item.appendChild(link);
+      } else item.textContent = cite.textContent;
+      if (cite._macroReceipt) {
+        var receipt = cite._macroReceipt, detail = el('dl');
+        function field(name, value) { var dt = el('dt'), dd = el('dd'); dt.textContent = name; dd.textContent = value || L('Not supplied', '未提供'); dd.style.overflowWrap = 'anywhere'; detail.appendChild(dt); detail.appendChild(dd); }
+        field(L('Unit', '单位'), receipt.unit && L(receipt.unit.en, receipt.unit.zh));
+        field(L('History basis', '历史口径'), receipt.basis && L(receipt.basis.en, receipt.basis.zh));
+        field(L('Publication time', '发布时间'), receipt.manifest_generated_at);
+        field(L('Publication', '发布代次'), receipt.reference.generation_id);
+        field(L('Canonical content digest', '规范内容摘要'), receipt.reference.content_sha256);
+        field(L('Manifest digest', '清单摘要'), receipt.reference.manifest_sha256);
+        item.appendChild(detail);
+      }
+      list.appendChild(item);
+    });
+    dialog.appendChild(list);
+    var footer = el('footer'); var back = el('button'); back.type = 'button';
+    back.textContent = L('Back to answer', '返回回答'); footer.appendChild(back); dialog.appendChild(footer);
+    dismiss.addEventListener('click', function () { dialog.close(); });
+    back.addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('keydown', function (e) { if (e.key === 'Escape') e.stopPropagation(); });
+    dialog.addEventListener('close', function () {
+      dialog.remove(); if (trigger.isConnected && trigger.getClientRects().length) trigger.focus();
+    }, {once:true});
+    group.appendChild(dialog); dialog.showModal(); dismiss.focus();
   }
   /* BEGIN retained source citation parser (pure URL validation). */
 
@@ -3537,11 +3908,16 @@
   /* Always open COMPACT (operator order): dashboard = corner chatbox, Terminal = top
      drop-down. The expand button offers the large overlay — desktop only. */
   function open() {
+    if (!panel.classList.contains('open') && !root.contains(DOC.activeElement)) openingControl = DOC.activeElement;
     refreshCtx(); scrim.classList.add('open'); panel.classList.add('open');
-    if (ANCHOR === 'top') panel.classList.add('mmb-top');
+    if (ANCHOR === 'top') {
+      if (!workspaceHost && window.innerWidth <= 560) {
+        panel.classList.add('max'); scrim.classList.add('max'); setHostedReading(true);
+      } else if (!panel.classList.contains('max')) panel.classList.add('mmb-top');
+    }
     if (launch) { launch.classList.add('mmb-hide'); launch.setAttribute('aria-expanded', 'true'); }
     /* WAAPI entry (transform only; opacity fades via CSS) — the sole transform owner. */
-    if (!reduceMotion() && typeof panel.animate === 'function') {
+    if (!workspaceHost && !reduceMotion() && typeof panel.animate === 'function') {
       if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
       var fy = ANCHOR === 'top' ? -16 : 16;
       panel._morph = panel.animate(
@@ -3593,16 +3969,26 @@
   /* Closing the panel does NOT tear the turn down — the widget is hidden, not gone, and
      the answer keeps painting into it. Re-opening shows the finished reply. */
   function close() {
+    if (workspaceHost) return;
+    var sourceSheet = root.querySelector('.mmb-source-sheet[open]');
+    if (sourceSheet) sourceSheet.close();
+    if (depthReview) depthReview.close();
     stopVoice();
     if (panel._morph) { try { panel._morph.cancel(); } catch (e) {} }
     /* Read activeElement BEFORE the classes drop: the panel goes visibility:hidden on the
        way out, and the browser blurs whatever was focused inside it the moment it does. */
     var wasInside = root.contains(DOC.activeElement);
     scrim.classList.remove('open', 'max'); panel.classList.remove('open', 'max', 'show-side');
+    setHostedReading(false);
     var hostReturnedFocus = false;
     if (wasInside && typeof CFG.onClose === 'function') {
       try { hostReturnedFocus = CFG.onClose() === true; } catch (e) {}
     }
+    if (wasInside && !hostReturnedFocus && !launch && openingControl && openingControl.isConnected &&
+        openingControl.getClientRects().length && typeof openingControl.focus === 'function') {
+      openingControl.focus();
+    }
+    openingControl = null;
     if (launch) {
       launch.classList.remove('mmb-hide'); launch.setAttribute('aria-expanded', 'false');
       /* Hand focus back to the control that opened it — otherwise a keyboard user who
@@ -3612,6 +3998,32 @@
          never steals it. */
       if (wasInside && !hostReturnedFocus && launch) { try { launch.focus(); } catch (e) {} }
     }
+  }
+  // Adopt the actual chat surface. The route owns only its mounting slot and
+  // all requests, history, draft and principal changes stay with this singleton.
+  function mountWorkspace(container) {
+    if (!container || container.ownerDocument !== DOC || !container.isConnected || root.contains(container)) return;
+    var owner = {};
+    workspaceHost = owner;
+    panel.classList.remove('max', 'show-side');
+    scrim.classList.remove('max');
+    root.removeAttribute('data-focus');
+    root.setAttribute('data-reading', '');
+    root.setAttribute('data-workspace', '');
+    $('.mmb-menu').setAttribute('aria-expanded', 'false');
+    container.appendChild(root);
+    if ($('#mmb-emptystate')) renderEmpty();
+    open();
+    return function releaseWorkspace() {
+      if (workspaceHost !== owner) return;
+      workspaceHost = null;
+      close();
+      root.removeAttribute('data-workspace');
+      root.removeAttribute('data-reading');
+      $('.mmb-menu').removeAttribute('aria-expanded');
+      DOC.body.appendChild(root);
+      if ($('#mmb-emptystate')) renderEmpty();
+    };
   }
   function toggle() { panel.classList.contains('open') ? close() : open(); }
   /* ── FLIP morph: animate the compact↔max resize with a transform ONLY (GPU compositor,
@@ -3641,23 +4053,47 @@
       { duration: 480, easing: MORPH_EASE, fill: 'none' }
     );
   }
+  function setHostedReading(focused) {
+    if (workspaceHost || ANCHOR !== 'top') return;
+    root.toggleAttribute('data-focus', focused);
+    root.toggleAttribute('data-reading', focused);
+    var expand = $('.mmb-head [data-act="max"]');
+    expand.setAttribute('aria-pressed', String(focused));
+    expand.querySelector('.mmb-expand-label').innerHTML = focused ? LB('Compact view', '紧凑视图') : LB('Focus view', '专注视图');
+    var page = CFG.page || 'terminal';
+    try { var context = CFG.getAiContext && CFG.getAiContext(); if (context && context.ambient) page = context.ambient.page; }
+    catch (e) { /* The host's fallback page remains valid. */ }
+    $('.mmb-chart-return span').innerHTML = page === 'terminal'
+      ? LB('Back to chart', '返回图表') : LB('Back to workspace', '返回工作区');
+    if ($('#mmb-emptystate')) renderEmpty();
+  }
   function toggleMax() {
-    if (window.innerWidth <= 560) return;       // mobile is compact-only
+    if (workspaceHost || (window.innerWidth <= 560 && ANCHOR !== 'top')) return;
     flipMorph(function () {
       var max = panel.classList.toggle('max');
       panel.classList.remove('show-side');
       scrim.classList.toggle('max', max);
+      setHostedReading(max);
       if (max) panel.classList.remove('mmb-top');
       else if (ANCHOR === 'top') panel.classList.add('mmb-top');
     });
   }
-  function toggleSide() { panel.classList.toggle('show-side'); }
-  function newChat() { if (optionsQuestion) optionsQuestion.reset(); stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
+  function toggleSide() {
+    var visible = panel.classList.toggle('show-side');
+    if (workspaceHost) {
+      $('.mmb-menu').setAttribute('aria-expanded', String(visible));
+      if (visible) searchIn.focus();
+      else $('.mmb-menu').focus();
+    }
+  }
+  function newChat() { withdrawMacroObservation(); if (optionsQuestion) optionsQuestion.reset(); stopVoice(); historyOpenGeneration++; abortStream(); threadId = null; lastTurn = null; priorTurn = null; pendingImages = []; renderThumbs(); root.querySelectorAll('.mmb-ti').forEach(function (el) { el.classList.remove('on'); }); clearMsgs(); ta.value = ''; autosize(); syncSend(); updateCounter(); closeSlash(); restoreDraft(); if (!panel.classList.contains('max') || window.innerWidth <= 960) panel.classList.remove('show-side'); }
 
   /* ── auth wiring ── */
   function onAuth(user) {
     var owner = user && (user.id || user.email) || null;
     if (!principalKnown || owner !== historyOwner) {
+      withdrawMacroObservation(); macroServiceReady = false;
+      if (depthReview) depthReview.close();
       stopVoice();
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
       abortStream(); resuming = false;
@@ -3666,7 +4102,7 @@
       allThreads = []; historyListUnavailable = false; threadId = null;
       clearMsgs(); ta.value = ''; pendingImages = []; renderThumbs(); paintThreads();
       quotas = {}; proEligible = false; renderQuota();
-      lastTurn = null; explainPanel = null; fileEl.value = '';
+      lastTurn = null; priorTurn = null; explainPanel = null; fileEl.value = '';
       if (searchIn) searchIn.value = '';
       ctxState.pinned = []; ctxState.lastReceipt = null; ctxState.lastHistoricalReceipt = null;
       ctxState.lastNativeFactReceipt = null; ctxState.lastAppliedRevision = -1; ctxState.revision++;
@@ -3679,6 +4115,7 @@
       if (gate) gate.remove();
       if (!scroll.querySelector('.mmb-msg') && !$('#mmb-emptystate')) renderEmpty();
       if (panel.classList.contains('open')) { loadThreads(); loadQuotas(); restoreDraft(); if (!(optionsQuestion && optionsQuestion.active())) resumeStoredRun(); }
+      else loadQuotas(); // cold native entry needs the existing /me capability before opening
       showChat(true);
     } else {
       /* Signed out: default to the gate, then probe /api/brain/me — if guest access is on it
@@ -3701,7 +4138,7 @@
   /* Guest mode: signed-out but allowed the free Fast lane. Show the chat UI (not the gate),
      render a sign-in prompt in the threads panel (guests are stateless), and load quotas. */
   function enterGuest(on) {
-    if (on === guestMode) { if (on) { renderEmpty(); showChat(true); } return; }
+    if (on === guestMode) { if (on) { if (!scroll.querySelector('.mmb-msg')) renderEmpty(); showChat(true); } return; }
     guestMode = on;
     if (on) {
       var gate = $('#mmb-gate'); if (gate) gate.remove();
@@ -3716,7 +4153,7 @@
   function paintGuestThreads() {
     if (!tlist) return;
     tlist.innerHTML = '<div class="mmb-th-empty" style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">' +
-      '<span>' + (ANCHOR === 'top'
+      '<span>' + (ANCHOR === 'top' && !workspaceHost
         ? LB('Sign in to connect this chart and save your conversations.', '登录后可连接此图表并保存对话记录。')
         : LB('Sign in to save your conversations.', '登录后可保存对话记录。')) + '</span>' +
       '<button class="mmb-signin" data-act="signin" style="margin-top:0;padding:9px 18px;font-size:13px">' + LB('Sign in', '登录') + '</button></div>';
@@ -3727,14 +4164,17 @@
     var rm = e.target.closest('[data-rmimg]');
     if (rm) { pendingImages.splice(+rm.dataset.rmimg, 1); renderThumbs(); return; }
     var t = e.target.closest('[data-act],[data-p],[data-lane]'); if (!t) return;
-    if (t.dataset.p) { ta.value = t.dataset.p; autosize(); send(); return; }
+    if (t.dataset.p) {
+      if (root.hasAttribute('data-reading')) { insertText(t.dataset.p); return; }
+      ta.value = t.dataset.p; autosize(); send(); return;
+    }
     if (t.dataset.lane) {
       /* Guests: the Pro lane is a sign-in prompt (it stays locked); Fast is theirs. */
       if (t.dataset.lane === 'pro' && guestMode) { showUpgrade({ feature: 'pro' }); return; }
       setLane(t.dataset.lane); return;
     }
     var a = t.dataset.act;
-    if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
+    if (a === 'close' || a === 'return-host') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
     else if (a === 'home') { var _d = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html'; var _ss = window.MMXSharedShell; if (_ss) { _ss.navigate(_d, 'push'); } else { location.href = _d; } }
     else if (a === 'search') toggleSearch();
@@ -3742,7 +4182,11 @@
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
     else if (a === 'voice') startVoice();
     else if (a === 'attach') { if (proEligible) fileEl.click(); else showUpgrade(guestMode ? { feature: 'pro' } : { feature: 'vision' }); }
-    else if (a === 'signin') { e.preventDefault(); if (window.MDXAuth) window.MDXAuth.open('signin'); }
+    else if (a === 'signin') {
+      e.preventDefault();
+      if (window.MDXAuth) window.MDXAuth.open('signin');
+      else if (typeof CFG.onAuthRequired === 'function') CFG.onAuthRequired();
+    }
     /* W1-C: strip click opens/closes the inspector; the pin control and each
        pinned chip's × are their OWN targets, never bubbling into ctx-toggle. */
     else if (a === 'ctx-toggle') toggleCtxInspector();
@@ -3802,7 +4246,12 @@
   })();
   if (searchIn) {
     searchIn.addEventListener('input', paintThreads);
-    searchIn.addEventListener('keydown', function (e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); toggleSearch(false); } });
+    searchIn.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      e.preventDefault(); e.stopPropagation();
+      if (workspaceHost && panel.classList.contains('show-side')) toggleSide();
+      else toggleSearch(false);
+    });
   }
   /* follow the host's language switch live — dashboard fires 'langchange' on the
      document (theme.js setLang), the Terminal fires 'mm:lang' on window (i18n.tsx). */
@@ -3852,10 +4301,15 @@
   /* Single Esc chain (priority): slash palette → ctx inspector → stream → search → close. */
   DOC.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape' || !panel.classList.contains('open')) return;
+    if (workspaceHost && !root.contains(e.target)) return;
     if (slashOpen()) { e.preventDefault(); closeSlash(); return; }
     if (ctxInspectorOpen()) { e.preventDefault(); closeCtxInspector(); return; }
     if (streaming) { e.preventDefault(); stopStream(); return; }
     if (searchWrap && searchWrap.classList.contains('on')) { e.preventDefault(); toggleSearch(false); return; }
+    if (workspaceHost) {
+      if (panel.classList.contains('show-side')) { e.preventDefault(); toggleSide(); }
+      return;
+    }
     e.preventDefault(); close();
   });
   /* Scroll pinning: any upward move (wheel/touch/scroll away from bottom) unpins;
@@ -4025,10 +4479,13 @@
      research/DEEPVUE_W1C_CONTEXT_ENVELOPE_CONTRACT_2026-08-25.md
      Frozen source-phrase vocabulary (bilingual, plain words, never an internal
      schema slug or falsifier/refutation term). */
-  function ctxSourceLabel(source) {
+  function ctxSourceLabel(source, page) {
     if (source === 'explicit') return L('From your question', '来自提问');
     if (source === 'pinned') return L('Pinned', '已固定');
-    if (source === 'active') return L('Active chart', '当前图表');
+    if (source === 'active') {
+      if (page === 'brain' || (!page && workspaceHost)) return L('Selected symbol', '所选标的');
+      return L('Active chart', '当前图表');
+    }
     if (source === 'ambient') return L('From your screen', '来自当前页面');
     return '';
   }
@@ -4179,6 +4636,10 @@
   function refreshCtx() {
     var s = ''; try { s = (CFG.symbol && CFG.symbol()) || window.MDXActiveSymbol || window.MMBrainSymbol || window.ACTIVE_SYMBOL || ''; } catch (e) {}
     var m = /[?&]symbol=([A-Za-z0-9.\-:]+)/i.exec(location.search); if (!s && m) s = m[1];
+    if (workspaceHost && typeof CFG.getAiContext === 'function') {
+      try { var selected = CFG.getAiContext(); s = selected && selected.active && selected.active.id || ''; }
+      catch (e) { s = ''; }
+    }
     ctxSymbol = (s || '').toString().toUpperCase().slice(0, 24);
     if (ctxSymbol !== _lastRefreshedSymbol) { _lastRefreshedSymbol = ctxSymbol; ctxState.revision++; }
     /* A host (Terminal) supplying its own ai_context previews from ITS OWN
@@ -4306,7 +4767,7 @@
     var rows = [
       { key: 'explicit', label: L('From your question', '来自提问'), entities: (receipt && receipt.explicit_entities) || [] },
       { key: 'pinned', label: L('Pinned', '已固定'), entities: (receipt && receipt.pinned_context) || ctxState.pinned },
-      { key: 'active', label: L('Active chart', '当前图表'), entities: (receipt && receipt.active_selection) || (ctxSymbol ? [{ id: ctxSymbol }] : []) },
+      { key: 'active', label: ctxSourceLabel('active'), entities: (receipt && receipt.active_selection) || (ctxSymbol ? [{ id: ctxSymbol }] : []) },
       { key: 'ambient', label: L('From your screen', '来自当前页面'),
         entities: (receipt && receipt.ambient_widget_context && receipt.ambient_widget_context.symbol)
           ? [{ id: receipt.ambient_widget_context.symbol }] : [] }
@@ -4808,13 +5269,24 @@
   boot();
   initExplain();
 
-  window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain,
+  window.MMBrain = { open: open, close: close, toggle: toggle, explain: explain, mountWorkspace: mountWorkspace,
+    clearMacroHistoryObservation: withdrawMacroObservation,
+    prepareMacroHistoryObservation: function () {
+      if (!authed || !macroServiceReady || streaming || resuming || optionsQuestion.active() || optionsQuestion.busy() || researchMode || pendingImages.length || typeof CFG.getExactSourceReference !== 'function') return false;
+      if (loadRun()) { if (!panel.classList.contains('open')) open(); return false; }
+      macroObservationExpected = true; macroObservationOwner = CFG.getExactSourceReference;
+      if (!panel.classList.contains('open')) open();
+      showMacroNotice(L('Selected economic observation attached. Write your question, then Send.', '已附加所选经济观察值。请输入问题，然后发送。'));
+      try { ta.focus(); } catch (e) {}
+      return true;
+    },
     setPrincipal: function (id) { onAuth(typeof id === 'string' && id ? { id: id } : null); },
     expand: function () { var was = panel.classList.contains('open'); if (!was) open(); if (window.innerWidth > 560 && !panel.classList.contains('max')) setTimeout(toggleMax, was ? 0 : 80); },
     /* P15.T2.S3: stage a selection question and open the existing composer
        (never a send), or withdraw the still-owned staged reference. */
     submitOptionsQuestion: function (reference) {
       if (!optionsQuestion.stage(reference)) return false;
+      withdrawMacroObservation();
       if (draftTimer) { clearTimeout(draftTimer); draftTimer = 0; }
       historyOpenGeneration++; threadId = null; lastTurn = null; priorTurn = null;
       ta.value = ""; pendingImages = []; renderThumbs(); clearMsgs();

@@ -159,7 +159,9 @@ def test_host_ai_context_is_also_visible_to_the_existing_answer_lane(
     assert "ambient && ambient.page" in text
     assert "ambient && ambient.panel" in text
     assert "var ctx = buildTurnContext();" in text
-    assert "ctx: buildTurnContext()" in text
+    # Ordinary Regenerate still resolves ambient context; a Macro replay carries
+    # only its original coordinates and language, never today's security selection.
+    assert "ctx: lastTurn.macroObservation ? { lang: zh() ? 'zh' : 'en' } : buildTurnContext()" in text
 
 
 def test_options_question_widget_state_machine():
