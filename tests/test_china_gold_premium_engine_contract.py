@@ -1859,3 +1859,46 @@ def test_china_gold_dataos_promoter_rolls_back_if_source_changes_during_apply(
         )
 
     assert registry.read_text() == before
+
+
+@pytest.mark.parametrize('method', ['close_proxy', 'intraday'])
+@pytest.mark.parametrize('future_leg', ['sge', 'reference', 'fx'])
+@pytest.mark.parametrize('timezone', ['UTC', 'Asia/Shanghai', 'naive'])
+def test_gold_future_source_rows_cannot_change_eligible_view(method, future_leg, timezone):
+    now = pd.Timestamp('2026-11-11T07:30:00Z')
+    def frame(stamps, values):
+        index = pd.to_datetime(stamps, utc=True)
+        index = index.tz_localize(None) if timezone == 'naive' else index.tz_convert(timezone)
+        return pd.DataFrame({'value': values}, index=index)
+    past = now - pd.Timedelta(minutes=1)
+    refs = {'sge': _leg('gold', 'sge'), 'global': _leg('gold', 'reference'),
+            'london': _leg('gold', 'reference'), 'fx': _leg('gold', 'fx'),
+            'max_skew_minutes': 2, 'max_age_days': 4, 'max_age_minutes': 30}
+    frames = {('gold', 'sge'): frame([now], [1040.]),
+              ('gold', 'reference'): frame([past], [1000. * cgp.TROY_OZ_GRAMS]),
+              ('gold', 'fx'): frame([past], [1.])}
+    baseline = cgp.build_view_model({method: refs}, reader=lambda g,n: frames.get((g,n)), now=now)
+    assert baseline['available'] is True
+    assert baseline['premium_pct'] == pytest.approx(4.)
+    original = {k:v.copy(deep=True) for k,v in frames.items()}
+    key = ('gold', future_leg)
+    frames[key] = pd.concat([frames[key], frame([now + pd.Timedelta(seconds=30)], [999999.])])
+    observed = cgp.build_view_model({method: refs}, reader=lambda g,n: frames.get((g,n)), now=now)
+    assert observed == baseline
+    # Filtering is read-only: no source frame mutation.
+    for k,v in original.items():
+        pd.testing.assert_frame_equal(frames[k].iloc[:len(v)], v)
+
+
+@pytest.mark.parametrize('method', ['close_proxy', 'intraday'])
+def test_gold_source_cutoff_is_inclusive_and_future_only_unavailable(method):
+    now = pd.Timestamp('2026-11-11T07:30:00Z')
+    refs = {'sge': _leg('g','s'), 'global': _leg('g','r'), 'london': _leg('g','r'),
+            'fx': _leg('g','f'), 'max_skew_minutes': 2, 'max_age_minutes': 30, 'max_age_days': 4}
+    frames = {('g','s'): _frame([1040.], dates=[now]),
+              ('g','r'): _frame([1000. * cgp.TROY_OZ_GRAMS], dates=[now]),
+              ('g','f'): _frame([1.], dates=[now])}
+    assert cgp.build_view_model({method:refs}, reader=lambda g,n:frames[(g,n)], now=now)['available'] is True
+    for frame in frames.values():
+        frame.index += pd.Timedelta(nanoseconds=1)
+    assert cgp.build_view_model({method:refs}, reader=lambda g,n:frames[(g,n)], now=now)['available'] is False
