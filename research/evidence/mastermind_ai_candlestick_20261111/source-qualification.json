@@ -1,0 +1,1263 @@
+{
+  "actual_browser_owner_projection_totals": {
+    "degraded_control_cases": 32,
+    "markets": 2,
+    "owner_cases_per_market": 3,
+    "primary_cases": 96,
+    "screenshots": 16,
+    "total_cases": 128
+  },
+  "actual_path_closure": {
+    "changed_paths": [
+      "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md",
+      "engine/neuralweb/brain_gateway.py",
+      "engine/neuralweb/brain_visuals.py",
+      "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+      "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+      "research/evidence/mastermind_ai_candlestick_20261106/README.md",
+      "research/evidence/mastermind_ai_candlestick_20261106/source-qualification.json",
+      "research/evidence/mastermind_ai_candlestick_20261111/README.md",
+      "research/evidence/mastermind_ai_candlestick_20261111/source-qualification.json",
+      "site/chat.html",
+      "site/mm_brain.js",
+      "site/mm_brain_presentation.js",
+      "site/mm_brain_visuals.css",
+      "site/mm_brain_visuals.js",
+      "site/theme.js",
+      "templates/chat.html",
+      "templates/mm_brain.js",
+      "templates/mm_brain_presentation.js",
+      "templates/mm_brain_visuals.css",
+      "templates/mm_brain_visuals.js",
+      "tests/test_brain_visuals.py",
+      "tests/test_brain_visuals_browser.py",
+      "tests/test_brain_visuals_integration.py",
+      "tests/test_brain_visuals_widget.py"
+    ],
+    "changed_paths_json_sha256": "be68199ca07026c0b419f1ab3911573670532433f8501b5b50f30dec4d2976f1",
+    "command": [
+      "python3",
+      "scripts/check_p0b_receipt_closure.py",
+      "--diff-file",
+      "owned-proof-p0b/changed-paths.json",
+      "--repo-root",
+      "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001",
+      "--event",
+      "pull_request"
+    ],
+    "finished": "2026-11-12T00:15:09.926382+00:00",
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "returncode": 0,
+    "started": "2026-11-12T00:15:09.855269+00:00",
+    "stdout": ""
+  },
+  "actual_screenshots": [
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+      "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+      "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+      "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+      "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+      "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+      "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+      "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+      "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+      "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+      "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+      "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+      "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+      "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+      "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+      "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+    },
+    {
+      "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+      "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+    }
+  ],
+  "browser_executions": {
+    "ca": {
+      "actual_receipt_sha256": "8cec2f8a1af5cd89c28acce7b856e59f4c5c2b5b9a38ea10b991ff264f3c873c",
+      "browser": {
+        "arch": "arm64",
+        "engine": "chromium",
+        "executable": {
+          "name": "chrome-headless-shell",
+          "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+        },
+        "platform": "darwin",
+        "playwright": "1.61.1",
+        "version": "149.0.7827.55"
+      },
+      "command": [
+        "node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "owned-proof-p0b/p0b-fixtures/canada_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+      ],
+      "current_receipt_bytes": 498957,
+      "current_receipt_git_blob": "2025316f14dff334731923665ca5109465a99d94",
+      "finished": "2026-11-12T00:00:18.700476+00:00",
+      "font_pin": {
+        "audited_nodes": 217794,
+        "audited_pages": 177,
+        "custom_fonts": [
+          "DejaVu Sans",
+          "Inter",
+          "Inter Black",
+          "Inter ExtraBold",
+          "Inter Medium",
+          "Inter SemiBold",
+          "Noto Sans SC",
+          "Twemoji Mozilla"
+        ],
+        "manifest": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json",
+          "sha256": "88b6cf9376ce1282e58415c1dde5519f428658b126169202d670257180b28b3d"
+        },
+        "platform_fonts": [],
+        "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
+        "stylesheet": "/p0b-font-pin/pin.css"
+      },
+      "log_sha256": "8cec2f8a1af5cd89c28acce7b856e59f4c5c2b5b9a38ea10b991ff264f3c873c",
+      "node_module_path": "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001/owned-proof-p0b/runtime/node_modules",
+      "prior_receipt_sha256": "ef4ed2b98d0cb050f0bc476f2943cd1ebb758d9623d08ee1c8a753402be19d49",
+      "returncode": 0,
+      "source_inputs_unchanged": true,
+      "source_snapshot_tree_before_evidence": "478b672f920c8402278328239580521c44edbcba",
+      "started": "2026-11-11T23:56:19.622509+00:00"
+    },
+    "hk": {
+      "actual_receipt_sha256": "128784269d7b25e0aa84c26352ecf236c3b8f8c1075ce62be80e492f1df81172",
+      "browser": {
+        "arch": "arm64",
+        "engine": "chromium",
+        "executable": {
+          "name": "chrome-headless-shell",
+          "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+        },
+        "platform": "darwin",
+        "playwright": "1.61.1",
+        "version": "149.0.7827.55"
+      },
+      "command": [
+        "node",
+        "scripts/verify_stock_dashboard_mobile_layout.cjs",
+        "--html",
+        "owned-proof-p0b/p0b-fixtures/hk_stocks.html",
+        "--site-dir",
+        "site",
+        "--fixture-receipt",
+        "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+        "--fixture-assets-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+        "--screenshot-dir",
+        "mockups/evidence/prophet-p0b-zero-fouc",
+        "--historical-head",
+        "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+        "--historical-tree",
+        "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+        "--browser",
+        "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+        "--out",
+        "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+      ],
+      "current_receipt_bytes": 491480,
+      "current_receipt_git_blob": "19d378e1673704e38da473b9898bf4445dc2f8b7",
+      "finished": "2026-11-11T23:51:13.657175+00:00",
+      "font_pin": {
+        "audited_nodes": 250663,
+        "audited_pages": 177,
+        "custom_fonts": [
+          "DejaVu Sans",
+          "Inter",
+          "Inter Black",
+          "Inter ExtraBold",
+          "Inter Medium",
+          "Inter SemiBold",
+          "Noto Sans SC",
+          "Twemoji Mozilla"
+        ],
+        "manifest": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json",
+          "sha256": "88b6cf9376ce1282e58415c1dde5519f428658b126169202d670257180b28b3d"
+        },
+        "platform_fonts": [],
+        "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
+        "stylesheet": "/p0b-font-pin/pin.css"
+      },
+      "log_sha256": "128784269d7b25e0aa84c26352ecf236c3b8f8c1075ce62be80e492f1df81172",
+      "node_module_path": "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001/owned-proof-p0b/runtime/node_modules",
+      "prior_receipt_sha256": "27a31b4e9788fbb6c75ab8de535035c908ec9a3cf8c3684fa8490100e87be59e",
+      "returncode": 0,
+      "source_inputs_unchanged": true,
+      "source_snapshot_tree_before_evidence": "478b672f920c8402278328239580521c44edbcba",
+      "started": "2026-11-11T23:47:12.455512+00:00"
+    }
+  },
+  "candidate_is_composed_dirty_source_not_executed_main": true,
+  "captured_input_files": {
+    "AGENTS.md": {
+      "bytes": 35364,
+      "git_blob": "547589f46c66a36ac02fc7313245b35f0d7fcd77",
+      "mode": "100644",
+      "sha256": "ee83c22f6a12f20a8bc2d3ec288a1668e0b9f508a7a4036509973f7dba53b175"
+    },
+    "config.yml": {
+      "bytes": 496073,
+      "git_blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+      "mode": "100644",
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+    },
+    "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md": {
+      "bytes": 4526,
+      "git_blob": "59f510eec0a73b199e17773d0b5c0bb6f063d422",
+      "mode": "100644",
+      "sha256": "dc91cf71179dcb817fa037810d1eea4bfc7fdd9ffabc03c1349d6f1ad039a72b"
+    },
+    "engine/i18n.py": {
+      "bytes": 35238,
+      "git_blob": "d3b240fa5e9b91b3e8070ae372c294c897e37464",
+      "mode": "100644",
+      "sha256": "64e55cf5d0396ae12075eab53e0a838d004fde47f574ffb170b07011b0e6e152"
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "bytes": 742190,
+      "git_blob": "9cd42b1367d30264e22927d63f9b71a97e5d7101",
+      "mode": "100644",
+      "sha256": "244dea334a5061b0dd30178b10690f385bd5584e4730b0a28f70b097fcf32860"
+    },
+    "engine/neuralweb/brain_visuals.py": {
+      "bytes": 16237,
+      "git_blob": "92f448b20f5a13c134229e1f7d3d4e852a2dce79",
+      "mode": "100644",
+      "sha256": "3ad5dbd3647e63021d26524b39e1099783227fb2ce68c02177c30733aac8dc0a"
+    },
+    "lib/__init__.py": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lib/config.py": {
+      "bytes": 1131,
+      "git_blob": "b6fc888269876242597da354aaa726c20ed95802",
+      "mode": "100644",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f"
+    },
+    "lib/pages.py": {
+      "bytes": 38933,
+      "git_blob": "db175c463a31828263b57a3287afba661439a765",
+      "mode": "100644",
+      "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba"
+    },
+    "lib/site_assets.py": {
+      "bytes": 7180,
+      "git_blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+      "mode": "100644",
+      "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json": {
+      "bytes": 3,
+      "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "mode": "100644",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json": {
+      "bytes": 3,
+      "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "mode": "100644",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json": {
+      "bytes": 3,
+      "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "mode": "100644",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json": {
+      "bytes": 3,
+      "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "mode": "100644",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json": {
+      "bytes": 3,
+      "git_blob": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "mode": "100644",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-400.woff2": {
+      "bytes": 155920,
+      "git_blob": "940b30a99fb348f30c11773ffb986e94e0756d0e",
+      "mode": "100644",
+      "sha256": "ac02a6519f8b4efb8ebce4411d22f731e7cc0831ad4856efde4def4f622e17a0"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-700.woff2": {
+      "bytes": 159112,
+      "git_blob": "5b17dabf1f39daddd5f64816bbc4988d7983f788",
+      "mode": "100644",
+      "sha256": "72cc73785af5c648b24f7c1ea72c6d5cf049c3652bda1839105e6bbb10a89a71"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/emoji.woff2": {
+      "bytes": 69888,
+      "git_blob": "cd066b5a1a3e933016c06902fc95d9f3a0ec916f",
+      "mode": "100644",
+      "sha256": "5c3b63d79b1df63a439061d8b446c2b9a0d39d0ffba9a913284f574831f26b66"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json": {
+      "bytes": 3184,
+      "git_blob": "614f7b8aae789437ac79d03b5618fe5e97c26f42",
+      "mode": "100644",
+      "sha256": "88b6cf9376ce1282e58415c1dde5519f428658b126169202d670257180b28b3d"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/pin.css": {
+      "bytes": 89735,
+      "git_blob": "40636bb69a402ee1dc1148f6015e58c4d7c81b9c",
+      "mode": "100644",
+      "sha256": "c45b4a8e41bff5def0b1f55ea2097832bb75dcaa3cee7af2e2628a1e0be2ada1"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-400.woff2": {
+      "bytes": 6408,
+      "git_blob": "c5d821f8b86e59e168569924a8949b3c1289ff78",
+      "mode": "100644",
+      "sha256": "4861f855e4d627c72dc9a0d5e5ccea06a5ff75afdeee3b5967be9ed52a294dc4"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-700.woff2": {
+      "bytes": 6584,
+      "git_blob": "8d3847d25ff13096584bf9fb8735cc244adf82e1",
+      "mode": "100644",
+      "sha256": "c3eff6b66b01322f570db903f794c0882e7485c51994d2c6e2bce8a58523d2cd"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json": {
+      "bytes": 1338,
+      "git_blob": "c7dc2779d2f5f6d2aea9221fb6dc8512297890bd",
+      "mode": "100644",
+      "sha256": "6a0d10249045cbffca6e7386458b45c0b3976408b7d57021254987df0c8a11f6"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json": {
+      "bytes": 1583,
+      "git_blob": "b52340dd93c610a9f4a732688d4a3c328c596fa6",
+      "mode": "100644",
+      "sha256": "dc93511b93517c9ecd096bcb5a79144d95f2ee565fc12d98a2410ff9aa1ad72b"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json": {
+      "bytes": 1338,
+      "git_blob": "619f36b5a514ae6b93ef9c71f537d53d9937c71c",
+      "mode": "100644",
+      "sha256": "b668fa56fbb03786562784e1e66a7cf058732dbe9ff9055294d7cf65fad462c9"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json": {
+      "bytes": 4458,
+      "git_blob": "644419cb708e001634d57a6611275bf4c2c18523",
+      "mode": "100644",
+      "sha256": "f0df976899677d3ff14ac0874b5b82e96ba77d52b9f1c0b7638927329e94ee95"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": {
+      "bytes": 30907,
+      "git_blob": "25cd0e39e6a97d9a16c7e874a1214e73ec9b1405",
+      "mode": "100644",
+      "sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3"
+    },
+    "requirements.txt": {
+      "bytes": 3510,
+      "git_blob": "bdb554b5a46f8f717ab0e1db3c7ed9c27e57a67a",
+      "mode": "100644",
+      "sha256": "8200ac05ab8aa27946cd4ae4237c0deb2171384363bd99ee72d15c683b7ab808"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/README.md": {
+      "bytes": 3543,
+      "git_blob": "55952b9cf95ed1c6450101cd36af89f719807b49",
+      "mode": "100644",
+      "sha256": "eb71c6ce826571bbaa586d40bca6310ccc55bd96961d3211f31183522581e45d"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/source-qualification.json": {
+      "bytes": 22822,
+      "git_blob": "370848bed7a716c0a7c34513c883f1b31396697a",
+      "mode": "100644",
+      "sha256": "059cb648e9c3e94c112062866e14f0822a8eaa061254a273004e75e9064f545d"
+    },
+    "scripts/__init__.py": {
+      "bytes": 2217,
+      "git_blob": "dafbbd0c3a49c56a2635c0d3d8918302d10689a6",
+      "mode": "100644",
+      "sha256": "099b906ef95aec83bbfc4d84b5ceb4f050e57a5fd2840e99faa9dc202e90c378"
+    },
+    "scripts/check_p0b_receipt_closure.py": {
+      "bytes": 22356,
+      "git_blob": "1c9efc6651a5ff5ef93807e9c9312ed9a3e8db4b",
+      "mode": "100644",
+      "sha256": "5236be66a4eabb93365ec9d5095170200ecc53363f1c054d6d86d26d1ace0652"
+    },
+    "scripts/optimize_assets.py": {
+      "bytes": 11756,
+      "git_blob": "62d7daf72add439d4880e1f0533b45524d4f141d",
+      "mode": "100644",
+      "sha256": "1c6ada51deb3be91f7b621bb6c1d3c52f373c6424c346ec6563ffb7b97cf26be"
+    },
+    "scripts/render_stock_dashboard_fixture.py": {
+      "bytes": 27655,
+      "git_blob": "23288e20270f251d3460014d8fb1876a9cfcd0cb",
+      "mode": "100644",
+      "sha256": "8f46fc24b9582ee85bc8e612b907f7cf23d02ed151cf3d15f0607a766fe10332"
+    },
+    "scripts/verify_stock_dashboard_mobile_layout.cjs": {
+      "bytes": 127388,
+      "git_blob": "a54cd2f99b7c252102070de02c28af0d10e1db88",
+      "mode": "100644",
+      "sha256": "0348d469bc2c86a93d23c89a5b95db845de273f1ab902773a20823da63b564fe"
+    },
+    "site/account.js": {
+      "bytes": 75906,
+      "git_blob": "bee3f81cb1db0578633b8cb70e28d70d51c4e47f",
+      "mode": "100644",
+      "sha256": "3a75ad49f6d678871206efbefd68311c1f60559b7924e96cfee0fcf5120cb50c"
+    },
+    "site/canada-stock-v36.js": {
+      "bytes": 36588,
+      "git_blob": "14fcffc867c75def247b50219c7f253b1e32ca87",
+      "mode": "100644",
+      "sha256": "b7ba336ddf9955585eacf0a18d07652249d2d2b9da8393c083bd7a9a416f41c0"
+    },
+    "site/chart_i18n.js": {
+      "bytes": 3473,
+      "git_blob": "ae149d4043c1f765515fd76af69e1648dc32257a",
+      "mode": "100644",
+      "sha256": "23272c482c2b27f294f6e35f45a76dfe8e61bdd6cdc61e88e83a3cde47174315"
+    },
+    "site/charts.js": {
+      "bytes": 4750,
+      "git_blob": "92296453a6c9b489194243ee646abf39d4bbd9f5",
+      "mode": "100644",
+      "sha256": "84a794395899da373f00ae59374aab93c3a41aee56ac55e973f2f960e95ed47c"
+    },
+    "site/chat.html": {
+      "bytes": 96169,
+      "git_blob": "544b99ad1814be1ecad28596cf03407e27cef28b",
+      "mode": "100644",
+      "sha256": "e7d2ac3e6ee70308392f9f654e1a3b60e0fa06b1cd231a46e2f83e0df00ce793"
+    },
+    "site/dashboard-icons.css": {
+      "bytes": 11284,
+      "git_blob": "a31665a63e85e841b5fc9e417424827ca632c84c",
+      "mode": "100644",
+      "sha256": "be32e541eabb7deeb4a6c88ff20bd1a0a53a96c873fb3773ed01da470682b0e9"
+    },
+    "site/dashboard-icons.js": {
+      "bytes": 13577,
+      "git_blob": "37e3ca5a3f111351fa18db4cd96953ce698e7433",
+      "mode": "100644",
+      "sha256": "ee1d516321594b8459adef23e0cd75427563ce72305543aaa2fcc9a7105e2b03"
+    },
+    "site/fonts/Inter-400.woff2": {
+      "bytes": 23664,
+      "git_blob": "f15b025d666269fb07daf0263e54231481e4289c",
+      "mode": "100644",
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc"
+    },
+    "site/fonts/Inter-500.woff2": {
+      "bytes": 24272,
+      "git_blob": "54f0a595dd3c76344a980109e7517ed42416de93",
+      "mode": "100644",
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f"
+    },
+    "site/fonts/Inter-600.woff2": {
+      "bytes": 24452,
+      "git_blob": "d1897949fda5c7fc5f04622df43a3fcba5b89d84",
+      "mode": "100644",
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a"
+    },
+    "site/fonts/Inter-700.woff2": {
+      "bytes": 24356,
+      "git_blob": "a68fb101cd9224aa7bb6ca80356b5132c40c6f3f",
+      "mode": "100644",
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491"
+    },
+    "site/fonts/Inter-800.woff2": {
+      "bytes": 24400,
+      "git_blob": "74a16d45945264434aa7409e79549c626ebcdfb1",
+      "mode": "100644",
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d"
+    },
+    "site/fonts/Inter-900.woff2": {
+      "bytes": 23900,
+      "git_blob": "4db8333caca3f0c93ff4683fed2d7eaa7ecdc786",
+      "mode": "100644",
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e"
+    },
+    "site/hk-stock-v36.js": {
+      "bytes": 35883,
+      "git_blob": "657d1196a4deba15ff1d1a48ff9c46abb6432c4e",
+      "mode": "100644",
+      "sha256": "ae348f953da7ff49f2e10a42a74b6c81b76dcb8d25dd0d37003b831ac562a4d6"
+    },
+    "site/illus.css": {
+      "bytes": 14335,
+      "git_blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5",
+      "mode": "100644",
+      "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+    },
+    "site/illus.js": {
+      "bytes": 2752,
+      "git_blob": "dfe818277c5068fe665337531f89d4fe7976565b",
+      "mode": "100644",
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+    },
+    "site/live.js": {
+      "bytes": 50731,
+      "git_blob": "7e91599afb20a69c4010d5dc36c85439381d529f",
+      "mode": "100644",
+      "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592"
+    },
+    "site/live_config.js": {
+      "bytes": 367,
+      "git_blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d",
+      "mode": "100644",
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "site/logo_config.js": {
+      "bytes": 202,
+      "git_blob": "523923f9f424a144f4a0cf3e4814e2ea36392474",
+      "mode": "100644",
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "site/mm_brain.js": {
+      "bytes": 318034,
+      "git_blob": "5625fa9c8b56e17feed2e0beff8677b502513f2e",
+      "mode": "100644",
+      "sha256": "a45b287184a5714e0410a68ded7673bccb59d70dbf1dc172e5b92f76af18e453"
+    },
+    "site/mm_brain_presentation.js": {
+      "bytes": 4272,
+      "git_blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "site/mm_brain_visuals.css": {
+      "bytes": 10669,
+      "git_blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "site/mm_brain_visuals.js": {
+      "bytes": 24026,
+      "git_blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "site/mtf.js": {
+      "bytes": 6549,
+      "git_blob": "3fa3b9de9dd84b9b11da39c2c3c748421faae79e",
+      "mode": "100644",
+      "sha256": "b62aea2f86b81a2d06e156c9e8f63f43804cd183868f209f3c450cdf2b39a1c0"
+    },
+    "site/nav_market.js": {
+      "bytes": 96881,
+      "git_blob": "37c7ac74301661d0bc4fe1997bb37d572a8573bb",
+      "mode": "100644",
+      "sha256": "d6a0ffd9c7fcc4f201f73b3e226934cc1709950452894e68cf921d60a90f1587"
+    },
+    "site/navigation-refresh.css": {
+      "bytes": 104548,
+      "git_blob": "2c96dbf6f96da1c5c7fab58d9314cc3fb06d15d1",
+      "mode": "100644",
+      "sha256": "edfd821b3a6267c762fe452f7da74c0517d2f4435705f3148d5ab2be89105fae"
+    },
+    "site/product-nav-icons.css": {
+      "bytes": 41645,
+      "git_blob": "58336d2b2521c7c4d126c0ddc11f08a5045d28dc",
+      "mode": "100644",
+      "sha256": "432f6a454755566f63e843a269bee842e672d0934f10d957b6c386dcc1a824ea"
+    },
+    "site/stock-dashboard.css": {
+      "bytes": 72697,
+      "git_blob": "18c5fa8d48fed98a999b2c9fae19ecff7c1f2464",
+      "mode": "100644",
+      "sha256": "3906781820560cb6b11a3fbc61239babcbf43fa0d6ef61d7ae08b1f9b8eac1a0"
+    },
+    "site/stock-logos.js": {
+      "bytes": 16539,
+      "git_blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c",
+      "mode": "100644",
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "site/stocktable.js": {
+      "bytes": 71746,
+      "git_blob": "937227f8cbffa76e81e146fa95f6f842f2c9f203",
+      "mode": "100644",
+      "sha256": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964"
+    },
+    "site/tablesort.js": {
+      "bytes": 15556,
+      "git_blob": "0cb1eea3ca2472945d671b65b0207737be6e8ffb",
+      "mode": "100644",
+      "sha256": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42"
+    },
+    "site/theme.css": {
+      "bytes": 227583,
+      "git_blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+      "mode": "100644",
+      "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757"
+    },
+    "site/theme.js": {
+      "bytes": 280236,
+      "git_blob": "c87e1b19f26555a73f40b9e2ddc0e5528a335bdb",
+      "mode": "100644",
+      "sha256": "521fecaf9dfca24de17cab88ab9aa3b5a24a3148634a66df28aeaacf0d98eb78"
+    },
+    "templates/_aibrief_body.html.j2": {
+      "bytes": 16080,
+      "git_blob": "c2c2b5abdcca17662032dd31b05bb3d581c61b9c",
+      "mode": "100644",
+      "sha256": "a51bf10e1d24d3b5ead9bfe63774908fee745e2b8315725baed637362ec89cfb"
+    },
+    "templates/_aibrief_css.j2": {
+      "bytes": 14923,
+      "git_blob": "5b123bae647e64df4cc88ae6f8b0ec375b2d07b5",
+      "mode": "100644",
+      "sha256": "fcb7276929b3d412312cdafef10eff6484fb038adb089dd7da5867b1c5cc780a"
+    },
+    "templates/_cmd_hero.css.j2": {
+      "bytes": 6131,
+      "git_blob": "f26ab9cdb5ddc4f77d5659183ba79ede0cb5e093",
+      "mode": "100644",
+      "sha256": "86d3c260212c477d990b82dd424078dcb2227e252dcc83a2ba92f3e629b5170e"
+    },
+    "templates/_decision_card.html.j2": {
+      "bytes": 14905,
+      "git_blob": "2727299dbaf6356852640bb925713a266bc2738c",
+      "mode": "100644",
+      "sha256": "2c67a16a868f40bfced08d96be88571f0a235ca948169c8e9a44de827442ca76"
+    },
+    "templates/_icons.html.j2": {
+      "bytes": 6785,
+      "git_blob": "0ada914d14ffca25498ed186d681d1a7b7f82697",
+      "mode": "100644",
+      "sha256": "91e9ed18b6423b41793062ccde2406222b66f646f6f3928f272e71318c9e0dab"
+    },
+    "templates/_lens.html.j2": {
+      "bytes": 6555,
+      "git_blob": "c2748c591a4fb184c2e8159a38e26f50764f5ad1",
+      "mode": "100644",
+      "sha256": "1d6bbb2ff780b60a2fcd0397e7c94305e1a7f996ae76c517c4562385ccdc19ea"
+    },
+    "templates/_market_state.css.j2": {
+      "bytes": 14031,
+      "git_blob": "b999effda89b7861205a3980fa9835e5ac6228ed",
+      "mode": "100644",
+      "sha256": "16f285a8a6857f6627ec756b7fbfc9009c130c8e6e6275b7438855f90d421a6c"
+    },
+    "templates/_navlinks.html.j2": {
+      "bytes": 54533,
+      "git_blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+      "mode": "100644",
+      "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83"
+    },
+    "templates/_prophet_card.html.j2": {
+      "bytes": 68845,
+      "git_blob": "2f2c2fe8b7e5d63ac271a89e12c699ac0da2a2f7",
+      "mode": "100644",
+      "sha256": "e8d875372e984f8f6b2da7ce5a19e7378b38697ba039c23e051c4d8447fa6e27"
+    },
+    "templates/_risk_radar_card.css.j2": {
+      "bytes": 17824,
+      "git_blob": "73d27c46f9bf2a4e007babca63d4eba654431202",
+      "mode": "100644",
+      "sha256": "203f682068ae42ae254a857cc572e962198623ba84123ba3a6527b373feedaa5"
+    },
+    "templates/_risk_radar_card.html.j2": {
+      "bytes": 47415,
+      "git_blob": "05ce286fbb6c1ddb580e9c0ba00caf10ec6d927a",
+      "mode": "100644",
+      "sha256": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
+    },
+    "templates/_risk_radar_dlg.css.j2": {
+      "bytes": 13737,
+      "git_blob": "9c4a78c2c4171de5062403084ad6ebf6569e0b14",
+      "mode": "100644",
+      "sha256": "186239255efa4f7a938c3b0abb9c33c59c99e0711993269b5909980da2adf1ac"
+    },
+    "templates/_risk_radar_dlg.html.j2": {
+      "bytes": 27188,
+      "git_blob": "b67147ba9737ad1d590c47bcbb4d02b76c119888",
+      "mode": "100644",
+      "sha256": "86829dfaf27214e34d244a29e24d1999d7905fb9836b653f53216de251bd8749"
+    },
+    "templates/_seo_head.html.j2": {
+      "bytes": 2335,
+      "git_blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+      "mode": "100644",
+      "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee"
+    },
+    "templates/_site_nav.html.j2": {
+      "bytes": 3684,
+      "git_blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+      "mode": "100644",
+      "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376"
+    },
+    "templates/canada.html.j2": {
+      "bytes": 244732,
+      "git_blob": "1465046662b4d7258558866984d8a191dbe963df",
+      "mode": "100644",
+      "sha256": "b98d20bf1994d32b617493ec86ffbcf984cdcafc513afdf4d523535b054b67c9"
+    },
+    "templates/chat.html": {
+      "bytes": 96169,
+      "git_blob": "544b99ad1814be1ecad28596cf03407e27cef28b",
+      "mode": "100644",
+      "sha256": "e7d2ac3e6ee70308392f9f654e1a3b60e0fa06b1cd231a46e2f83e0df00ce793"
+    },
+    "templates/hk.html.j2": {
+      "bytes": 453426,
+      "git_blob": "0efe56c833cbd8c195e47764a821a89a00b4ca90",
+      "mode": "100644",
+      "sha256": "71153c38db5e79b2a3dd458d21678b02a08951c1d4786d19833d87dee5ed3eac"
+    },
+    "templates/mm_brain.js": {
+      "bytes": 318034,
+      "git_blob": "5625fa9c8b56e17feed2e0beff8677b502513f2e",
+      "mode": "100644",
+      "sha256": "a45b287184a5714e0410a68ded7673bccb59d70dbf1dc172e5b92f76af18e453"
+    },
+    "templates/mm_brain_presentation.js": {
+      "bytes": 4272,
+      "git_blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "templates/mm_brain_visuals.css": {
+      "bytes": 10669,
+      "git_blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "templates/mm_brain_visuals.js": {
+      "bytes": 24026,
+      "git_blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "templates/terminal_overlay.js": {
+      "bytes": 41029,
+      "git_blob": "e0f7c9747f1f9d38eb526f4794f0db0bcf695a7a",
+      "mode": "100644",
+      "sha256": "9817ca9fdace99e6ce0af55bebda7b90c3a55ae6589fa267cf35ab23c9b5a5bf"
+    },
+    "templates/theme.js": {
+      "bytes": 400176,
+      "git_blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+      "mode": "100644",
+      "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d"
+    },
+    "tests/test_brain_visuals.py": {
+      "bytes": 10792,
+      "git_blob": "47906049264e1638bb9dfd813f7765f8aaafb09c",
+      "mode": "100644",
+      "sha256": "6e3dabdc6521fa1e218056e01b0fc0e548143a25ebe15b2f4d8ceab7b2f2814c"
+    },
+    "tests/test_brain_visuals_browser.py": {
+      "bytes": 13944,
+      "git_blob": "50bcedabfbd96ee509dbe2c982622bec6f0d24c8",
+      "mode": "100644",
+      "sha256": "7365f4ccf78ed0a6a438d545d928ebf641da081720e9955c76ac8ba7e17342d0"
+    },
+    "tests/test_brain_visuals_integration.py": {
+      "bytes": 16378,
+      "git_blob": "0d50763235c914d756b5191804d8d1d96bd05682",
+      "mode": "100644",
+      "sha256": "5ece3c5bda7dbadf46d0a8e8df1c210e3dbd7a220fd15d6c35004e3d2ba3024c"
+    },
+    "tests/test_brain_visuals_widget.py": {
+      "bytes": 6881,
+      "git_blob": "f5b73568704dbbad0c365c47ece47459e70c6a91",
+      "mode": "100644",
+      "sha256": "829ae175c0a1214771e4138fe5e6bbb72746b304394336fe50d08b39b0ace4f2"
+    }
+  },
+  "changed_screenshots": [],
+  "dependency_runtime": {
+    "browser_download_disabled": true,
+    "command": [
+      "npm",
+      "install",
+      "--offline",
+      "--ignore-scripts",
+      "--no-save",
+      "--package-lock=false",
+      "--no-audit",
+      "--no-fund",
+      "--omit=optional",
+      "playwright@1.61.1"
+    ],
+    "cwd": "/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001/owned-proof-p0b/runtime",
+    "free_bytes": 188875591680,
+    "install_scripts_disabled": true,
+    "log_sha256": "1e7b9e03541a03daecb2e458f86f712450305cd3d0e6d1c56d14eb7ec06e5e70",
+    "log_text": "\nadded 2 packages in 645ms\n",
+    "offline": true,
+    "ordinary_script_resolution": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"node\":\"v26.5.0\",\"platform\":\"darwin\",\"arch\":\"arm64\",\"module\":\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001/owned-proof-p0b/runtime/node_modules/playwright/index.js\",\"package\":\"/Volumes/Mastermind/agent-workspaces/macro/web/macro-pr10208-p0b-20261111-sol-web-001/owned-proof-p0b/runtime/node_modules/playwright/package.json\",\"playwright\":\"1.61.1\",\"core\":\"1.61.1\"}\n"
+    },
+    "returncode": 0
+  },
+  "fixture_claims": {
+    "browser_fixture": "reproducible",
+    "canonical_build": "unavailable",
+    "production": "none",
+    "source_contract": "browser_fixture"
+  },
+  "focused_asset_and_parser_checks": {
+    "commands": [
+      {
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "-q",
+          "--tb=short",
+          "tests/test_brain_visuals_assets.py::test_lazy_urls_use_the_same_per_asset_content_hash_as_the_site_pipeline",
+          "tests/test_brain_financial_assets.py::test_lazy_asset_hashes_match_controlled_presentation_registry",
+          "tests/test_mm_brain_asset.py::test_mm_brain_template_and_site_copy_stay_identical"
+        ],
+        "finished": "2026-11-12T00:08:42.979673+00:00",
+        "log_sha256": "57fe68cc7c305b2a8f3841d9927113d5511b7733d6847dc1502ce320b3e8cfea",
+        "name": "asset-contracts",
+        "returncode": 0,
+        "started": "2026-11-12T00:08:34.537061+00:00",
+        "stdout": "...                                                                      [100%]\n3 passed in 6.18s\n"
+      },
+      {
+        "command": [
+          "node",
+          "--check",
+          "templates/mm_brain.js"
+        ],
+        "finished": "2026-11-12T00:08:43.060301+00:00",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name": "widget-syntax",
+        "returncode": 0,
+        "started": "2026-11-12T00:08:42.980197+00:00",
+        "stdout": ""
+      }
+    ],
+    "source_inputs_unchanged": true,
+    "test_sources": {
+      "tests/test_brain_financial_assets.py": {
+        "bytes": 2811,
+        "git_blob": "43c0ed3574c38b7db9dcd2c5fbba72c7b5bbfd4e",
+        "sha256": "095c3d8fd046f79232da3119508349d61ef1064c2e4106171f7a928879c0b6bf"
+      },
+      "tests/test_brain_visuals_assets.py": {
+        "bytes": 3533,
+        "git_blob": "f526a487f5295319c798b7056c372030172db309",
+        "sha256": "85aa422e1d720d7c2c99c9418c08db5ab7d017f9468e873641565485a3434a85"
+      },
+      "tests/test_mm_brain_asset.py": {
+        "bytes": 7733,
+        "git_blob": "5aab4f38221c93ff179f675637293c0e9fdbcfc1",
+        "sha256": "f014851bf44ed15cc8dbf018559dd625005cec5a3d637de0965df6774511c098"
+      }
+    },
+    "tests_source_same_as_qualification_base": true
+  },
+  "focused_receipt_contracts": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "-q",
+      "--tb=short",
+      "tests/test_stock_dashboard_first_frame.py::test_committed_browser_receipts_are_self_binding_fixture_proof",
+      "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair"
+    ],
+    "finished": "2026-11-12T00:05:26.388099+00:00",
+    "log_sha256": "314e82f38e9cc7f066ae94b7257974fa07d89e5f8beee37ec1c22f45154e9958",
+    "returncode": 0,
+    "source_inputs_unchanged": true,
+    "started": "2026-11-12T00:05:22.508798+00:00",
+    "stdout": "...                                                                      [100%]\n3 passed in 2.90s\n"
+  },
+  "generated_at": "2026-11-12T00:15:09.926925+00:00",
+  "limits": [
+    "Current-head hosted CI, current-base controller freshness and actual protected merge remain pending at qualification.",
+    "P0B loaded assets include the changed theme but not mm_brain.js. Direct asset-binding and parser checks do not establish new widget runtime or signed-in acceptance.",
+    "Original compiler/provenance and43-case visual/widget browser receipts remain dated historical evidence; they were not rerun or restamped.",
+    "Specifically refused local theme-emitter-parity verification6536386256 remains unreplayed; no full asset owner or guarded POLICY/Caddy read was performed.",
+    "All15 original feature/evidence postimages and complete current-main manifest history are conserved.",
+    "Historical3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86/b4dd8fd9b29b4eb769239d35df2a7911e793c7ec identify only the immutable earlier baseline.",
+    "No deployment, publisher, signed-in Macro/Terminal, private-history, provider, source-rights, empirical or trading acceptance is established.",
+    "Separate #7151/R8/Paper/review effects and #9601/Terminal1048 writer custody are unchanged."
+  ],
+  "manifest": {
+    "bytes": 140633,
+    "git_blob": "b3688e71809c36cba4ab6f1b91679b5519e195a2",
+    "path": "mockups/evidence/prophet-p0b-zero-fouc/manifest.json",
+    "sha256": "7cc7e693b9022b915e394cc455b269a75cd732ba64bfc4c746cebaa117c38889"
+  },
+  "manifest_history_conservation": {
+    "H_common_prefix_records": 16,
+    "H_unique_historical_record_appended": true,
+    "M_prefix_records_preserved": 19,
+    "prior_H_active_extension_archived_exactly": true,
+    "prior_M_active_extension_archived_exactly": true,
+    "total_records": 22,
+    "unaffected_top_level_fields_exact": true
+  },
+  "mission": "macro-pr-healing-20261109-sol-web-001",
+  "operation_id": "macro-pr10208-p0b-20261111-sol-web-001",
+  "original_branch": "sol/web-mastermind-ai-candlestick-pivots-20261030",
+  "original_feature_postimages_conserved": {
+    "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md": {
+      "mode": "100644",
+      "path": "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md",
+      "sha": "59f510eec0a73b199e17773d0b5c0bb6f063d422",
+      "type": "blob"
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "mode": "100644",
+      "path": "engine/neuralweb/brain_gateway.py",
+      "sha": "9cd42b1367d30264e22927d63f9b71a97e5d7101",
+      "type": "blob"
+    },
+    "engine/neuralweb/brain_visuals.py": {
+      "mode": "100644",
+      "path": "engine/neuralweb/brain_visuals.py",
+      "sha": "92f448b20f5a13c134229e1f7d3d4e852a2dce79",
+      "type": "blob"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/README.md": {
+      "mode": "100644",
+      "path": "research/evidence/mastermind_ai_candlestick_20261106/README.md",
+      "sha": "55952b9cf95ed1c6450101cd36af89f719807b49",
+      "type": "blob"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/source-qualification.json": {
+      "mode": "100644",
+      "path": "research/evidence/mastermind_ai_candlestick_20261106/source-qualification.json",
+      "sha": "370848bed7a716c0a7c34513c883f1b31396697a",
+      "type": "blob"
+    },
+    "site/mm_brain_presentation.js": {
+      "mode": "100644",
+      "path": "site/mm_brain_presentation.js",
+      "sha": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "type": "blob"
+    },
+    "site/mm_brain_visuals.css": {
+      "mode": "100644",
+      "path": "site/mm_brain_visuals.css",
+      "sha": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "type": "blob"
+    },
+    "site/mm_brain_visuals.js": {
+      "mode": "100644",
+      "path": "site/mm_brain_visuals.js",
+      "sha": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "type": "blob"
+    },
+    "templates/mm_brain_presentation.js": {
+      "mode": "100644",
+      "path": "templates/mm_brain_presentation.js",
+      "sha": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "type": "blob"
+    },
+    "templates/mm_brain_visuals.css": {
+      "mode": "100644",
+      "path": "templates/mm_brain_visuals.css",
+      "sha": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "type": "blob"
+    },
+    "templates/mm_brain_visuals.js": {
+      "mode": "100644",
+      "path": "templates/mm_brain_visuals.js",
+      "sha": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "type": "blob"
+    },
+    "tests/test_brain_visuals.py": {
+      "mode": "100644",
+      "path": "tests/test_brain_visuals.py",
+      "sha": "47906049264e1638bb9dfd813f7765f8aaafb09c",
+      "type": "blob"
+    },
+    "tests/test_brain_visuals_browser.py": {
+      "mode": "100644",
+      "path": "tests/test_brain_visuals_browser.py",
+      "sha": "50bcedabfbd96ee509dbe2c982622bec6f0d24c8",
+      "type": "blob"
+    },
+    "tests/test_brain_visuals_integration.py": {
+      "mode": "100644",
+      "path": "tests/test_brain_visuals_integration.py",
+      "sha": "0d50763235c914d756b5191804d8d1d96bd05682",
+      "type": "blob"
+    },
+    "tests/test_brain_visuals_widget.py": {
+      "mode": "100644",
+      "path": "tests/test_brain_visuals_widget.py",
+      "sha": "f5b73568704dbbad0c365c47ece47459e70c6a91",
+      "type": "blob"
+    }
+  },
+  "original_head": "84a2b4b7ad6b7c5c9f6c98bd7bff855d86762cb7",
+  "protected_mastermind_pin": "517138ca65c14ad4262f7f937352ae08a0415d76",
+  "publication_head_recorded_separately_to_avoid_receipt_self_reference": true,
+  "qualification_base": "aed66e338d0b08ca3ee1d97f8f3fbfae119a4b82",
+  "qualification_base_tree": "cd80f46e866c79f362af2081b46feead805880b7",
+  "render_execution": {
+    "actual_receipt_sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3",
+    "command": [
+      "python3",
+      "scripts/render_stock_dashboard_fixture.py",
+      "--market",
+      "all",
+      "--out-dir",
+      "owned-proof-p0b/p0b-fixtures",
+      "--receipt",
+      "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+    ],
+    "finished": "2026-11-11T23:45:49.790265+00:00",
+    "fixtures": [
+      {
+        "bytes": 237086,
+        "path": "owned-proof-p0b/p0b-fixtures/canada_stocks.html",
+        "sha256": "7d78e3eda59b9a9596ee4144ed9e5c81b474cd6d268c8ef9acbf8c498f5371db"
+      },
+      {
+        "bytes": 204793,
+        "path": "owned-proof-p0b/p0b-fixtures/canada_stocks.null-buy.html",
+        "sha256": "03141f86c8e4afa72433ed0dec2a5aeaeaee513053999712514ec4eb181a72da"
+      },
+      {
+        "bytes": 204831,
+        "path": "owned-proof-p0b/p0b-fixtures/canada_stocks.watch-only.html",
+        "sha256": "b58945268e0343a189f7ef938d2443bec5b14076e76585b0193db324f75415d8"
+      },
+      {
+        "bytes": 395004,
+        "path": "owned-proof-p0b/p0b-fixtures/hk_stocks.html",
+        "sha256": "8a5126f0c7bc2645ed03fa2eb621cc6d343c9567c8d41ce58f87119e203da021"
+      },
+      {
+        "bytes": 384084,
+        "path": "owned-proof-p0b/p0b-fixtures/hk_stocks.null-buy.html",
+        "sha256": "865728437b19fe887ba3bd7a93c7cc2376c7a7d921050ce5aaa4e7decdb45454"
+      },
+      {
+        "bytes": 384263,
+        "path": "owned-proof-p0b/p0b-fixtures/hk_stocks.watch-only.html",
+        "sha256": "57b9e86ebfcc3d09ee3d6dd45a38190b5fcc335185acb23bd1822b4a3e99fd7f"
+      }
+    ],
+    "log_sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3",
+    "original_receipt_sha256": "d00390eafd2d1db05dd78a723bd759846ed3c5fba634e7436edb0716deb262f3",
+    "returncode": 0,
+    "source_inputs_unchanged": true,
+    "source_snapshot_tree_before_evidence": "478b672f920c8402278328239580521c44edbcba",
+    "started": "2026-11-11T23:45:46.191750+00:00"
+  },
+  "schema": "macro.mastermind_ai_candlestick_main_composition_qualification.v1",
+  "source_claim_and_administrative_recovery": "https://github.com/mastermindx-market-intelligence/macro/pull/10208#issuecomment-6809733211",
+  "source_composition": {
+    "actual_existing_generator_calls": [
+      "lib.site_assets.copy_asset(theme.js, templates/theme.js, site)",
+      "scripts.optimize_assets.make_optimizer(actual site) then paired chat output"
+    ],
+    "added_feature_paths_absent_on_B_and_M": 2,
+    "annotation_semantics": "Accepted entry/setup and stop roles retained; no color-only change.",
+    "modified_feature_preimages_B_equal_M": 13,
+    "other_original_feature_objects": 15,
+    "presentation_version": "b252d819",
+    "private_env_absent": true,
+    "rjsmin": "1.2.5",
+    "theme_version": "521fecaf",
+    "visual_script_version": "1005e0b0",
+    "visual_style_version": "897c1b53",
+    "widget": "Complete current main plus only the original three version literals; exact original B-to-H and candidate-to-main inverses verified.",
+    "widget_version": "a45b2871"
+  },
+  "source_files": {
+    "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md": {
+      "bytes": 4526,
+      "git_blob": "59f510eec0a73b199e17773d0b5c0bb6f063d422",
+      "mode": "100644",
+      "sha256": "dc91cf71179dcb817fa037810d1eea4bfc7fdd9ffabc03c1349d6f1ad039a72b"
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "bytes": 742190,
+      "git_blob": "9cd42b1367d30264e22927d63f9b71a97e5d7101",
+      "mode": "100644",
+      "sha256": "244dea334a5061b0dd30178b10690f385bd5584e4730b0a28f70b097fcf32860"
+    },
+    "engine/neuralweb/brain_visuals.py": {
+      "bytes": 16237,
+      "git_blob": "92f448b20f5a13c134229e1f7d3d4e852a2dce79",
+      "mode": "100644",
+      "sha256": "3ad5dbd3647e63021d26524b39e1099783227fb2ce68c02177c30733aac8dc0a"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/README.md": {
+      "bytes": 3543,
+      "git_blob": "55952b9cf95ed1c6450101cd36af89f719807b49",
+      "mode": "100644",
+      "sha256": "eb71c6ce826571bbaa586d40bca6310ccc55bd96961d3211f31183522581e45d"
+    },
+    "research/evidence/mastermind_ai_candlestick_20261106/source-qualification.json": {
+      "bytes": 22822,
+      "git_blob": "370848bed7a716c0a7c34513c883f1b31396697a",
+      "mode": "100644",
+      "sha256": "059cb648e9c3e94c112062866e14f0822a8eaa061254a273004e75e9064f545d"
+    },
+    "site/chat.html": {
+      "bytes": 96169,
+      "git_blob": "544b99ad1814be1ecad28596cf03407e27cef28b",
+      "mode": "100644",
+      "sha256": "e7d2ac3e6ee70308392f9f654e1a3b60e0fa06b1cd231a46e2f83e0df00ce793"
+    },
+    "site/mm_brain.js": {
+      "bytes": 318034,
+      "git_blob": "5625fa9c8b56e17feed2e0beff8677b502513f2e",
+      "mode": "100644",
+      "sha256": "a45b287184a5714e0410a68ded7673bccb59d70dbf1dc172e5b92f76af18e453"
+    },
+    "site/mm_brain_presentation.js": {
+      "bytes": 4272,
+      "git_blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "site/mm_brain_visuals.css": {
+      "bytes": 10669,
+      "git_blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "site/mm_brain_visuals.js": {
+      "bytes": 24026,
+      "git_blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "site/theme.js": {
+      "bytes": 280236,
+      "git_blob": "c87e1b19f26555a73f40b9e2ddc0e5528a335bdb",
+      "mode": "100644",
+      "sha256": "521fecaf9dfca24de17cab88ab9aa3b5a24a3148634a66df28aeaacf0d98eb78"
+    },
+    "templates/chat.html": {
+      "bytes": 96169,
+      "git_blob": "544b99ad1814be1ecad28596cf03407e27cef28b",
+      "mode": "100644",
+      "sha256": "e7d2ac3e6ee70308392f9f654e1a3b60e0fa06b1cd231a46e2f83e0df00ce793"
+    },
+    "templates/mm_brain.js": {
+      "bytes": 318034,
+      "git_blob": "5625fa9c8b56e17feed2e0beff8677b502513f2e",
+      "mode": "100644",
+      "sha256": "a45b287184a5714e0410a68ded7673bccb59d70dbf1dc172e5b92f76af18e453"
+    },
+    "templates/mm_brain_presentation.js": {
+      "bytes": 4272,
+      "git_blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "templates/mm_brain_visuals.css": {
+      "bytes": 10669,
+      "git_blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "templates/mm_brain_visuals.js": {
+      "bytes": 24026,
+      "git_blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "tests/test_brain_visuals.py": {
+      "bytes": 10792,
+      "git_blob": "47906049264e1638bb9dfd813f7765f8aaafb09c",
+      "mode": "100644",
+      "sha256": "6e3dabdc6521fa1e218056e01b0fc0e548143a25ebe15b2f4d8ceab7b2f2814c"
+    },
+    "tests/test_brain_visuals_browser.py": {
+      "bytes": 13944,
+      "git_blob": "50bcedabfbd96ee509dbe2c982622bec6f0d24c8",
+      "mode": "100644",
+      "sha256": "7365f4ccf78ed0a6a438d545d928ebf641da081720e9955c76ac8ba7e17342d0"
+    },
+    "tests/test_brain_visuals_integration.py": {
+      "bytes": 16378,
+      "git_blob": "0d50763235c914d756b5191804d8d1d96bd05682",
+      "mode": "100644",
+      "sha256": "5ece3c5bda7dbadf46d0a8e8df1c210e3dbd7a220fd15d6c35004e3d2ba3024c"
+    },
+    "tests/test_brain_visuals_widget.py": {
+      "bytes": 6881,
+      "git_blob": "f5b73568704dbbad0c365c47ece47459e70c6a91",
+      "mode": "100644",
+      "sha256": "829ae175c0a1214771e4138fe5e6bbb72746b304394336fe50d08b39b0ace4f2"
+    }
+  },
+  "source_snapshot_tree_before_evidence": "478b672f920c8402278328239580521c44edbcba",
+  "status": "QUALIFIED_SOURCE_AND_BROWSER_FIXTURE_PENDING_HOSTED_CI"
+}

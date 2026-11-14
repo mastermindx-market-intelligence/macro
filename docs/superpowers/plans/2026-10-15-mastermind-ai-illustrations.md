@@ -18,3 +18,29 @@ Untrusted history must not expose other metadata or bypass spec checks. Source e
 - [ ] Review and delivery: consume existing Fabric contract review, repair blockers, run targeted regressions and design/asset guards, capture real-widget browser evidence. Commit/push using registered workspace fenced tools, open original PR, preserve genuine CI/review/release gates and verify live when admitted. Save current continuation in canonical Agent OS and PR; do not claim production from fixtures or a PR.
 
 Execution ownership: principal retains cross-owner integration and visual judgment (PRINCIPAL_JUDGMENT); bounded independent review delegated through installed M2 Fabric under the same original operation root. No background Web execution claim.
+
+## 2026-10-30 — bounded OHLC candlestick extension
+Chairman asks existing public Mastermind AI chat to draw a 30-minute bullish pivot
+(first green after two red candles), or bearish mirror, with an entry/stop and
+the first subsequent breakout. Own this through WS:MASTERMIND-AI-ILLUSTRATIONS;
+do not create a second chat engine, chart bus, history, auth or data owner.
+Source base: Macro main f5d91f6c5a6211c2d51f0f9b93a46dfe75789177.
+New branch: sol/web-mastermind-ai-candlestick-pivots-20261030.
+
+- [x] Closed v1 preset: five columns Candle/Open/High/Low/Close, 4–48 valid
+  positive finite OHLC rows. Every observed numeric cell binds to a single
+  completed authorized tool result with original call ID; illustrations never
+  inherit data-source claims.
+- [x] Native SVG candles, wick, pivot highlight, derived entry/stop, first
+  later breakout, accessible table/CSV, responsive bilingual descriptions.
+  No qualifying pivot means no entry/stop/breakout annotation.
+- [x] Preserve the original illustration/provenance guards, stream, saved
+  history, source-sensitive presentation and existing render_inline_chart.
+- [x] Add Python and Chromium unit specimens and propagate versioned template
+  and site assets through the existing writer and cache conventions.
+- [ ] Exact-head hosted checks, independent non-author review and actual
+  signed-in Macro standalone, Macro embedded and Terminal model/chart/history
+  proof remain mandatory; static tests are not production acceptance.
+
+These pivot/stop lines are educational diagram elements, not order sizing,
+fills, validated trading signals, current quotes or historical market facts.

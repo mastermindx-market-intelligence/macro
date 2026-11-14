@@ -1,0 +1,578 @@
+{
+  "browser": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_brain_visuals_browser.py",
+      "tests/test_brain_visuals_widget.py",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/private/tmp/c4-candlestick-browser-wz1sbpee/pytest",
+      "--junitxml",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10208-repair/.proof_runtime/c4-repair-20261106/independent-browser.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 43
+    },
+    "elapsed_seconds": 39.672,
+    "emitter_parity_executed": false,
+    "exit_code": 0,
+    "fixture_base_gid": 20,
+    "fixture_parent_gid": 20,
+    "fixture_parent_mode": "0o700",
+    "guard_environment": {},
+    "require_browser": "1",
+    "schema": "c4.candlestick.independent-browser.v1",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_tail": "",
+    "stdout_sha256": "c1c1a7cc8860fea14ce8ab4e519545f8136d3d6594eb44d7287d47cbc58660f6",
+    "stdout_tail": "...........................................                              [100%]\n43 passed in 38.73s\n"
+  },
+  "closure_checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_p0b_receipt_closure.py",
+        "--selftest"
+      ],
+      "exit_code": 0,
+      "phase": "p0b-closure-selftest",
+      "stderr": "",
+      "stdout": "check_p0b_receipt_closure selftest OK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_p0b_receipt_closure.py",
+        "--diff-file",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10208-repair/.proof_runtime/c4-repair-20261106/changed-paths.txt",
+        "--repo-root",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10208-repair",
+        "--event",
+        "pull_request"
+      ],
+      "exit_code": 0,
+      "phase": "p0b-closure-gate",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+        "--"
+      ],
+      "exit_code": 0,
+      "phase": "diff-check",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "coordinator": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/2028",
+  "current_head_hosted_ci": "PENDING_PUBLICATION",
+  "formal_github_approval": false,
+  "limits": [
+    "Dated frozen fixtures and simulated auth/history; no signed-in deployed Macro/Terminal proof.",
+    "The specifically refused local theme-emitter parity action was not replayed or weakened.",
+    "Generic schematic drawings and explicit fictional teaching do not grant trading, fill, sizing or predictive authority.",
+    "Inherited Paper/R8, PR7151 scope and prior review effects remain separate."
+  ],
+  "local_theme_emitter_parity": "NOT_EXECUTED_PRIOR_REPORTED_REFUSAL_PRESERVED",
+  "operation_id": "github-pr-sweep-2028-c4-pr10208-repair",
+  "original_branch": "sol/web-mastermind-ai-candlestick-pivots-20261030",
+  "original_head": "c7c12bcabaa698aa456d4a5bab4e969f0e366bca",
+  "p0b": {
+    "capture": {
+      "changed_paths": [
+        {
+          "bytes": 498957,
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+          "sha256": "8fc09bcec550ffa005d9fcf36d38f2c55c87e8c9678b90a7b8a33796c83c2924"
+        },
+        {
+          "bytes": 491480,
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+          "sha256": "705f4b350c522d00a0761b514986e6005836206bf9f376b50755837d4839212f"
+        }
+      ],
+      "completed_at": "2026-11-06T12:29:44.453448+00:00",
+      "historical_files_unchanged": true,
+      "pass": true,
+      "phases": [
+        {
+          "command": [
+            "python3",
+            "scripts/render_stock_dashboard_fixture.py",
+            "--market",
+            "all",
+            "--out-dir",
+            ".proof_runtime/c4-repair-20261106/p0b-fixtures",
+            "--receipt",
+            "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+          ],
+          "exit_code": 0,
+          "log_sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3",
+          "phase": "render",
+          "seconds": 4.325
+        },
+        {
+          "command": [
+            "node",
+            "scripts/verify_stock_dashboard_mobile_layout.cjs",
+            "--html",
+            ".proof_runtime/c4-repair-20261106/p0b-fixtures/hk_stocks.html",
+            "--site-dir",
+            "site",
+            "--fixture-receipt",
+            "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+            "--fixture-assets-dir",
+            "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+            "--screenshot-dir",
+            "mockups/evidence/prophet-p0b-zero-fouc",
+            "--historical-head",
+            "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+            "--historical-tree",
+            "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+            "--browser",
+            "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+            "--out",
+            "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+          ],
+          "exit_code": 0,
+          "log_sha256": "705f4b350c522d00a0761b514986e6005836206bf9f376b50755837d4839212f",
+          "phase": "hk",
+          "seconds": 253.986
+        },
+        {
+          "command": [
+            "node",
+            "scripts/verify_stock_dashboard_mobile_layout.cjs",
+            "--html",
+            ".proof_runtime/c4-repair-20261106/p0b-fixtures/canada_stocks.html",
+            "--site-dir",
+            "site",
+            "--fixture-receipt",
+            "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+            "--fixture-assets-dir",
+            "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data",
+            "--screenshot-dir",
+            "mockups/evidence/prophet-p0b-zero-fouc",
+            "--historical-head",
+            "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+            "--historical-tree",
+            "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+            "--browser",
+            "/Users/chriswong/Library/Caches/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-mac-arm64/chrome-headless-shell",
+            "--out",
+            "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+          ],
+          "exit_code": 0,
+          "log_sha256": "8fc09bcec550ffa005d9fcf36d38f2c55c87e8c9678b90a7b8a33796c83c2924",
+          "phase": "ca",
+          "seconds": 244.528
+        }
+      ],
+      "receipts": {
+        "ca": {
+          "browser": {
+            "arch": "arm64",
+            "engine": "chromium",
+            "executable": {
+              "name": "chrome-headless-shell",
+              "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+            },
+            "platform": "darwin",
+            "playwright": "1.61.1",
+            "version": "149.0.7827.55"
+          },
+          "owner_projection_matrix_keys": [
+            "contract",
+            "membership_overlay",
+            "primary_passed",
+            "degraded_controls_passed",
+            "screenshot_count",
+            "theme_art_direction_pairs",
+            "cases",
+            "pass"
+          ],
+          "pass": true,
+          "sha256": "8fc09bcec550ffa005d9fcf36d38f2c55c87e8c9678b90a7b8a33796c83c2924"
+        },
+        "hk": {
+          "browser": {
+            "arch": "arm64",
+            "engine": "chromium",
+            "executable": {
+              "name": "chrome-headless-shell",
+              "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+            },
+            "platform": "darwin",
+            "playwright": "1.61.1",
+            "version": "149.0.7827.55"
+          },
+          "owner_projection_matrix_keys": [
+            "contract",
+            "membership_overlay",
+            "primary_passed",
+            "degraded_controls_passed",
+            "screenshot_count",
+            "theme_art_direction_pairs",
+            "cases",
+            "pass"
+          ],
+          "pass": true,
+          "sha256": "705f4b350c522d00a0761b514986e6005836206bf9f376b50755837d4839212f"
+        }
+      },
+      "source_theme_sha256": "a17c73f414013a465f5f2adc80a6aa06d604b78a10b554450288af862a4a5320",
+      "started_at": "2026-11-06T12:21:21.569574+00:00"
+    },
+    "claims": {
+      "browser_fixture": "reproducible",
+      "canonical_build": "unavailable",
+      "production": "none",
+      "source_contract": "browser_fixture"
+    },
+    "emitter_parity_executed": false,
+    "fixture_receipt_unchanged": true,
+    "historical_baselines_preserved": true,
+    "history_after": 17,
+    "history_before": 16,
+    "manifest_sha256": "b1bffb96e54324580c39eaff3070daba52b431226876421d7457c4983aedc565",
+    "prior_manifest_sha256": "d3247088200205b337e0d89f7fb5ee379537de7d33f7bfc3bac9f9d39566aa7a",
+    "receipts": {
+      "ca": {
+        "browser": {
+          "arch": "arm64",
+          "engine": "chromium",
+          "executable": {
+            "name": "chrome-headless-shell",
+            "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+          },
+          "platform": "darwin",
+          "playwright": "1.61.1",
+          "version": "149.0.7827.55"
+        },
+        "degraded_control_cases": 16,
+        "historical_baseline_preserved": true,
+        "pass": true,
+        "primary_cases": 48,
+        "receipt_sha256": "8fc09bcec550ffa005d9fcf36d38f2c55c87e8c9678b90a7b8a33796c83c2924",
+        "screenshot_bytes_unchanged": true,
+        "screenshots": 8
+      },
+      "hk": {
+        "browser": {
+          "arch": "arm64",
+          "engine": "chromium",
+          "executable": {
+            "name": "chrome-headless-shell",
+            "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+          },
+          "platform": "darwin",
+          "playwright": "1.61.1",
+          "version": "149.0.7827.55"
+        },
+        "degraded_control_cases": 16,
+        "historical_baseline_preserved": true,
+        "pass": true,
+        "primary_cases": 48,
+        "receipt_sha256": "705f4b350c522d00a0761b514986e6005836206bf9f376b50755837d4839212f",
+        "screenshot_bytes_unchanged": true,
+        "screenshots": 8
+      }
+    },
+    "schema": "c4.candlestick.p0b-qualification.v1",
+    "screenshots_unchanged": 16,
+    "totals": {
+      "degraded_control_cases": 32,
+      "markets": 2,
+      "owner_cases_per_market": 3,
+      "primary_cases": 96,
+      "screenshots": 16,
+      "total_cases": 128
+    }
+  },
+  "p0b_contract_closure": {
+    "distinct_passed": 144,
+    "errors": 0,
+    "failures": 0,
+    "full_suite_replayed": false,
+    "initial": {
+      "passed": 143,
+      "reason": "sparse checkout omitted the existing ux-smells.json input",
+      "skipped": 1
+    },
+    "original_wrapper_exit": 1,
+    "original_wrapper_failure": "post-test zero-skip assertion; both pytest phases themselves exited0",
+    "schema": "c4.candlestick.p0b-contract-closure.v1",
+    "targeted": {
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_stock_dashboard_first_frame.py::test_visual_manifest_preserves_history_and_appends_bounded_repair",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/private/tmp/c4-candlestick-history-rvn1vtfp/pytest",
+        "--junitxml",
+        "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10208-repair/.proof_runtime/c4-repair-20261106/p0b-history-target.xml"
+      ],
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 1
+      },
+      "elapsed_seconds": 3.591,
+      "exit_code": 0,
+      "materialized_input": {
+        "blob": "ceffb643edf46953656328e746fc2a497f6cc560",
+        "path": "mockups/evidence/prophet-p0b-zero-fouc/ux-smells.json"
+      },
+      "source_unchanged": true,
+      "stderr": "",
+      "stdout": ".                                                                        [100%]\n1 passed in 2.50s\n"
+    },
+    "unresolved_skips": 0
+  },
+  "preparation_reconciliation": {
+    "original_child": 80882,
+    "original_pid": 78756,
+    "original_step": "git write-tree on private publication index",
+    "original_terminal_exit": 1,
+    "profile": "prefetch_cache_entries -> promisor_remote_get_direct -> is_promisor_object -> for_each_packed_object",
+    "qualified_source_changed": false,
+    "refs_changed": false,
+    "termination": "owned child SIGTERM; parent fully settled before continuation",
+    "tests_replayed": false
+  },
+  "production_acceptance": false,
+  "publication_base": "0b852c947aabe321ee98d153cb9596cd452a923d",
+  "publication_base_tree": "46236bc39da9d020fc66bf74e1e101f6c059b7a1",
+  "python_final": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_brain_visuals.py",
+      "tests/test_brain_visuals_review.py",
+      "tests/test_brain_visuals_integration.py",
+      "tests/test_brain_visuals_assets.py::test_visual_assets_are_public_code_not_a_new_public_data_route",
+      "tests/test_brain_visuals_assets.py::test_both_widget_builders_emit_the_exact_native_asset_set",
+      "tests/test_brain_visuals_assets.py::test_lazy_urls_use_the_same_per_asset_content_hash_as_the_site_pipeline",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/private/tmp/c4-candlestick-final-9bcghtze/final-independent-python",
+      "--junitxml",
+      "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10208-repair/.proof_runtime/c4-repair-20261106/final-independent-python.xml"
+    ],
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 143
+    },
+    "elapsed_seconds": 7.287,
+    "emitter_parity_executed": false,
+    "exit_code": 0,
+    "fixture_base_gid": 20,
+    "fixture_parent_gid": 20,
+    "guard_environment": {},
+    "phase": "final-independent-python",
+    "schema": "c4.candlestick.test-phase.v1",
+    "source_blobs": {
+      "engine/neuralweb/brain_gateway.py": "9cd42b1367d30264e22927d63f9b71a97e5d7101",
+      "tests/test_brain_visuals_integration.py": "0d50763235c914d756b5191804d8d1d96bd05682"
+    },
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_tail": "",
+    "stdout_sha256": "83761724664b4e1d6986908f33e6b0da76d55255435e9a9108385ef592a68242",
+    "stdout_tail": "........................................................................ [ 50%]\n.......................................................................  [100%]\n143 passed in 5.56s\n"
+  },
+  "q1_before": {
+    "command": [
+      "python3",
+      "-m",
+      "pytest",
+      "tests/test_brain_visuals_integration.py::test_candlestick_session_request_cannot_become_numeric_example[nonstream]",
+      "-q",
+      "--tb=short",
+      "--basetemp",
+      "/private/tmp/c4-candlestick-before-2agxqwh3"
+    ],
+    "elapsed_seconds": 4.948,
+    "exit_code": 1,
+    "fixture_gid": 0,
+    "fixture_mode": "0o700",
+    "gateway_blob": "0c1a25b6d5687eab7f2e0357e803b31834c220b1",
+    "schema": "c4.candlestick.q1.before.v1",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_tail": "",
+    "stdout_sha256": "2351a82ef554a081c605e6cca74664c9404fbdd663f94d8d6cbe5cb127d272d0",
+    "stdout_tail": "F                                                                        [100%]\n=================================== FAILURES ===================================\n__ test_candlestick_session_request_cannot_become_numeric_example[nonstream] ___\ntests/test_brain_visuals_integration.py:215: in test_candlestick_session_request_cannot_become_numeric_example\n    assert charts == []\nE   AssertionError: assert [{'type': 'ch...pivot', ...}}] == []\nE     \nE     Left contains one more item: {'type': 'chart', 'visual_id': '21e82d6edcff8486c649b83f', 'visual': {'version': 1, 'template': 'candlestick', 'basis': 'illustrative', 'title': 'Illustrative bullish 30-minute pivot', ...}}\nE     Use -v to get more diff\n\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n=========================== short test summary info ============================\nFAILED tests/test_brain_visuals_integration.py::test_candlestick_session_request_cannot_become_numeric_example[nonstream]\n1 failed in 2.92s\n",
+    "test_blob": "2d598f30c35757d4dd48f7374771967515e08f47"
+  },
+  "qualification_base": "52d3350bb78740f465e0b7e7c8c5bfc502c109cf",
+  "schema": "mastermind.candlestick.c4.source_qualification.v1",
+  "self_reviewed": true,
+  "source_files": {
+    "docs/superpowers/plans/2026-10-15-mastermind-ai-illustrations.md": {
+      "blob": "59f510eec0a73b199e17773d0b5c0bb6f063d422",
+      "bytes": 4526,
+      "mode": "100644",
+      "sha256": "dc91cf71179dcb817fa037810d1eea4bfc7fdd9ffabc03c1349d6f1ad039a72b"
+    },
+    "engine/neuralweb/brain_gateway.py": {
+      "blob": "9cd42b1367d30264e22927d63f9b71a97e5d7101",
+      "bytes": 742190,
+      "mode": "100644",
+      "sha256": "244dea334a5061b0dd30178b10690f385bd5584e4730b0a28f70b097fcf32860"
+    },
+    "engine/neuralweb/brain_visuals.py": {
+      "blob": "92f448b20f5a13c134229e1f7d3d4e852a2dce79",
+      "bytes": 16237,
+      "mode": "100644",
+      "sha256": "3ad5dbd3647e63021d26524b39e1099783227fb2ce68c02177c30733aac8dc0a"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "blob": "729cfb6102653eb498b3c00812979cb06f23cf6a",
+      "bytes": 113010,
+      "mode": "100644",
+      "sha256": "b1bffb96e54324580c39eaff3070daba52b431226876421d7457c4983aedc565"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "blob": "23f80320fd7809fdfc0e8af43bdb12417733fa37",
+      "bytes": 498957,
+      "mode": "100644",
+      "sha256": "8fc09bcec550ffa005d9fcf36d38f2c55c87e8c9678b90a7b8a33796c83c2924"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "blob": "3a4ddf1de188f400d81d7df14d23b244c8004a7d",
+      "bytes": 491480,
+      "mode": "100644",
+      "sha256": "705f4b350c522d00a0761b514986e6005836206bf9f376b50755837d4839212f"
+    },
+    "site/chat.html": {
+      "blob": "400a5dee93df31be6602ef08a0365f3ed68292d7",
+      "bytes": 96169,
+      "mode": "100644",
+      "sha256": "39feec0b9f60cd8cf00dc6f153f98cdff0594d27ddee20c41c2f2fc296e622cb"
+    },
+    "site/mm_brain.js": {
+      "blob": "5f0b395ea98a2929bb8aa9303371c2fbcbd31b9e",
+      "bytes": 291018,
+      "mode": "100644",
+      "sha256": "2f6bfc93354fe747fe1ee58654fab8703878db65e35a54e646d194c9622a454b"
+    },
+    "site/mm_brain_presentation.js": {
+      "blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "bytes": 4272,
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "site/mm_brain_visuals.css": {
+      "blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "bytes": 10669,
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "site/mm_brain_visuals.js": {
+      "blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "bytes": 24026,
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "site/theme.js": {
+      "blob": "1bff79f1922d3e4ace7bb7e30cbd383f0d5bf174",
+      "bytes": 280236,
+      "mode": "100644",
+      "sha256": "a17c73f414013a465f5f2adc80a6aa06d604b78a10b554450288af862a4a5320"
+    },
+    "templates/chat.html": {
+      "blob": "400a5dee93df31be6602ef08a0365f3ed68292d7",
+      "bytes": 96169,
+      "mode": "100644",
+      "sha256": "39feec0b9f60cd8cf00dc6f153f98cdff0594d27ddee20c41c2f2fc296e622cb"
+    },
+    "templates/mm_brain.js": {
+      "blob": "5f0b395ea98a2929bb8aa9303371c2fbcbd31b9e",
+      "bytes": 291018,
+      "mode": "100644",
+      "sha256": "2f6bfc93354fe747fe1ee58654fab8703878db65e35a54e646d194c9622a454b"
+    },
+    "templates/mm_brain_presentation.js": {
+      "blob": "0101eafeabaf7969dd4153606be4ed81444d56dc",
+      "bytes": 4272,
+      "mode": "100644",
+      "sha256": "b252d81940be53ff96d491b61a9d7cb4c6ee6a4c3a48e406ebc89d30eef7c833"
+    },
+    "templates/mm_brain_visuals.css": {
+      "blob": "278e44c3ba6375da985e9a343a14a47f8a09bedd",
+      "bytes": 10669,
+      "mode": "100644",
+      "sha256": "897c1b5364c64aa56e87cdba30677b23fcb31f0aea94fd93fcb1f9cb0a539d9a"
+    },
+    "templates/mm_brain_visuals.js": {
+      "blob": "45481e9743fb01aea99fcde7054783a08d79210b",
+      "bytes": 24026,
+      "mode": "100644",
+      "sha256": "1005e0b0dec2d59d6c225fa66fc351a16bc69abb70a24dc11621ceda2b223c70"
+    },
+    "tests/test_brain_visuals.py": {
+      "blob": "47906049264e1638bb9dfd813f7765f8aaafb09c",
+      "bytes": 10792,
+      "mode": "100644",
+      "sha256": "6e3dabdc6521fa1e218056e01b0fc0e548143a25ebe15b2f4d8ceab7b2f2814c"
+    },
+    "tests/test_brain_visuals_browser.py": {
+      "blob": "50bcedabfbd96ee509dbe2c982622bec6f0d24c8",
+      "bytes": 13944,
+      "mode": "100644",
+      "sha256": "7365f4ccf78ed0a6a438d545d928ebf641da081720e9955c76ac8ba7e17342d0"
+    },
+    "tests/test_brain_visuals_integration.py": {
+      "blob": "0d50763235c914d756b5191804d8d1d96bd05682",
+      "bytes": 16378,
+      "mode": "100644",
+      "sha256": "5ece3c5bda7dbadf46d0a8e8df1c210e3dbd7a220fd15d6c35004e3d2ba3024c"
+    },
+    "tests/test_brain_visuals_widget.py": {
+      "blob": "f5b73568704dbbad0c365c47ece47459e70c6a91",
+      "bytes": 6881,
+      "mode": "100644",
+      "sha256": "829ae175c0a1214771e4138fe5e6bbb72746b304394336fe50d08b39b0ace4f2"
+    }
+  },
+  "source_pr": 10208,
+  "source_snapshot_tree_before_evidence": "27e39ec0c8005887177264182e8f2ddd114c21f1",
+  "tree_construction": {
+    "base_tree_roundtrip_verified": true,
+    "method": "canonical Git tree serialization from immutable publication-base objects and exact qualified file blobs",
+    "native_tree_sha_readback_required": true,
+    "qualified_paths": 21,
+    "source_tree": "27e39ec0c8005887177264182e8f2ddd114c21f1",
+    "unchanged_base_entries_preserved": true
+  },
+  "upstream_composition": {
+    "accepted_7940_merge": "0b852c947aabe321ee98d153cb9596cd452a923d",
+    "accepted_7940_source_paths": [
+      "agentos/handoffs/RATES-INFLATION-COMMAND-2026-09-24-prospective-ledger.md",
+      "research/RATES_DIRECTION_PROSPECTIVE_LEDGER_2026-09-24.md",
+      "scripts/build_rates_command.py",
+      "tests/test_rates_command.py"
+    ],
+    "candidate_path_overlap": [],
+    "data_paths": 30,
+    "paths": 34
+  }
+}
