@@ -1,0 +1,65 @@
+{
+ "schema": "theme_graph.segment_propose_manifest/v1",
+ "rows": [
+  {
+   "ticker": "ARM",
+   "issuer": "co:us:ARM",
+   "theme": "theme:semiconductor_ip_licensing",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/ARM_0001973239-26-000097_single-operating-segment_496b8c7259c8_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/ARM_0001973239-26-000097_single-operating-segment_496b8c7259c8_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  },
+  {
+   "ticker": "FN",
+   "issuer": "co:us:FN",
+   "theme": "theme:optical_transceiver_modules",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/FN_0001408710-26-000028_single-operating-segment_496b8c7259c8_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/FN_0001408710-26-000028_single-operating-segment_496b8c7259c8_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  },
+  {
+   "ticker": "SMCI",
+   "issuer": "co:us:SMCI",
+   "theme": "theme:ai_server_board_integration",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/SMCI_0001375365-26-000022_one-operating-segment_c4ceaf3a7506_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/SMCI_0001375365-26-000022_one-operating-segment_c4ceaf3a7506_SOURCE_POLICY.json",
+   "exposure_role": "primary",
+   "profit_driver": true
+  },
+  {
+   "ticker": "NVDA",
+   "issuer": "co:us:NVDA",
+   "theme": "theme:ai_interconnect_silicon",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/NVDA_0001045810-26-000021_Compute-Networking_d813cb724dea_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/NVDA_0001045810-26-000021_Compute-Networking_d813cb724dea_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  },
+  {
+   "ticker": "NVDA",
+   "issuer": "co:us:NVDA",
+   "theme": "theme:network_offload_processors",
+   "role": "component_supplier",
+   "knowledge_cutoff": "2026-11-14T15:00:00Z",
+   "created": "2026-11-14T15:00:00Z",
+   "spec_path": "research/theme_graph/sec_segment_20261114/NVDA_0001045810-26-000021_Compute-Networking_d813cb724dea_SEGMENT_OWNER_DECISION.json",
+   "policy_path": "research/theme_graph/sec_segment_20261114/NVDA_0001045810-26-000021_Compute-Networking_d813cb724dea_SOURCE_POLICY.json",
+   "exposure_role": "secondary",
+   "profit_driver": false
+  }
+ ]
+}
